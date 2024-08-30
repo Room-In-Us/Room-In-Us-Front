@@ -18,5 +18,5 @@ export default MainLayOut;
 
 // CSS
 const Padding = styled.div`
-    padding-top: 135px;
+    //padding 필요 시 작성
 `;
