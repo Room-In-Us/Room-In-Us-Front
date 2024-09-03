@@ -24,11 +24,6 @@ function MainPage() {
         }
     });
 
-    // 기본 드래그 동작 방지 함수 (지구모양 아이콘 없애기)
-    const handleDragStart = (e) => {
-        e.preventDefault();
-    };
-
     // navigate
     const navigate = useNavigate();
 
@@ -36,14 +31,14 @@ function MainPage() {
         <PageWrapper>
             {/* 카드 영역 */}
             <CardWrapper {...bind()}>
-                <Card className={positions[0]} onClick={() => navigate("/Level")} onDragStart={handleDragStart}>
-                    <StyledImg src={LevelCard} alt="숙련도" />
+                <Card className={positions[0]} onClick={() => navigate("/Level")}>
+                    <StyledImg src={LevelCard} alt="숙련도"/>
                 </Card>
-                <Card  className={positions[1]} onClick={() => navigate("/location")} onDragStart={handleDragStart}>
-                    <StyledImg src={LocationCard} alt="위치" />
+                <Card  className={positions[1]} onClick={() => navigate("/location")}>
+                    <StyledImg src={LocationCard} alt="위치"/>
                 </Card>
-                <Card  className={positions[2]} onClick={() => navigate("/Genre")} onDragStart={handleDragStart}>
-                    <StyledImg src={GenreCard} alt="장르" />
+                <Card  className={positions[2]} onClick={() => navigate("/Genre")}>
+                    <StyledImg src={GenreCard} alt="장르"/>
                 </Card>
             </CardWrapper>
 
