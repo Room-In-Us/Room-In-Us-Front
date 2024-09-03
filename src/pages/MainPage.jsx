@@ -36,7 +36,7 @@ function MainPage() {
         <PageWrapper>
             {/* 카드 영역 */}
             <CardWrapper {...bind()}>
-                <Card className={positions[0]} onClick={() => navigate("/Level")} onDragStart={handleDragStart}>
+                <Card className={positions[0]} onClick={() => navigate("/level")} onDragStart={handleDragStart}>
                     <StyledImg src={LevelCard} alt="숙련도" />
                 </Card>
                 <Card  className={positions[1]} onClick={() => navigate("/location")} onDragStart={handleDragStart}>
