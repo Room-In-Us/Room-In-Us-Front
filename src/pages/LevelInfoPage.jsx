@@ -18,13 +18,70 @@ export default function LevelInfoPage() {
           </LevelDetail>
         </LevelInfoBox>
         <RoomList>
-          <CtgyWrapper>
-            <Ctgy>지역명</Ctgy>
-            <Ctgy>상세지역</Ctgy>
-            <Ctgy>가게 이름</Ctgy>
-            <Ctgy>테마 이름</Ctgy>
-          </CtgyWrapper>
-          <List></List>
+          <TableHeaderWrapper>
+            <TableHeader1>지역명</TableHeader1>
+            <TableHeader2>상세지역</TableHeader2>
+            <TableHeader3>가게 이름</TableHeader3>
+            <TableHeader4>테마 이름</TableHeader4>
+          </TableHeaderWrapper>
+          <Table>
+            <tbody>
+              <TableRow>
+                <TableData>서울</TableData>
+                <TableData>강남</TableData>
+                <TableData>미스터리룸 이스케이프</TableData>
+                <TableData>인형괴담</TableData>
+              </TableRow>
+              <TableRow>
+                <TableData>서울</TableData>
+                <TableData>강남</TableData>
+                <TableData>미스터리룸 이스케이프</TableData>
+                <TableData>인형괴담</TableData>
+              </TableRow>
+              <TableRow>
+                <TableData>서울</TableData>
+                <TableData>강남</TableData>
+                <TableData>미스터리룸 이스케이프</TableData>
+                <TableData>인형괴담</TableData>
+              </TableRow>
+              <TableRow>
+                <TableData>서울</TableData>
+                <TableData>강남</TableData>
+                <TableData>미스터리룸 이스케이프</TableData>
+                <TableData>인형괴담</TableData>
+              </TableRow>
+              <TableRow>
+                <TableData>서울</TableData>
+                <TableData>강남</TableData>
+                <TableData>미스터리룸 이스케이프</TableData>
+                <TableData>인형괴담</TableData>
+              </TableRow>
+              <TableRow>
+                <TableData>서울</TableData>
+                <TableData>강남</TableData>
+                <TableData>미스터리룸 이스케이프</TableData>
+                <TableData>인형괴담</TableData>
+              </TableRow>
+              <TableRow>
+                <TableData>서울</TableData>
+                <TableData>강남</TableData>
+                <TableData>미스터리룸 이스케이프</TableData>
+                <TableData>인형괴담</TableData>
+              </TableRow>
+              <TableRow>
+                <TableData>서울</TableData>
+                <TableData>강남</TableData>
+                <TableData>미스터리룸 이스케이프</TableData>
+                <TableData>인형괴담</TableData>
+              </TableRow>
+              <TableRow>
+                <TableData>서울</TableData>
+                <TableData>강남</TableData>
+                <TableData>미스터리룸 이스케이프</TableData>
+                <TableData>인형괴담</TableData>
+              </TableRow>
+            </tbody>
+          </Table>
         </RoomList>
       </Container>
     </Wrapper>
@@ -40,23 +97,28 @@ const Wrapper = styled.div`
 `;
 
 const Container = styled.div`
-  width: 90%;
-  height: 80%;
+  width: 85%;
+  height: 100%;
   border-radius: 1.25em;
   background-color: #373737;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 2em;
+  padding: 2.5em;
+  margin: 1.5em;
 `;
 
 const LevelInfoBox = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   width: 74.1875em;
   height: 7.4375em;
   border-radius: 6.25em;
   background-color: #B1B1B1;
+  position: relative;
 `;
 
 const LevelIconWrapper = styled.div`
@@ -109,23 +171,92 @@ const LevelDetail = styled.div`
 
 const RoomList = styled.div`
   width: 76.0625em;
-  height: 100%;
+  height: 28em;
   background-color: #787878;
-  border-radius: 6.25em;
+  border-radius: 0.9375em;
+  padding: 0.5em;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8x;
+    background: none;
+  }
+  &:hover::-webkit-scrollbar-thumb {
+      border-radius: 30px;
+      background-color: darkgray;
+  }
 `;
 
-const CtgyWrapper = styled.div`
+const Table = styled.table`
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  margin-top: 3em;
+`;
+
+const TableRow = styled.tr``;
+
+const TableHeaderWrapper = styled.div`
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 72.0625em;
+  margin-right: 2em;
+  margin-left: 2em;
+  position: absolute;
+`;
+
+const TableHeader1 = styled.div`
+  padding: 0.6em;
+  background-color: rgba(56, 50, 50, 0.7);
   color: #fff;
   font-family: 'PretendardMedium';
-  background-color: #383232;
+  font-size: 1.3em;
+  text-align: center;
+  border-radius: 0.9615em;
+  width: 5em;
 `;
 
-const Ctgy = styled.div`
-  width: 10em;
-  height: 100%;
+const TableHeader2 = styled.div`
+  padding: 0.6em;
+  background-color: rgba(56, 50, 50, 0.7);
+  color: #fff;
+  font-family: 'PretendardMedium';
+  font-size: 1.3em;
+  text-align: center;
+  border-radius: 0.9615em;
+  width: 7.8em;
 `;
 
-const List = styled.div`
+const TableHeader3 = styled.div`
+  padding: 0.6em;
+  background-color: rgba(56, 50, 50, 0.7);
+  color: #fff;
+  font-family: 'PretendardMedium';
+  font-size: 1.3em;
+  text-align: center;
+  border-radius: 0.9615em;
+  width: 24.3em;
+`;
+
+const TableHeader4 = styled.div`
+  padding: 0.6em;
+  background-color: rgba(56, 50, 50, 0.7);
+  color: #fff;
+  font-family: 'PretendardMedium';
+  font-size: 1.3em;
+  text-align: center;
+  border-radius: 0.9615em;
+  width: 9.8em;
+`;
+
+const TableData = styled.td`
+  color: #fff;
+  font-family: 'PretendardMedium';
+  font-size: 1.3em;
+  padding-left: 1em;
+  padding-right: 1em;
+  text-align: center;
   border-bottom: 1px solid #fff;
+  height: 2.375em;
 `;
