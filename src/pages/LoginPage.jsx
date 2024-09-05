@@ -135,6 +135,7 @@ const LoginStateWrapper = styled.div`
 
 const StyledCheckbox = styled.div`
     border: 1px solid white;
+    border: ${(props) => (props.isCheck ? '1px solid #940000' : '1px solid white')};;
     border-radius: 3px;
     width: 1em;
     height: 1em;
