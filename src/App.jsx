@@ -2,6 +2,7 @@ import './App.css';
 import { Routes, Route } from "react-router-dom";
 import MainLayOut from './layout/MainLayOut';
 import MainPage from './pages/MainPage';
+import LoginPage from './pages/LoginPage';
 
 function App() {
   return (
@@ -13,7 +14,10 @@ function App() {
         <Route path="/" element={<MainPage/>} />
         
         {/* 로그인 페이지 */}
-        <Route path="/login" element={<MainPage/>} />
+        <Route path="/login" element={<LoginPage/>} />
+
+        {/* 회원가입 페이지 */}
+        <Route path="/signup" element={<LoginPage/>} />
 
         {/* 위치 페이지 */}
         <Route path="/location" element={<MainPage/>} />
