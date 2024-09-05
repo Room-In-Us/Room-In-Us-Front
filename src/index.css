@@ -51,3 +51,38 @@ body {
   font-weight: normal;
   font-style: normal;
 }
+
+@font-face {
+  font-family: 'PretendardBold';
+  src: url('./assets/fonts/genrePage/Pretendard-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PretendardRegular';
+  src: url('./assets/fonts/genrePage/Pretendard-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'esamanruBold';
+  src: url('./assets/fonts/genrePage/esamanru_Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'esamanruMedium';
+  src: url('./assets/fonts/genrePage/esamanru_Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'esamanruLight';
+  src: url('./assets/fonts/genrePage/esamanru_Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}

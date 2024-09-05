@@ -4,6 +4,8 @@ import MainLayOut from './layout/MainLayOut';
 import MainPage from './pages/MainPage';
 import LevelPage from './pages/LevelPage';
 import LevelInfoPage from './pages/LevelInfoPage';
+import GenrePage from './pages/GenrePage';
+import GenreInfoPage from './pages/GenreInfoPage';
 
 function App() {
   return (
@@ -25,7 +27,8 @@ function App() {
         <Route path='/levelInfo' element={<LevelInfoPage/>} />
 
         {/* 장르 페이지 */}
-        <Route path="/genre" element={<MainPage/>} />
+        <Route path="/genre" element={<GenrePage/>} />
+        <Route path="/genreInfo" element={<GenreInfoPage/>} />
 
         {/* 게시판 페이지 */}
         <Route path="/board" element={<MainPage/>} />
