@@ -17,6 +17,7 @@ body {
   }
 };
 
+
 /* Pretendard 폰트 */
 @font-face {
   font-family: 'Pretendard-Thin';
@@ -71,4 +72,73 @@ body {
   src: url('./assets/fonts/common/pretendard/Pretendard-Black.woff') format('woff');
   font-weight: 900;
   font-display: swap;
+};
+
+
+/* Pretendard 폰트 (levelPage) */
+@font-face {
+  font-family: 'PretendardMedium';
+  src: url('./assets/fonts/levelPage/Pretendard-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+};
+@font-face {
+  font-family: 'PretendardSemiBold';
+  src: url('./assets/fonts/levelPage/Pretendard-SemiBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+};
+@font-face {
+  font-family: 'PretendardBold';
+  src: url('./assets/fonts/genrePage/Pretendard-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+};
+@font-face {
+  font-family: 'PretendardRegular';
+  src: url('./assets/fonts/genrePage/Pretendard-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+};
+
+
+/* VitroCore 폰트 */
+@font-face {
+  font-family: 'VitroCore';
+  src: url('./assets/fonts/common/VITRO_CORE_TTF.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+};
+@font-face {
+  font-family: 'VitroInspire';
+  src: url('./assets/fonts/common/VITRO_INSPIRE_TTF.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+};
+@font-face {
+  font-family: 'VitroPride';
+  src: url('./assets/fonts/common/VITRO_PRIDE_TTF.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+};
+
+
+/* esamanru 폰트 */
+@font-face {
+  font-family: 'esamanruBold';
+  src: url('./assets/fonts/genrePage/esamanru_Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+};
+@font-face {
+  font-family: 'esamanruMedium';
+  src: url('./assets/fonts/genrePage/esamanru_Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+};
+@font-face {
+  font-family: 'esamanruLight';
+  src: url('./assets/fonts/genrePage/esamanru_Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 };
