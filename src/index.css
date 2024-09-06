@@ -15,7 +15,7 @@ body {
       border-radius: 30px;
       background-color: darkgray;
   }
-};
+}
 
 
 /* Pretendard 폰트 */
@@ -24,55 +24,55 @@ body {
   src: url('./assets/fonts/common/pretendard/Pretendard-Thin.woff') format('woff');
   font-weight: 100;
   font-display: swap;
-};
+}
 @font-face {
   font-family: 'Pretendard-ExtraLight';
   src: url('./assets/fonts/common/pretendard/Pretendard-ExtraLight.woff') format('woff');
   font-weight: 200;
   font-display: swap;
-};
+}
 @font-face {
   font-family: 'Pretendard-Light';
   src: url('./assets/fonts/common/pretendard/Pretendard-Light.woff') format('woff');
   font-weight: 300;
   font-display: swap;
-};
+}
 @font-face {
   font-family: 'Pretendard-Regular';
   src: url('./assets/fonts/common/pretendard/Pretendard-Regular.woff') format('woff');
   font-weight: 400;
   font-display: swap;
-};
+}
 @font-face {
   font-family: 'Pretendard-Medium';
   src: url('./assets/fonts/common/pretendard/Pretendard-Medium.woff') format('woff');
   font-weight: 500;
   font-display: swap;
-};
+}
 @font-face {
   font-family: 'Pretendard-SemiBold';
   src: url('./assets/fonts/common/pretendard/Pretendard-SemiBold.woff') format('woff');
   font-weight: 600;
   font-display: swap;
-};
+}
 @font-face {
   font-family: 'Pretendard-Bold';
   src: url('./assets/fonts/common/pretendard/Pretendard-Bold.woff') format('woff');
   font-weight: 700;
   font-display: swap;
-};
+}
 @font-face {
   font-family: 'Pretendard-ExtraBold';
   src: url('./assets/fonts/common/pretendard/Pretendard-ExtraBold.woff') format('woff');
   font-weight: 800;
   font-display: swap;
-};
+}
 @font-face {
   font-family: 'Pretendard-Black';
   src: url('./assets/fonts/common/pretendard/Pretendard-Black.woff') format('woff');
   font-weight: 900;
   font-display: swap;
-};
+}
 
 
 /* Pretendard 폰트 (levelPage) */
@@ -81,25 +81,25 @@ body {
   src: url('./assets/fonts/levelPage/Pretendard-Medium.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-};
+}
 @font-face {
   font-family: 'PretendardSemiBold';
   src: url('./assets/fonts/levelPage/Pretendard-SemiBold.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-};
+}
 @font-face {
   font-family: 'PretendardBold';
   src: url('./assets/fonts/genrePage/Pretendard-Bold.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-};
+}
 @font-face {
   font-family: 'PretendardRegular';
   src: url('./assets/fonts/genrePage/Pretendard-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-};
+}
 
 
 /* VitroCore 폰트 */
@@ -108,19 +108,19 @@ body {
   src: url('./assets/fonts/common/VITRO_CORE_TTF.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-};
+}
 @font-face {
   font-family: 'VitroInspire';
   src: url('./assets/fonts/common/VITRO_INSPIRE_TTF.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-};
+}
 @font-face {
   font-family: 'VitroPride';
   src: url('./assets/fonts/common/VITRO_PRIDE_TTF.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-};
+}
 
 
 /* esamanru 폰트 */
@@ -129,16 +129,16 @@ body {
   src: url('./assets/fonts/genrePage/esamanru_Bold.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-};
+}
 @font-face {
   font-family: 'esamanruMedium';
   src: url('./assets/fonts/genrePage/esamanru_Medium.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-};
+}
 @font-face {
   font-family: 'esamanruLight';
   src: url('./assets/fonts/genrePage/esamanru_Light.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-};
+}
