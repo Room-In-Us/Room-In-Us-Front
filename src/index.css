@@ -20,49 +20,55 @@ body {
 /* Pretendard 폰트 */
 @font-face {
   font-family: 'Pretendard-Thin';
-  src: url('./assets/fonts/common/Pretendard-Thin.woff') format('woff');
+  src: url('./assets/fonts/common/pretendard/Pretendard-Thin.woff') format('woff');
   font-weight: 100;
-  font-style: normal;
+  font-display: swap;
 };
 @font-face {
   font-family: 'Pretendard-ExtraLight';
-  src: url('./assets/fonts/common/Pretendard-ExtraLight.woff') format('woff');
+  src: url('./assets/fonts/common/pretendard/Pretendard-ExtraLight.woff') format('woff');
   font-weight: 200;
-  font-style: normal;
+  font-display: swap;
 };
 @font-face {
   font-family: 'Pretendard-Light';
-  src: url('./assets/fonts/common/Pretendard-Light.woff') format('woff');
+  src: url('./assets/fonts/common/pretendard/Pretendard-Light.woff') format('woff');
   font-weight: 300;
-  font-style: normal;
+  font-display: swap;
+};
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('./assets/fonts/common/pretendard/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-display: swap;
 };
 @font-face {
   font-family: 'Pretendard-Medium';
-  src: url('./assets/fonts/common/Pretendard-Medium.woff') format('woff');
+  src: url('./assets/fonts/common/pretendard/Pretendard-Medium.woff') format('woff');
   font-weight: 500;
-  font-style: normal;
+  font-display: swap;
 };
 @font-face {
   font-family: 'Pretendard-SemiBold';
-  src: url('./assets/fonts/common/Pretendard-SemiBold.woff') format('woff');
+  src: url('./assets/fonts/common/pretendard/Pretendard-SemiBold.woff') format('woff');
   font-weight: 600;
-  font-style: normal;
+  font-display: swap;
 };
 @font-face {
   font-family: 'Pretendard-Bold';
-  src: url('./assets/fonts/common/Pretendard-Bold.woff') format('woff');
+  src: url('./assets/fonts/common/pretendard/Pretendard-Bold.woff') format('woff');
   font-weight: 700;
-  font-style: normal;
+  font-display: swap;
 };
 @font-face {
   font-family: 'Pretendard-ExtraBold';
-  src: url('./assets/fonts/common/Pretendard-ExtraBold.woff') format('woff');
+  src: url('./assets/fonts/common/pretendard/Pretendard-ExtraBold.woff') format('woff');
   font-weight: 800;
-  font-style: normal;
+  font-display: swap;
 };
 @font-face {
   font-family: 'Pretendard-Black';
-  src: url('./assets/fonts/common/Pretendard-Black.woff') format('woff');
+  src: url('./assets/fonts/common/pretendard/Pretendard-Black.woff') format('woff');
   font-weight: 900;
-  font-style: normal;
+  font-display: swap;
 };

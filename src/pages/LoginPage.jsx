@@ -85,6 +85,8 @@ const LeftWrapper = styled.div`
     margin: 1.5em;
     width: 10em;
     color: #EAEAEA;
+    font-family: 'Pretendard-SemiBold';
+    font-weight: 600;
     font-size: 2.3em;
 `;
 
@@ -111,6 +113,8 @@ const InputWrapper = styled.div`
 const InputText = styled.div`
     margin-top: 1em;
     color: #FBE8E9;
+    font-family: 'Pretendard-Medium';
+    font-weight: 500;
 `;
 
 const StyledInput = styled.input`
@@ -149,6 +153,8 @@ const StyledCheckbox = styled.div`
 const CheckboxText = styled.div`
     margin-left: 0.6em;
     color: white;
+    font-family: 'Pretendard-Regular';
+    font-weight: 400;
     font-size: 0.8125em;
     cursor: pointer;
 `;
@@ -166,6 +172,8 @@ const LoginButton = styled.div`
     text-align: center;
     background-color: #940000;
     color: white;
+    font-family: 'Pretendard-Medium';
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     &:hover{
@@ -176,5 +184,7 @@ const LoginButton = styled.div`
 const SignupText = styled.div`
     margin-top: 0.6em;
     color: white;
+    font-family: 'Pretendard-regular';
+    font-weight: 400;
     cursor: pointer;
 `;
