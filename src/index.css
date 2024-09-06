@@ -16,3 +16,38 @@ body {
       background-color: darkgray;
   }
 }
+
+@font-face {
+  font-family: 'VitroCore';
+  src: url('./assets/fonts/common/VITRO_CORE_TTF.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'VitroInspire';
+  src: url('./assets/fonts/common/VITRO_INSPIRE_TTF.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'VitroPride';
+  src: url('./assets/fonts/common/VITRO_PRIDE_TTF.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PretendardMedium';
+  src: url('./assets/fonts/levelPage/Pretendard-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PretendardSemiBold';
+  src: url('./assets/fonts/levelPage/Pretendard-SemiBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}

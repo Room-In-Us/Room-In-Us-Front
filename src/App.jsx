@@ -2,6 +2,8 @@ import './App.css';
 import { Routes, Route } from "react-router-dom";
 import MainLayOut from './layout/MainLayOut';
 import MainPage from './pages/MainPage';
+import LevelPage from './pages/LevelPage';
+import LevelInfoPage from './pages/LevelInfoPage';
 
 function App() {
   return (
@@ -19,7 +21,8 @@ function App() {
         <Route path="/location" element={<MainPage/>} />
 
         {/* 숙련도 페이지 */}
-        <Route path="/level" element={<MainPage/>} />
+        <Route path="/level" element={<LevelPage/>} />
+        <Route path='/levelInfo' element={<LevelInfoPage/>} />
 
         {/* 장르 페이지 */}
         <Route path="/genre" element={<MainPage/>} />
