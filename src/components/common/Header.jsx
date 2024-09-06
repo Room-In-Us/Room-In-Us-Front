@@ -23,7 +23,6 @@ export default Header;
 
 // CSS
 const HeadrWrapper = styled.div`
-// border: 1px solid red;
     padding: 0 3em;
     height: 115px;
     display: flex;
@@ -37,14 +36,15 @@ const StyledLogoImg = styled.img`
 `;
 
 const ButtonWrapper = styled.div`
-    height: 5.3125em;
-    line-height: 5.3125em;
+    height: 2em;
+    line-height: 2em;
     display: flex;
 `;
 
 const Button = styled.div`
     margin-left: 4em;
     color: white;
-    font-size: 1.25em;
+    font-family: 'Pretendard-SemiBold';
+    font-weight: 600;
     cursor: pointer;
 `;
