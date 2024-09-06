@@ -45,6 +45,7 @@ const Button = styled.div`
     margin-left: 4em;
     color: white;
     font-family: 'Pretendard-SemiBold';
+    font-size: 1.25em;
     font-weight: 600;
     cursor: pointer;
 `;
