@@ -136,13 +136,13 @@ const TextWrapper = styled.div`
 `;
 
 const MainText = styled.div`
-  font-family: 'PretendardBold';
+  font-family: 'Pretendard-Bold';
   font-size: 1.2em;
   color: #fff;
 `;
 
 const SubText = styled.div`
-  font-family: 'PretendardMedium';
+  font-family: 'Pretendard-Medium';
   color: #A9A9A9;
 `;
 
@@ -159,7 +159,7 @@ const InfoFooter = styled.div`
 `;
 
 const InfoDetail = styled.div`
-  font-family: 'PretendardRegular';
+  font-family: 'Pretendard-Regular';
   color: #fff;
   padding: 1em;
   width: 90%;
