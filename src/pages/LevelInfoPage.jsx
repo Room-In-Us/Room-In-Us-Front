@@ -3,6 +3,86 @@ import styled from 'styled-components'
 import JokerHead from '../assets/images/levelPage/jokerhead.png';
 
 export default function LevelInfoPage() {
+  const roomData = [
+    {
+      id: 1,
+      region: '서울',
+      detailRegion: '강남',
+      shopName: '미스터리룸 이스케이프',
+      themeName: '인형괴담',
+    },
+    {
+      id: 2,
+      region: '서울',
+      detailRegion: '강남',
+      shopName: '미스터리룸 이스케이프',
+      themeName: '인형괴담',
+    },
+    {
+      id: 3,
+      region: '서울',
+      detailRegion: '강남',
+      shopName: '미스터리룸 이스케이프',
+      themeName: '인형괴담',
+    },
+    {
+      id: 4,
+      region: '서울',
+      detailRegion: '강남',
+      shopName: '미스터리룸 이스케이프',
+      themeName: '인형괴담',
+    },
+    {
+      id: 5,
+      region: '서울',
+      detailRegion: '강남',
+      shopName: '미스터리룸 이스케이프',
+      themeName: '인형괴담',
+    },
+    {
+      id: 6,
+      region: '서울',
+      detailRegion: '강남',
+      shopName: '미스터리룸 이스케이프',
+      themeName: '인형괴담',
+    },
+    {
+      id: 7,
+      region: '서울',
+      detailRegion: '강남',
+      shopName: '미스터리룸 이스케이프',
+      themeName: '인형괴담',
+    },
+    {
+      id: 8,
+      region: '서울',
+      detailRegion: '강남',
+      shopName: '미스터리룸 이스케이프',
+      themeName: '인형괴담',
+    },
+    {
+      id: 9,
+      region: '서울',
+      detailRegion: '강남',
+      shopName: '미스터리룸 이스케이프',
+      themeName: '인형괴담',
+    },
+    {
+      id: 10,
+      region: '서울',
+      detailRegion: '강남',
+      shopName: '미스터리룸 이스케이프',
+      themeName: '인형괴담',
+    },
+    {
+      id: 11,
+      region: '서울',
+      detailRegion: '강남',
+      shopName: '미스터리룸 이스케이프',
+      themeName: '인형괴담',
+    },
+  ];
+
   return (
     <Wrapper>
       <Container>
@@ -26,60 +106,14 @@ export default function LevelInfoPage() {
           </TableHeaderWrapper>
           <Table>
             <tbody>
-              <TableRow>
-                <TableData>서울</TableData>
-                <TableData>강남</TableData>
-                <TableData>미스터리룸 이스케이프</TableData>
-                <TableData>인형괴담</TableData>
-              </TableRow>
-              <TableRow>
-                <TableData>서울</TableData>
-                <TableData>강남</TableData>
-                <TableData>미스터리룸 이스케이프</TableData>
-                <TableData>인형괴담</TableData>
-              </TableRow>
-              <TableRow>
-                <TableData>서울</TableData>
-                <TableData>강남</TableData>
-                <TableData>미스터리룸 이스케이프</TableData>
-                <TableData>인형괴담</TableData>
-              </TableRow>
-              <TableRow>
-                <TableData>서울</TableData>
-                <TableData>강남</TableData>
-                <TableData>미스터리룸 이스케이프</TableData>
-                <TableData>인형괴담</TableData>
-              </TableRow>
-              <TableRow>
-                <TableData>서울</TableData>
-                <TableData>강남</TableData>
-                <TableData>미스터리룸 이스케이프</TableData>
-                <TableData>인형괴담</TableData>
-              </TableRow>
-              <TableRow>
-                <TableData>서울</TableData>
-                <TableData>강남</TableData>
-                <TableData>미스터리룸 이스케이프</TableData>
-                <TableData>인형괴담</TableData>
-              </TableRow>
-              <TableRow>
-                <TableData>서울</TableData>
-                <TableData>강남</TableData>
-                <TableData>미스터리룸 이스케이프</TableData>
-                <TableData>인형괴담</TableData>
-              </TableRow>
-              <TableRow>
-                <TableData>서울</TableData>
-                <TableData>강남</TableData>
-                <TableData>미스터리룸 이스케이프</TableData>
-                <TableData>인형괴담</TableData>
-              </TableRow>
-              <TableRow>
-                <TableData>서울</TableData>
-                <TableData>강남</TableData>
-                <TableData>미스터리룸 이스케이프</TableData>
-                <TableData>인형괴담</TableData>
-              </TableRow>
+              {roomData.map((room) => (
+                <TableRow key={room.id}>
+                  <TableData>{room.region}</TableData>
+                  <TableData>{room.detailRegion}</TableData>
+                  <TableData>{room.shopName}</TableData>
+                  <TableData>{room.themeName}</TableData>
+                </TableRow>
+              ))}
             </tbody>
           </Table>
         </RoomList>
