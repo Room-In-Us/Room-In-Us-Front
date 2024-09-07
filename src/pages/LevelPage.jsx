@@ -142,7 +142,7 @@ const LayOut = styled.div`
 const MainTitle = styled.div`
   color: #fff;
   font-size: 4em;
-  font-family: 'VitroCore';
+  font-family: 'Vitro-Core';
   margin-top: 1em;
   z-index: 1000;
 `;
@@ -222,7 +222,7 @@ const TextWrapper = styled.div`
 `;
 
 const LevelTextTop = styled.div`
-  font-family: 'VitroCore';
+  font-family: 'Vitro-Core';
   font-size: 2em;
   text-align: center;
   position: absolute;
@@ -231,7 +231,7 @@ const LevelTextTop = styled.div`
 `;
 
 const LevelText = styled.div`
-  font-family: 'VitroCore';
+  font-family: 'Vitro-Core';
   font-size: 3.5em;
   text-align: center;
   position: absolute;
@@ -240,7 +240,7 @@ const LevelText = styled.div`
 `;
 
 const LevelTextBottom = styled.div`
-  font-family: 'VitroInspire';
+  font-family: 'Vitro-Inspire';
   font-size: 1.5em;
   text-align: center;
   position: absolute;
@@ -266,7 +266,7 @@ const PlayButton = styled.button`
   background-color: #B01814;
   color: #fff;
   font-size: 2.5em;
-  font-family: 'VitroCore';
+  font-family: 'Vitro-Core';
   box-shadow: 0 0.1em 0.1em 0 rgba(0, 0, 0, 0.3);
   cursor: pointer;
 `;

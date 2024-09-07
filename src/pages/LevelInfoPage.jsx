@@ -172,7 +172,7 @@ const LevelIcon = styled.img`
 `;
 
 const GradientText = styled.div`
-  font-family: 'VitroCore';
+  font-family: 'Vitro-Core';
   background: linear-gradient(to bottom, #940000 40%, #2E0000 60%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -200,7 +200,7 @@ const LevelDetail = styled.div`
   width: 80%;
   height: 100%;
   color: #fff;
-  font-family: 'PretendardSemiBold';
+  font-family: 'Pretendard-SemiBold';
 `;
 
 const RoomList = styled.div`
@@ -244,7 +244,7 @@ const TableHeader1 = styled.div`
   padding: 0.6em;
   background-color: rgba(56, 50, 50, 0.7);
   color: #fff;
-  font-family: 'PretendardMedium';
+  font-family: 'Pretendard-Medium';
   font-size: 1.3em;
   text-align: center;
   border-radius: 0.9615em;
@@ -255,7 +255,7 @@ const TableHeader2 = styled.div`
   padding: 0.6em;
   background-color: rgba(56, 50, 50, 0.7);
   color: #fff;
-  font-family: 'PretendardMedium';
+  font-family: 'Pretendard-Medium';
   font-size: 1.3em;
   text-align: center;
   border-radius: 0.9615em;
@@ -266,7 +266,7 @@ const TableHeader3 = styled.div`
   padding: 0.6em;
   background-color: rgba(56, 50, 50, 0.7);
   color: #fff;
-  font-family: 'PretendardMedium';
+  font-family: 'Pretendard-Medium';
   font-size: 1.3em;
   text-align: center;
   border-radius: 0.9615em;
@@ -277,7 +277,7 @@ const TableHeader4 = styled.div`
   padding: 0.6em;
   background-color: rgba(56, 50, 50, 0.7);
   color: #fff;
-  font-family: 'PretendardMedium';
+  font-family: 'Pretendard-Medium';
   font-size: 1.3em;
   text-align: center;
   border-radius: 0.9615em;
@@ -286,7 +286,7 @@ const TableHeader4 = styled.div`
 
 const TableData = styled.td`
   color: #fff;
-  font-family: 'PretendardMedium';
+  font-family: 'Pretendard-Medium';
   font-size: 1.3em;
   padding-left: 1em;
   padding-right: 1em;

@@ -85,7 +85,7 @@ const GenreIcon = styled.img`
 `;
 
 const GenreText = styled.div`
-    font-family: 'esamanruBold';
+    font-family: 'esamanru-Bold';
     color: #fff;
     font-size: 2.5em;
 `;
