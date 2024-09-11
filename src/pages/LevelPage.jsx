@@ -143,13 +143,13 @@ const MainTitle = styled.div`
   color: #fff;
   font-size: 4em;
   font-family: 'Vitro-Core';
-  margin-top: 1em;
+  margin-top: 1.1em;
   z-index: 1000;
 `;
 
 const PokerTableImg = styled.img`
   position: absolute;
-  top: 4em;
+  top: 4.1em;
   width: 100%;
   z-index: -2;
 `;
@@ -162,15 +162,19 @@ const TableLineImg = styled.img`
 `;
 
 const LevelWrapper = styled.div`
-  display: flex;
   gap: 2em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2em;
 `;
 
 const LevelBox = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  height: 30em;
 `;
 
 const CardBox = styled.div`

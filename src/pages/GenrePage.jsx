@@ -21,11 +21,11 @@ export default function GenrePage() {
     <Wrapper>
         <GenreBox onClick={handleGenreInfo}>
             <GenreIcon src={ComicGenre} />
-            <GenreText>코믹</GenreText>
+            <GenreText>감성</GenreText>
         </GenreBox>
         <GenreBox onClick={handleGenreInfo}>
             <GenreIcon src={MisteryGenre} />
-            <GenreText>공포/미스터리</GenreText>
+            <GenreText>공포/스릴러</GenreText>
         </GenreBox>
         <GenreBox onClick={handleGenreInfo}>
             <GenreIcon src={ReasoningGenre} />
@@ -33,7 +33,7 @@ export default function GenrePage() {
         </GenreBox>
         <GenreBox onClick={handleGenreInfo}>
             <GenreIcon src={ThrillerGenre} />
-            <GenreText>공포/미스터리</GenreText>
+            <GenreText>미스터리</GenreText>
         </GenreBox>
         <GenreBox onClick={handleGenreInfo}>
             <GenreIcon src={Comic2Genre} />
@@ -45,7 +45,7 @@ export default function GenrePage() {
         </GenreBox>
         <GenreBox onClick={handleGenreInfo}>
             <GenreIcon src={AdventureGenre} />
-            <GenreText>어드벤쳐</GenreText>
+            <GenreText>어드벤처</GenreText>
         </GenreBox>
         <GenreBox onClick={handleGenreInfo}>
             <GenreIcon src={Others} />
