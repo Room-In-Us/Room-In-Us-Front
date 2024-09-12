@@ -97,26 +97,29 @@ export default function LevelInfoPage() {
             거의 모두가 쉽게 탈출할 수 있는 테마로 준비하였습니다!
           </LevelDetail>
         </LevelInfoBox>
-        <RoomList>
+        <RoomListWrapper>
           <TableHeaderWrapper>
-            <TableHeader1>지역명</TableHeader1>
-            <TableHeader2>상세지역</TableHeader2>
-            <TableHeader3>가게 이름</TableHeader3>
-            <TableHeader4>테마 이름</TableHeader4>
-          </TableHeaderWrapper>
-          <Table>
-            <tbody>
-              {roomData.map((room) => (
-                <TableRow key={room.id}>
-                  <TableData>{room.region}</TableData>
-                  <TableData>{room.detailRegion}</TableData>
-                  <TableData>{room.shopName}</TableData>
-                  <TableData>{room.themeName}</TableData>
-                </TableRow>
-              ))}
-            </tbody>
-          </Table>
-        </RoomList>
+              <TableHeader1>지역명</TableHeader1>
+              <TableHeader2>상세지역</TableHeader2>
+              <TableHeader3>가게 이름</TableHeader3>
+              <TableHeader4>테마 이름</TableHeader4>
+            </TableHeaderWrapper>
+          <RoomList>
+            
+            <Table>
+              <tbody>
+                {roomData.map((room) => (
+                  <TableRow key={room.id}>
+                    <TableData>{room.region}</TableData>
+                    <TableData>{room.detailRegion}</TableData>
+                    <TableData>{room.shopName}</TableData>
+                    <TableData>{room.themeName}</TableData>
+                  </TableRow>
+                ))}
+              </tbody>
+            </Table>
+          </RoomList>
+        </RoomListWrapper>
       </Container>
     </Wrapper>
   )
@@ -148,7 +151,7 @@ const LevelInfoBox = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 74.1875em;
+  width: 100%;
   height: 7.4375em;
   border-radius: 6.25em;
   background-color: #B1B1B1;
@@ -203,8 +206,16 @@ const LevelDetail = styled.div`
   font-family: 'Pretendard-SemiBold';
 `;
 
+const RoomListWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
 const RoomList = styled.div`
-  width: 76.0625em;
+  width: 100%;
   height: 28em;
   background-color: #787878;
   border-radius: 0.9375em;
@@ -226,6 +237,7 @@ const Table = styled.table`
   height: 100%;
   border-collapse: collapse;
   margin-top: 3em;
+  margin-
 `;
 
 const TableRow = styled.tr``;
@@ -234,9 +246,8 @@ const TableHeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 72.0625em;
-  margin-right: 2em;
-  margin-left: 2em;
+  width: 80%;
+  margin-top: 0.5%;
   position: absolute;
 `;
 
@@ -248,7 +259,7 @@ const TableHeader1 = styled.div`
   font-size: 1.3em;
   text-align: center;
   border-radius: 0.9615em;
-  width: 5em;
+  width: 8%;
 `;
 
 const TableHeader2 = styled.div`
@@ -259,7 +270,7 @@ const TableHeader2 = styled.div`
   font-size: 1.3em;
   text-align: center;
   border-radius: 0.9615em;
-  width: 7.8em;
+  width: 14%;
 `;
 
 const TableHeader3 = styled.div`
@@ -270,7 +281,7 @@ const TableHeader3 = styled.div`
   font-size: 1.3em;
   text-align: center;
   border-radius: 0.9615em;
-  width: 24.3em;
+  width: 42%;
 `;
 
 const TableHeader4 = styled.div`
@@ -281,7 +292,7 @@ const TableHeader4 = styled.div`
   font-size: 1.3em;
   text-align: center;
   border-radius: 0.9615em;
-  width: 9.8em;
+  width: 17%;
 `;
 
 const TableData = styled.td`
