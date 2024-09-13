@@ -1,18 +1,29 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import MapImg from '../assets/images/locationPage/locationMap.png';
 import RectangleImg from '../assets/images/locationPage/spotRectangle.png';
 import SquareImg1 from '../assets/images/locationPage/spotSquare1.png';
 import SquareImg2 from '../assets/images/locationPage/spotSquare2.png';
 import NoiseTexture from '../assets/images/locationPage/noiseTexture.png';
+import LocationContent from '../components/location/LocationContent';
 
 function LocationPage() {
     // state 관리
     const [isVisible, setIsVisible] = useState(false);
+    const [isButtonVisible, setIsButtonVisible] = useState(false);
+    const [isLocationState, setIsLocationState] = useState("");
 
     // 내용 나타내기 함수
     const handleVisibleContent = () => {
         setIsVisible(true);
+        setIsButtonVisible(true);
+        setIsLocationState("");
+    };
+    
+    // 지역 선택 함수
+    const handleLocationState = (locationName) => {
+        setIsLocationState(locationName);
+        setIsButtonVisible(false);
     };
     
     return (
@@ -23,33 +34,39 @@ function LocationPage() {
 
                 {/* 콘텐츠 영역 */}
                 <ContentWrapper isVisible={isVisible}>
-                    <ButtonWrapper>
+                    <ButtonWrapper isVisible={isButtonVisible}>
+
+                        {/* 지역별 선택 화면 */}
                         <RectangleButton>
-                            <Text>
+                            <Text onClick={()=>handleLocationState('서울/수도권')}>
                                 서울/수도권
                             </Text>
                         </RectangleButton>
                         <SquareButtonLeft1>
-                            <Text>
+                            <Text onClick={()=>handleLocationState('전라')}>
                                 전라
                             </Text>
                         </SquareButtonLeft1>
                         <SquareButtonRight1>
-                            <Text>
+                            <Text onClick={()=>handleLocationState('충청')}>
                                 충청
                             </Text>
                         </SquareButtonRight1>
                         <SquareButtonLeft2>
-                            <Text>
+                            <Text onClick={()=>handleLocationState('경북')}>
                                 경북
                             </Text>
                         </SquareButtonLeft2>
                         <SquareButtonRight2>
-                            <Text>
+                            <Text onClick={()=>handleLocationState('경남')}>
                                 경남
                             </Text>
                         </SquareButtonRight2>
                     </ButtonWrapper>
+
+                    {/* 지역 이름 초성 화면 */}
+                    <LocationContent isLocationState={isLocationState}/>
+                    
                 </ContentWrapper>
             </ImgWrapper>
         </PageWrapper>
@@ -78,7 +95,7 @@ const StyledMapImg = styled.img`
     z-index: 5;
     box-shadow: 0 0.5em 3em 0.1em black;
     transition: all 1s ease;
-    cursor: ${(props) => (props.isVisible ? 'normal' : 'pointer')};
+    cursor: pointer;
 `;
 
 const ContentWrapper = styled.div`
@@ -88,8 +105,8 @@ const ContentWrapper = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #393939;
-    box-shadow: 0 0 1.5em 2em #393939;
+    background-color: #353535;
+    box-shadow: 0 0 1.5em 2em #353535;
     opacity: ${(props) => (props.isVisible ? 1 : 0)};
     transition: opacity 0.5s ease-in;
     transition-delay: 0.5s;
@@ -98,6 +115,7 @@ const ContentWrapper = styled.div`
 const ButtonWrapper = styled.div`
     width: 100%;
     height: 100%;
+    display: ${(props) => (props.isVisible ? 'inline-block' : 'none')};
 `;
 
 const RectangleButton = styled.div`
@@ -115,6 +133,11 @@ const RectangleButton = styled.div`
     color: white;
     box-shadow: 0 3px 2px #322F35;
     cursor: pointer;
+    transition: all 0.3s ease;
+    &:hover {
+        transform: translateY(-0.1em);
+        box-shadow: 0 0.1em 0.1em #322F35;
+    }
 `;
 
 const Text = styled.div`
@@ -143,6 +166,11 @@ const SquareButtonLeft1 = styled.div`
     color: white;
     box-shadow: 0 3px 2px #322F35;
     cursor: pointer;
+    transition: all 0.3s ease;
+    &:hover {
+        transform: translateY(-0.2em);
+        box-shadow: 0 0.1em 0.1em #322F35;
+    }
 `;
 
 const SquareButtonRight1 = styled.div`
@@ -161,6 +189,11 @@ const SquareButtonRight1 = styled.div`
     color: white;
     box-shadow: 0 3px 2px #322F35;
     cursor: pointer;
+    transition: all 0.3s ease;
+    &:hover {
+        transform: translateY(-0.2em);
+        box-shadow: 0 0.1em 0.1em #322F35;
+    }
 `;
 
 const SquareButtonLeft2 = styled.div`
@@ -179,6 +212,11 @@ const SquareButtonLeft2 = styled.div`
     color: white;
     box-shadow: 0 3px 2px #322F35;
     cursor: pointer;
+    transition: all 0.3s ease;
+    &:hover {
+        transform: translateY(-0.2em);
+        box-shadow: 0 0.1em 0.1em #322F35;
+    }
 `;
 
 const SquareButtonRight2 = styled.div`
@@ -197,4 +235,9 @@ const SquareButtonRight2 = styled.div`
     color: white;
     box-shadow: 0 3px 2px #322F35;
     cursor: pointer;
+    transition: all 0.3s ease;
+    &:hover {
+        transform: translateY(-0.2em);
+        box-shadow: 0 0.1em 0.1em #322F35;
+    }
 `;
