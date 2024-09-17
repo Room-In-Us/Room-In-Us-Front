@@ -20,9 +20,9 @@ function CafeArea() {
     return (
         <ComponentWrapper isVisible={isCafeVisible}>
             {cafeDummy.map((cafe) => (
-                <StyledList key={cafe.id}>
-                    <StationName onClick={() => handleCafeState(cafe.name)}>{cafe.name}</StationName>
-                    <StyledArrowIcon onClick={() => handleCafeState(cafe.name)}/>
+                <StyledList key={cafe.id} onClick={() => handleCafeState(cafe.name)}>
+                    <StationName>{cafe.name}</StationName>
+                    <StyledArrowIcon/>
                 </StyledList>
             ))}
         </ComponentWrapper>
@@ -59,6 +59,10 @@ const StyledList = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: all 0.1s ease;
+    &:hover {
+        background-color: rgba(0,0,0,0.2);
+    }
 `;
 
 const StationName = styled.div`

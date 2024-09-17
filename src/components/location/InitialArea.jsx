@@ -1,6 +1,5 @@
 import { useRecoilState } from 'recoil';
-import { initialState, stationState, cafeState, themeState,
-        initialVisible, stationVisible, cafeVisible, themeVisible } from '../../recoil/atoms/locationAtom';
+import { initialState, initialVisible, stationVisible } from '../../recoil/atoms/locationAtom';
 import styled from "styled-components";
 import NoiseTexture from '../../assets/images/locationPage/noiseTexture.png';
 import Pettern1 from '../../assets/images/locationPage/pettern1.png';
@@ -15,14 +14,9 @@ import Pettern8 from '../../assets/images/locationPage/pettern8.png';
 function InitialArea() {
     // state 관리
     const [isInitialState, setIsInitialState] = useRecoilState(initialState);
-    const [isStationState, setIsStationState] = useRecoilState(stationState);
-    const [isCafeState, setIsCafeState] = useRecoilState(cafeState);
-    const [isThemeState, setIsThemeState] = useRecoilState(themeState);
     
     const [isInitialVisible, setIsInitialVisible] = useRecoilState(initialVisible);
     const [isStationVisible, setIsStationVisible] = useRecoilState(stationVisible);
-    const [isCafeVisible, setIsCafeVisible] = useRecoilState(cafeVisible);
-    const [isThemeVisible, setIsThemeVisible] = useRecoilState(themeVisible);
     
     // 초성 선택 함수
     const handleInitialState = (initial) => {

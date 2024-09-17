@@ -20,9 +20,9 @@ function StationArea() {
     return (
         <ComponentWrapper isVisible={isStationVisible}>
             {stationDummy.map((station) => (
-                <StyledList key={station.id}>
-                    <StationName onClick={() => handleStationState(station.name)}>{station.name}</StationName>
-                    <StyledArrowIcon onClick={() => handleStationState(station.name)}/>
+                <StyledList key={station.id} onClick={() => handleStationState(station.name)}>
+                    <StationName>{station.name}</StationName>
+                    <StyledArrowIcon/>
                 </StyledList>
             ))}
         </ComponentWrapper>
@@ -59,6 +59,10 @@ const StyledList = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: all 0.1s ease;
+    &:hover {
+        background-color: rgba(0,0,0,0.2);
+    }
 `;
 
 const StationName = styled.div`
@@ -66,7 +70,6 @@ const StationName = styled.div`
     color: white;
     font-size: 0.9em;
     font-family: "esamanru-Light";
-    cursor: pointer;
     // 말줄임표
     overflow: hidden;
     white-space: nowrap;
@@ -76,5 +79,4 @@ const StationName = styled.div`
 
 const StyledArrowIcon = styled(ArrowIcon)`
     width: 0.5em;
-    cursor: pointer;
 `;

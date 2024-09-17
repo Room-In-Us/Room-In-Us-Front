@@ -44,10 +44,14 @@ function LocationPage() {
     
     // 지역 선택 함수
     const handleLocationState = (locationName) => {
-        setIsLocationState(locationName);
-        setIsLocationVisible(false);
-        setIsInitialVisible(true);
-        setIsBackgroundVisible(true);
+        if (locationName == '서울/수도권') {
+            setIsLocationState(locationName);
+            setIsLocationVisible(false);
+            setIsInitialVisible(true);
+            setIsBackgroundVisible(true);
+        } else {
+            alert('준비 중인 기능입니다.');
+        }
     };
     
     return (

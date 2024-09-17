@@ -1,6 +1,6 @@
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { locationState, initialState, stationState, cafeState, themeState, backgroundVisible,
-        locationVisible, initialVisible, stationVisible, cafeVisible, themeVisible } from '../../recoil/atoms/locationAtom';
+        initialVisible, stationVisible, cafeVisible, themeVisible } from '../../recoil/atoms/locationAtom';
 import { initialAndStationVisible } from '../../recoil/selectors/locationSelector';
 import styled from 'styled-components';
 import InitialBackground from '../../assets/images/locationPage/initialBackground.png';
@@ -19,7 +19,6 @@ function LocationContent() {
     const [isThemeState, setIsThemeState] = useRecoilState(themeState);
     
     const [isBackgroundVisible, setIsBackgroundVisible] = useRecoilState(backgroundVisible);
-    const [isLocationVisible, setIsLocationVisible] = useRecoilState(locationVisible);
     const [isInitialVisible, setIsInitialVisible] = useRecoilState(initialVisible);
     const [isStationVisible, setIsStationVisible] = useRecoilState(stationVisible);
     const [isCafeVisible, setIsCafeVisible] = useRecoilState(cafeVisible);
@@ -125,6 +124,10 @@ const TitleButton = styled.div`
     flex-grow: 1;
     transition: all 0.3s ease;
     display: ${(props) => (props.isVisible ? 'flex' : 'none')};
+    &:hover {
+        background-color: #830000;
+        box-shadow: inset 0 3px 1px 1px #770000;
+    }
     // 말줄임표
     overflow: hidden;
     white-space: nowrap;
