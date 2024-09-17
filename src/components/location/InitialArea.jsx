@@ -1,4 +1,6 @@
-import PropTypes from 'prop-types';
+import { useRecoilState } from 'recoil';
+import { initialState, stationState, cafeState, themeState,
+        initialVisible, stationVisible, cafeVisible, themeVisible } from '../../recoil/atoms/locationAtom';
 import styled from "styled-components";
 import NoiseTexture from '../../assets/images/locationPage/noiseTexture.png';
 import Pettern1 from '../../assets/images/locationPage/pettern1.png';
@@ -10,14 +12,27 @@ import Pettern6 from '../../assets/images/locationPage/pettern6.png';
 import Pettern7 from '../../assets/images/locationPage/pettern7.png';
 import Pettern8 from '../../assets/images/locationPage/pettern8.png';
 
-function InitialArea({ handleInitialChange }) {
-    // 초성 값 전달 함수
+function InitialArea() {
+    // state 관리
+    const [isInitialState, setIsInitialState] = useRecoilState(initialState);
+    const [isStationState, setIsStationState] = useRecoilState(stationState);
+    const [isCafeState, setIsCafeState] = useRecoilState(cafeState);
+    const [isThemeState, setIsThemeState] = useRecoilState(themeState);
+    
+    const [isInitialVisible, setIsInitialVisible] = useRecoilState(initialVisible);
+    const [isStationVisible, setIsStationVisible] = useRecoilState(stationVisible);
+    const [isCafeVisible, setIsCafeVisible] = useRecoilState(cafeVisible);
+    const [isThemeVisible, setIsThemeVisible] = useRecoilState(themeVisible);
+    
+    // 초성 선택 함수
     const handleInitialState = (initial) => {
-        handleInitialChange(initial);  // 상위 컴포넌트에서 전달받은 상태 업데이트 함수 호출
+        setIsInitialState(initial);
+        setIsInitialVisible(false);
+        setIsStationVisible(true);
     };
 
     return (
-        <ComponentWrapper>
+        <ComponentWrapper isVisible={isInitialVisible}>
             <Button1 onClick={() => handleInitialState('ㄱ')}>
                 <Text>ㄱ</Text>
             </Button1>
@@ -52,11 +67,6 @@ function InitialArea({ handleInitialChange }) {
     );
 };
 
-// ESLint 경고 방지를 위한 PropTypes 검증
-InitialArea.propTypes = {
-    handleInitialChange: PropTypes.string.isRequired,
-};
-
 export default InitialArea;
 
 // CSS
@@ -65,7 +75,7 @@ const ComponentWrapper = styled.div`
     box-sizing: border-box;
     width: 100%;
     height: 100%;
-    display: flex;
+    display: ${(props) => (props.isVisible ? 'flex' : 'none')};
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;

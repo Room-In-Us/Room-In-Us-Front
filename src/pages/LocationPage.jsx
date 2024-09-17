@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useRecoilState } from 'recoil';
+import { locationState, initialState, stationState, cafeState, themeState, backgroundVisible,
+        locationVisible, initialVisible, stationVisible, cafeVisible, themeVisible } from '../recoil/atoms/locationAtom';
 import styled from 'styled-components';
 import MapImg from '../assets/images/locationPage/locationMap.png';
 import RectangleImg from '../assets/images/locationPage/spotRectangle.png';
@@ -10,31 +13,52 @@ import LocationContent from '../components/location/LocationContent';
 function LocationPage() {
     // state 관리
     const [isVisible, setIsVisible] = useState(false);
-    const [isButtonVisible, setIsButtonVisible] = useState(false);
-    const [isLocationState, setIsLocationState] = useState("");
+    const [isLocationState, setIsLocationState] = useRecoilState(locationState);
+    const [isInitialState, setIsInitialState] = useRecoilState(initialState);
+    const [isStationState, setIsStationState] = useRecoilState(stationState);
+    const [isCafeState, setIsCafeState] = useRecoilState(cafeState);
+    const [isThemeState, setIsThemeState] = useRecoilState(themeState);
 
-    // 내용 나타내기 함수
+    const [isBackgroundVisible, setIsBackgroundVisible] = useRecoilState(backgroundVisible);
+    const [isLocationVisible, setIsLocationVisible] = useRecoilState(locationVisible);
+    const [isInitialVisible, setIsInitialVisible] = useRecoilState(initialVisible);
+    const [isStationVisible, setIsStationVisible] = useRecoilState(stationVisible);
+    const [isCafeVisible, setIsCafeVisible] = useRecoilState(cafeVisible);
+    const [isThemeVisible, setIsThemeVisible] = useRecoilState(themeVisible);
+
+    // 내용 나타내기 + 처음으로 이동
     const handleVisibleContent = () => {
-        setIsVisible(true);
-        setIsButtonVisible(true);
         setIsLocationState("");
+        setIsInitialState("");
+        setIsStationState("");
+        setIsCafeState("");
+        setIsThemeState("");
+        setIsVisible(true);
+        setIsBackgroundVisible(false);
+        setIsLocationVisible(true);
+        setIsInitialVisible(false);
+        setIsStationVisible(false);
+        setIsCafeVisible(false);
+        setIsThemeVisible(false);
     };
     
     // 지역 선택 함수
     const handleLocationState = (locationName) => {
         setIsLocationState(locationName);
-        setIsButtonVisible(false);
+        setIsLocationVisible(false);
+        setIsInitialVisible(true);
+        setIsBackgroundVisible(true);
     };
     
     return (
         <PageWrapper>
             <ImgWrapper isVisible={isVisible}>
                 {/* 지도 이미지 영역 */}
-                <StyledMapImg src={MapImg} alt='map' isVisible={isVisible} onClick={handleVisibleContent} />
+                <StyledMapImg src={MapImg} alt='map' isVisible={isVisible} onClick={() => handleVisibleContent()} />
 
                 {/* 콘텐츠 영역 */}
                 <ContentWrapper isVisible={isVisible}>
-                    <ButtonWrapper isVisible={isButtonVisible}>
+                    <ButtonWrapper isVisible={isLocationVisible}>
 
                         {/* 지역별 선택 화면 */}
                         <RectangleButton>
@@ -65,7 +89,7 @@ function LocationPage() {
                     </ButtonWrapper>
 
                     {/* 지역 이름 초성 화면 */}
-                    <LocationContent isLocationState={isLocationState}/>
+                    <LocationContent/>
                     
                 </ContentWrapper>
             </ImgWrapper>

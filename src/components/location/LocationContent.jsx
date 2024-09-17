@@ -1,57 +1,103 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useRecoilState } from 'recoil';
+import { locationState, initialState, stationState, cafeState, themeState, backgroundVisible,
+        locationVisible, initialVisible, stationVisible, cafeVisible, themeVisible } from '../../recoil/atoms/locationAtom';
 import styled from 'styled-components';
 import InitialBackground from '../../assets/images/locationPage/initialBackground.png';
 import NoiseTexture from '../../assets/images/locationPage/noiseTexture.png';
-import InitialArea from '../location/InitialArea';
+import InitialArea from './InitialArea';
+import StationArea from './StationArea';
+import CafeArea from './CafeArea';
+import ThemeArea from './ThemeArea';
 
-function LocationContent({ isLocationState }) {
+function LocationContent() {
     // state 관리
-    const [isInitialState, setIsInitialState] = useState("");
+    const [isLocationState, setIsLocationState] = useRecoilState(locationState);
+    const [isInitialState, setIsInitialState] = useRecoilState(initialState);
+    const [isStationState, setIsStationState] = useRecoilState(stationState);
+    const [isCafeState, setIsCafeState] = useRecoilState(cafeState);
+    const [isThemeState, setIsThemeState] = useRecoilState(themeState);
     
-    // 초성 값 업데이트 함수
-    const handleInitialChange = (initial) => {
-        setIsInitialState(initial);  // 하위 컴포넌트에서 선택된 값을 업데이트
+    const [isBackgroundVisible, setIsBackgroundVisible] = useRecoilState(backgroundVisible);
+    const [isLocationVisible, setIsLocationVisible] = useRecoilState(locationVisible);
+    const [isInitialVisible, setIsInitialVisible] = useRecoilState(initialVisible);
+    const [isStationVisible, setIsStationVisible] = useRecoilState(stationVisible);
+    const [isCafeVisible, setIsCafeVisible] = useRecoilState(cafeVisible);
+    const [isThemeVisible, setIsThemeVisible] = useRecoilState(themeVisible);
+
+    // 초성 화면로 이동
+    const handleMoveInitial = () => {
+        setIsInitialState("");
+        setIsStationState("");
+        setIsCafeState("");
+        setIsThemeState("");
+        setIsInitialVisible(true);
+        setIsStationVisible(false);
+        setIsCafeVisible(false);
+        setIsThemeVisible(false);
+    };
+    
+    // 역 화면로 이동
+    const handleMoveStation = () => {
+        setIsStationState("");
+        setIsCafeState("");
+        setIsThemeState("");
+        setIsStationVisible(true);
+        setIsCafeVisible(false);
+        setIsThemeVisible(false);
     };
 
-    // 지역 단위로 이동 함수
-    const handleMoveLocation = () => {
-        setIsInitialState("");
+    // 카페 화면로 이동
+    const handleMoveCafe = () => {
+        setIsCafeState("");
+        setIsThemeState("");
+        setIsCafeVisible(true);
+        setIsThemeVisible(false);
     };
     
     return (
-        <ComponentWrapper isLocationState={isLocationState}>
+        <ComponentWrapper isVisible={isBackgroundVisible}>
             {/* 타이틀 영역 */}
             <TitleWrapper>
-                {/* 지역 단위 */}
-                <LocationNameWrapper onClick={() => handleMoveLocation()}>
-                    <LocationName>{isLocationState}</LocationName>
-                </LocationNameWrapper>
-                {/* 초성 단위 */}
-                <InitialWrapper isInitialState={isInitialState}>
-                    <LocationName>{isInitialState}</LocationName>
-                </InitialWrapper>
-                {/* 역 단위 */}
+
+                {/* 지역 버튼 */}
+                <TitleButton onClick={() => handleMoveInitial()} isVisible={isLocationState}>
+                    <TitleText>{isLocationState}</TitleText>
+                </TitleButton>
+                {/* 초성, 역 버튼 */}
+                <TitleButton onClick={() => handleMoveStation()} isVisible={isInitialState}>
+                    <TitleText>{isInitialState}</TitleText>
+                </TitleButton>
+                {/* <TitleButton onClick={() => handleMoveStation()} isVisible={isInitialState}>
+                    <TitleText>{isInitialState}</TitleText>
+                </TitleButton> */}
+                {/* 역 버튼 */}
+                <TitleButton onClick={() => handleMoveCafe()} isVisible={isStationState}>
+                    <TitleText>{isStationState}</TitleText>
+                </TitleButton>
+                {/* 카페 버튼 */}
+                <TitleButton isVisible={isCafeState}>
+                    <TitleText>{isCafeState}</TitleText>
+                </TitleButton>
                 
             </TitleWrapper>
 
             {/* 콘텐츠 영역 */}
             <ContentWrapper>
-                {/* 초성 영역 */}
-                <InitialArea handleInitialChange={handleInitialChange} />
-                {/* 역 영역 */}
 
-                {/* 방탈출 영역 */}
+                {/* 초성 영역 */}
+                <InitialArea />
+                {/* 역 영역 */}
+                <StationArea />
+                {/* 카페 영역 */}
+                <CafeArea />
+                {/* 테마 영역 */}
+                <ThemeArea />
 
             </ContentWrapper>
         </ComponentWrapper>
     );
 };
 
-// ESLint 경고 방지를 위한 PropTypes 검증
-LocationContent.propTypes = {
-    isLocationState: PropTypes.string.isRequired,
-};
 
 export default LocationContent;
 
@@ -59,7 +105,7 @@ export default LocationContent;
 const ComponentWrapper = styled.div`
     width: 100%;
     height: 105%;
-    display: ${(props) => (props.isLocationState ? 'inline-block' : 'none')};
+    display: ${(props) => (props.isVisible ? 'inline-block' : 'none')};
 `;
 
 const TitleWrapper = styled.div`
@@ -72,7 +118,7 @@ const TitleWrapper = styled.div`
     gap: 0.7em;
 `;
 
-const LocationNameWrapper = styled.div`
+const TitleButton = styled.div`
     border-radius: 0.5em;
     width: 100%;
     height: 100%;
@@ -81,6 +127,7 @@ const LocationNameWrapper = styled.div`
     cursor: pointer;
     flex-grow: 1;
     transition: all 0.3s ease;
+    display: ${(props) => (props.isVisible ? 'flex' : 'none')};
     // 말줄임표
     overflow: hidden;
     white-space: nowrap;
@@ -88,7 +135,7 @@ const LocationNameWrapper = styled.div`
     word-break: break-all;
 `;
 
-const LocationName = styled.div`
+const TitleText = styled.div`
     width: 100%;
     height: 100%;
     background-image: url(${NoiseTexture});
@@ -98,23 +145,6 @@ const LocationName = styled.div`
     color: transparent;
     font-family: 'esamanru-Medium';
     font-size: 1.25em;
-    // 말줄임표
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    word-break: break-all;
-`;
-
-const InitialWrapper = styled.div`
-    border-radius: 0.5em;
-    width: 100%;
-    height: 100%;
-    background-color: #940000;
-    box-shadow: inset 0 3px 1px 1px #7F0000;
-    cursor: pointer;
-    flex-grow: 1;
-    transition: all 0.3s ease;
-    display: ${(props) => (props.isInitialState ? 'flex' : 'none')};
     // 말줄임표
     overflow: hidden;
     white-space: nowrap;
