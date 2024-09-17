@@ -143,7 +143,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   gap: 2em;
-  padding: 2.5em;
+  padding: 3em;
   margin: 1.5em;
 `;
 
