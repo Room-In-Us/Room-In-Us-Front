@@ -10,11 +10,13 @@ export const locationVisible = atom({
     default: false
 });
 
+
 // 배경
 export const backgroundVisible = atom({
     key: "backgroundVisible",
     default: false
 });
+
 
 // 초성 상태
 export const initialState = atom({

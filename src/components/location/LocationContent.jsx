@@ -1,6 +1,7 @@
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { locationState, initialState, stationState, cafeState, themeState, backgroundVisible,
         locationVisible, initialVisible, stationVisible, cafeVisible, themeVisible } from '../../recoil/atoms/locationAtom';
+import { initialAndStationVisible } from '../../recoil/selectors/locationSelector';
 import styled from 'styled-components';
 import InitialBackground from '../../assets/images/locationPage/initialBackground.png';
 import NoiseTexture from '../../assets/images/locationPage/noiseTexture.png';
@@ -24,6 +25,9 @@ function LocationContent() {
     const [isCafeVisible, setIsCafeVisible] = useRecoilState(cafeVisible);
     const [isThemeVisible, setIsThemeVisible] = useRecoilState(themeVisible);
 
+    // 초성, 역이름 버튼 텍스트
+    const initialAndStationState = useRecoilValue(initialAndStationVisible);
+    
     // 초성 화면로 이동
     const handleMoveInitial = () => {
         setIsInitialState("");
@@ -36,23 +40,23 @@ function LocationContent() {
         setIsThemeVisible(false);
     };
     
-    // 역 화면로 이동
+    // 역이름, 카페이름 화면로 이동
     const handleMoveStation = () => {
-        setIsStationState("");
-        setIsCafeState("");
-        setIsThemeState("");
-        setIsStationVisible(true);
-        setIsCafeVisible(false);
-        setIsThemeVisible(false);
+        if (isCafeState) {
+            setIsCafeState("");
+            setIsThemeState("");
+            setIsCafeVisible(true);
+            setIsThemeVisible(false);
+        } else {
+            setIsStationState("");
+            setIsCafeState("");
+            setIsThemeState("");
+            setIsStationVisible(true);
+            setIsCafeVisible(false);
+            setIsThemeVisible(false);
+        }
     };
 
-    // 카페 화면로 이동
-    const handleMoveCafe = () => {
-        setIsCafeState("");
-        setIsThemeState("");
-        setIsCafeVisible(true);
-        setIsThemeVisible(false);
-    };
     
     return (
         <ComponentWrapper isVisible={isBackgroundVisible}>
@@ -65,14 +69,7 @@ function LocationContent() {
                 </TitleButton>
                 {/* 초성, 역 버튼 */}
                 <TitleButton onClick={() => handleMoveStation()} isVisible={isInitialState}>
-                    <TitleText>{isInitialState}</TitleText>
-                </TitleButton>
-                {/* <TitleButton onClick={() => handleMoveStation()} isVisible={isInitialState}>
-                    <TitleText>{isInitialState}</TitleText>
-                </TitleButton> */}
-                {/* 역 버튼 */}
-                <TitleButton onClick={() => handleMoveCafe()} isVisible={isStationState}>
-                    <TitleText>{isStationState}</TitleText>
+                    <TitleText>{initialAndStationState}</TitleText>
                 </TitleButton>
                 {/* 카페 버튼 */}
                 <TitleButton isVisible={isCafeState}>
@@ -136,6 +133,8 @@ const TitleButton = styled.div`
 `;
 
 const TitleText = styled.div`
+    padding: 0 0.3em;
+    box-sizing: border-box;
     width: 100%;
     height: 100%;
     background-image: url(${NoiseTexture});
