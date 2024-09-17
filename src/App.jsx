@@ -7,6 +7,7 @@ import LevelPage from './pages/LevelPage';
 import LevelInfoPage from './pages/LevelInfoPage';
 import GenrePage from './pages/GenrePage';
 import GenreInfoPage from './pages/GenreInfoPage';
+import LocationPage from './pages/LocationPage';
 
 function App() {
   return (
@@ -24,7 +25,7 @@ function App() {
         <Route path="/signup" element={<LoginPage/>} />
 
         {/* 위치 페이지 */}
-        <Route path="/location" element={<MainPage/>} />
+        <Route path="/location" element={<LocationPage/>} />
 
         {/* 숙련도 페이지 */}
         <Route path="/level" element={<LevelPage/>} />
