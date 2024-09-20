@@ -8,7 +8,10 @@ import LevelInfoPage from './pages/LevelInfoPage';
 import GenrePage from './pages/GenrePage';
 import GenreInfoPage from './pages/GenreInfoPage';
 import LocationPage from './pages/LocationPage';
-
+import BoardPage from './pages/BoardPage';
+import BoardMorePage from './pages/BoardMorePage';
+import BoardWritePage from './pages/BoardWritePage';
+ 
 function App() {
   return (
     <Routes>
@@ -36,7 +39,9 @@ function App() {
         <Route path="/genreInfo" element={<GenreInfoPage/>} />
 
         {/* 게시판 페이지 */}
-        <Route path="/board" element={<MainPage/>} />
+        <Route path="/board" element={<BoardPage/>} />
+        <Route path="/boardmore" element={<BoardMorePage />} />
+        <Route path="/boardwrite" element={<BoardWritePage/>} />
 
         {/* 마이 페이지 */}
         <Route path="/mypage" element={<MainPage/>} />
