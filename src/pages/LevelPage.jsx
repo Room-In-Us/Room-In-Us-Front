@@ -1,7 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import PokerTable from '../assets/images/levelPage/pokertable.png';
-import TableLine from '../assets/images/levelPage/tableline.png';
 import Joker1 from '../assets/images/levelPage/joker1.png';
 import Joker2 from '../assets/images/levelPage/joker2.png';
 import Joker3 from '../assets/images/levelPage/joker3.png';
@@ -10,6 +8,7 @@ import JokerBack1 from '../assets/images/levelPage/jokerback1.png';
 import JokerBack2 from '../assets/images/levelPage/jokerback2.png';
 import JokerBack3 from '../assets/images/levelPage/jokerback3.png';
 import JokerBack4 from '../assets/images/levelPage/jokerback4.png';
+import noiseImage from '../assets/images/levelPage/noise.png';
 import { useNavigate } from 'react-router-dom';
 
 export default function ProficiencyPage() {
@@ -21,8 +20,9 @@ export default function ProficiencyPage() {
 
   return (
     <PageWrapper>
-      <PokerTableImg src={PokerTable} alt="배경이미지" />
-      <TableLineImg src={TableLine} alt="배경도형" />
+      <OvalBackground>
+        <HalfOval />
+      </OvalBackground>
       <LayOut>
         <MainTitle>숙련도</MainTitle>
         <LevelWrapper>
@@ -131,6 +131,56 @@ const PageWrapper = styled.div`
   height: 100%;
 `;
 
+const OvalBackground = styled.div`
+  position: absolute;
+  top: 7em;
+  width: 114em;
+  height: 66.125em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: -3;
+  overflow: hidden;
+  clip-path: ellipse(57em 33.0625em at 50% 50%);
+
+  &:before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    z-index: -2;
+
+    background: url(${noiseImage}), #940000;
+    box-shadow: 0em 0.25em 1.875em 1.875em rgba(0, 0, 0, 0.25), inset 0em 0.25em 6.25em 3.75em rgba(0, 0, 0, 0.5);
+    filter: blur(0.125em);
+  }
+
+  &:after {
+    content: '';
+    position: absolute;
+    top: 6em;
+    left: calc(50% - 114em/2);
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 0.3125em solid #C4C4C4;
+    box-sizing: border-box;
+    box-shadow: inset 0 0.25em 0.25em rgba(0, 0, 0, 0.25);
+    z-index: -2;
+  }
+`;
+
+const HalfOval = styled.div`
+  position: absolute;
+  top: 52em;
+  width: 114em;
+  height: 66.125em;
+  border-radius: 50%;
+  border: 0.3125em solid #C4C4C4;
+  z-index: -2;
+`;
+
 const LayOut = styled.div`
   display: flex;
   flex-direction: column;
@@ -143,22 +193,8 @@ const MainTitle = styled.div`
   color: #fff;
   font-size: 4em;
   font-family: 'Vitro-Core';
-  margin-top: 1.1em;
+  margin-top: 0.8em;
   z-index: 1000;
-`;
-
-const PokerTableImg = styled.img`
-  position: absolute;
-  top: 4.1em;
-  width: 100%;
-  z-index: -2;
-`;
-
-const TableLineImg = styled.img`
-  position: absolute;
-  top: 14em;
-  width: 100%;
-  z-index: -1;
 `;
 
 const LevelWrapper = styled.div`
@@ -168,6 +204,42 @@ const LevelWrapper = styled.div`
   justify-content: center;
   align-items: center;
   margin-top: 2em;
+  width: 100%;
+  height: 100%;
+
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar {
+      width: 0.5em;
+      height: 0.5em;
+      background: none;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    border-radius: 1.875em;
+    background-color: #B01814;
+  }
+
+  @media (max-width: 90em) {
+    width: 70em;
+    height: 31em;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+
+  @media (max-width: 65em) {
+    width: 50em;
+    height: 31em;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+
+  @media (max-width: 45em) {
+    width: 20em;
+    height: 31em;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
 `;
 
 const LevelBox = styled.div`
