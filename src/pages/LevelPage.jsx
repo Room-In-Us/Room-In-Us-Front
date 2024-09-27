@@ -11,12 +11,12 @@ import JokerBack4 from '../assets/images/levelPage/jokerback4.png';
 import noiseImage from '../assets/images/levelPage/noise.png';
 import { useNavigate } from 'react-router-dom';
 
-export default function ProficiencyPage() {
+export default function LevelPage() {
   const navigate = useNavigate();
 
-  const handleLevelInfo = () => {
-    navigate('/levelInfo');
-  }
+  const handleLevelInfo = (levelInfo) => {
+    navigate('/levelInfo', {state: levelInfo});
+  };
 
   return (
     <PageWrapper>
@@ -42,7 +42,10 @@ export default function ProficiencyPage() {
                     </LevelTextBottom>
                   </TextWrapper>
                   <ButtonWrapper>
-                    <PlayButton onClick={handleLevelInfo}>Play</PlayButton>
+                    <PlayButton onClick={() => handleLevelInfo({
+                      level: '방린이',
+                      description: '방탈출을 한 번도 해보지 않은 여러분들을 위해 대부분 가볍게 즐길 수 있는 테마로 준비했으며, 거의 모두가 쉽게 탈출할 수 있는 테마로 준비하였습니다!'
+                    })}>Play</PlayButton>
                   </ButtonWrapper>
                 </CardBack>
               </CardInner>
@@ -65,7 +68,10 @@ export default function ProficiencyPage() {
                     </LevelTextBottom>
                   </TextWrapper>
                   <ButtonWrapper>
-                    <PlayButton onClick={handleLevelInfo}>Play</PlayButton>
+                    <PlayButton onClick={() => handleLevelInfo({
+                      level: '방초보',
+                      description: '방초보 레벨에 대한 설명'
+                    })}>Play</PlayButton>
                   </ButtonWrapper>
                 </CardBack>
               </CardInner>
@@ -88,7 +94,10 @@ export default function ProficiencyPage() {
                     </LevelTextBottom>
                   </TextWrapper>
                   <ButtonWrapper>
-                    <PlayButton onClick={handleLevelInfo}>Play</PlayButton>
+                    <PlayButton onClick={() => handleLevelInfo({
+                      level: '방중수',
+                      description: '방중수 레벨에 대한 설명'
+                    })}>Play</PlayButton>
                   </ButtonWrapper>
                 </CardBack>
               </CardInner>
@@ -111,7 +120,10 @@ export default function ProficiencyPage() {
                     </LevelTextBottom>
                   </TextWrapper>
                   <ButtonWrapper>
-                    <PlayButton onClick={handleLevelInfo}>Play</PlayButton>
+                    <PlayButton onClick={() => handleLevelInfo({
+                      level: '방고인물',
+                      description: '방고인물 레벨에 대한 설명'
+                    })}>Play</PlayButton>
                   </ButtonWrapper>
                 </CardBack>
               </CardInner>

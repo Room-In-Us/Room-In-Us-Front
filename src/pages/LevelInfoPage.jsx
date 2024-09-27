@@ -1,8 +1,12 @@
 import React from 'react'
 import styled from 'styled-components'
 import JokerHead from '../assets/images/levelPage/jokerhead.png';
+import { useLocation } from 'react-router-dom';
 
 export default function LevelInfoPage() {
+  const location = useLocation();
+  const {level, description} = location.state || {};
+
   const roomData = [
     {
       id: 1,
@@ -90,11 +94,9 @@ export default function LevelInfoPage() {
           <LevelIconWrapper>
             <LevelIcon src={JokerHead} alt='레벨아이콘' />
           </LevelIconWrapper>
-          <Level>방린이</Level>
+          <Level>{level}</Level>
           <LevelDetail>
-            방탈출을 한 번도 해보지 않은 여러분들을 위해 
-            대부분 가볍게 즐길 수 있는 테마로 준비했으며, 
-            거의 모두가 쉽게 탈출할 수 있는 테마로 준비하였습니다!
+            {description}
           </LevelDetail>
         </LevelInfoBox>
         <RoomListWrapper>
