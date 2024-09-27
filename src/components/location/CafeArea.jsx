@@ -6,9 +6,9 @@ import { cafeDummy } from "./LocationDummy";
 
 function CafeArea() {
     // state 관리
-    const [isCafeState, setIsCafeState] = useRecoilState(cafeState);
+    const [, setIsCafeState] = useRecoilState(cafeState);
     const [isCafeVisible, setIsCafeVisible] = useRecoilState(cafeVisible);
-    const [isThemeVisible, setIsThemeVisible] = useRecoilState(themeVisible);
+    const [, setIsThemeVisible] = useRecoilState(themeVisible);
 
     // 카페 선택 함수
     const handleCafeState = (cafe) => {

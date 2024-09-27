@@ -13,10 +13,10 @@ import Pettern8 from '../../assets/images/locationPage/pettern8.png';
 
 function InitialArea() {
     // state 관리
-    const [isInitialState, setIsInitialState] = useRecoilState(initialState);
+    const [, setIsInitialState] = useRecoilState(initialState);
     
     const [isInitialVisible, setIsInitialVisible] = useRecoilState(initialVisible);
-    const [isStationVisible, setIsStationVisible] = useRecoilState(stationVisible);
+    const [, setIsStationVisible] = useRecoilState(stationVisible);
     
     // 초성 선택 함수
     const handleInitialState = (initial) => {
