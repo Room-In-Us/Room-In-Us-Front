@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import Icon1 from '../assets/icons/boardMorePage/icon1.png'
-import { Wrapper, MainBox, MainTitle, LayoutBox, SortButton, Icon1Img } from './BoardMorePage';
+import { Wrapper, MainBox, MainTitle, LayoutBox, Icon1Img } from './BoardMorePage';
 
 export default function BoardWritePage() {
   const [showCategories, setShowCategories] = useState(false);
@@ -21,18 +21,23 @@ export default function BoardWritePage() {
       <MainBox>
         <MainTitle>글 작성</MainTitle>
         <LayoutBox>
-          <SortButton color="#fff">
-            {selectedCategory}
-            <Icon1Img src={Icon1} alt='정렬아이콘' onClick={handleToggleCategories} />
+          <SortButton>
+            <CategoryText>{selectedCategory}</CategoryText>
+            <Icon1Img 
+              src={Icon1} 
+              alt='정렬아이콘' 
+              onClick={handleToggleCategories} 
+              isRotated={showCategories}
+            />
           </SortButton>
 
-          {showCategories && (
-            <CategoryBox>
+          
+            <CategoryBox isVisible={showCategories}>
               <CategoryButton onClick={() => handleCategorySelect('인생테마 게시판')}>인생테마 게시판</CategoryButton>
               <Divider />
               <CategoryButton onClick={() => handleCategorySelect('질문 게시판')}>질문 게시판</CategoryButton>
             </CategoryBox>
-          )}
+        
 
           <SubmitButton>저장하기</SubmitButton>
         </LayoutBox>
@@ -92,6 +97,29 @@ const ContentInputBox = styled.textarea`
   resize: none;
 `;
 
+const SortButton = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7em;
+  border-radius: 0.625em;
+  background-color: #313131;
+  color: #fff;
+  font-family: 'esamanru-Light';
+  font-size: 1em;
+  border: 0.0625em solid #121212;
+  box-shadow: 0em 0.25em 0.25em rgba(0, 0, 0, 0.25);
+  width: 12em;
+`;
+
+const CategoryText = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+`;
+
 const CategoryBox = styled.div`
   display: flex;
   flex-direction: column;
@@ -102,10 +130,17 @@ const CategoryBox = styled.div`
   border-radius: 0.625em;
   background-color: #313131;
   box-shadow: 0.25em 0.25em 0.625em rgba(0, 0, 0, 0.35);
+  width: 13.3em;
+  opacity: ${({ isVisible }) => (isVisible ? 1 : 0)};
+  transform: ${({ isVisible }) => (isVisible ? 'translateY(0)' : 'translateY(-0.5px)')};
+  transition: opacity 0.4s ease, transform 0.5s ease;
 `;
 
 const CategoryButton = styled.div`
-  padding: 0.7em;
+  padding-top: 0.7em;
+  padding-bottom: 0.7em;
+  padding-left: 3em;
+  padding-right: 3em;
   color: #fff;
   font-family: 'esamanru-Light';
   cursor: pointer;
