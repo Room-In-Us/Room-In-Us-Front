@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import styled from 'styled-components'
 import Icon1 from '../assets/icons/boardMorePage/icon1.png'
 import Icon2 from '../assets/icons/boardMorePage/icon2.png'
@@ -6,77 +6,51 @@ import PostLikeIcon from '../assets/icons/boardMorePage/likeicon.png'
 import { useNavigate } from 'react-router-dom'
 
 export default function BoardMorePage() {
+
     const navigate = useNavigate();
 
     const handleWrite = () => {
         navigate('/boardwrite');
-    }
+    };
 
-    const postData = [
-        {
-            id: 1,
-            title: '미스터리스케이프 - 아버지의 비밀 추천합니다.',
-            author: '작성자',
-            date: '24.09.09',
-            like_count: 12
-        },
-        {
-            id: 2,
-            title: '미스터리스케이프 - 아버지의 비밀 추천합니다.',
-            author: '작성자',
-            date: '24.09.09',
-            like_count: 12
-        },
-        {
-            id: 3,
-            title: '미스터리스케이프 - 아버지의 비밀 추천합니다.',
-            author: '작성자',
-            date: '24.09.09',
-            like_count: 12
-        },
-        {
-            id: 4,
-            title: '미스터리스케이프 - 아버지의 비밀 추천합니다.',
-            author: '작성자',
-            date: '24.09.09',
-            like_count: 12
-        },
-        {
-            id: 5,
-            title: '미스터리스케이프 - 아버지의 비밀 추천합니다.',
-            author: '작성자',
-            date: '24.09.09',
-            like_count: 12
-        },
-        {
-            id: 6,
-            title: '미스터리스케이프 - 아버지의 비밀 추천합니다.',
-            author: '작성자',
-            date: '24.09.09',
-            like_count: 12
-        },
-        {
-            id: 7,
-            title: '미스터리스케이프 - 아버지의 비밀 추천합니다.',
-            author: '작성자',
-            date: '24.09.09',
-            like_count: 12
-        },
-        {
-            id: 8,
-            title: '미스터리스케이프 - 아버지의 비밀 추천합니다.',
-            author: '작성자',
-            date: '24.09.09',
-            like_count: 12
-        },
-        {
-            id: 9,
-            title: '미스터리스케이프 - 아버지의 비밀 추천합니다.',
-            author: '작성자',
-            date: '24.09.09',
-            like_count: 12
+    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPageGroup, setCurrentPageGroup] = useState(0);
+    
+    const postsPerPage = 10;
+    const pagesPerGroup = 10;
+    
+    const postData = Array.from({length: 500}, (_, i) => ({
+        id: i + 1,
+        title: `게시물 제목 ${i + 1}`,
+        author: '작성자',
+        date: '24.09.09',
+        like_count: 12
+    }));
+
+    const totalPages = Math.ceil(postData.length / postsPerPage);
+
+    const handleNextPageGroup = () => {
+        if ((currentPageGroup + 1) * pagesPerGroup < totalPages) {
+            setCurrentPageGroup(prev => prev + 1);
+            setCurrentPage((currentPageGroup + 1) * pagesPerGroup + 1);
         }
-    ];
+    };
+
+    const handlePreviousPageGroup = () => {
+        if (currentPageGroup > 0) {
+            setCurrentPageGroup(prev => prev - 1);
+            setCurrentPage(currentPageGroup * pagesPerGroup); 
+        };
+    }   
+
+    const startPage = currentPageGroup * pagesPerGroup + 1;
+    const endPage = Math.min((currentPageGroup + 1) * pagesPerGroup, totalPages);
+
+    const displayedPosts = postData.filter((_, index) => {
+        const startIdx = (currentPage - 1) * postsPerPage;
+        const endIdx = startIdx + postsPerPage;
+        return index >= startIdx && index < endIdx;
+    });
 
   return (
     <Wrapper>
@@ -87,7 +61,7 @@ export default function BoardMorePage() {
                 <SubLayout>
                     <SortButton>
                         정렬순
-                        <Icon1Img src={Icon1} alt="정렬아이콘" />
+                        <Icon1Img src={Icon1} alt="정렬아이콘"/>
                     </SortButton>
                     <InputBox>
                         <Input placeholder="제목+본문 검색하기" />
@@ -96,20 +70,37 @@ export default function BoardMorePage() {
                 </SubLayout>
             </LayoutBox>
             <ListBox>
-                {postData.map((post) => (
-                    <PostList key={post.id}>
-                        <PostTitle>{post.title}</PostTitle>
-                        <PostInfo>
-                            <PostAuthor>{post.author}</PostAuthor>
-                            <PostDate>{post.date}</PostDate>
-                            <LikeWrapper>
-                                <LikeIcon src={PostLikeIcon} alt="좋아요아이콘" />
-                                <PostLikeCount>{post.like_count}</PostLikeCount>
-                            </LikeWrapper>
-                        </PostInfo>
-                    </PostList>
-                ))}
+            {displayedPosts.map((post) => (
+                        <PostList key={post.id}>
+                            <PostTitle>{post.title}</PostTitle>
+                            <PostInfo>
+                                <PostAuthor>{post.author}</PostAuthor>
+                                <PostDate>{post.date}</PostDate>
+                                <LikeWrapper>
+                                    <LikeIcon src={PostLikeIcon} alt="좋아요아이콘" />
+                                    <PostLikeCount>{post.like_count}</PostLikeCount>
+                                </LikeWrapper>
+                            </PostInfo>
+                        </PostList>
+                    ))}
             </ListBox>
+            <PaginationWrapper>
+                <Pagination>
+                    <PageButton onClick={handlePreviousPageGroup} disabled={currentPageGroup === 0}>
+                        &lt;
+                    </PageButton>
+                    {startPage > 1 && <Ellipsis>···</Ellipsis>}
+                    {Array.from({length: endPage - startPage + 1}, (_, i) => startPage + i).map(page => (
+                        <CurrentPageButton key={page} onClick={() => setCurrentPage(page)} disabled={currentPage === page}>
+                            {page}
+                        </CurrentPageButton>
+                    ))}
+                    {endPage < totalPages && <Ellipsis>···</Ellipsis>}
+                    <PageButton onClick={handleNextPageGroup} disabled={endPage === totalPages}>
+                        &gt;
+                    </PageButton>
+                </Pagination>
+            </PaginationWrapper>
         </MainBox>
     </Wrapper>
   )
@@ -134,7 +125,7 @@ export const MainBox = styled.div`
     padding: 1.5em;
     display: flex;
     flex-direction: column;
-    gap: 1.3em;
+    gap: 1em;
 `;
 
 export const MainTitle = styled.div`
@@ -229,7 +220,7 @@ const ListBox = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 1.5em;
+    margin-top: 1em;
     width: 100%;
     border-bottom: 1px solid #fff;
 `;
@@ -238,7 +229,7 @@ const PostList = styled.div`
     display: flex;
     justify-content: space-between;
     width: 97.5%;
-    padding: 0.9em;
+    padding: 0.85em;
     border-top: 1px solid #fff;
     font-family: 'esamanru-Light';
     color: #fff;
@@ -272,4 +263,48 @@ const LikeIcon  = styled.img`
 
 const PostLikeCount = styled.div`
     font-size: 0.9em;
+`;
+
+const PaginationWrapper = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.5em;
+`;
+
+const Pagination = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 40%;
+    height: 2em;
+`;
+
+const PageButton = styled.div`
+    background-color: transparent;
+    color: ${props => (props.disabled ? 'grey' : '#fff')};
+    cursor: ${props => (props.disabled ? '' : 'pointer')};
+    padding: 1em;
+    font-size: 1.3em;
+
+    &:hover {
+        color: ${props => (props.disabled ? '' : '#810000')};
+    }
+`;
+
+const CurrentPageButton = styled.span`
+    font-size: 1em;
+    color: #fff;
+    padding: 0.3em;
+    color: ${props => (props.disabled ? '#fff' : '#A4A4A4')};
+    &:hover {
+        color: ${props => (props.disabled ? '' : '#810000')};
+        cursor: pointer;
+    }
+`;
+
+const Ellipsis = styled.span`
+    font-size: 0.8em;
+    color: #fff;
+    padding: 0.3em;
 `;
