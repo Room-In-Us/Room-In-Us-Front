@@ -172,14 +172,14 @@ const SubLayout = styled.div`
     gap: 1em;
 `;
 
-export const SortButton = styled.div`
+const SortButton = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 0.7em;
     border-radius: 0.625em;
     background-color: #313131;
-    color: ${({ color }) => color || '#D2D2D2'};
+    color: #D2D2D2;
     font-family: 'esamanru-Light';
     font-size: 1em;
     gap: 1em;
@@ -190,6 +190,8 @@ export const SortButton = styled.div`
 export const Icon1Img = styled.img`
     width: 1em;
     cursor: pointer;
+    transition: transform 0.5s ease;
+    transform: ${({ isRotated }) => (isRotated ? 'rotate(180deg)' : 'rotate(0deg)')};
 `;
 
 const InputBox = styled.div`
