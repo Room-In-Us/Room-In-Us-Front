@@ -1,11 +1,11 @@
 import { useMediaQuery } from "react-responsive";
 
 const useDevice = () => {
-    const isMobile = useMediaQuery({ maxWidth: 768 });  // 모바일
-    const isTablet = useMediaQuery({ minWidth: 769, maxWidth: 1024 });  // 태블릿
     const isDesktop = useMediaQuery({ minWidth: 1025 });  // PC
+    const isTablet = useMediaQuery({ minWidth: 769, maxWidth: 1024 });  // 태블릿
+    const isMobile = useMediaQuery({ maxWidth: 768 });  // 모바일
 
-    return { isMobile, isTablet, isDesktop };
+    return { isDesktop, isTablet, isMobile };
 
 };
 

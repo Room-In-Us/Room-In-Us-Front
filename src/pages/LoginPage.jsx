@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import useDevice from "../hooks/useDevice";
 import BackgroundImg from "../assets/images/loginPage/background2.png";
 
 function LoginPage() {
@@ -14,9 +15,14 @@ function LoginPage() {
     const handleCheckBox = () => {
         setIsCheck(!isCheck);
     }
+
+    // 반응형 함수
+    const { isDesktop, isTablet, isMobile } = useDevice();
     
     return (
         <PageWrapper>
+            {/* PC 버전 */}
+            
             <ContentWrapper>
                 {/* 좌측 영역 */}
                 <LeftWrapper>

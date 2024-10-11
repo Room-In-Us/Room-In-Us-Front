@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import LogoImg from "../../assets/images/common/logo.png";
 import { useNavigate } from "react-router-dom";
 import useDevice from "../../hooks/useDevice";
@@ -20,7 +20,7 @@ function Header() {
     };
 
     // 반응형 함수
-    const { isMobile, isTablet, isDesktop } = useDevice();
+    const { isDesktop, isTablet, isMobile } = useDevice();
 
     // 메뉴 열고 닫기
     const handleMenu = () => {
@@ -29,12 +29,33 @@ function Header() {
     
     // 화면 크기가 변경 시 메뉴를 닫기
     useEffect(() => {
-        // 모바일이 아닌 상태(isTablet 또는 isDesktop)에서는 메뉴를 닫음
         if (!isMobile) {
             setIsVisibleMenu(false);
         }
     }, [isMobile, isTablet, isDesktop]);;
     
+    // 메뉴바 참조를 위한 ref
+    const menuRef = useRef(null);
+
+    // 메뉴바 외부 클릭 시 메뉴를 닫기
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setIsVisibleMenu(false);
+            }
+        };
+
+        if (isVisibleMenu) {
+            document.addEventListener("mousedown", handleClickOutside);
+        } else {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isVisibleMenu]);
+
     return (
         <>
         <HeaderWrapper>
@@ -71,7 +92,7 @@ function Header() {
         
         { isMobile &&
             // 메뉴바
-            <MenuWrapper isVisible={isVisibleMenu}>
+            <MenuWrapper isVisible={isVisibleMenu} ref={menuRef}>
                 <StyledCancelIcon onClick={() => handleMenu()}/>
                 <MobileButtonWrapper>
                     <MobileButton onClick={() => handleNavigation("/")}>홈</MobileButton>
@@ -149,7 +170,7 @@ const MenuWrapper = styled.div`
     background-color: rgba(26,26,26,0.7);
     backdrop-filter: blur(15px);
     transform: ${({ isVisible }) => (isVisible ? 'translateX(0)' : 'translateX(100%)')};
-    transition: transform 0.5s ease;
+    transition: transform 0.3s ease;
 `;
 
 const StyledCancelIcon = styled(CancelIcon)`
