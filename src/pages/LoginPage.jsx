@@ -68,27 +68,27 @@ function LoginPage() {
             { isTablet &&
                 <TabletContentWrapper>
                     {/* 좌측 영역 */}
-                    <LeftWrapper>
+                    <TabletLeftWrapper>
                         후기와 예약까지<br/>
                         한 번에 살필 수 있는,
-                    </LeftWrapper>
+                    </TabletLeftWrapper>
                     
                     {/* 우측 영역 */}
-                    <RightWrapper>
+                    <TabletRightWrapper>
                         <UpWrapper>
                             {/* 아이디 */}
                             <InputWrapper>
                                 <InputText>
                                     아이디
                                 </InputText>
-                                <StyledInput/>
+                                <TabletStyledInput/>
                             </InputWrapper>
                             {/* 비밀번호 */}
                             <InputWrapper>
                                 <InputText>
                                     비밀번호
                                 </InputText>
-                                <StyledInput type="password"/>
+                                <TabletStyledInput type="password"/>
                             </InputWrapper>
                             {/* 로그인상태유지 버튼 */}
                             <LoginStateWrapper>
@@ -102,7 +102,7 @@ function LoginPage() {
                                 회원가입 하기
                             </SignupText>
                         </DownWrapper>
-                    </RightWrapper>
+                    </TabletRightWrapper>
                 </TabletContentWrapper>
                 }
 
@@ -111,10 +111,10 @@ function LoginPage() {
             { isMobile &&
                 <MobileContentWrapper>
                     {/* 좌측 영역 */}
-                    <LeftWrapper>
+                    <MobileLeftWrapper>
                         후기와 예약까지<br/>
                         한 번에 살필 수 있는,
-                    </LeftWrapper>
+                    </MobileLeftWrapper>
                     
                     {/* 우측 영역 */}
                     <MobileRightWrapper>
@@ -124,14 +124,14 @@ function LoginPage() {
                                 <InputText>
                                     아이디
                                 </InputText>
-                                <StyledInput/>
+                                <MobileStyledInput/>
                             </InputWrapper>
                             {/* 비밀번호 */}
                             <InputWrapper>
                                 <InputText>
                                     비밀번호
                                 </InputText>
-                                <StyledInput type="password"/>
+                                <MobileStyledInput type="password"/>
                             </InputWrapper>
                             {/* 로그인상태유지 버튼 */}
                             <LoginStateWrapper>
@@ -140,7 +140,7 @@ function LoginPage() {
                             </LoginStateWrapper>
                         </UpWrapper>
                         <DownWrapper>
-                            <LoginButton onClick={() => navigate("/")}>로그인</LoginButton>
+                            <MobileLoginButton onClick={() => navigate("/")}>로그인</MobileLoginButton>
                             <SignupText onClick={() => navigate("/signup")}>
                                 회원가입 하기
                             </SignupText>
@@ -166,7 +166,7 @@ const ContentWrapper = styled.div`
     border-radius: 1em;
     display: flex;
     justify-content: space-between;
-    width: 60em;
+    width: 65em;
     height: 36em;
     background-color: #030303;
     background-image: url(${BackgroundImg});
@@ -287,38 +287,69 @@ const TabletContentWrapper = styled.div`
     margin-top: 1em;
     border-radius: 1em;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     width: 40em;
     height: 36em;
     background-color: #030303;
     background-image: url(${BackgroundImg});
-    background-size: 55em;
+    background-size: 30em;
+    background-position: right -10em top -4em;
     background-repeat: no-repeat;
 `;
 
-// 태블릿 반응형
+const TabletLeftWrapper = styled(LeftWrapper)`
+    font-size: 2em;
+`;
+
+const TabletRightWrapper = styled.div`
+    padding: 2em 3em 3em 3em;
+    box-sizing: border-box;
+    margin: 3em auto;
+    border-radius: 1em;
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #1A1A1A;
+    font-size: 0.8125em;
+`;
+
+const TabletStyledInput = styled(StyledInput)`
+    height: 2.8em;
+`;
+
+// 모바일 반응형
 const MobileContentWrapper = styled.div`
     margin-top: 1em;
     border-radius: 1em;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 80%;
+    align-items: center;
+    width: 20em;
     height: 36em;
     background-color: #030303;
     background-image: url(${BackgroundImg});
-    background-size: 55em;
+    background-size: 28em;
     background-repeat: no-repeat;
 `;
 
-const MobileRightWrapper = styled.div`
-    padding: 2em 3em 3em 3em;
-    box-sizing: border-box;
-    margin: 3.45em;
-    border-radius: 1em;
+const MobileLeftWrapper = styled(LeftWrapper)`
+    font-size: 1.5em;
+`;
+
+const MobileRightWrapper = styled(RightWrapper)`
+    padding: 1em 2em;
     width: 70%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background-color: #1A1A1A;
+    height: 26em;
+    font-size: 0.7em;
+`;
+
+const MobileStyledInput = styled(StyledInput)`
+    height: 2.3em;
+`;
+
+const MobileLoginButton = styled(LoginButton)`
+    height: 2.8em;
+    line-height: 2.8em;
 `;

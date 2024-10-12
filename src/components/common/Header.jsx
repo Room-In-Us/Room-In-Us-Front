@@ -83,7 +83,7 @@ function Header() {
             }
             { isMobile &&
                 <>
-                    <TabletLogoImg src={LogoImg} alt="logo image" onClick={() => handleNavigation("/")}/>
+                    <MobileLogoImg src={LogoImg} alt="logo image" onClick={() => handleNavigation("/")}/>
                     <StyledMenuIcon onClick={() => handleMenu()}/>
                 </>
             }
@@ -152,6 +152,11 @@ const TabletButton = styled.div`
 `;
 
 // 모바일 반응형
+const MobileLogoImg = styled.img`
+    height: 2.8em;
+    cursor: pointer;
+`;
+
 const StyledMenuIcon = styled(MenuIcon)`
     width: 2em;
     height: 2em;
