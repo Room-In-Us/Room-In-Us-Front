@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 function ThemeArea() {
     // state 관리
-    const [isThemeState, setIsThemeState] = useRecoilState(themeState);
+    const [, setIsThemeState] = useRecoilState(themeState);
     const [isThemeVisible, setIsThemeVisible] = useRecoilState(themeVisible);
 
     // navigate

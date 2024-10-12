@@ -6,9 +6,9 @@ import { stationDummy } from "./LocationDummy";
 
 function StationArea() {
     // state 관리
-    const [isStationState, setIsStationState] = useRecoilState(stationState);
+    const [, setIsStationState] = useRecoilState(stationState);
     const [isStationVisible, setIsStationVisible] = useRecoilState(stationVisible);
-    const [isCafeVisible, setIsCafeVisible] = useRecoilState(cafeVisible);
+    const [, setIsCafeVisible] = useRecoilState(cafeVisible);
     
     // 역 선택 함수
     const handleStationState = (station) => {
