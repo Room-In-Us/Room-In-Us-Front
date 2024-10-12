@@ -22,45 +22,132 @@ function LoginPage() {
     return (
         <PageWrapper>
             {/* PC 버전 */}
-            
-            <ContentWrapper>
-                {/* 좌측 영역 */}
-                <LeftWrapper>
-                    후기와 예약까지<br/>
-                    한 번에 살필 수 있는,
-                </LeftWrapper>
-                
-                {/* 우측 영역 */}
-                <RightWrapper>
-                    <UpWrapper>
-                        {/* 아이디 */}
-                        <InputWrapper>
-                            <InputText>
-                                아이디
-                            </InputText>
-                            <StyledInput/>
-                        </InputWrapper>
-                        {/* 비밀번호 */}
-                        <InputWrapper>
-                            <InputText>
-                                비밀번호
-                            </InputText>
-                            <StyledInput type="password"/>
-                        </InputWrapper>
-                        {/* 로그인상태유지 버튼 */}
-                        <LoginStateWrapper>
-                                <StyledCheckbox onClick={handleCheckBox} isCheck={isCheck}>✓</StyledCheckbox>
-                                <CheckboxText onClick={handleCheckBox}>로그인 상태 유지하기</CheckboxText>
-                        </LoginStateWrapper>
-                    </UpWrapper>
-                    <DownWrapper>
-                        <LoginButton onClick={() => navigate("/")}>로그인</LoginButton>
-                        <SignupText onClick={() => navigate("/signup")}>
-                            회원가입 하기
-                        </SignupText>
-                    </DownWrapper>
-                </RightWrapper>
-            </ContentWrapper>
+            { isDesktop &&
+                <ContentWrapper>
+                    {/* 좌측 영역 */}
+                    <LeftWrapper>
+                        후기와 예약까지<br/>
+                        한 번에 살필 수 있는,
+                    </LeftWrapper>
+                    
+                    {/* 우측 영역 */}
+                    <RightWrapper>
+                        <UpWrapper>
+                            {/* 아이디 */}
+                            <InputWrapper>
+                                <InputText>
+                                    아이디
+                                </InputText>
+                                <StyledInput/>
+                            </InputWrapper>
+                            {/* 비밀번호 */}
+                            <InputWrapper>
+                                <InputText>
+                                    비밀번호
+                                </InputText>
+                                <StyledInput type="password"/>
+                            </InputWrapper>
+                            {/* 로그인상태유지 버튼 */}
+                            <LoginStateWrapper>
+                                    <StyledCheckbox onClick={handleCheckBox} isCheck={isCheck}>✓</StyledCheckbox>
+                                    <CheckboxText onClick={handleCheckBox}>로그인 상태 유지하기</CheckboxText>
+                            </LoginStateWrapper>
+                        </UpWrapper>
+                        <DownWrapper>
+                            <LoginButton onClick={() => navigate("/")}>로그인</LoginButton>
+                            <SignupText onClick={() => navigate("/signup")}>
+                                회원가입 하기
+                            </SignupText>
+                        </DownWrapper>
+                    </RightWrapper>
+                </ContentWrapper>
+                }
+
+
+            {/* 태블릿 버전 */}
+            { isTablet &&
+                <TabletContentWrapper>
+                    {/* 좌측 영역 */}
+                    <LeftWrapper>
+                        후기와 예약까지<br/>
+                        한 번에 살필 수 있는,
+                    </LeftWrapper>
+                    
+                    {/* 우측 영역 */}
+                    <RightWrapper>
+                        <UpWrapper>
+                            {/* 아이디 */}
+                            <InputWrapper>
+                                <InputText>
+                                    아이디
+                                </InputText>
+                                <StyledInput/>
+                            </InputWrapper>
+                            {/* 비밀번호 */}
+                            <InputWrapper>
+                                <InputText>
+                                    비밀번호
+                                </InputText>
+                                <StyledInput type="password"/>
+                            </InputWrapper>
+                            {/* 로그인상태유지 버튼 */}
+                            <LoginStateWrapper>
+                                    <StyledCheckbox onClick={handleCheckBox} isCheck={isCheck}>✓</StyledCheckbox>
+                                    <CheckboxText onClick={handleCheckBox}>로그인 상태 유지하기</CheckboxText>
+                            </LoginStateWrapper>
+                        </UpWrapper>
+                        <DownWrapper>
+                            <LoginButton onClick={() => navigate("/")}>로그인</LoginButton>
+                            <SignupText onClick={() => navigate("/signup")}>
+                                회원가입 하기
+                            </SignupText>
+                        </DownWrapper>
+                    </RightWrapper>
+                </TabletContentWrapper>
+                }
+
+
+            {/* 모바일 버전 */}
+            { isMobile &&
+                <MobileContentWrapper>
+                    {/* 좌측 영역 */}
+                    <LeftWrapper>
+                        후기와 예약까지<br/>
+                        한 번에 살필 수 있는,
+                    </LeftWrapper>
+                    
+                    {/* 우측 영역 */}
+                    <MobileRightWrapper>
+                        <UpWrapper>
+                            {/* 아이디 */}
+                            <InputWrapper>
+                                <InputText>
+                                    아이디
+                                </InputText>
+                                <StyledInput/>
+                            </InputWrapper>
+                            {/* 비밀번호 */}
+                            <InputWrapper>
+                                <InputText>
+                                    비밀번호
+                                </InputText>
+                                <StyledInput type="password"/>
+                            </InputWrapper>
+                            {/* 로그인상태유지 버튼 */}
+                            <LoginStateWrapper>
+                                    <StyledCheckbox onClick={handleCheckBox} isCheck={isCheck}>✓</StyledCheckbox>
+                                    <CheckboxText onClick={handleCheckBox}>로그인 상태 유지하기</CheckboxText>
+                            </LoginStateWrapper>
+                        </UpWrapper>
+                        <DownWrapper>
+                            <LoginButton onClick={() => navigate("/")}>로그인</LoginButton>
+                            <SignupText onClick={() => navigate("/signup")}>
+                                회원가입 하기
+                            </SignupText>
+                        </DownWrapper>
+                    </MobileRightWrapper>
+                </MobileContentWrapper>
+                }
         </PageWrapper>
     )
 }
@@ -193,4 +280,45 @@ const SignupText = styled.div`
     font-family: 'Pretendard-regular';
     font-weight: 400;
     cursor: pointer;
+`;
+
+// 태블릿 반응형
+const TabletContentWrapper = styled.div`
+    margin-top: 1em;
+    border-radius: 1em;
+    display: flex;
+    justify-content: space-between;
+    width: 40em;
+    height: 36em;
+    background-color: #030303;
+    background-image: url(${BackgroundImg});
+    background-size: 55em;
+    background-repeat: no-repeat;
+`;
+
+// 태블릿 반응형
+const MobileContentWrapper = styled.div`
+    margin-top: 1em;
+    border-radius: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 80%;
+    height: 36em;
+    background-color: #030303;
+    background-image: url(${BackgroundImg});
+    background-size: 55em;
+    background-repeat: no-repeat;
+`;
+
+const MobileRightWrapper = styled.div`
+    padding: 2em 3em 3em 3em;
+    box-sizing: border-box;
+    margin: 3.45em;
+    border-radius: 1em;
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #1A1A1A;
 `;

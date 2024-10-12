@@ -193,4 +193,8 @@ const MobileButton = styled.div`
     font-size: 1.2em;
     font-weight: 600;
     cursor: pointer;
+    &:hover {
+        transform: translateX(5px);
+        }
+    transition: all 0.3s ease;
 `;
