@@ -11,7 +11,8 @@ import LocationPage from './pages/LocationPage';
 import BoardPage from './pages/BoardPage';
 import BoardMorePage from './pages/BoardMorePage';
 import BoardWritePage from './pages/BoardWritePage';
- 
+import MapPage from './pages/MapPage';
+
 function App() {
   return (
     <Routes>
@@ -28,7 +29,7 @@ function App() {
         <Route path="/signup" element={<LoginPage/>} />
 
         {/* 위치 페이지 */}
-        <Route path="/location" element={<LocationPage/>} />
+        <Route path="/location" element={<MapPage/>} />
 
         {/* 숙련도 페이지 */}
         <Route path="/level" element={<LevelPage/>} />
