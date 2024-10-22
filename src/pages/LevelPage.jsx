@@ -43,8 +43,7 @@ export default function LevelPage() {
                   </TextWrapper>
                   <ButtonWrapper>
                     <PlayButton onClick={() => handleLevelInfo({
-                      level: '방린이',
-                      description: '방탈출을 한 번도 해보지 않은 여러분들을 위해 대부분 가볍게 즐길 수 있는 테마로 준비했으며, 거의 모두가 쉽게 탈출할 수 있는 테마로 준비하였습니다!'
+                      level: 'BEGINNER'
                     })}>Play</PlayButton>
                   </ButtonWrapper>
                 </CardBack>
@@ -69,8 +68,7 @@ export default function LevelPage() {
                   </TextWrapper>
                   <ButtonWrapper>
                     <PlayButton onClick={() => handleLevelInfo({
-                      level: '방초보',
-                      description: '방초보 레벨에 대한 설명'
+                      level: 'JUNIOR'
                     })}>Play</PlayButton>
                   </ButtonWrapper>
                 </CardBack>
@@ -95,8 +93,7 @@ export default function LevelPage() {
                   </TextWrapper>
                   <ButtonWrapper>
                     <PlayButton onClick={() => handleLevelInfo({
-                      level: '방중수',
-                      description: '방중수 레벨에 대한 설명'
+                      level: 'SENIOR'
                     })}>Play</PlayButton>
                   </ButtonWrapper>
                 </CardBack>
@@ -121,8 +118,7 @@ export default function LevelPage() {
                   </TextWrapper>
                   <ButtonWrapper>
                     <PlayButton onClick={() => handleLevelInfo({
-                      level: '방고인물',
-                      description: '방고인물 레벨에 대한 설명'
+                      level: 'MASTER'
                     })}>Play</PlayButton>
                   </ButtonWrapper>
                 </CardBack>

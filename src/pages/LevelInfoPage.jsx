@@ -1,91 +1,119 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import JokerHead from '../assets/images/levelPage/jokerhead.png';
 import { useLocation } from 'react-router-dom';
+import { getProficiencyListAPI } from '../apis/theme/getProficiencyListAPI'; // api 파일
 
 export default function LevelInfoPage() {
-  const location = useLocation();
-  const {level, description} = location.state || {};
+  // state 관리
+  const [profName, setProfName] = useState([]);
+  const [profDescription, setProfDescription] = useState([]);
+  const [cafeLists, setCafeLists] = useState([]);
+  const [page,] = useState('1');
 
-  const roomData = [
-    {
-      id: 1,
-      region: '서울',
-      detailRegion: '강남',
-      shopName: '미스터리룸 이스케이프',
-      themeName: '인형괴담',
-    },
-    {
-      id: 2,
-      region: '서울',
-      detailRegion: '강남',
-      shopName: '미스터리룸 이스케이프',
-      themeName: '인형괴담',
-    },
-    {
-      id: 3,
-      region: '서울',
-      detailRegion: '강남',
-      shopName: '미스터리룸 이스케이프',
-      themeName: '인형괴담',
-    },
-    {
-      id: 4,
-      region: '서울',
-      detailRegion: '강남',
-      shopName: '미스터리룸 이스케이프',
-      themeName: '인형괴담',
-    },
-    {
-      id: 5,
-      region: '서울',
-      detailRegion: '강남',
-      shopName: '미스터리룸 이스케이프',
-      themeName: '인형괴담',
-    },
-    {
-      id: 6,
-      region: '서울',
-      detailRegion: '강남',
-      shopName: '미스터리룸 이스케이프',
-      themeName: '인형괴담',
-    },
-    {
-      id: 7,
-      region: '서울',
-      detailRegion: '강남',
-      shopName: '미스터리룸 이스케이프',
-      themeName: '인형괴담',
-    },
-    {
-      id: 8,
-      region: '서울',
-      detailRegion: '강남',
-      shopName: '미스터리룸 이스케이프',
-      themeName: '인형괴담',
-    },
-    {
-      id: 9,
-      region: '서울',
-      detailRegion: '강남',
-      shopName: '미스터리룸 이스케이프',
-      themeName: '인형괴담',
-    },
-    {
-      id: 10,
-      region: '서울',
-      detailRegion: '강남',
-      shopName: '미스터리룸 이스케이프',
-      themeName: '인형괴담',
-    },
-    {
-      id: 11,
-      region: '서울',
-      detailRegion: '강남',
-      shopName: '미스터리룸 이스케이프',
-      themeName: '인형괴담',
-    },
-  ];
+  // useLocation
+  const location = useLocation();
+  const {level} = location.state || {};
+
+  // const roomData = [
+  //   {
+  //     id: 1,
+  //     region: '서울',
+  //     detailRegion: '강남',
+  //     shopName: '미스터리룸 이스케이프',
+  //     themeName: '인형괴담',
+  //   },
+  //   {
+  //     id: 2,
+  //     region: '서울',
+  //     detailRegion: '강남',
+  //     shopName: '미스터리룸 이스케이프',
+  //     themeName: '인형괴담',
+  //   },
+  //   {
+  //     id: 3,
+  //     region: '서울',
+  //     detailRegion: '강남',
+  //     shopName: '미스터리룸 이스케이프',
+  //     themeName: '인형괴담',
+  //   },
+  //   {
+  //     id: 4,
+  //     region: '서울',
+  //     detailRegion: '강남',
+  //     shopName: '미스터리룸 이스케이프',
+  //     themeName: '인형괴담',
+  //   },
+  //   {
+  //     id: 5,
+  //     region: '서울',
+  //     detailRegion: '강남',
+  //     shopName: '미스터리룸 이스케이프',
+  //     themeName: '인형괴담',
+  //   },
+  //   {
+  //     id: 6,
+  //     region: '서울',
+  //     detailRegion: '강남',
+  //     shopName: '미스터리룸 이스케이프',
+  //     themeName: '인형괴담',
+  //   },
+  //   {
+  //     id: 7,
+  //     region: '서울',
+  //     detailRegion: '강남',
+  //     shopName: '미스터리룸 이스케이프',
+  //     themeName: '인형괴담',
+  //   },
+  //   {
+  //     id: 8,
+  //     region: '서울',
+  //     detailRegion: '강남',
+  //     shopName: '미스터리룸 이스케이프',
+  //     themeName: '인형괴담',
+  //   },
+  //   {
+  //     id: 9,
+  //     region: '서울',
+  //     detailRegion: '강남',
+  //     shopName: '미스터리룸 이스케이프',
+  //     themeName: '인형괴담',
+  //   },
+  //   {
+  //     id: 10,
+  //     region: '서울',
+  //     detailRegion: '강남',
+  //     shopName: '미스터리룸 이스케이프',
+  //     themeName: '인형괴담',
+  //   },
+  //   {
+  //     id: 11,
+  //     region: '서울',
+  //     detailRegion: '강남',
+  //     shopName: '미스터리룸 이스케이프',
+  //     themeName: '인형괴담',
+  //   },
+  // ];
+
+  // 임시 
+  // const page = '1';
+
+  // 방탈출 정보 불러오기
+  useEffect(() => {
+    const fetchStudies = async () => {
+        try {
+            const response = await getProficiencyListAPI(level, page);
+            console.log('받은 데이터:', response);
+            setProfName(response.profName);  // 레벨
+            setProfDescription(response.profDescription);  // 설명
+            setCafeLists(response.contents);  // 리스트
+        } catch (error) {
+            console.error('카페 목록 데이터를 불러오는 중 오류 발생:', error);
+        }
+    };
+    fetchStudies();
+  }, [level, page]);
+
 
   return (
     <Wrapper>
@@ -94,9 +122,9 @@ export default function LevelInfoPage() {
           <LevelIconWrapper>
             <LevelIcon src={JokerHead} alt='레벨아이콘' />
           </LevelIconWrapper>
-          <Level>{level}</Level>
+          <Level>{profName}</Level>
           <LevelDetail>
-            {description}
+            {profDescription}
           </LevelDetail>
         </LevelInfoBox>
         <RoomListWrapper>
@@ -110,12 +138,12 @@ export default function LevelInfoPage() {
             
             <Table>
               <tbody>
-                {roomData.map((room) => (
-                  <TableRow key={room.id}>
-                    <TableData>{room.region}</TableData>
-                    <TableData>{room.detailRegion}</TableData>
-                    <TableData>{room.shopName}</TableData>
-                    <TableData>{room.themeName}</TableData>
+                {cafeLists.map((cafe) => (
+                  <TableRow key={cafe.themeId}>
+                    <TableData>{cafe.cityName}</TableData>
+                    <TableData>{cafe.townName}</TableData>
+                    <TableData>{cafe.pointName}</TableData>
+                    <TableData>{cafe.themeName}</TableData>
                   </TableRow>
                 ))}
               </tbody>
@@ -239,7 +267,7 @@ const Table = styled.table`
   height: 100%;
   border-collapse: collapse;
   margin-top: 3em;
-  margin-
+  // margin-
 `;
 
 const TableRow = styled.tr``;
