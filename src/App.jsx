@@ -11,7 +11,8 @@ import LocationPage from './pages/LocationPage';
 import BoardPage from './pages/BoardPage';
 import BoardMorePage from './pages/BoardMorePage';
 import BoardWritePage from './pages/BoardWritePage';
- 
+import MapPage from './pages/MapPage';
+
 function App() {
   return (
     <Routes>
