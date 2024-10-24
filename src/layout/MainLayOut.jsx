@@ -6,9 +6,9 @@ function MainLayOut() {
     return (
         <>
             <Header/>
-            <Padding>
+            <ContentWrapper>
                 <Outlet/>
-            </Padding>
+            </ContentWrapper>
     
         </>
     )
@@ -17,6 +17,6 @@ function MainLayOut() {
 export default MainLayOut;
 
 // CSS
-const Padding = styled.div`
-    //padding 필요 시 작성
+const ContentWrapper = styled.div`
+    padding-top: 6em;
 `;

@@ -110,11 +110,16 @@ export default Header;
 
 // CSS
 const HeaderWrapper = styled.div`
+    position: fixed;
     padding: 0 3em;
-    height: 115px;
+    width: 100%;
+    height: 6em;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: #1A1A1A;
+    z-index: 2000;
+    box-sizing: border-box;
 `;
 
 const DeskTopLogoImg = styled.img`
