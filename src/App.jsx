@@ -11,7 +11,9 @@ import LocationPage from './pages/LocationPage';
 import BoardPage from './pages/BoardPage';
 import BoardMorePage from './pages/BoardMorePage';
 import BoardWritePage from './pages/BoardWritePage';
-import MapPage from './pages/MapPage';
+// 지도 컴포넌트
+import NaverMapPage from './pages/map/NaverMapPage';
+import GoogleMapPage from './pages/map/GoogleMapPage';
 
 function App() {
   return (

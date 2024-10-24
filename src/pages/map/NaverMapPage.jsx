@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { locationState, initialState, stationState, cafeState, themeState, backgroundVisible,
-        locationVisible, initialVisible, stationVisible, cafeVisible, themeVisible } from '../recoil/atoms/locationAtom';
+        locationVisible, initialVisible, stationVisible, cafeVisible, themeVisible } from '../../recoil/atoms/locationAtom';
 import styled from 'styled-components';
-import MapImg from '../assets/images/locationPage/locationMap.png';
-import LocationContent from '../components/location/LocationContent';
-import NaverMapContainer from '../components/map/NaverMapContainer';
+// import MapImg from '../assets/images/locationPage/locationMap.png';
+import LocationContent from '../../components/location/LocationContent';
+import NaverMapContainer from '../../components/map/NaverMapContainer';
 import { NavermapsProvider } from 'react-naver-maps';
 
-function MapPage() {
+function NaverMapPage() {
     // state 관리
     const [isVisible, setIsVisible] = useState(false);
     const [isLocationState, setIsLocationState] = useRecoilState(locationState);
@@ -79,7 +79,7 @@ function MapPage() {
     );
 };
 
-export default MapPage;
+export default NaverMapPage;
 
 // CSS
 const PageWrapper = styled.div`
