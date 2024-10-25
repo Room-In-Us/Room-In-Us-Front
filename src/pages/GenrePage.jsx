@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import ComicGenre from '../assets/images/genrePage/comic.png'
 import MisteryGenre from '../assets/images/genrePage/mistery.png'
@@ -9,13 +9,28 @@ import FantasyGenre from '../assets/images/genrePage/fantasy.png'
 import AdventureGenre from '../assets/images/genrePage/adventure.png'
 import Others from '../assets/images/genrePage/others.png'
 import { useNavigate } from 'react-router-dom'
+import { getGenresListAPI } from '../apis/theme/getGenresListAPI'
 
 export default function GenrePage() {
     const navigate = useNavigate();
+    const [genres, setGenres] = useState([]);
 
     const handleGenreInfo = () => {
         navigate('/genreInfo');
     }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await getGenresListAPI();
+                console.log('받은 데이터: ', response);
+                setGenres(response);
+            } catch (error) {
+                console.error('장르 목록 데이터를 불러오는 중 오류 발생:', error);
+            }
+        };
+        fetchData();
+      }, []);
 
   return (
     <Wrapper>
