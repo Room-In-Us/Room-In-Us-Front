@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { GoogleMap, LoadScript, MarkerF } from "@react-google-maps/api";
 import MarkerIcon from "../../assets/images/mapPage/marker.png";
+import { goolgleMapStyles } from "./googleMap";
 
 function GoogleMapPage() {
     // state 관리
@@ -14,8 +15,14 @@ function GoogleMapPage() {
 
     // 표시될 위치(위도, 경도)
     const center = {
-        lat: 37.4488405,
-        lng: 127.1267087
+        lat: 37.5638934,
+        lng: 126.9844558
+    };
+
+    // Google Map에 옵션을 설정
+    const options = {
+        styles: goolgleMapStyles, // 스타일 적용
+        disableDefaultUI: true, // 기본 UI 요소 비활성화
     };
 
     // Google Maps API가 로드된 후 아이콘 크기 설정
@@ -38,6 +45,7 @@ function GoogleMapPage() {
                 mapContainerStyle={containerStyle}
                 center={center}
                 zoom={14}
+                options={options}
             >
                 <MarkerF position={center} icon={customIcon}></MarkerF>
             </GoogleMap>
