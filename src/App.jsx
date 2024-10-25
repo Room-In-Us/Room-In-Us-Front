@@ -11,9 +11,6 @@ import LocationPage from './pages/LocationPage';
 import BoardPage from './pages/BoardPage';
 import BoardMorePage from './pages/BoardMorePage';
 import BoardWritePage from './pages/BoardWritePage';
-// 지도 컴포넌트
-import NaverMapPage from './pages/map/NaverMapPage';
-import GoogleMapPage from './pages/map/GoogleMapPage';
 
 function App() {
   return (
@@ -31,7 +28,7 @@ function App() {
         <Route path="/signup" element={<LoginPage/>} />
 
         {/* 위치 페이지 */}
-        <Route path="/location" element={<GoogleMapPage/>} />
+        <Route path="/location" element={<LocationPage/>} />
 
         {/* 숙련도 페이지 */}
         <Route path="/level" element={<LevelPage/>} />

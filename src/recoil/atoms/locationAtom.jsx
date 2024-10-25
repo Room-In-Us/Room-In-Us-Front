@@ -18,17 +18,6 @@ export const backgroundVisible = atom({
 });
 
 
-// 초성 상태
-export const initialState = atom({
-    key: "initialState",
-    default: ""
-});
-export const initialVisible = atom({
-    key: "initialVisible",
-    default: false
-});
-
-
 // 역 상태
 export const stationState = atom({
     key: "stationState",

@@ -66,7 +66,7 @@ export default MainPage;
 // CSS
 const PageWrapper = styled.div`
     font-size: 0.95em;  // 크기 조정
-    padding-top: 2em;
+    padding-top: 1em;
     display: flex;
     flex-direction: column;
     justify-content: center;
