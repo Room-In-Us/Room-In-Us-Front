@@ -6,12 +6,14 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store/store.jsx';
 import { RecoilRoot } from 'recoil';
+import ScrollToTop from './utils/scrollToTop.js';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Provider store={store}>
         <RecoilRoot>
+          <ScrollToTop/>
           <App />
         </RecoilRoot>
       </Provider>
