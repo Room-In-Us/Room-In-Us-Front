@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
-import LogoImg from "../../assets/images/common/logo.png";
 import { useNavigate } from "react-router-dom";
 import useDevice from "../../hooks/useDevice";
 import MenuIcon from "../../assets/icons/common/menuIcon.svg?react";
 import CancelIcon from "../../assets/icons/common/cancelIcon.svg?react";
+import LogoIcon from "../../assets/icons/common/logo.svg?react";
 
 function Header() {
     // state 관리
@@ -61,29 +61,29 @@ function Header() {
         <HeaderWrapper>
             { isDesktop &&
                 <>
-                    <DeskTopLogoImg src={LogoImg} alt="logo image" onClick={() => handleNavigation("/")}/>
+                    <StyledLogoIcon onClick={() => handleNavigation("/")}/>
                     <ButtonWrapper>
-                        <DeskTopButton onClick={() => handleNavigation("/")}>홈</DeskTopButton>
-                        <DeskTopButton onClick={() => handleNavigation("/board")}>게시판</DeskTopButton>
-                        <DeskTopButton onClick={() => handleNavigation("/mypage")}>마이페이지</DeskTopButton>
-                        <DeskTopButton onClick={() => handleNavigation("/login")}>로그인</DeskTopButton>
+                        <StyledButton onClick={() => handleNavigation("/")}>홈</StyledButton>
+                        <StyledButton onClick={() => handleNavigation("/board")}>게시판</StyledButton>
+                        <StyledButton onClick={() => handleNavigation("/mypage")}>마이페이지</StyledButton>
+                        <StyledButton onClick={() => handleNavigation("/login")}>로그인</StyledButton>
                     </ButtonWrapper>
                 </>
             }
             { isTablet &&
                 <>
-                    <TabletLogoImg src={LogoImg} alt="logo image" onClick={() => handleNavigation("/")}/>
+                    <StyledLogoIcon onClick={() => handleNavigation("/")}/>
                     <ButtonWrapper>
-                        <TabletButton onClick={() => handleNavigation("/")}>홈</TabletButton>
-                        <TabletButton onClick={() => handleNavigation("/board")}>게시판</TabletButton>
-                        <TabletButton onClick={() => handleNavigation("/mypage")}>마이페이지</TabletButton>
-                        <TabletButton onClick={() => handleNavigation("/login")}>로그인</TabletButton>
+                        <StyledButton onClick={() => handleNavigation("/")}>홈</StyledButton>
+                        <StyledButton onClick={() => handleNavigation("/board")}>게시판</StyledButton>
+                        <StyledButton onClick={() => handleNavigation("/mypage")}>마이페이지</StyledButton>
+                        <StyledButton onClick={() => handleNavigation("/login")}>로그인</StyledButton>
                     </ButtonWrapper>
                 </>
             }
             { isMobile &&
                 <>
-                    <MobileLogoImg src={LogoImg} alt="logo image" onClick={() => handleNavigation("/")}/>
+                    <StyledLogoIcon onClick={() => handleNavigation("/")}/>
                     <StyledMenuIcon onClick={() => handleMenu()}/>
                 </>
             }
@@ -118,13 +118,29 @@ const HeaderWrapper = styled.div`
     justify-content: space-between;
     align-items: center;
     background-color: #1A1A1A;
+    background-color: rgba(26,26,26,0.9);
+    backdrop-filter: blur(15px);
     z-index: 2000;
     box-sizing: border-box;
+    
+    @media (max-width: 1024px) {  // 태블릿
+        padding-left: 2.5em;
+    }
+    @media (max-width: 768px) {  // 모바일
+        padding-left: 1em;
+    }
 `;
 
-const DeskTopLogoImg = styled.img`
+const StyledLogoIcon = styled(LogoIcon)`
     height: 4.5em;
     cursor: pointer;
+
+    @media (max-width: 1024px) {  // 태블릿
+        height: 3.8em;
+    }
+    @media (max-width: 768px) {  // 모바일
+        height: 3em;
+    }
 `;
 
 const ButtonWrapper = styled.div`
@@ -133,35 +149,20 @@ const ButtonWrapper = styled.div`
     display: flex;
 `;
 
-const DeskTopButton = styled.div`
+const StyledButton = styled.div`
     margin-left: 4em;
     color: white;
     font-family: 'Pretendard-SemiBold';
     font-size: 1.2em;
     font-weight: 600;
     cursor: pointer;
-`;
 
-// 태블릿 반응형
-const TabletLogoImg = styled.img`
-    height: 3.8em;
-    cursor: pointer;
-`;
-
-const TabletButton = styled.div`
-    margin-left: 4em;
-    color: white;
-    font-family: 'Pretendard-SemiBold';
-    font-weight: 600;
-    cursor: pointer;
+     @media (max-width: 1024px) {  // 태블릿
+        font-size: 1em;
+    }
 `;
 
 // 모바일 반응형
-const MobileLogoImg = styled.img`
-    height: 2.8em;
-    cursor: pointer;
-`;
-
 const StyledMenuIcon = styled(MenuIcon)`
     width: 2em;
     height: 2em;
@@ -181,6 +182,7 @@ const MenuWrapper = styled.div`
     backdrop-filter: blur(15px);
     transform: ${({ isVisible }) => (isVisible ? 'translateX(0)' : 'translateX(100%)')};
     transition: transform 0.3s ease;
+    z-index: 3000;
 `;
 
 const StyledCancelIcon = styled(CancelIcon)`

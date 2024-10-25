@@ -29,6 +29,11 @@ function MainPage() {
 
     return (
         <PageWrapper>
+            {/* 검색 영역 */}
+            <InputWrapper>
+
+            </InputWrapper>
+
             {/* 카드 영역 */}
             <CardWrapper {...bind()}>
                 <Card className={positions[0]} onClick={() => navigate("/Level")}>
@@ -56,10 +61,21 @@ export default MainPage;
 
 // CSS
 const PageWrapper = styled.div`
-    padding-top: 5em;
+font-size: 0.95em;  // 크기 조정
+    padding-top: 2em;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+`;
+
+const InputWrapper = styled.div`
+    margin-bottom: 5em;
+    border: 3px solid rgba(148,0,0,0.8);
+    border-radius: 1em;
+    width: 70vw;
+    height: 3em;
+    background-color: rgba(148,0,0,0.15);
 `;
 
 const CardWrapper = styled.div`
