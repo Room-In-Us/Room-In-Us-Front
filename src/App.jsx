@@ -31,7 +31,7 @@ function App() {
         <Route path="/signup" element={<LoginPage/>} />
 
         {/* 위치 페이지 */}
-        <Route path="/location" element={<LocationPage/>} />
+        <Route path="/location" element={<GoogleMapPage/>} />
 
         {/* 숙련도 페이지 */}
         <Route path="/level" element={<LevelPage/>} />
