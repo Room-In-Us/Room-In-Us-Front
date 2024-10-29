@@ -49,3 +49,10 @@ export const themeVisible = atom({
     key: "themeVisible",
     default: false
 });
+
+
+// 구글 맵
+export const mapsLoadedState = atom({
+    key: 'mapsLoadedState',
+    default: false,
+});
