@@ -1,14 +1,16 @@
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
 import { stationState, stationVisible, cafeVisible } from "../../recoil/atoms/locationAtom";
 import ArrowIcon from "../../assets/icons/locationPage/arrowIcon.svg?react";
-import { stationDummy } from "./LocationDummy";
+import { getStationListAPI } from "../../apis/theme/getLocationListAPI";
 
 function StationArea() {
     // state 관리
     const [, setIsStationState] = useRecoilState(stationState);
     const [isStationVisible, setIsStationVisible] = useRecoilState(stationVisible);
     const [, setIsCafeVisible] = useRecoilState(cafeVisible);
+    const [stationList, setStationList] = useState([]);
     
     // 역 선택 함수
     const handleStationState = (station) => {
@@ -16,12 +18,26 @@ function StationArea() {
         setIsStationVisible(false);
         setIsCafeVisible(true);
     };
+
+    // 방탈출 정보 불러오기
+    useEffect(() => {
+        const fetchStudies = async () => {
+            try {
+                const response = await getStationListAPI();
+                console.log('받은 데이터:', response);
+                setStationList(response.stationList);  // 역 리스트
+            } catch (error) {
+                console.error('카페 목록 데이터를 불러오는 중 오류 발생:', error);
+            }
+        };
+        fetchStudies();
+    }, []);
     
     return (
         <ComponentWrapper isVisible={isStationVisible}>
-            {stationDummy.map((station) => (
-                <StyledList key={station.id} onClick={() => handleStationState(station.name)}>
-                    <StationName>{station.name}</StationName>
+            {stationList.map((station) => (
+                <StyledList key={station.stationId} onClick={() => handleStationState(station.station)}>
+                    <StationName>{station.station}</StationName>
                     <StyledArrowIcon/>
                 </StyledList>
             ))}

@@ -1,4 +1,3 @@
-// LocationPage.js
 import { useState, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { locationState, stationState, cafeState, themeState, backgroundVisible,

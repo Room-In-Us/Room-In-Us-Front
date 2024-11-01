@@ -1,10 +1,10 @@
-// GoogleMaps.jsx
 import { useState, useEffect } from "react";
 import { useRecoilValue } from 'recoil';
 import { GoogleMap, MarkerF } from "@react-google-maps/api";
 import MarkerIcon from "../../../assets/images/locationPage/marker.png";
 import { goolgleMapStyles } from "./googleMapStyles";
 import { mapsLoadedState } from '../../../recoil/atoms/locationAtom';
+import Loading from "../../common/Loading";
 
 function GoogleMaps() {
     const mapsLoaded = useRecoilValue(mapsLoadedState); // 전역 상태로 로딩 여부 확인
@@ -37,7 +37,7 @@ function GoogleMaps() {
         }
     }, [mapsLoaded]);
 
-    if (!mapsLoaded) return <div>Loading...</div>; // API 로딩 중 상태 표시
+    if (!mapsLoaded) return <Loading/>; // API 로딩 중 상태 표시
 
     return (
         <GoogleMap
