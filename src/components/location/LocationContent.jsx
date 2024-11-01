@@ -45,7 +45,7 @@ function LocationContent() {
 
                 {/* 지역 버튼 */}
                 <TitleButton onClick={() => handleMoveInitial()} isVisible={isLocationState}>
-                    <TitleText>{isLocationState}</TitleText>
+                    <TitleText>{isLocationState === "2" ? "서울" : "수도권"}</TitleText>
                 </TitleButton>
                 {/* 역 버튼 */}
                 <TitleButton onClick={() => handleMoveStation()} isVisible={isStationState}>

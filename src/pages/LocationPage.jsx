@@ -61,7 +61,8 @@ function LocationPage() {
                 <ContentWrapper isVisible={isVisible}>
                     <ButtonWrapper isVisible={isLocationVisible}>
                         <StyledButton>
-                            <Text onClick={() => handleLocationState('서울')}>서울</Text>
+                            {/* 2: 서울 */}
+                            <Text onClick={() => handleLocationState('2')}>서울</Text>
                         </StyledButton>
                         <StyledButton>
                             <Text onClick={() => handleLocationState('수도권')}>수도권</Text>
