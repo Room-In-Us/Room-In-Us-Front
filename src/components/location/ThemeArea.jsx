@@ -1,14 +1,19 @@
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
-import { themeState, themeVisible } from "../../recoil/atoms/locationAtom";
+import { cafeState, themeState, themeVisible } from "../../recoil/atoms/locationAtom";
 import ArrowIcon from "../../assets/icons/locationPage/arrowIcon.svg?react";
-import { themeDummy } from "./LocationDummy";
 import { useNavigate } from "react-router-dom";
+import { getLocationListAPI } from "../../apis/theme/getLocationListAPI";
 
 function ThemeArea() {
     // state 관리
     const [, setIsThemeState] = useRecoilState(themeState);
     const [isThemeVisible, setIsThemeVisible] = useRecoilState(themeVisible);
+    const [isCafeState,] = useRecoilState(cafeState);  // 파라미터(value)
+    const [category,] = useState('Point');  // 파라미터(category)
+    const [page,] = useState('1');  // 파라미터(page)
+    const [contents, setContents] = useState([]);  // 리스트
 
     // navigate
     const navigate = useNavigate();
@@ -21,10 +26,24 @@ function ThemeArea() {
         alert("상세정보 페이지는 구현 중입니다");
     };
 
+    // 테마 리스트 불러오기
+    useEffect(() => {
+        const fetchStudies = async () => {
+            try {
+                const response = await getLocationListAPI(category, isCafeState, page);
+                console.log('받은 데이터:', response);
+                setContents(response.contents);  // 방탈출별 테마 리스트
+            } catch (error) {
+                console.error('카페 목록 데이터를 불러오는 중 오류 발생:', error);
+            }
+        };
+        fetchStudies();
+    }, [category, isCafeState, page]);
+
     return (
         <ComponentWrapper isVisible={isThemeVisible}>
-            {themeDummy.map((theme) => (
-                <StyledList key={theme.id} onClick={() => handleThemeState(theme.name)}>
+            {contents.map((theme) => (
+                <StyledList key={theme.id} onClick={() => handleThemeState(theme.id)}>
                     <StationName>{theme.name}</StationName>
                     <StyledArrowIcon/>
                 </StyledList>

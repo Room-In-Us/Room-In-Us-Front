@@ -7,17 +7,17 @@ import { getLocationListAPI } from "../../apis/theme/getLocationListAPI";
 
 function StationArea() {
     // state 관리
-    const [isLocationState, ] = useRecoilState(locationState);  // 파라미터(value)
     const [, setIsStationState] = useRecoilState(stationState);
     const [isStationVisible, setIsStationVisible] = useRecoilState(stationVisible);
     const [, setIsCafeVisible] = useRecoilState(cafeVisible);
+    const [isLocationState, ] = useRecoilState(locationState);  // 파라미터(value)
     const [category,] = useState('City');  // 파라미터(category)
     const [page,] = useState('1');  // 파라미터(page)
     const [contents, setContents] = useState([]);  // 리스트
     
     // 역 선택 함수
     const handleStationState = (station) => {
-        setIsStationState(station);
+        setIsStationState(station);  // 역 id 저장
         setIsStationVisible(false);
         setIsCafeVisible(true);
     };
@@ -34,12 +34,12 @@ function StationArea() {
             }
         };
         fetchStudies();
-      }, [category, isLocationState, page]);
+    }, [category, isLocationState, page]);
     
     return (
         <ComponentWrapper isVisible={isStationVisible}>
             {contents.map((station) => (
-                <StyledList key={station.id} onClick={() => handleStationState(station.station)}>
+                <StyledList key={station.id} onClick={() => handleStationState(station.id)}>
                     <StationName>{station.name}</StationName>
                     <StyledArrowIcon/>
                 </StyledList>
