@@ -8,7 +8,7 @@ import JokerBack1 from '../assets/images/levelPage/jokerback1.png';
 import JokerBack2 from '../assets/images/levelPage/jokerback2.png';
 import JokerBack3 from '../assets/images/levelPage/jokerback3.png';
 import JokerBack4 from '../assets/images/levelPage/jokerback4.png';
-import noiseImage from '../assets/images/levelPage/noise.png';
+import Pokertable from '../assets/images/levelPage/pokertable.png';
 import { useNavigate } from 'react-router-dom';
 
 export default function LevelPage() {
@@ -20,9 +20,14 @@ export default function LevelPage() {
 
   return (
     <PageWrapper>
-      <OvalBackground>
-        <HalfOval />
-      </OvalBackground>
+      {/* <OvalBackground/>
+      <HalfOval />
+      <HalfOval2 />
+      <BlurOverlay /> */}
+      <ImgWrapper>
+        <GroupImg src={Pokertable} />
+      
+        
       <LayOut>
         <MainTitle>숙련도</MainTitle>
         <LevelWrapper>
@@ -127,6 +132,7 @@ export default function LevelPage() {
           </LevelBox>
         </LevelWrapper>
       </LayOut>
+      </ImgWrapper>
     </PageWrapper>
   );
 }
@@ -136,57 +142,23 @@ const PageWrapper = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
+  height: calc(100vh - 6em);
+`;
+
+const ImgWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: end;
+  width: 100%;
   height: 100%;
 `;
 
-const OvalBackground = styled.div`
+const GroupImg = styled.img`
+  width: 100%;
+  height: 90vh;
   position: absolute;
-  top: 7em;
-  width: 114em;
-  height: 66.125em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: -3;
-  overflow: hidden;
-  clip-path: ellipse(57em 33.0625em at 50% 50%);
-
-  &:before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    z-index: -2;
-
-    background: url(${noiseImage}), #940000;
-    box-shadow: 0em 0.25em 1.875em 1.875em rgba(0, 0, 0, 0.25), inset 0em 0.25em 6.25em 3.75em rgba(0, 0, 0, 0.5);
-    filter: blur(0.125em);
-  }
-
-  &:after {
-    content: '';
-    position: absolute;
-    top: 6em;
-    left: calc(50% - 114em/2);
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 0.3125em solid #C4C4C4;
-    box-sizing: border-box;
-    box-shadow: inset 0 0.25em 0.25em rgba(0, 0, 0, 0.25);
-    z-index: -2;
-  }
-`;
-
-const HalfOval = styled.div`
-  position: absolute;
-  top: 52em;
-  width: 114em;
-  height: 66.125em;
-  border-radius: 50%;
-  border: 0.3125em solid #C4C4C4;
-  z-index: -2;
+  bottom: 0em;
 `;
 
 const LayOut = styled.div`
@@ -194,24 +166,27 @@ const LayOut = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 6em;
+  width: 100%;
+  height: 100%;
 `;
 
 const MainTitle = styled.div`
   color: #fff;
+  position: absolute;
+  top: 2.8em;
   font-size: 4em;
   font-family: 'Vitro-Core';
-  margin-top: 0.8em;
   z-index: 1000;
 `;
 
 const LevelWrapper = styled.div`
-  gap: 2em;
+  gap: 4em;
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  margin-top: 2em;
+  margin-top: 11em;
+  padding-left: 1em;
+  padding-right:1em;
   width: 100%;
   height: 100%;
 
@@ -229,24 +204,32 @@ const LevelWrapper = styled.div`
   }
 
   @media (max-width: 90em) {
-    width: 70em;
-    height: 31em;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    width: 60em;
+    height: 25em;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    white-space: nowrap;
+    justify-content: flex-start;
   }
 
   @media (max-width: 65em) {
-    width: 50em;
-    height: 31em;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    width: 38em;
+    height: 25em;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    white-space: nowrap;
+    justify-content: flex-start;
+    padding-left: 3em;
   }
 
   @media (max-width: 45em) {
-    width: 20em;
-    height: 31em;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    width: 16em;
+    height: 25em;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    white-space: nowrap;
+    justify-content: flex-start;
+    padding-left: 3em;
   }
 `;
 
@@ -254,12 +237,12 @@ const LevelBox = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 30em;
+  height: 23em;
 `;
 
 const CardBox = styled.div`
-  width: 19.049375em;
-  height: 24.9375em;
+  width: 13.049375em;
+  height: 17.9375em;
   position: relative;
   perspective: 62.5em;
 `;
@@ -307,16 +290,16 @@ const TextWrapper = styled.div`
 
 const LevelTextTop = styled.div`
   font-family: 'Vitro-Core';
-  font-size: 2em;
+  font-size: 1.5em;
   text-align: center;
   position: absolute;
-  width: 10em;
+  width: 6em;
   top: 2.2em;
 `;
 
 const LevelText = styled.div`
   font-family: 'Vitro-Core';
-  font-size: 3.5em;
+  font-size: 2.5em;
   text-align: center;
   position: absolute;
   top: 2.5em;
@@ -325,20 +308,20 @@ const LevelText = styled.div`
 
 const LevelTextBottom = styled.div`
   font-family: 'Vitro-Inspire';
-  font-size: 1.5em;
+  font-size: 1.14em;
   text-align: center;
   position: absolute;
-  top: 10.3em;
+  top: 9.5em;
   width: 100%;
 `;
 
 const ButtonWrapper = styled.div`
-  width: 15.0625em;
-  height: 3.9375em;
+  width: 10.85em;
+  height: 3em;
   opacity: 0;
   transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
   position: absolute;
-  bottom: -4em;
+  bottom: -2.5em;
   backface-visibility: hidden;
 `;
 
@@ -349,7 +332,7 @@ const PlayButton = styled.button`
   border: none;
   background-color: #B01814;
   color: #fff;
-  font-size: 2.5em;
+  font-size: 2em;
   font-family: 'Vitro-Core';
   box-shadow: 0 0.1em 0.1em 0 rgba(0, 0, 0, 0.3);
   cursor: pointer;
