@@ -15,8 +15,19 @@ export default function GenrePage() {
     const navigate = useNavigate();
     const [genres, setGenres] = useState([]);
 
-    const handleGenreInfo = () => {
-        navigate('/genreInfo');
+    const genreImages = {
+        SENTIMENTAL: ComicGenre,
+        HORROR: MisteryGenre,
+        DETECTIVE: ReasoningGenre,
+        COMIC: Comic2Genre,
+        MYSTERY: ThrillerGenre,
+        FANTASY: FantasyGenre,
+        ADVENTURE: AdventureGenre,
+        ETC: Others,
+      };
+
+    const handleGenreInfo = (selectedGenre) => {
+        navigate('/genreInfo', {state: {genre: selectedGenre}});
     }
 
     useEffect(() => {
@@ -34,38 +45,12 @@ export default function GenrePage() {
 
   return (
     <Wrapper>
-        <GenreBox onClick={handleGenreInfo}>
-            <GenreIcon src={ComicGenre} />
-            <GenreText>감성</GenreText>
-        </GenreBox>
-        <GenreBox onClick={handleGenreInfo}>
-            <GenreIcon src={MisteryGenre} />
-            <GenreText>공포/스릴러</GenreText>
-        </GenreBox>
-        <GenreBox onClick={handleGenreInfo}>
-            <GenreIcon src={ReasoningGenre} />
-            <GenreText>추리</GenreText>
-        </GenreBox>
-        <GenreBox onClick={handleGenreInfo}>
-            <GenreIcon src={ThrillerGenre} />
-            <GenreText>미스터리</GenreText>
-        </GenreBox>
-        <GenreBox onClick={handleGenreInfo}>
-            <GenreIcon src={Comic2Genre} />
-            <GenreText>코믹</GenreText>
-        </GenreBox>
-        <GenreBox onClick={handleGenreInfo}>
-            <GenreIcon src={FantasyGenre} />
-            <GenreText>판타지</GenreText>
-        </GenreBox>
-        <GenreBox onClick={handleGenreInfo}>
-            <GenreIcon src={AdventureGenre} />
-            <GenreText>어드벤처</GenreText>
-        </GenreBox>
-        <GenreBox onClick={handleGenreInfo}>
-            <GenreIcon src={Others} />
-            <GenreText>기타</GenreText>
-        </GenreBox>
+        {genres.map((genreItem, index) => (
+            <GenreBox key={index} onClick={() => handleGenreInfo(genreItem.genreEnum)}>
+                <GenreIcon src={genreImages[genreItem.genreEnum]} />
+                <GenreText>{genreItem.genre}</GenreText>
+            </GenreBox>
+        ))}
     </Wrapper>
   )
 }
