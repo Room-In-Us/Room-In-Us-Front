@@ -64,3 +64,14 @@ export const mapsLoadedState = atom({
     key: 'mapsLoadedState',
     default: false,
 });
+
+
+// 위치별 위도, 경도 리스트
+export const stationLatAndLngList = atom({
+    key: 'stationLatAndLngList',
+    default: [],
+});
+export const cafeLatAndLngList = atom({
+    key: 'cafeLatAndLngList',
+    default: [],
+});

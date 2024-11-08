@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
-import { locationState, stationState, stationVisible, stationNameState, cafeVisible } from "../../recoil/atoms/locationAtom";
+import { locationState, stationState, stationVisible, stationNameState, cafeVisible, stationLatAndLngList } from "../../recoil/atoms/locationAtom";
 import ArrowIcon from "../../assets/icons/locationPage/arrowIcon.svg?react";
 import { getLocationListAPI } from "../../apis/theme/getLocationListAPI";
 
@@ -16,6 +16,8 @@ function StationArea() {
     const [contents, setContents] = useState([]);  // 리스트
 
     const [, setStationName] = useRecoilState(stationNameState);
+
+    const [, setLatAndLngList] = useRecoilState(stationLatAndLngList);
     
     // 역 선택 함수
     const handleStationState = (station) => {
@@ -32,12 +34,19 @@ function StationArea() {
                 const response = await getLocationListAPI(category, isLocationState, page);
                 console.log('받은 데이터:', response);
                 setContents(response.contents);  // 지역별 역 리스트
+
+                // 역의 위도,경도 리스트 저장
+                const latAndLng = response.contents.map(station => ({
+                    lat: station.latitude,
+                    lng: station.longitude
+                }));
+                setLatAndLngList(latAndLng); // Recoil 상태에 저장
             } catch (error) {
                 console.error('카페 목록 데이터를 불러오는 중 오류 발생:', error);
             }
         };
         fetchStudies();
-    }, [category, isLocationState, page]);
+    }, [category, isLocationState, page, setLatAndLngList]);
     
     return (
         <ComponentWrapper isVisible={isStationVisible}>
