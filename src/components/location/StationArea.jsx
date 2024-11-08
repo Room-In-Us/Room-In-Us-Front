@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
-import { locationState, stationState, stationVisible, cafeVisible } from "../../recoil/atoms/locationAtom";
+import { locationState, stationState, stationVisible, stationNameState, cafeVisible } from "../../recoil/atoms/locationAtom";
 import ArrowIcon from "../../assets/icons/locationPage/arrowIcon.svg?react";
 import { getLocationListAPI } from "../../apis/theme/getLocationListAPI";
 
@@ -14,10 +14,13 @@ function StationArea() {
     const [category,] = useState('City');  // 파라미터(category)
     const [page,] = useState('1');  // 파라미터(page)
     const [contents, setContents] = useState([]);  // 리스트
+
+    const [, setStationName] = useRecoilState(stationNameState);
     
     // 역 선택 함수
     const handleStationState = (station) => {
-        setIsStationState(station);  // 역 id 저장
+        setIsStationState(station.id);  // 역 id 저장
+        setStationName(station.name);  // 역 이름 저장
         setIsStationVisible(false);
         setIsCafeVisible(true);
     };
@@ -39,7 +42,7 @@ function StationArea() {
     return (
         <ComponentWrapper isVisible={isStationVisible}>
             {contents.map((station) => (
-                <StyledList key={station.id} onClick={() => handleStationState(station.id)}>
+                <StyledList key={station.id} onClick={() => handleStationState(station)}>
                     <StationName>{station.name}</StationName>
                     <StyledArrowIcon/>
                 </StyledList>

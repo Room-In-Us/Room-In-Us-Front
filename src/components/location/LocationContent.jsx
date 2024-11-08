@@ -1,5 +1,5 @@
 import { useRecoilState } from 'recoil';
-import { locationState, stationState, cafeState, themeState, backgroundVisible,
+import { locationState, stationState, stationNameState, cafeState, cafeNameState, themeState, backgroundVisible,
         stationVisible, cafeVisible, themeVisible } from '../../recoil/atoms/locationAtom';
 import styled from 'styled-components';
 import LocationBackground from '../../assets/images/locationPage/locationBackground.png';
@@ -19,6 +19,9 @@ function LocationContent() {
     const [, setIsStationVisible] = useRecoilState(stationVisible);
     const [, setIsCafeVisible] = useRecoilState(cafeVisible);
     const [, setIsThemeVisible] = useRecoilState(themeVisible);
+
+    const [stationName,] = useRecoilState(stationNameState);
+    const [cafeName,] = useRecoilState(cafeNameState);
     
     // 초성 화면로 이동
     const handleMoveInitial = () => {
@@ -49,11 +52,11 @@ function LocationContent() {
                 </TitleButton>
                 {/* 역 버튼 */}
                 <TitleButton onClick={() => handleMoveStation()} isVisible={isStationState}>
-                    <TitleText>{isStationState}</TitleText>
+                    <TitleText>{stationName}</TitleText>
                 </TitleButton>
                 {/* 카페 버튼 */}
                 <TitleButton isVisible={isCafeState}>
-                    <TitleText>{isCafeState}</TitleText>
+                    <TitleText>{cafeName}</TitleText>
                 </TitleButton>
                 
             </TitleWrapper>

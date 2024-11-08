@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
-import { stationState, cafeState, cafeVisible, themeVisible } from "../../recoil/atoms/locationAtom";
+import { stationState, cafeState, cafeVisible, cafeNameState, themeVisible } from "../../recoil/atoms/locationAtom";
 import ArrowIcon from "../../assets/icons/locationPage/arrowIcon.svg?react";
 import { getLocationListAPI } from "../../apis/theme/getLocationListAPI";
 
@@ -15,9 +15,12 @@ function CafeArea() {
     const [page,] = useState('1');  // 파라미터(page)
     const [contents, setContents] = useState([]);  // 리스트
 
+    const [, setCafeName] = useRecoilState(cafeNameState);
+
     // 카페 선택 함수
     const handleCafeState = (cafe) => {
-        setIsCafeState(cafe);  // 방탈출 id 저장
+        setIsCafeState(cafe.id);  // 방탈출 id 저장
+        setCafeName(cafe.name);  // 방탈출 이름 저장
         setIsCafeVisible(false);
         setIsThemeVisible(true);
     };
@@ -39,7 +42,7 @@ function CafeArea() {
     return (
         <ComponentWrapper isVisible={isCafeVisible}>
             {contents.map((cafe) => (
-                <StyledList key={cafe.id} onClick={() => handleCafeState(cafe.id)}>
+                <StyledList key={cafe.id} onClick={() => handleCafeState(cafe)}>
                     <StationName>{cafe.name}</StationName>
                     <StyledArrowIcon/>
                 </StyledList>

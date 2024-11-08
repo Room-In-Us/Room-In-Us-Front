@@ -27,6 +27,10 @@ export const stationVisible = atom({
     key: "stationVisible",
     default: false
 });
+export const stationNameState = atom({
+    key: 'stationNameState',
+    default: '',
+});
 
 
 // 카페 상태
@@ -37,6 +41,10 @@ export const cafeState = atom({
 export const cafeVisible = atom({
     key: "cafeVisible",
     default: false
+});
+export const cafeNameState = atom({
+    key: 'cafeNameState',
+    default: '',
 });
 
 
