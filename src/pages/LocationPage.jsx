@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { locationState, stationState, cafeState, themeState, backgroundVisible,
-        locationVisible, stationVisible, cafeVisible, themeVisible, mapsLoadedState } from '../recoil/atoms/locationAtom';
+import { locationState, stationState, cafeState, themeState, backgroundVisible, locationVisible,
+        stationVisible, cafeVisible, themeVisible, mapsLoadedState, locationCenterState } from '../recoil/atoms/locationAtom';
 import styled from 'styled-components';
 import MapImg from '../assets/images/locationPage/locationMap.png';
 import LocationContent from '../components/location/LocationContent';
@@ -22,6 +22,9 @@ function LocationPage() {
     const [, setIsStationVisible] = useRecoilState(stationVisible);
     const [, setIsCafeVisible] = useRecoilState(cafeVisible);
     const [, setIsThemeVisible] = useRecoilState(themeVisible);
+
+    // 도시 중앙 위치 관리
+    const [, setLocationCenter] = useRecoilState(locationCenterState);
 
     // Google Maps 로드가 완료되면, isBackgroundVisible을 업데이트
     useEffect(() => {
@@ -47,6 +50,7 @@ function LocationPage() {
         setIsLocationVisible(false);
         setIsStationVisible(true);
         setIsBackgroundVisible(true); // 위치 클릭 시 지도를 표시
+        setLocationCenter({ lat: 37.5638934, lng: 126.9844558 })  // 도시 좌표 저장
     };
 
     return (

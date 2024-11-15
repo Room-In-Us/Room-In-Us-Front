@@ -75,3 +75,15 @@ export const cafeLatAndLngList = atom({
     key: 'cafeLatAndLngList',
     default: [],
 });
+
+// 위치별 중앙 좌표
+export const locationCenterState = atom({
+    key: 'locationCenterState',
+    default: {},
+});
+
+// 역 중앙 좌표
+export const stationCenterState = atom({
+    key: 'stationCenterState',
+    default: {},
+});

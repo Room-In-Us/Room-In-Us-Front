@@ -18,7 +18,7 @@ function ThemeArea() {
     // navigate
     const navigate = useNavigate();
     
-    // 카페 선택 함수
+    // 테마 선택 함수
     const handleThemeState = (theme) => {
         setIsThemeState(theme);
         setIsThemeVisible(false);

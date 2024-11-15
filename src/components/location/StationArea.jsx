@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
-import { locationState, stationState, stationVisible, stationNameState, cafeVisible, stationLatAndLngList } from "../../recoil/atoms/locationAtom";
+import { locationState, stationState, stationVisible, stationNameState, cafeVisible,
+        stationLatAndLngList, locationCenterState, stationCenterState } from "../../recoil/atoms/locationAtom";
 import ArrowIcon from "../../assets/icons/locationPage/arrowIcon.svg?react";
 import { getLocationListAPI } from "../../apis/theme/getLocationListAPI";
 
@@ -15,9 +16,11 @@ function StationArea() {
     const [page,] = useState('1');  // 파라미터(page)
     const [contents, setContents] = useState([]);  // 리스트
 
+    // 역 위도, 경도, 중앙 위치 관리
     const [, setStationName] = useRecoilState(stationNameState);
-
     const [, setLatAndLngList] = useRecoilState(stationLatAndLngList);
+    const [, setLocationCenter] = useRecoilState(locationCenterState);
+    const [, setStationCenter] = useRecoilState(stationCenterState);
     
     // 역 선택 함수
     const handleStationState = (station) => {
@@ -25,6 +28,8 @@ function StationArea() {
         setStationName(station.name);  // 역 이름 저장
         setIsStationVisible(false);
         setIsCafeVisible(true);
+        setLocationCenter({ lat: station.latitude, lng: station.longitude })  // 역 좌표 저장
+        setStationCenter({ lat: station.latitude, lng: station.longitude })  // 역 좌표 저장
     };
 
     // 지역 리스트 불러오기

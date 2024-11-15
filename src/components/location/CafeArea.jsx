@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
-import { stationState, cafeState, cafeVisible, cafeNameState, themeVisible, cafeLatAndLngList } from "../../recoil/atoms/locationAtom";
+import { stationState, cafeState, cafeVisible, cafeNameState, themeVisible, cafeLatAndLngList, locationCenterState } from "../../recoil/atoms/locationAtom";
 import ArrowIcon from "../../assets/icons/locationPage/arrowIcon.svg?react";
 import { getLocationListAPI } from "../../apis/theme/getLocationListAPI";
 
@@ -17,7 +17,9 @@ function CafeArea() {
 
     const [, setCafeName] = useRecoilState(cafeNameState);
 
+    // 카페 위도, 경도, 중앙 위치 관리
     const [, setLatAndLngList] = useRecoilState(cafeLatAndLngList);
+    const [, setLocationCenter] = useRecoilState(locationCenterState);
 
     // 카페 선택 함수
     const handleCafeState = (cafe) => {
@@ -25,6 +27,8 @@ function CafeArea() {
         setCafeName(cafe.name);  // 방탈출 이름 저장
         setIsCafeVisible(false);
         setIsThemeVisible(true);
+        setLatAndLngList([{lat: cafe.latitude, lng: cafe.longitude}]); // 카페 위도, 경도 저장
+        setLocationCenter({lat: cafe.latitude, lng: cafe.longitude}); // 중앙 위치 저장
     };
 
     // 방탈출 리스트 불러오기

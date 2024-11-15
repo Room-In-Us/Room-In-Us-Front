@@ -3,7 +3,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { GoogleMap, MarkerF } from "@react-google-maps/api";
 import MarkerIcon from "../../../assets/images/locationPage/marker.png";
 import { goolgleMapStyles } from "./googleMapStyles";
-import { stationVisible, mapsLoadedState, stationLatAndLngList, cafeLatAndLngList } from '../../../recoil/atoms/locationAtom';
+import { stationVisible, mapsLoadedState, stationLatAndLngList, cafeLatAndLngList, locationCenterState } from '../../../recoil/atoms/locationAtom';
 import Loading from "../../common/Loading";
 
 function GoogleMaps() {
@@ -14,17 +14,13 @@ function GoogleMaps() {
     // 핀으로 표시할 위도,경도 리스트 (역, 카페)
     const stationLatAndLng = useRecoilValue(stationLatAndLngList);
     const cafeLatAndLng = useRecoilValue(cafeLatAndLngList);
+    // 중앙 좌표
+    const locationCenter = useRecoilValue(locationCenterState);
 
     // 지도 사이즈
     const containerStyle = {
         width: '26em',
         height: '35em'
-    };
-
-    // 중앙 위치
-    const center = {
-        lat: 37.5638934,
-        lng: 126.9844558
     };
 
     const options = {
@@ -47,7 +43,7 @@ function GoogleMaps() {
     return (
         <GoogleMap
             mapContainerStyle={containerStyle}
-            center={center}
+            center={locationCenter}
             zoom={12}
             options={options}
         >
@@ -59,6 +55,20 @@ function GoogleMaps() {
                 />
             ))}
         </GoogleMap>
+        // <GoogleMap
+        //     mapContainerStyle={containerStyle}
+        //     center={locationCenter}
+        //     zoom={12}
+        //     options={options}
+        // >
+        //     {(isStationVisible ? stationLatAndLng : cafeLatAndLng).map((list, index) => (
+        //         <MarkerF
+        //             key={index}
+        //             position={list}
+        //             icon={customIcon}
+        //         />
+        //     ))}
+        // </GoogleMap>
     );
 }
 
