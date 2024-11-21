@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
-import { stationState, cafeState, cafeVisible, cafeNameState, themeVisible, cafeLatAndLngList, locationCenterState } from "../../recoil/atoms/locationAtom";
+import { stationState, cafeState, cafeVisible, cafeNameState, themeVisible, cafeLatAndLngList, locationCenterState, backupCafeLatAndLngList } from "../../recoil/atoms/locationAtom";
 import ArrowIcon from "../../assets/icons/locationPage/arrowIcon.svg?react";
 import { getLocationListAPI } from "../../apis/theme/getLocationListAPI";
 
@@ -20,6 +20,7 @@ function CafeArea() {
     // 카페 위도, 경도, 중앙 위치 관리
     const [, setLatAndLngList] = useRecoilState(cafeLatAndLngList);
     const [, setLocationCenter] = useRecoilState(locationCenterState);
+    const [, setBackupLatAndLngList] = useRecoilState(backupCafeLatAndLngList);
 
     // 카페 선택 함수
     const handleCafeState = (cafe) => {
@@ -27,29 +28,32 @@ function CafeArea() {
         setCafeName(cafe.name);  // 방탈출 이름 저장
         setIsCafeVisible(false);
         setIsThemeVisible(true);
-        setLatAndLngList([{lat: cafe.latitude, lng: cafe.longitude}]); // 카페 위도, 경도 저장
+        setLatAndLngList([{lat: cafe.latitude, lng: cafe.longitude, name: cafe.name}]); // 카페 위도, 경도 저장
         setLocationCenter({lat: cafe.latitude, lng: cafe.longitude}); // 중앙 위치 저장
     };
 
     // 방탈출 리스트 불러오기
     useEffect(() => {
-        const fetchStudies = async () => {
+        const fetchCafeList = async () => {
             try {
                 const response = await getLocationListAPI(category, isStationState, page);
                 console.log('받은 데이터:', response);
                 setContents(response.contents);  // 역별 방탈출 리스트
 
                 // 카페의 위도,경도 리스트 저장
-                const latAndLng = response.contents.map(station => ({
-                    lat: station.latitude,
-                    lng: station.longitude
+                const latAndLng = response.contents.map(cafe => ({
+                    lat: cafe.latitude,
+                    lng: cafe.longitude,
+                    name: cafe.name,
                 }));
-                setLatAndLngList(latAndLng); // Recoil 상태에 저장
+                setLatAndLngList(latAndLng);  // Recoil 상태에 저장
+                setBackupLatAndLngList(latAndLng);  // Recoil 상태에 저장 (백업)
+
             } catch (error) {
                 console.error('카페 목록 데이터를 불러오는 중 오류 발생:', error);
             }
         };
-        fetchStudies();
+        fetchCafeList();
     }, [category, isStationState, page, setLatAndLngList]);
     
     return (

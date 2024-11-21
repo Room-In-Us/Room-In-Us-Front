@@ -66,13 +66,19 @@ export const mapsLoadedState = atom({
 });
 
 
-// 위치별 위도, 경도 리스트
+// 위치별 위도, 경도 리스트 (역)
 export const stationLatAndLngList = atom({
     key: 'stationLatAndLngList',
     default: [],
 });
+// 위치별 위도, 경도 리스트 (카페)
 export const cafeLatAndLngList = atom({
     key: 'cafeLatAndLngList',
+    default: [],
+});
+// 위치별 위도, 경도 리스트 저장 (테마로 이동 시 리셋 되는 경우 방지)
+export const backupCafeLatAndLngList = atom({
+    key: 'backupCafeLatAndLngList',
     default: [],
 });
 
@@ -81,7 +87,6 @@ export const locationCenterState = atom({
     key: 'locationCenterState',
     default: {},
 });
-
 // 역 중앙 좌표
 export const stationCenterState = atom({
     key: 'stationCenterState',

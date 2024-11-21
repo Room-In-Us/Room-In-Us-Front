@@ -28,16 +28,16 @@ function ThemeArea() {
 
     // 테마 리스트 불러오기
     useEffect(() => {
-        const fetchStudies = async () => {
+        const fetchThemeList = async () => {
             try {
                 const response = await getLocationListAPI(category, isCafeState, page);
                 console.log('받은 데이터:', response);
                 setContents(response.contents);  // 방탈출별 테마 리스트
             } catch (error) {
-                console.error('카페 목록 데이터를 불러오는 중 오류 발생:', error);
+                console.error('테마 목록 데이터를 불러오는 중 오류 발생:', error);
             }
         };
-        fetchStudies();
+        fetchThemeList();
     }, [category, isCafeState, page]);
 
     return (

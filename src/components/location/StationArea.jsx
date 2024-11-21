@@ -32,9 +32,9 @@ function StationArea() {
         setStationCenter({ lat: station.latitude, lng: station.longitude })  // 역 좌표 저장
     };
 
-    // 지역 리스트 불러오기
+    // 역 리스트 불러오기
     useEffect(() => {
-        const fetchStudies = async () => {
+        const fetchStationList = async () => {
             try {
                 const response = await getLocationListAPI(category, isLocationState, page);
                 console.log('받은 데이터:', response);
@@ -43,14 +43,14 @@ function StationArea() {
                 // 역의 위도,경도 리스트 저장
                 const latAndLng = response.contents.map(station => ({
                     lat: station.latitude,
-                    lng: station.longitude
+                    lng: station.longitude,
                 }));
                 setLatAndLngList(latAndLng); // Recoil 상태에 저장
             } catch (error) {
-                console.error('카페 목록 데이터를 불러오는 중 오류 발생:', error);
+                console.error('역 목록 데이터를 불러오는 중 오류 발생:', error);
             }
         };
-        fetchStudies();
+        fetchStationList();
     }, [category, isLocationState, page, setLatAndLngList]);
     
     return (

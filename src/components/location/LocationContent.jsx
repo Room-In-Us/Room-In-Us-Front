@@ -1,6 +1,6 @@
 import { useRecoilState } from 'recoil';
 import { locationState, stationState, stationNameState, cafeState, cafeNameState, themeState, backgroundVisible,
-        stationVisible, cafeVisible, themeVisible, locationCenterState, stationCenterState } from '../../recoil/atoms/locationAtom';
+        stationVisible, cafeVisible, themeVisible, locationCenterState, stationCenterState, cafeLatAndLngList, backupCafeLatAndLngList } from '../../recoil/atoms/locationAtom';
 import styled from 'styled-components';
 import LocationBackground from '../../assets/images/locationPage/locationBackground.png';
 import NoiseTexture from '../../assets/images/locationPage/noiseTexture.png';
@@ -25,6 +25,9 @@ function LocationContent() {
 
     const [, setLocationCenter] = useRecoilState(locationCenterState);
     const [stationCenter, ] = useRecoilState(stationCenterState);
+
+    const [, setLatAndLngList] = useRecoilState(cafeLatAndLngList);
+    const [backupLatAndLngList, ] = useRecoilState(backupCafeLatAndLngList);
     
     // 지역 화면(역 선택)으로 이동
     const handleMoveLocation = () => {
@@ -43,7 +46,8 @@ function LocationContent() {
         setIsThemeState("");
         setIsCafeVisible(true);
         setIsThemeVisible(false);
-        setLocationCenter(stationCenter)  // 역 좌표 저장
+        setLocationCenter(stationCenter);  // 역 좌표 저장
+        setLatAndLngList(backupLatAndLngList);  // 백업한 카페 좌표 불러오기
     };
 
     return (

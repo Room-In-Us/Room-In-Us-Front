@@ -31,7 +31,7 @@ function LocationPage() {
         if (mapsLoaded) {
             setIsBackgroundVisible(false); // 기본값을 false로 설정해 지도를 숨김
         }
-    }, [mapsLoaded]);
+    }, [mapsLoaded, setIsBackgroundVisible]);
 
     const handleVisibleContent = () => {
         setIsLocationState("");
