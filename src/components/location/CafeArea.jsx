@@ -54,7 +54,7 @@ function CafeArea() {
             }
         };
         fetchCafeList();
-    }, [category, isStationState, page, setLatAndLngList]);
+    }, [category, isStationState, page, setLatAndLngList, setBackupLatAndLngList]);
     
     return (
         <ComponentWrapper isVisible={isCafeVisible}>
