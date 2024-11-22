@@ -11,9 +11,19 @@ import LocationPage from './pages/LocationPage';
 import BoardPage from './pages/BoardPage';
 import BoardMorePage from './pages/BoardMorePage';
 import BoardWritePage from './pages/BoardWritePage';
+import { LoadScript } from '@react-google-maps/api';
+import { useSetRecoilState } from 'recoil';
+import { mapsLoadedState } from './recoil/atoms/locationAtom';
 
 function App() {
+  const setMapsLoaded = useSetRecoilState(mapsLoadedState);
+  
   return (
+    <LoadScript
+            googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+            onLoad={() => setMapsLoaded(true)} // 로딩 완료 시 상태를 true로 설정
+            onError={() => setMapsLoaded(false)} // 로딩 실패 시 false로 설정
+        >
     <Routes>
       {/* 메인 레이아웃 적용 */}
       <Route element={<MainLayOut/>}>
@@ -48,6 +58,7 @@ function App() {
 
       </Route>
     </Routes>
+    </LoadScript>
   )
 }
 

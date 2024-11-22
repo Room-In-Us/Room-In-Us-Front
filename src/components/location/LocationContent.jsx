@@ -1,6 +1,6 @@
 import { useRecoilState } from 'recoil';
-import { locationState, stationState, cafeState, themeState, backgroundVisible,
-        stationVisible, cafeVisible, themeVisible } from '../../recoil/atoms/locationAtom';
+import { locationState, stationState, stationNameState, cafeState, cafeNameState, themeState, backgroundVisible,
+        stationVisible, cafeVisible, themeVisible, locationCenterState, stationCenterState, cafeLatAndLngList, backupCafeLatAndLngList } from '../../recoil/atoms/locationAtom';
 import styled from 'styled-components';
 import LocationBackground from '../../assets/images/locationPage/locationBackground.png';
 import NoiseTexture from '../../assets/images/locationPage/noiseTexture.png';
@@ -19,23 +19,35 @@ function LocationContent() {
     const [, setIsStationVisible] = useRecoilState(stationVisible);
     const [, setIsCafeVisible] = useRecoilState(cafeVisible);
     const [, setIsThemeVisible] = useRecoilState(themeVisible);
+
+    const [stationName,] = useRecoilState(stationNameState);
+    const [cafeName,] = useRecoilState(cafeNameState);
+
+    const [, setLocationCenter] = useRecoilState(locationCenterState);
+    const [stationCenter, ] = useRecoilState(stationCenterState);
+
+    const [, setLatAndLngList] = useRecoilState(cafeLatAndLngList);
+    const [backupLatAndLngList, ] = useRecoilState(backupCafeLatAndLngList);
     
-    // 초성 화면로 이동
-    const handleMoveInitial = () => {
+    // 지역 화면(역 선택)으로 이동
+    const handleMoveLocation = () => {
         setIsStationState("");
         setIsCafeState("");
         setIsThemeState("");
         setIsStationVisible(true);
         setIsCafeVisible(false);
         setIsThemeVisible(false);
+        setLocationCenter({ lat: 37.5638934, lng: 126.9844558 })  // 도시 좌표 저장
     };
     
-    // 역이름, 카페이름 화면로 이동
+    // 역 화면(카페 선택)으로 이동
     const handleMoveStation = () => {
         setIsCafeState("");
         setIsThemeState("");
         setIsCafeVisible(true);
         setIsThemeVisible(false);
+        setLocationCenter(stationCenter);  // 역 좌표 저장
+        setLatAndLngList(backupLatAndLngList);  // 백업한 카페 좌표 불러오기
     };
 
     return (
@@ -44,16 +56,16 @@ function LocationContent() {
             <TitleWrapper>
 
                 {/* 지역 버튼 */}
-                <TitleButton onClick={() => handleMoveInitial()} isVisible={isLocationState}>
-                    <TitleText>{isLocationState}</TitleText>
+                <TitleButton onClick={() => handleMoveLocation()} isVisible={isLocationState}>
+                    <TitleText>{isLocationState === "2" ? "서울" : "수도권"}</TitleText>
                 </TitleButton>
                 {/* 역 버튼 */}
                 <TitleButton onClick={() => handleMoveStation()} isVisible={isStationState}>
-                    <TitleText>{isStationState}</TitleText>
+                    <TitleText>{stationName}</TitleText>
                 </TitleButton>
                 {/* 카페 버튼 */}
                 <TitleButton isVisible={isCafeState}>
-                    <TitleText>{isCafeState}</TitleText>
+                    <TitleText>{cafeName}</TitleText>
                 </TitleButton>
                 
             </TitleWrapper>

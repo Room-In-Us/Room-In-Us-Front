@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { useRecoilState } from 'recoil';
-import { locationState, stationState, cafeState, themeState, backgroundVisible,
-        locationVisible, stationVisible, cafeVisible, themeVisible } from '../recoil/atoms/locationAtom';
+import { useState, useEffect } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { locationState, stationState, cafeState, themeState, backgroundVisible, locationVisible,
+        stationVisible, cafeVisible, themeVisible, mapsLoadedState, locationCenterState } from '../recoil/atoms/locationAtom';
 import styled from 'styled-components';
 import MapImg from '../assets/images/locationPage/locationMap.png';
 import LocationContent from '../components/location/LocationContent';
@@ -10,70 +10,69 @@ import LocationButton from '../assets/images/locationPage/locationButton.png';
 import NoiseTexture from '../assets/images/locationPage/noiseTexture.png';
 
 function LocationPage() {
-    // state 관리
     const [isVisible, setIsVisible] = useState(false);
+    const [isBackgroundVisible, setIsBackgroundVisible] = useRecoilState(backgroundVisible);
+    const mapsLoaded = useRecoilValue(mapsLoadedState); // Google Maps API 로드 상태 확인용
     const [, setIsLocationState] = useRecoilState(locationState);
     const [, setIsStationState] = useRecoilState(stationState);
     const [, setIsCafeState] = useRecoilState(cafeState);
     const [, setIsThemeState] = useRecoilState(themeState);
 
-    const [isBackgroundVisible, setIsBackgroundVisible] = useRecoilState(backgroundVisible);
     const [isLocationVisible, setIsLocationVisible] = useRecoilState(locationVisible);
     const [, setIsStationVisible] = useRecoilState(stationVisible);
     const [, setIsCafeVisible] = useRecoilState(cafeVisible);
     const [, setIsThemeVisible] = useRecoilState(themeVisible);
 
-    // 내용 나타내기 + 처음으로 이동
+    // 도시 중앙 위치 관리
+    const [, setLocationCenter] = useRecoilState(locationCenterState);
+
+    // Google Maps 로드가 완료되면, isBackgroundVisible을 업데이트
+    useEffect(() => {
+        if (mapsLoaded) {
+            setIsBackgroundVisible(false); // 기본값을 false로 설정해 지도를 숨김
+        }
+    }, [mapsLoaded, setIsBackgroundVisible]);
+
     const handleVisibleContent = () => {
         setIsLocationState("");
         setIsStationState("");
         setIsCafeState("");
         setIsThemeState("");
         setIsVisible(true);
-        setIsBackgroundVisible(false);
         setIsLocationVisible(true);
         setIsStationVisible(false);
         setIsCafeVisible(false);
         setIsThemeVisible(false);
     };
-    
-    // 지역 선택 함수
+
     const handleLocationState = (locationName) => {
         setIsLocationState(locationName);
         setIsLocationVisible(false);
         setIsStationVisible(true);
-        setIsBackgroundVisible(true);
+        setIsBackgroundVisible(true); // 위치 클릭 시 지도를 표시
+        setLocationCenter({ lat: 37.5638934, lng: 126.9844558 })  // 도시 좌표 저장
     };
-    
+
     return (
         <PageWrapper>
             <ImgWrapper isVisible={isVisible}>
-                {/* 지도 이미지 영역 */}
-                {isBackgroundVisible ? (
+                {/* GoogleMaps는 mapsLoaded와 isBackgroundVisible이 true일 때만 렌더링 */}
+                {mapsLoaded && isBackgroundVisible ? (
                     <GoogleMaps />
                 ) : (
-                    <StyledMapImg src={MapImg} alt='map' isVisible={isVisible} onClick={() => handleVisibleContent()} />
+                    <StyledMapImg src={MapImg} alt='map' isVisible={isVisible} onClick={handleVisibleContent} />
                 )}
-
-                {/* 콘텐츠 영역 */}
                 <ContentWrapper isVisible={isVisible}>
-                    {/* 지역 선택 화면 */}
                     <ButtonWrapper isVisible={isLocationVisible}>
                         <StyledButton>
-                            <Text onClick={()=>handleLocationState('서울')}>
-                                서울
-                            </Text>
+                            {/* 2: 서울 */}
+                            <Text onClick={() => handleLocationState('2')}>서울</Text>
                         </StyledButton>
                         <StyledButton>
-                            <Text onClick={()=>handleLocationState('수도권')}>
-                                수도권
-                            </Text>
+                            <Text onClick={() => handleLocationState('수도권')}>수도권</Text>
                         </StyledButton>
                     </ButtonWrapper>
-
-                    {/* 역 선택 화면 */}
-                    <LocationContent/>
-                    
+                    <LocationContent />
                 </ContentWrapper>
             </ImgWrapper>
         </PageWrapper>
