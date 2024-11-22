@@ -86,12 +86,12 @@ const InputWrapper = styled.div`
     box-shadow: 0 0.3em 1em 0.1em #111111;
 `;
 
-const StyledSearchIcon = styled(SearchIcon)`
+export const StyledSearchIcon = styled(SearchIcon)`
     margin: 0 1em;
     width: 1.2em;
 `;
 
-const StyledInput = styled.input`
+export const StyledInput = styled.input`
     flex: 1;
     border: none;
     height: 1.67em;
@@ -101,7 +101,7 @@ const StyledInput = styled.input`
     outline: none;
 `;
 
-const StyledEnterIcon = styled(EnterIcon)`
+export const StyledEnterIcon = styled(EnterIcon)`
     margin: 0 1em;
     width: 1em;
     cursor: pointer;
