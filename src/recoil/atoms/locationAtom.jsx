@@ -27,6 +27,10 @@ export const stationVisible = atom({
     key: "stationVisible",
     default: false
 });
+export const stationNameState = atom({
+    key: 'stationNameState',
+    default: '',
+});
 
 
 // 카페 상태
@@ -38,6 +42,10 @@ export const cafeVisible = atom({
     key: "cafeVisible",
     default: false
 });
+export const cafeNameState = atom({
+    key: 'cafeNameState',
+    default: '',
+});
 
 
 // 테마 상태
@@ -48,4 +56,39 @@ export const themeState = atom({
 export const themeVisible = atom({
     key: "themeVisible",
     default: false
+});
+
+
+// 구글 맵
+export const mapsLoadedState = atom({
+    key: 'mapsLoadedState',
+    default: false,
+});
+
+
+// 위치별 위도, 경도 리스트 (역)
+export const stationLatAndLngList = atom({
+    key: 'stationLatAndLngList',
+    default: [],
+});
+// 위치별 위도, 경도 리스트 (카페)
+export const cafeLatAndLngList = atom({
+    key: 'cafeLatAndLngList',
+    default: [],
+});
+// 위치별 위도, 경도 리스트 저장 (테마로 이동 시 리셋 되는 경우 방지)
+export const backupCafeLatAndLngList = atom({
+    key: 'backupCafeLatAndLngList',
+    default: [],
+});
+
+// 위치별 중앙 좌표
+export const locationCenterState = atom({
+    key: 'locationCenterState',
+    default: {},
+});
+// 역 중앙 좌표
+export const stationCenterState = atom({
+    key: 'stationCenterState',
+    default: {},
 });

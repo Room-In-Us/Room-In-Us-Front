@@ -171,7 +171,8 @@ const ContentWrapper = styled.div`
     display: flex;
     justify-content: space-between;
     width: 65em;
-    height: 36em;
+    // height: 36em;
+    height: 80vh;
     background-color: #030303;
     background-image: url(${BackgroundImg});
     background-size: 55em;
