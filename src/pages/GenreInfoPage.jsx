@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import JokerHeadIcon from '../assets/images/genrePage/jokerheadicon.png'
 import NoImage from '../assets/images/common/nophotos.png'
 import { getGenreRoomListAPI } from '../apis/theme/getGenresListAPI';
+import {StyledSearchIcon, StyledInput, StyledEnterIcon} from '../pages/MainPage'
 
 export default function GenreInfoPage() {
   const location = useLocation();
@@ -94,31 +95,128 @@ export default function GenreInfoPage() {
   //   },
   // ];
 
+  const genreKoreanName = {
+    SENTIMENTAL : "감성",
+    HORROR : "공포",
+    DETECTIVE : "추리",
+    COMIC : "코믹",
+    MYSTERY : "미스테리",
+    FANTASY : "판타지",
+    ADVENTURE : "어드벤처",
+    ETC : "기타",
+  }
+
+  const getKoreanGenre = (genre) => genreKoreanName[genre] || "기타";
+
+  const difficultyLevels = [
+    "매우 쉬움", // 0
+    "쉬움",     // 1
+    "보통",     // 2
+    "어려움",   // 3
+    "매우 어려움", // 4
+    "극한"      // 5
+  ];
+
+  // 난이도 단계 임의로 처리, 추후에 수정 가능
+  const getDifficultyText = (level) => {
+    if (level < 0) return "알 수 없음"; // 음수는 잘못된 값 처리
+    if (level < 1) return "매우 쉬움"; // 0.0 ~ 0.9
+    if (level < 2) return "쉬움";     // 1.0 ~ 1.9
+    if (level < 3) return "보통";     // 2.0 ~ 2.9
+    if (level < 4) return "어려움";   // 3.0 ~ 3.9
+    if (level < 5) return "매우 어려움"; // 4.0 ~ 4.9
+    if (level == 5) return "극한"; // 5.0
+    return "알 수 없음"; // 5.0 초과는 기본값 처리
+  };
+
   return (
     <Wrapper>
-      {genreRoomList.map((room) => (
-        <InfoBox key={room.id}>
-          <InfoHeader>
-            <HeaderIcon src={JokerHeadIcon} />
-            <TextWrapper>
-              <MainText>{room.pointName}</MainText>
-              <SubText>{room.stationName}</SubText>
-            </TextWrapper>
-          </InfoHeader>
-          {room.img ? (
-            <MainImg src={room.img} alt="방탈출 이미지" />
-          ) : (
-            <NoImgWrapper>
-              <NoImg src={NoImage} alt="샘플 이미지" />
-              <NoImgText>No Image</NoImgText>
-            </NoImgWrapper>
-          )}
-          <InfoFooter>
-            <InfoDetail>{room.name}</InfoDetail>
-            <Button>구경하기</Button>
-          </InfoFooter>
-        </InfoBox>
-      ))}
+
+      <InfoHeaderWrapper>
+
+        <InfoHeader>
+          <HeaderIcon src={JokerHeadIcon} />
+          <LevelText>방린이</LevelText>
+        </InfoHeader>
+
+        <InputWrapper>
+          <StyledSearchIcon/>
+            <StyledInput placeholder='검색어를 입력하세요.'/>
+          <StyledEnterIcon/>
+        </InputWrapper>
+
+      </InfoHeaderWrapper>
+
+      <InfoBoxWrapper>
+        {genreRoomList.map((room) => (
+          <InfoBox key={room.id}>
+            
+            {room.img ? (
+              <MainImgWrapper>
+                <MainImg src={room.img} alt="방탈출 이미지" />
+                <Overlay className='overlay'>
+                  <CircleWrapper>
+                    <CircleTag>난이도</CircleTag>
+                    <Circle>
+                      <OverlayText>{getDifficultyText(room.themeLevel)}</OverlayText>
+                    </Circle>
+                  </CircleWrapper>
+                  <CircleWrapper>
+                    <CircleTag>플레이타임</CircleTag>
+                    <Circle>
+                      <OverlayText>{room.themePlayTime}분</OverlayText>
+                    </Circle>
+                  </CircleWrapper>
+                  <CircleWrapper>
+                    <CircleTag>장르</CircleTag>
+                    <Circle>
+                      <OverlayText>{getKoreanGenre(room.themeGenre)}</OverlayText>
+                    </Circle>
+                  </CircleWrapper>
+                  
+                </Overlay>
+              </MainImgWrapper>
+              
+            ) : (
+              <NoImgWrapper>
+                <NoImg src={NoImage} alt="이미지 없음" />
+                <NoImgText>No Image</NoImgText>
+                <Overlay className='overlay'>
+                  <CircleWrapper>
+                    <CircleTag>난이도</CircleTag>
+                    <Circle>
+                      <OverlayText>{getDifficultyText(room.themeLevel)}</OverlayText>
+                    </Circle>
+                  </CircleWrapper>
+                  <CircleWrapper>
+                    <CircleTag>플레이타임</CircleTag>
+                    <Circle>
+                      <OverlayText>{room.themePlayTime}분</OverlayText>
+                    </Circle>
+                  </CircleWrapper>
+                  <CircleWrapper>
+                    <CircleTag>장르</CircleTag>
+                    <Circle>
+                      <OverlayText>{getKoreanGenre(room.themeGenre)}</OverlayText>
+                    </Circle>
+                  </CircleWrapper>
+                  
+                </Overlay>
+              </NoImgWrapper>
+            )}
+            <InfoFooter>
+              {/* <TextWrapper> */}
+                <MainText>{room.pointName}</MainText>
+                {/* <SubText>{room.stationName}</SubText> */}
+              {/* </TextWrapper> */}
+              <InfoDetail>{room.name}</InfoDetail>
+            </InfoFooter>
+            <Button>
+              <ButtonText>예약하기</ButtonText>
+            </Button>
+          </InfoBox>
+        ))}
+      </InfoBoxWrapper>
     </Wrapper>
   );
 }
@@ -127,58 +225,168 @@ const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 `;
 
-const InfoBox = styled.div`
-  border: 3px solid #fff;
-  width: 20em;
-  height: 26.3125em;
-  border-radius: 0.625em;
+const InfoHeaderWrapper = styled.div`
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5em;
+`;
+
+const InfoBoxWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
   margin: 1em;
+`;
+
+const InfoBox = styled.div`
+  width: 16em;
+  height: 20.3125em;
+  border-radius:  0.3125em;
+  margin: 1em;
+  padding-top: 1em;
+  padding-right: 1.8em;
+  padding-left: 1.8em;
+  padding-bottom: 1.3em;
 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+
+  background-color: #3B3B3B;
+
+  &:hover .overlay {
+    opacity: 1;
+  }
 `;
 
 const InfoHeader = styled.div`
   display: flex;
-  padding: 1.3em;
   align-items: center;
-  width: 85%;
-  gap: 0.5em;
+  width: 13.5em;
+  height: 4.5em;
+  margin-top: 0.5em;
+  padding-left: 1em;
+  gap: 1.3em;
+  background-color: #3B3B3B;
+  border-radius: 1.25em;
 `;
 
 const HeaderIcon = styled.img`
-  width: 3em;
-  height: 3em;
+  width: 3.5em;
+  height: 3.5em;
+  padding: 0.1em;
+  border-radius: 100%;
+  object-fit: contain;
+  background: radial-gradient(50% 50% at 50% 50%, #1A1A1A 0%, #808080 100%);
 `;
 
-const TextWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.3em;
+const LevelText = styled.div`
+  font-family: 'esamanru-Bold';
+  color: #fff;
+  font-size: 2.3em;
 `;
 
 const MainText = styled.div`
-  font-family: 'Pretendard-Bold';
-  font-size: 1.2em;
+  font-family: 'esamanru-Light';
+  font-size: 0.8em;
   color: #fff;
 `;
 
-const SubText = styled.div`
-  font-family: 'Pretendard-Medium';
-  color: #A9A9A9;
+const InputWrapper = styled.div`
+    border: 3px solid rgba(148,0,0.8);
+    border-radius: 1em;
+    width: 100%;
+    height: 3em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(148,0,0,0.15);
+    box-shadow: 0 0.3em 1em 0.1em #111111;
+`;
+
+const MainImgWrapper = styled.div`
+  width: 100%;
+  height: 10.9375em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative; // 오버레이 위치 조정을 위해 필요
 `;
 
 const MainImg = styled.img`
   width: 100%;
-  height: 10.9375em;
+  height: 100%;
   object-fit: cover;
+  // object-fit: contain;
+  border-radius: 0.625em;
+`;
+
+const Overlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.625em;
+  background: rgba(0, 0, 0, 0.6); // 반투명 배경
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  opacity: 0; // 기본적으로 보이지 않음
+  transition: opacity 0.3s ease; // 부드러운 전환 효과
+  gap: 1em;
+`;
+
+const CircleTag = styled.div`
+  font-family: 'esamanru-Light';
+  color: #fff;
+  font-size: 0.5em;
+`;
+
+const CircleWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+  word-break: keep-all;
+  white-space: normal;
+`;
+
+const Circle = styled.div`
+  width: 3.5em;
+  height: 3.5em;
+  // padding: 0.5em;
+  border-radius: 50%;
+  background:  #383838;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const OverlayText = styled.div`
+  font-family: 'esamanru-Light';
+  font-size: 0.8em;
+  width: 100%;
+  height: 2.5em;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // word-break: break-word;
+  // white-space: normal;
+  color: #fff;
 `;
 
 const NoImgWrapper = styled.div`
@@ -190,6 +398,8 @@ const NoImgWrapper = styled.div`
   justify-content: center;
   align-items: center;
   gap: 1em;
+  border-radius: 0.625em;
+  position: relative; 
 `;
 
 const NoImg = styled.img`
@@ -208,26 +418,32 @@ const InfoFooter = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  justify-content: center;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  gap: 0.5em;
 `;
 
 const InfoDetail = styled.div`
-  font-family: 'Pretendard-Regular';
+  font-family: 'esamanru-Bold';
   color: #fff;
-  padding: 1em;
-  width: 90%;
-  white-space: pre-line;
+  font-size: 1.5em;
 `;
 
-const Button = styled.button`
-  border: 1px solid #fff;
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-  padding-left: 0.7em;
-  padding-right: 0.7em;
+const Button = styled.div`
+  width: 100%;
+  height: 2.8em;
+  border: none;
   border-radius: 0.3125em;
-  background-color: transparent;
-  color: #fff;
-  margin: 1em;
+  display:flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
+  background-color: #940000
+`;
+
+const ButtonText = styled.div`
+  font-family: 'esamanru-Medium';
+  font-size: 1em;
+  color: #fff;
 `;
