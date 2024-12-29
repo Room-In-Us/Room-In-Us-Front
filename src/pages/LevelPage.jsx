@@ -1,14 +1,13 @@
-import React from 'react';
 import styled from 'styled-components';
-import Joker1 from '../assets/images/levelPage/joker1.png';
-import Joker2 from '../assets/images/levelPage/joker2.png';
-import Joker3 from '../assets/images/levelPage/joker3.png';
-import Joker4 from '../assets/images/levelPage/joker4.png';
-import JokerBack1 from '../assets/images/levelPage/jokerback1.png';
-import JokerBack2 from '../assets/images/levelPage/jokerback2.png';
-import JokerBack3 from '../assets/images/levelPage/jokerback3.png';
-import JokerBack4 from '../assets/images/levelPage/jokerback4.png';
-import Pokertable from '../assets/images/levelPage/pokertable.png';
+import Joker1 from '../shared/assets/images/level/joker1.png';
+import Joker2 from '../shared/assets/images/level/joker2.png';
+import Joker3 from '../shared/assets/images/level/joker3.png';
+import Joker4 from '../shared/assets/images/level/joker4.png';
+import JokerBack1 from '../shared/assets/images/level/jokerback1.png';
+import JokerBack2 from '../shared/assets/images/level/jokerback2.png';
+import JokerBack3 from '../shared/assets/images/level/jokerback3.png';
+import JokerBack4 from '../shared/assets/images/level/jokerback4.png';
+import Pokertable from '../shared/assets/images/level/pokertable.png';
 import { useNavigate } from 'react-router-dom';
 
 export default function LevelPage() {

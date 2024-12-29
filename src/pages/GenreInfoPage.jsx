@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import styled from 'styled-components'
-import JokerHeadIcon from '../assets/images/genrePage/jokerheadicon.png'
-import NoImage from '../assets/images/common/nophotos.png'
-import { getGenreRoomListAPI } from '../apis/theme/getGenresListAPI';
-import {StyledSearchIcon, StyledInput, StyledEnterIcon} from '../pages/MainPage'
+import styled from 'styled-components';
+import JokerHeadIcon from '../shared/assets/images/genre/jokerheadicon.png';
+import NoImage from '../shared/assets/images/common/nophotos.png';
+import { getGenreRoomListAPI } from '../features/genreInfo/api/genreInfoAPI';
+import {StyledSearchIcon, StyledInput, StyledEnterIcon} from './MainPage';
 
 export default function GenreInfoPage() {
   const location = useLocation();
   const [genreRoomList, setGenreRoomList] = useState([]);
-  const [genre, setGenre] = useState(location.state.genre || 'FANTASY');
-  const [page, setPage] = useState(1); // 우선 첫 페이지만 초기값으로 설정
+  const [genre, ] = useState(location.state.genre || 'FANTASY');
+  const [page, ] = useState(1); // 우선 첫 페이지만 초기값으로 설정
 
   useEffect(() => {
     const fetchData= async () => {
@@ -108,14 +108,14 @@ export default function GenreInfoPage() {
 
   const getKoreanGenre = (genre) => genreKoreanName[genre] || "기타";
 
-  const difficultyLevels = [
-    "매우 쉬움", // 0
-    "쉬움",     // 1
-    "보통",     // 2
-    "어려움",   // 3
-    "매우 어려움", // 4
-    "극한"      // 5
-  ];
+  // const difficultyLevels = [
+  //   "매우 쉬움", // 0
+  //   "쉬움",     // 1
+  //   "보통",     // 2
+  //   "어려움",   // 3
+  //   "매우 어려움", // 4
+  //   "극한"      // 5
+  // ];
 
   // 난이도 단계 임의로 처리, 추후에 수정 가능
   const getDifficultyText = (level) => {

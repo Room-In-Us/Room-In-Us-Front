@@ -1,9 +1,9 @@
-import React, {useState} from 'react'
-import styled from 'styled-components'
-import Icon1 from '../assets/icons/boardMorePage/icon1.png'
-import Icon2 from '../assets/icons/boardMorePage/icon2.png'
-import PostLikeIcon from '../assets/icons/boardMorePage/likeicon.png'
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react';
+import styled from 'styled-components';
+import Icon1 from '../shared/assets/icons/boardMore/icon1.png';
+import Icon2 from '../shared/assets/icons/boardMore/icon2.png';
+import PostLikeIcon from '../shared/assets/icons/boardMore/likeicon.png';
+import { useNavigate } from 'react-router-dom';
 
 export default function BoardMorePage() {
 

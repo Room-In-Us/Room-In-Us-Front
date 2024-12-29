@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
-import Icon1 from '../assets/icons/boardMorePage/icon1.png'
-import { Wrapper, MainBox, MainTitle, LayoutBox, Icon1Img } from './BoardMorePage';
+import { useState } from 'react';
+import styled from 'styled-components';
+import Icon1 from '../shared/assets/icons/boardMore/icon1.png';
+import { Wrapper, MainBox, MainTitle, LayoutBox, Icon1Img } from './BoardMorePage';;
 
 export default function BoardWritePage() {
   const [showCategories, setShowCategories] = useState(false);

@@ -1,9 +1,9 @@
 import { useRecoilState } from 'recoil';
 import { locationState, stationState, stationNameState, cafeState, cafeNameState, themeState, backgroundVisible,
-        stationVisible, cafeVisible, themeVisible, locationCenterState, stationCenterState, cafeLatAndLngList, backupCafeLatAndLngList } from '../../recoil/atoms/locationAtom';
+        stationVisible, cafeVisible, themeVisible, locationCenterState, stationCenterState, cafeLatAndLngList, backupCafeLatAndLngList } from '../model/locationAtom';
 import styled from 'styled-components';
-import LocationBackground from '../../assets/images/locationPage/locationBackground.png';
-import NoiseTexture from '../../assets/images/locationPage/noiseTexture.png';
+import LocationBackground from '../../../shared/assets/images/location/locationBackground.png';
+import NoiseTexture from '../../../shared/assets/images/location/noiseTexture.png';
 import StationArea from './StationArea';
 import CafeArea from './CafeArea';
 import ThemeArea from './ThemeArea';

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
-import styled from 'styled-components'
-import JokerHead from '../assets/images/levelPage/jokerhead.png';
+import { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import JokerHead from '../shared/assets/images/level/jokerhead.png';
 import { useLocation } from 'react-router-dom';
-import { getProficiencyListAPI } from '../apis/theme/getProficiencyListAPI'; // api 파일
+import { getProficiencyListAPI } from '../features/levelInfo/api/levelInfoAPI'; // api 파일
 
 export default function LevelInfoPage() {
   // state 관리

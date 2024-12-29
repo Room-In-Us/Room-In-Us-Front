@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
 import PropTypes from 'prop-types';
-import { themeState, themeVisible } from "../../recoil/atoms/locationAtom";
+import { themeState, themeVisible } from "../model/locationAtom";
 import { useNavigate } from "react-router-dom";
-import { getThemeInfoAPI } from "../../apis/theme/getThemeInfoAPI";
-import NoAvailableImg from "../../assets/images/locationPage/noImageAvailable.webp";
+import { getThemeInfoAPI } from "../api/getThemeInfoAPI";
+import NoAvailableImg from "../../../shared/assets/images/location/noImageAvailable.webp";
 
 function ThemeInfo({ themeId }) {
     // state 관리

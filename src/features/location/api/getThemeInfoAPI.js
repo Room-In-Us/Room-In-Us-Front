@@ -1,4 +1,4 @@
-import { api } from "../API";
+import { api } from '../../../app/API';
 
 // 지역 목록 조회 api
 export const getThemeInfoAPI = async (themeId) => {

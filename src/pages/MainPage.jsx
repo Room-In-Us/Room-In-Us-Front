@@ -2,12 +2,12 @@ import { useState } from 'react';
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useDrag } from 'react-use-gesture';
-import LocationCard from '../assets/images/mainPage/locationCard.png';
-import GenreCard from '../assets/images/mainPage/genreCard.png';
-import LevelCard from '../assets/images/mainPage/levelCard.png';
-import CenterLine from '../assets/images/mainPage/cardCenterLine.png';
-import SearchIcon from "../assets/icons/mainPage/searchIcon.svg?react";
-import EnterIcon from "../assets/icons/mainPage/enterIcon.svg?react";
+import LocationCard from '../shared/assets/images/main/locationCard.png';
+import GenreCard from '../shared/assets/images/main/genreCard.png';
+import LevelCard from '../shared/assets/images/main/levelCard.png';
+import CenterLine from '../shared/assets/images/main/cardCenterLine.png';
+import SearchIcon from "../shared/assets/icons/main/searchIcon.svg?react";
+import EnterIcon from "../shared/assets/icons/main/enterIcon.svg?react";
 
 function MainPage() {
     // state 관리

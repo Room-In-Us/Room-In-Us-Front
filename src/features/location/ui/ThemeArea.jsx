@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
-import { cafeState, themeVisible } from "../../recoil/atoms/locationAtom";
-import { getLocationListAPI } from "../../apis/theme/getLocationListAPI";
+import { cafeState, themeVisible } from "../model/locationAtom";
+import { getLocationListAPI } from "../api/getLocationListAPI";
 import ThemeInfo from "./ThemeInfo";
 
 function ThemeArea() {

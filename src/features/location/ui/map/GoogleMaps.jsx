@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { GoogleMap, MarkerF, OverlayView } from "@react-google-maps/api";
-import MarkerIcon from "../../../assets/images/locationPage/marker.png";
-import { goolgleMapStyles } from "./googleMapStyles";
-import { stationVisible, themeVisible, mapsLoadedState, stationLatAndLngList, cafeLatAndLngList, locationCenterState } from '../../../recoil/atoms/locationAtom';
-import Loading from "../../common/Loading";
+import MarkerIcon from "../../../../shared/assets/images/location/marker.png";
+import { goolgleMapStyles } from "./googleMapStyles.js";
+import { stationVisible, themeVisible, mapsLoadedState, stationLatAndLngList, cafeLatAndLngList, locationCenterState } from '../../model/locationAtom';
+import Loading from "../../../../shared/components/Loading";
 
 function GoogleMaps() {
     // state 관리

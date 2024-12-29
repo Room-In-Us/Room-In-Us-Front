@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react'
-import styled from 'styled-components'
-import ComicGenre from '../assets/images/genrePage/comic.png'
-import MisteryGenre from '../assets/images/genrePage/mistery.png'
-import ReasoningGenre from '../assets/images/genrePage/reasoning.png'
-import ThrillerGenre from '../assets/images/genrePage/thriller.png'
-import Comic2Genre from '../assets/images/genrePage/comic2.png'
-import FantasyGenre from '../assets/images/genrePage/fantasy.png'
-import AdventureGenre from '../assets/images/genrePage/adventure.png'
-import Others from '../assets/images/genrePage/others.png'
-import { useNavigate } from 'react-router-dom'
-import { getGenresListAPI } from '../apis/theme/getGenresListAPI'
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import ComicGenre from '../shared/assets/images/genre/comic.png';
+import MisteryGenre from '../shared/assets/images/genre/mistery.png';
+import ReasoningGenre from '../shared/assets/images/genre/reasoning.png';
+import ThrillerGenre from '../shared/assets/images/genre/thriller.png';
+import Comic2Genre from '../shared/assets/images/genre/comic2.png';
+import FantasyGenre from '../shared/assets/images/genre/fantasy.png';
+import AdventureGenre from '../shared/assets/images/genre/adventure.png';
+import Others from '../shared/assets/images/genre/others.png';
+import { useNavigate } from 'react-router-dom';
+import { getGenresListAPI } from '../features/genre/api/genreAPI';
 
 export default function GenrePage() {
     const navigate = useNavigate();
