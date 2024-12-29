@@ -1,9 +1,8 @@
-import React from 'react'
-import styled from 'styled-components'
-import BoardImage from '../assets/images/boardPage/boardimg.png'
-import TitleTextImg from '../assets/images/boardPage/boardpagetitle.png'
-import Background from '../assets/images/boardPage/boardimgbackground.png'
-import { useNavigate } from 'react-router-dom'
+import styled from 'styled-components';
+import BoardImage from '../shared/assets/images/board/boardimg.png';
+import TitleTextImg from '../shared/assets/images/board/boardpagetitle.png';
+import Background from '../shared/assets/images/board/boardimgbackground.png';
+import { useNavigate } from 'react-router-dom';
 
 export default function BoardPage() {
     const navigate = useNavigate();

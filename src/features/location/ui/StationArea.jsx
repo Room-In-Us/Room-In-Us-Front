@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
 import { locationState, stationState, stationVisible, stationNameState, cafeVisible,
-        stationLatAndLngList, locationCenterState, stationCenterState } from "../../recoil/atoms/locationAtom";
-import ArrowIcon from "../../assets/icons/locationPage/arrowIcon.svg?react";
-import { getLocationListAPI } from "../../apis/theme/getLocationListAPI";
+        stationLatAndLngList, locationCenterState, stationCenterState } from "../model/locationAtom";
+import ArrowIcon from "../../../shared/assets/icons/location/arrowIcon.svg?react";
+import { getLocationListAPI } from "../api/getLocationListAPI";
 
 function StationArea() {
     // state 관리

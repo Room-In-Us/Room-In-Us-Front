@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import useDevice from "../hooks/useDevice";
-import BackgroundImg from "../assets/images/loginPage/background2.png";
-import KakaoLogo from "../assets/icons/loginPage/kakaoLogo.svg?react";
-import GoogleLogo from "../assets/icons/loginPage/googleLogo.svg?react";
+import useDevice from "../shared/hooks/useDevice";
+import BackgroundImg from "../shared/assets/images/login/background2.png";
+import KakaoLogo from "../shared/assets/icons/login/kakaoLogo.svg?react";
+import GoogleLogo from "../shared/assets/icons/login/googleLogo.svg?react";
 
 function LoginPage() {
     // state 관리

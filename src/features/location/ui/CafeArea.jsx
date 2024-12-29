@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
-import { stationState, cafeState, cafeVisible, cafeNameState, themeVisible, cafeLatAndLngList, locationCenterState, backupCafeLatAndLngList } from "../../recoil/atoms/locationAtom";
-import ArrowIcon from "../../assets/icons/locationPage/arrowIcon.svg?react";
-import { getLocationListAPI } from "../../apis/theme/getLocationListAPI";
+import { stationState, cafeState, cafeVisible, cafeNameState, themeVisible, cafeLatAndLngList, locationCenterState, backupCafeLatAndLngList } from "../model/locationAtom";
+import ArrowIcon from "../../../shared/assets/icons/location/arrowIcon.svg?react";
+import { getLocationListAPI } from "../api/getLocationListAPI";
 
 function CafeArea() {
     // state 관리

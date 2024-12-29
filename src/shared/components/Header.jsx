@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import useDevice from "../../hooks/useDevice";
-import MenuIcon from "../../assets/icons/common/menuIcon.svg?react";
-import CancelIcon from "../../assets/icons/common/cancelIcon.svg?react";
-import LogoIcon from "../../assets/icons/common/logo.svg?react";
+import useDevice from "../../shared/hooks/useDevice";
+import MenuIcon from "../../shared/assets/icons/common/menuIcon.svg?react";
+import CancelIcon from "../../shared/assets/icons/common/cancelIcon.svg?react";
+import LogoIcon from "../../shared/assets/icons/common/logo.svg?react";
 
 function Header() {
     // state 관리

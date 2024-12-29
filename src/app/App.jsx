@@ -1,19 +1,19 @@
 import './App.css';
 import { Routes, Route } from "react-router-dom";
-import MainLayOut from './layout/MainLayOut';
-import MainPage from './pages/MainPage';
-import LoginPage from './pages/LoginPage';
-import LevelPage from './pages/LevelPage';
-import LevelInfoPage from './pages/LevelInfoPage';
-import GenrePage from './pages/GenrePage';
-import GenreInfoPage from './pages/GenreInfoPage';
-import LocationPage from './pages/LocationPage';
-import BoardPage from './pages/BoardPage';
-import BoardMorePage from './pages/BoardMorePage';
-import BoardWritePage from './pages/BoardWritePage';
+import MainLayOut from '../widgets/MainLayOut';
+import MainPage from '../pages/MainPage';
+import LoginPage from '../pages/LoginPage';
+import LevelPage from '../pages/LevelPage';
+import LevelInfoPage from '../pages/LevelInfoPage';
+import GenrePage from '../pages/GenrePage';
+import GenreInfoPage from '../pages/GenreInfoPage';
+import LocationPage from '../pages/LocationPage';
+import BoardPage from '../pages/BoardPage';
+import BoardMorePage from '../pages/BoardMorePage';
+import BoardWritePage from '../pages/BoardWritePage';
 import { LoadScript } from '@react-google-maps/api';
 import { useSetRecoilState } from 'recoil';
-import { mapsLoadedState } from './recoil/atoms/locationAtom';
+import { mapsLoadedState } from '../features/location/model/locationAtom';
 
 function App() {
   const setMapsLoaded = useSetRecoilState(mapsLoadedState);

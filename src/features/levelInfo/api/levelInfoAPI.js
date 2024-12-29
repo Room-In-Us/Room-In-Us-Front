@@ -1,4 +1,4 @@
-import { api } from "../API";
+import { api } from "../../../app/API";
 
 export const getProficiencyListAPI = async (proficiency, page) => {
     try {

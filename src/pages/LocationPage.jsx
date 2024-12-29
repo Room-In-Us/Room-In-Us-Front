@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { locationState, stationState, cafeState, themeState, backgroundVisible, locationVisible,
-        stationVisible, cafeVisible, themeVisible, mapsLoadedState, locationCenterState } from '../recoil/atoms/locationAtom';
+        stationVisible, cafeVisible, themeVisible, mapsLoadedState, locationCenterState } from '../features/location/model/locationAtom';
 import styled from 'styled-components';
-import MapImg from '../assets/images/locationPage/locationMap.png';
-import LocationContent from '../components/location/LocationContent';
-import GoogleMaps from '../components/location/map/GoogleMaps';
-import LocationButton from '../assets/images/locationPage/locationButton.png';
-import NoiseTexture from '../assets/images/locationPage/noiseTexture.png';
+import MapImg from '../shared/assets/images/location/locationMap.png';
+import LocationContent from '../features/location/ui/LocationContent';
+import GoogleMaps from '../features/location/ui/map/GoogleMaps';
+import LocationButton from '../shared/assets/images/location/locationButton.png';
+import NoiseTexture from '../shared/assets/images/location/noiseTexture.png';
 
 function LocationPage() {
     const [isVisible, setIsVisible] = useState(false);
