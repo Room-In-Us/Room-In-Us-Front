@@ -12,7 +12,7 @@ import BoardPage from '../pages/BoardPage';
 import BoardMorePage from '../pages/BoardMorePage';
 import BoardWritePage from '../pages/BoardWritePage';
 import SignupPage from '../pages/SignupPage';
-import UserInfoPage from '../pages/userInfoPage';
+// import UserInfoPage from '../pages/userInfoPage';
 import { LoadScript } from '@react-google-maps/api';
 import { useSetRecoilState } from 'recoil';
 import { mapsLoadedState } from '../features/location/model/locationAtom';
