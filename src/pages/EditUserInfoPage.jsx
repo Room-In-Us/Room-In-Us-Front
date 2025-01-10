@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
-function UserInfoPage() {
+function EditUserInfoPage() {
     const navigate = useNavigate();
 
     return (
@@ -32,7 +32,7 @@ function UserInfoPage() {
     )
 };
 
-export default UserInfoPage;
+export default EditUserInfoPage;
 
 // CSS
 const PageWrapper = styled.div`
