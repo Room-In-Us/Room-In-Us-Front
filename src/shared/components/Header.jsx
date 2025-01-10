@@ -5,10 +5,12 @@ import useDevice from "../../shared/hooks/useDevice";
 import MenuIcon from "../../shared/assets/icons/common/menuIcon.svg?react";
 import CancelIcon from "../../shared/assets/icons/common/cancelIcon.svg?react";
 import LogoIcon from "../../shared/assets/icons/common/logo.svg?react";
+import { getAccessToken } from "../../app/API";
 
 function Header() {
     // state 관리
     const [isVisibleMenu, setIsVisibleMenu] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
     
     // navigate
     const navigate = useNavigate();
@@ -56,6 +58,32 @@ function Header() {
         };
     }, [isVisibleMenu]);
 
+    // 로그인 상태 확인
+    const token = getAccessToken(); // 토큰 가져오기
+    useEffect(() => {
+        setIsLoggedIn(!!token); // 토큰 여부에 따라 상태 설정
+    
+        const handleStorageChange = () => {
+            const token = getAccessToken();
+            setIsLoggedIn(!!token);
+        };
+    
+        window.addEventListener("storage", handleStorageChange);
+    
+        return () => {
+            window.removeEventListener("storage", handleStorageChange);
+        };
+    }, [token]);
+
+    // 로그아웃 처리 함수
+    const handleLogout = () => {
+        localStorage.removeItem("accessToken"); // localStorage에서 토큰 제거
+        localStorage.removeItem("refreshToken"); // 필요시 refreshToken도 제거
+        setIsLoggedIn(false); // 상태 업데이트
+        alert("로그아웃 되었습니다.");
+        navigate("/"); // 메인 페이지로 이동
+    };
+
     return (
         <>
         <HeaderWrapper>
@@ -66,7 +94,11 @@ function Header() {
                         <StyledButton onClick={() => handleNavigation("/")}>홈</StyledButton>
                         <StyledButton onClick={() => handleNavigation("/board")}>게시판</StyledButton>
                         <StyledButton onClick={() => handleNavigation("/mypage")}>마이페이지</StyledButton>
-                        <StyledButton onClick={() => handleNavigation("/login")}>로그인</StyledButton>
+                        {isLoggedIn ? (
+                            <StyledButton onClick={handleLogout}>로그아웃</StyledButton>
+                        ) : (
+                            <StyledButton onClick={() => handleNavigation("/login")}>로그인</StyledButton>
+                        )}
                     </ButtonWrapper>
                 </>
             }
