@@ -45,7 +45,7 @@ function LoginPage() {
             }
     
             alert("로그인에 성공했습니다.");
-            navigate("/"); // 메인 페이지로 이동
+            navigate("/");
         } catch (error) {
             console.error("로그인 실패:", error.response?.data || error.message);
             alert("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인하세요.");
@@ -448,5 +448,4 @@ const MobileLoginButton = styled(LoginButton)`
 const ErrorMessage = styled.div`
     color: red;
     font-size: 0.8em;
-    margin-top: 0.3em;
 `;

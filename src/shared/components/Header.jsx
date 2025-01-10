@@ -81,7 +81,7 @@ function Header() {
         localStorage.removeItem("refreshToken"); // 필요시 refreshToken도 제거
         setIsLoggedIn(false); // 상태 업데이트
         alert("로그아웃 되었습니다.");
-        navigate("/"); // 메인 페이지로 이동
+        navigate("/login");
     };
 
     return (
@@ -109,7 +109,11 @@ function Header() {
                         <StyledButton onClick={() => handleNavigation("/")}>홈</StyledButton>
                         <StyledButton onClick={() => handleNavigation("/board")}>게시판</StyledButton>
                         <StyledButton onClick={() => handleNavigation("/mypage")}>마이페이지</StyledButton>
-                        <StyledButton onClick={() => handleNavigation("/login")}>로그인</StyledButton>
+                        {isLoggedIn ? (
+                            <StyledButton onClick={handleLogout}>로그아웃</StyledButton>
+                        ) : (
+                            <StyledButton onClick={() => handleNavigation("/login")}>로그인</StyledButton>
+                        )}
                     </ButtonWrapper>
                 </>
             }
@@ -130,7 +134,11 @@ function Header() {
                     <MobileButton onClick={() => handleNavigation("/")}>홈</MobileButton>
                     <MobileButton onClick={() => handleNavigation("/board")}>게시판</MobileButton>
                     <MobileButton onClick={() => handleNavigation("/mypage")}>마이페이지</MobileButton>
-                    <MobileButton onClick={() => handleNavigation("/login")}>로그인</MobileButton>
+                    {isLoggedIn ? (
+                        <MobileButton onClick={handleLogout}>로그아웃</MobileButton>
+                    ) : (
+                        <MobileButton onClick={() => handleNavigation("/login")}>로그인</MobileButton>
+                    )}
                 </MobileButtonWrapper>
             </MenuWrapper>
         }
