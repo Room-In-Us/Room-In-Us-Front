@@ -11,6 +11,7 @@ import LocationPage from '../pages/LocationPage';
 import BoardPage from '../pages/BoardPage';
 import BoardMorePage from '../pages/BoardMorePage';
 import BoardWritePage from '../pages/BoardWritePage';
+import SignupPage from '../pages/SignupPage';
 import { LoadScript } from '@react-google-maps/api';
 import { useSetRecoilState } from 'recoil';
 import { mapsLoadedState } from '../features/location/model/locationAtom';
@@ -35,7 +36,7 @@ function App() {
         <Route path="/login" element={<LoginPage/>} />
 
         {/* 회원가입 페이지 */}
-        <Route path="/signup" element={<LoginPage/>} />
+        <Route path="/signup" element={<SignupPage/>} />
 
         {/* 위치 페이지 */}
         <Route path="/location" element={<LocationPage/>} />
