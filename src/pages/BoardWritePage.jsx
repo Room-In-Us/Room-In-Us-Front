@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import Icon1 from '../shared/assets/icons/boardMore/icon1.png';
-import { Wrapper, MainBox, MainTitle, LayoutBox, Icon1Img } from './BoardMorePage';;
+import { Wrapper, MainBox, MainTitle, LayoutBox, Icon1Img } from './BoardMorePage';
 
 export default function BoardWritePage() {
   const [showCategories, setShowCategories] = useState(false);
@@ -23,29 +23,22 @@ export default function BoardWritePage() {
         <LayoutBox>
           <SortButton>
             <CategoryText>{selectedCategory}</CategoryText>
-            <Icon1Img 
-              src={Icon1} 
-              alt='정렬아이콘' 
-              onClick={handleToggleCategories} 
-              isRotated={showCategories}
-            />
+            <Icon1Img src={Icon1} alt="정렬아이콘" onClick={handleToggleCategories} isRotated={showCategories} />
           </SortButton>
 
-          
-            <CategoryBox isVisible={showCategories}>
-              <CategoryButton onClick={() => handleCategorySelect('인생테마 게시판')}>인생테마 게시판</CategoryButton>
-              <Divider />
-              <CategoryButton onClick={() => handleCategorySelect('질문 게시판')}>질문 게시판</CategoryButton>
-            </CategoryBox>
-        
+          <CategoryBox isVisible={showCategories}>
+            <CategoryButton onClick={() => handleCategorySelect('인생테마 게시판')}>인생테마 게시판</CategoryButton>
+            <Divider />
+            <CategoryButton onClick={() => handleCategorySelect('질문 게시판')}>질문 게시판</CategoryButton>
+          </CategoryBox>
 
           <SubmitButton>저장하기</SubmitButton>
         </LayoutBox>
-        <TitleInputBox placeholder='제목을 입력하세요.'/>
-        <ContentInputBox placeholder='내용을 입력하세요.' />
+        <TitleInputBox placeholder="제목을 입력하세요." />
+        <ContentInputBox placeholder="내용을 입력하세요." />
       </MainBox>
     </Wrapper>
-  )
+  );
 }
 
 const SubmitButton = styled.div`
@@ -58,7 +51,7 @@ const SubmitButton = styled.div`
   padding-left: 1em;
   border-radius: 0.625em;
   background-color: #930000;
-  color: #D2D2D2;
+  color: #d2d2d2;
   font-family: 'esamanru-Light';
   cursor: pointer;
   box-shadow: 0.25em 0.25em 0.625em rgba(147, 0, 0, 0.35);
@@ -133,7 +126,9 @@ const CategoryBox = styled.div`
   width: 13.3em;
   opacity: ${({ isVisible }) => (isVisible ? 1 : 0)};
   transform: ${({ isVisible }) => (isVisible ? 'translateY(0)' : 'translateY(-0.5px)')};
-  transition: opacity 0.4s ease, transform 0.5s ease;
+  transition:
+    opacity 0.4s ease,
+    transform 0.5s ease;
 `;
 
 const CategoryButton = styled.div`

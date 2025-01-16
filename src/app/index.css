@@ -1,10 +1,10 @@
 body {
-  width : 100%;
-  height : 100%;
+  width: 100%;
+  height: 100%;
   margin: 0 auto;
   position: relative;
   overflow-x: hidden;
-  background-color: #1A1A1A;
+  background-color: #1a1a1a;
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -12,11 +12,10 @@ body {
     background: none;
   }
   &:hover::-webkit-scrollbar-thumb {
-      border-radius: 30px;
-      background-color: darkgray;
+    border-radius: 30px;
+    background-color: darkgray;
   }
 }
-
 
 /* Pretendard 폰트 */
 @font-face {
@@ -74,7 +73,6 @@ body {
   font-display: swap;
 }
 
-
 /* VitroCore 폰트 */
 @font-face {
   font-family: 'Vitro-Core';
@@ -94,7 +92,6 @@ body {
   font-weight: normal;
   font-display: swap;
 }
-
 
 /* esamanru 폰트 */
 @font-face {

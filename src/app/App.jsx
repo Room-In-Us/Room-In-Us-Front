@@ -1,5 +1,5 @@
 import './App.css';
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route } from 'react-router-dom';
 import MainLayOut from '../widgets/MainLayOut';
 import MainPage from '../pages/MainPage';
 import LoginPage from '../pages/LoginPage';
@@ -18,53 +18,51 @@ import { useSetRecoilState } from 'recoil';
 import { mapsLoadedState } from '../features/location/model/locationAtom';
 
 function App() {
-    const setMapsLoaded = useSetRecoilState(mapsLoadedState);
+  const setMapsLoaded = useSetRecoilState(mapsLoadedState);
 
-    return (
-        <LoadScript
-            googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-            onLoad={() => setMapsLoaded(true)} // 로딩 완료 시 상태를 true로 설정
-            onError={() => setMapsLoaded(false)} // 로딩 실패 시 false로 설정
-        >
-            <Routes>
-                {/* 메인 레이아웃 적용 */}
-                <Route element={<MainLayOut/>}>
-                    
-                    {/* 메인 페이지 */}
-                    <Route path="/" element={<MainPage/>} />
-                    
-                    {/* 로그인 페이지 */}
-                    <Route path="/login" element={<LoginPage/>} />
+  return (
+    <LoadScript
+      googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+      onLoad={() => setMapsLoaded(true)} // 로딩 완료 시 상태를 true로 설정
+      onError={() => setMapsLoaded(false)} // 로딩 실패 시 false로 설정
+    >
+      <Routes>
+        {/* 메인 레이아웃 적용 */}
+        <Route element={<MainLayOut />}>
+          {/* 메인 페이지 */}
+          <Route path="/" element={<MainPage />} />
 
-                    {/* 회원가입 페이지 */}
-                    <Route path="/signup" element={<SignupPage/>} />
+          {/* 로그인 페이지 */}
+          <Route path="/login" element={<LoginPage />} />
 
-                    {/* 유저 정보 페이지 */}
-                    <Route path="/userInfo" element={<EditUserInfoPage/>} />
-                    
-                    {/* 위치 페이지 */}
-                    <Route path="/location" element={<LocationPage/>} />
+          {/* 회원가입 페이지 */}
+          <Route path="/signup" element={<SignupPage />} />
 
-                    {/* 숙련도 페이지 */}
-                    <Route path="/level" element={<LevelPage/>} />
-                    <Route path="/levelInfo" element={<LevelInfoPage/>} />
+          {/* 유저 정보 페이지 */}
+          <Route path="/userInfo" element={<EditUserInfoPage />} />
 
-                    {/* 장르 페이지 */}
-                    <Route path="/genre" element={<GenrePage/>} />
-                    <Route path="/genreInfo" element={<GenreInfoPage/>} />
+          {/* 위치 페이지 */}
+          <Route path="/location" element={<LocationPage />} />
 
-                    {/* 게시판 페이지 */}
-                    <Route path="/board" element={<BoardPage/>} />
-                    <Route path="/boardmore" element={<BoardMorePage />} />
-                    <Route path="/boardwrite" element={<BoardWritePage/>} />
+          {/* 숙련도 페이지 */}
+          <Route path="/level" element={<LevelPage />} />
+          <Route path="/levelInfo" element={<LevelInfoPage />} />
 
-                    {/* 마이 페이지 */}
-                    <Route path="/mypage" element={<MainPage/>} />
+          {/* 장르 페이지 */}
+          <Route path="/genre" element={<GenrePage />} />
+          <Route path="/genreInfo" element={<GenreInfoPage />} />
 
-                </Route>
-            </Routes>
-        </LoadScript>
-    )
+          {/* 게시판 페이지 */}
+          <Route path="/board" element={<BoardPage />} />
+          <Route path="/boardmore" element={<BoardMorePage />} />
+          <Route path="/boardwrite" element={<BoardWritePage />} />
+
+          {/* 마이 페이지 */}
+          <Route path="/mypage" element={<MainPage />} />
+        </Route>
+      </Routes>
+    </LoadScript>
+  );
 }
 
 export default App;
