@@ -9,11 +9,11 @@ export default function LevelInfoPage() {
   const [profName, setProfName] = useState([]);
   const [profDescription, setProfDescription] = useState([]);
   const [cafeLists, setCafeLists] = useState([]);
-  const [page,] = useState('1');
+  const [page] = useState('1');
 
   // useLocation
   const location = useLocation();
-  const {level} = location.state || {};
+  const { level } = location.state || {};
 
   // const roomData = [
   //   {
@@ -95,47 +95,43 @@ export default function LevelInfoPage() {
   //   },
   // ];
 
-  // 임시 
+  // 임시
   // const page = '1';
 
   // 방탈출 정보 불러오기
   useEffect(() => {
     const fetchStudies = async () => {
-        try {
-            const response = await getProficiencyListAPI(level, page);
-            console.log('받은 데이터:', response);
-            setProfName(response.profName);  // 레벨
-            setProfDescription(response.profDescription);  // 설명
-            setCafeLists(response.contents);  // 리스트
-        } catch (error) {
-            console.error('카페 목록 데이터를 불러오는 중 오류 발생:', error);
-        }
+      try {
+        const response = await getProficiencyListAPI(level, page);
+        console.log('받은 데이터:', response);
+        setProfName(response.profName); // 레벨
+        setProfDescription(response.profDescription); // 설명
+        setCafeLists(response.contents); // 리스트
+      } catch (error) {
+        console.error('카페 목록 데이터를 불러오는 중 오류 발생:', error);
+      }
     };
     fetchStudies();
   }, [level, page]);
-
 
   return (
     <Wrapper>
       <Container>
         <LevelInfoBox>
           <LevelIconWrapper>
-            <LevelIcon src={JokerHead} alt='레벨아이콘' />
+            <LevelIcon src={JokerHead} alt="레벨아이콘" />
           </LevelIconWrapper>
           <Level>{profName}</Level>
-          <LevelDetail>
-            {profDescription}
-          </LevelDetail>
+          <LevelDetail>{profDescription}</LevelDetail>
         </LevelInfoBox>
         <RoomListWrapper>
           <TableHeaderWrapper>
-              <TableHeader1>지역명</TableHeader1>
-              <TableHeader2>상세지역</TableHeader2>
-              <TableHeader3>가게 이름</TableHeader3>
-              <TableHeader4>테마 이름</TableHeader4>
-            </TableHeaderWrapper>
+            <TableHeader1>지역명</TableHeader1>
+            <TableHeader2>상세지역</TableHeader2>
+            <TableHeader3>가게 이름</TableHeader3>
+            <TableHeader4>테마 이름</TableHeader4>
+          </TableHeaderWrapper>
           <RoomList>
-            
             <Table>
               <tbody>
                 {cafeLists.map((cafe) => (
@@ -152,7 +148,7 @@ export default function LevelInfoPage() {
         </RoomListWrapper>
       </Container>
     </Wrapper>
-  )
+  );
 }
 
 const Wrapper = styled.div`
@@ -184,7 +180,7 @@ const LevelInfoBox = styled.div`
   width: 100%;
   height: 7.4375em;
   border-radius: 6.25em;
-  background-color: #B1B1B1;
+  background-color: #b1b1b1;
   position: relative;
 `;
 
@@ -195,7 +191,7 @@ const LevelIconWrapper = styled.div`
   width: 7.4375em;
   height: 7.4375em;
   border-radius: 6.25em;
-  background-color: #D9D9D9;
+  background-color: #d9d9d9;
   position: absolute;
 `;
 
@@ -206,7 +202,7 @@ const LevelIcon = styled.img`
 
 const GradientText = styled.div`
   font-family: 'Vitro-Core';
-  background: linear-gradient(to bottom, #940000 40%, #2E0000 60%);
+  background: linear-gradient(to bottom, #940000 40%, #2e0000 60%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `;
@@ -257,8 +253,8 @@ const RoomList = styled.div`
     background: none;
   }
   &:hover::-webkit-scrollbar-thumb {
-      border-radius: 30px;
-      background-color: darkgray;
+    border-radius: 30px;
+    background-color: darkgray;
   }
 `;
 

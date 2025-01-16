@@ -14,7 +14,7 @@ export default function LevelPage() {
   const navigate = useNavigate();
 
   const handleLevelInfo = (levelInfo) => {
-    navigate('/levelInfo', {state: levelInfo});
+    navigate('/levelInfo', { state: levelInfo });
   };
 
   return (
@@ -25,112 +25,134 @@ export default function LevelPage() {
       <BlurOverlay /> */}
       <ImgWrapper>
         <GroupImg src={Pokertable} />
-      
-        
-      <LayOut>
-        <MainTitle>숙련도</MainTitle>
-        <LevelWrapper>
-          <LevelBox>
-            <CardBoxHover>
-              <CardInner>
-                <CardFront src={Joker1} alt="카드앞면1" />
-                <CardBack $backgroundImage={JokerBack1}>
-                  <TextWrapper>
-                    <LevelTextTop>STEP 1</LevelTextTop>
-                    <LevelText>방린이</LevelText>
-                    <LevelTextBottom>
-                      한번도 방탈출
-                      <br />
-                      해보지 않았어요.
-                      <br />
-                    </LevelTextBottom>
-                  </TextWrapper>
-                  <ButtonWrapper>
-                    <PlayButton onClick={() => handleLevelInfo({
-                      level: 'BEGINNER'
-                    })}>Play</PlayButton>
-                  </ButtonWrapper>
-                </CardBack>
-              </CardInner>
-            </CardBoxHover>
-          </LevelBox>
-          <LevelBox>
-            <CardBoxHover>
-              <CardInner>
-                <CardFront src={Joker2} alt="카드앞면2" />
-                <CardBack $backgroundImage={JokerBack2}>
-                  <TextWrapper>
-                    <LevelTextTop>STEP 2</LevelTextTop>
-                    <LevelText>방초보</LevelText>
-                    <LevelTextBottom>
-                      0-10 방 정도 경험이
-                      <br />
-                      있어 어떤 느낌인지
-                      <br />
-                      알아요!
-                    </LevelTextBottom>
-                  </TextWrapper>
-                  <ButtonWrapper>
-                    <PlayButton onClick={() => handleLevelInfo({
-                      level: 'JUNIOR'
-                    })}>Play</PlayButton>
-                  </ButtonWrapper>
-                </CardBack>
-              </CardInner>
-            </CardBoxHover>
-          </LevelBox>
-          <LevelBox>
-            <CardBoxHover>
-              <CardInner>
-                <CardFront src={Joker3} alt="카드앞면3" />
-                <CardBack $backgroundImage={JokerBack3}>
-                  <TextWrapper>
-                    <LevelTextTop>STEP 3</LevelTextTop>
-                    <LevelText>방중수</LevelText>
-                    <LevelTextBottom>
-                      10-50 방 정도의
-                      <br />
-                      경험이 있어 무난하게
-                      <br />
-                      할 수 있어요!
-                    </LevelTextBottom>
-                  </TextWrapper>
-                  <ButtonWrapper>
-                    <PlayButton onClick={() => handleLevelInfo({
-                      level: 'SENIOR'
-                    })}>Play</PlayButton>
-                  </ButtonWrapper>
-                </CardBack>
-              </CardInner>
-            </CardBoxHover>
-          </LevelBox>
-          <LevelBox>
-            <CardBoxHover>
-              <CardInner>
-                <CardFront src={Joker4} alt="카드앞면4" />
-                <CardBack $backgroundImage={JokerBack4}>
-                  <TextWrapper>
-                    <LevelTextTop>STEP 4</LevelTextTop>
-                    <LevelText>방고인물</LevelText>
-                    <LevelTextBottom>
-                      100+ 방 정도 경험이
-                      <br />
-                      있어 난이도가 상관
-                      <br />
-                      없어요!
-                    </LevelTextBottom>
-                  </TextWrapper>
-                  <ButtonWrapper>
-                    <PlayButton onClick={() => handleLevelInfo({
-                      level: 'MASTER'
-                    })}>Play</PlayButton>
-                  </ButtonWrapper>
-                </CardBack>
-              </CardInner>
-            </CardBoxHover>
-          </LevelBox>
-        </LevelWrapper>
-      </LayOut>
+
+        <LayOut>
+          <MainTitle>숙련도</MainTitle>
+          <LevelWrapper>
+            <LevelBox>
+              <CardBoxHover>
+                <CardInner>
+                  <CardFront src={Joker1} alt="카드앞면1" />
+                  <CardBack $backgroundImage={JokerBack1}>
+                    <TextWrapper>
+                      <LevelTextTop>STEP 1</LevelTextTop>
+                      <LevelText>방린이</LevelText>
+                      <LevelTextBottom>
+                        한번도 방탈출
+                        <br />
+                        해보지 않았어요.
+                        <br />
+                      </LevelTextBottom>
+                    </TextWrapper>
+                    <ButtonWrapper>
+                      <PlayButton
+                        onClick={() =>
+                          handleLevelInfo({
+                            level: 'BEGINNER',
+                          })
+                        }
+                      >
+                        Play
+                      </PlayButton>
+                    </ButtonWrapper>
+                  </CardBack>
+                </CardInner>
+              </CardBoxHover>
+            </LevelBox>
+            <LevelBox>
+              <CardBoxHover>
+                <CardInner>
+                  <CardFront src={Joker2} alt="카드앞면2" />
+                  <CardBack $backgroundImage={JokerBack2}>
+                    <TextWrapper>
+                      <LevelTextTop>STEP 2</LevelTextTop>
+                      <LevelText>방초보</LevelText>
+                      <LevelTextBottom>
+                        0-10 방 정도 경험이
+                        <br />
+                        있어 어떤 느낌인지
+                        <br />
+                        알아요!
+                      </LevelTextBottom>
+                    </TextWrapper>
+                    <ButtonWrapper>
+                      <PlayButton
+                        onClick={() =>
+                          handleLevelInfo({
+                            level: 'JUNIOR',
+                          })
+                        }
+                      >
+                        Play
+                      </PlayButton>
+                    </ButtonWrapper>
+                  </CardBack>
+                </CardInner>
+              </CardBoxHover>
+            </LevelBox>
+            <LevelBox>
+              <CardBoxHover>
+                <CardInner>
+                  <CardFront src={Joker3} alt="카드앞면3" />
+                  <CardBack $backgroundImage={JokerBack3}>
+                    <TextWrapper>
+                      <LevelTextTop>STEP 3</LevelTextTop>
+                      <LevelText>방중수</LevelText>
+                      <LevelTextBottom>
+                        10-50 방 정도의
+                        <br />
+                        경험이 있어 무난하게
+                        <br />할 수 있어요!
+                      </LevelTextBottom>
+                    </TextWrapper>
+                    <ButtonWrapper>
+                      <PlayButton
+                        onClick={() =>
+                          handleLevelInfo({
+                            level: 'SENIOR',
+                          })
+                        }
+                      >
+                        Play
+                      </PlayButton>
+                    </ButtonWrapper>
+                  </CardBack>
+                </CardInner>
+              </CardBoxHover>
+            </LevelBox>
+            <LevelBox>
+              <CardBoxHover>
+                <CardInner>
+                  <CardFront src={Joker4} alt="카드앞면4" />
+                  <CardBack $backgroundImage={JokerBack4}>
+                    <TextWrapper>
+                      <LevelTextTop>STEP 4</LevelTextTop>
+                      <LevelText>방고인물</LevelText>
+                      <LevelTextBottom>
+                        100+ 방 정도 경험이
+                        <br />
+                        있어 난이도가 상관
+                        <br />
+                        없어요!
+                      </LevelTextBottom>
+                    </TextWrapper>
+                    <ButtonWrapper>
+                      <PlayButton
+                        onClick={() =>
+                          handleLevelInfo({
+                            level: 'MASTER',
+                          })
+                        }
+                      >
+                        Play
+                      </PlayButton>
+                    </ButtonWrapper>
+                  </CardBack>
+                </CardInner>
+              </CardBoxHover>
+            </LevelBox>
+          </LevelWrapper>
+        </LayOut>
       </ImgWrapper>
     </PageWrapper>
   );
@@ -185,21 +207,21 @@ const LevelWrapper = styled.div`
   align-items: center;
   margin-top: 11em;
   padding-left: 1em;
-  padding-right:1em;
+  padding-right: 1em;
   width: 100%;
   height: 100%;
 
   scroll-behavior: smooth;
 
   &::-webkit-scrollbar {
-      width: 0.5em;
-      height: 0.5em;
-      background: none;
+    width: 0.5em;
+    height: 0.5em;
+    background: none;
   }
 
   &:hover::-webkit-scrollbar-thumb {
     border-radius: 1.875em;
-    background-color: #B01814;
+    background-color: #b01814;
   }
 
   @media (max-width: 90em) {
@@ -270,7 +292,7 @@ const CardBack = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url(${props => props.$backgroundImage});
+  background-image: url(${(props) => props.$backgroundImage});
   background-size: cover;
   background-position: center;
 `;
@@ -318,7 +340,9 @@ const ButtonWrapper = styled.div`
   width: 10.85em;
   height: 3em;
   opacity: 0;
-  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+  transition:
+    opacity 0.4s ease-in-out,
+    transform 0.4s ease-in-out;
   position: absolute;
   bottom: -2.5em;
   backface-visibility: hidden;
@@ -329,7 +353,7 @@ const PlayButton = styled.button`
   height: 100%;
   border-radius: 0.375em;
   border: none;
-  background-color: #B01814;
+  background-color: #b01814;
   color: #fff;
   font-size: 2em;
   font-family: 'Vitro-Core';

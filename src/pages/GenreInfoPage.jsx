@@ -4,28 +4,27 @@ import styled from 'styled-components';
 import JokerHeadIcon from '../shared/assets/images/genre/jokerheadicon.png';
 import NoImage from '../shared/assets/images/common/nophotos.png';
 import { getGenreRoomListAPI } from '../features/genreInfo/api/genreInfoAPI';
-import {StyledSearchIcon, StyledInput, StyledEnterIcon} from './MainPage';
+import { StyledSearchIcon, StyledInput, StyledEnterIcon } from './MainPage';
 
 export default function GenreInfoPage() {
   const location = useLocation();
   const [genreRoomList, setGenreRoomList] = useState([]);
-  const [genre, ] = useState(location.state.genre || 'FANTASY');
-  const [page, ] = useState(1); // 우선 첫 페이지만 초기값으로 설정
+  const [genre] = useState(location.state.genre || 'FANTASY');
+  const [page] = useState(1); // 우선 첫 페이지만 초기값으로 설정
 
   useEffect(() => {
-    const fetchData= async () => {
+    const fetchData = async () => {
       try {
         const response = await getGenreRoomListAPI(genre, page);
         console.log('받은 데이터: ', response);
         setGenreRoomList(response.contents);
         console.log('response.contents: ', response.contents);
       } catch (error) {
-          console.error('장르 기반 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
+        console.error('장르 기반 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
       }
-    }
+    };
     fetchData();
   }, [genre, page]);
-
 
   // 레이아웃 구현 위해 임시로 만든 data
   // const genreData = [
@@ -96,17 +95,17 @@ export default function GenreInfoPage() {
   // ];
 
   const genreKoreanName = {
-    SENTIMENTAL : "감성",
-    HORROR : "공포",
-    DETECTIVE : "추리",
-    COMIC : "코믹",
-    MYSTERY : "미스테리",
-    FANTASY : "판타지",
-    ADVENTURE : "어드벤처",
-    ETC : "기타",
-  }
+    SENTIMENTAL: '감성',
+    HORROR: '공포',
+    DETECTIVE: '추리',
+    COMIC: '코믹',
+    MYSTERY: '미스테리',
+    FANTASY: '판타지',
+    ADVENTURE: '어드벤처',
+    ETC: '기타',
+  };
 
-  const getKoreanGenre = (genre) => genreKoreanName[genre] || "기타";
+  const getKoreanGenre = (genre) => genreKoreanName[genre] || '기타';
 
   // const difficultyLevels = [
   //   "매우 쉬움", // 0
@@ -119,42 +118,38 @@ export default function GenreInfoPage() {
 
   // 난이도 단계 임의로 처리, 추후에 수정 가능
   const getDifficultyText = (level) => {
-    if (level < 0) return "알 수 없음"; // 음수는 잘못된 값 처리
-    if (level < 1) return "매우 쉬움"; // 0.0 ~ 0.9
-    if (level < 2) return "쉬움";     // 1.0 ~ 1.9
-    if (level < 3) return "보통";     // 2.0 ~ 2.9
-    if (level < 4) return "어려움";   // 3.0 ~ 3.9
-    if (level < 5) return "매우 어려움"; // 4.0 ~ 4.9
-    if (level == 5) return "극한"; // 5.0
-    return "알 수 없음"; // 5.0 초과는 기본값 처리
+    if (level < 0) return '알 수 없음'; // 음수는 잘못된 값 처리
+    if (level < 1) return '매우 쉬움'; // 0.0 ~ 0.9
+    if (level < 2) return '쉬움'; // 1.0 ~ 1.9
+    if (level < 3) return '보통'; // 2.0 ~ 2.9
+    if (level < 4) return '어려움'; // 3.0 ~ 3.9
+    if (level < 5) return '매우 어려움'; // 4.0 ~ 4.9
+    if (level == 5) return '극한'; // 5.0
+    return '알 수 없음'; // 5.0 초과는 기본값 처리
   };
 
   return (
     <Wrapper>
-
       <InfoHeaderWrapper>
-
         <InfoHeader>
           <HeaderIcon src={JokerHeadIcon} />
           <LevelText>방린이</LevelText>
         </InfoHeader>
 
         <InputWrapper>
-          <StyledSearchIcon/>
-            <StyledInput placeholder='검색어를 입력하세요.'/>
-          <StyledEnterIcon/>
+          <StyledSearchIcon />
+          <StyledInput placeholder="검색어를 입력하세요." />
+          <StyledEnterIcon />
         </InputWrapper>
-
       </InfoHeaderWrapper>
 
       <InfoBoxWrapper>
         {genreRoomList.map((room) => (
           <InfoBox key={room.id}>
-            
             {room.img ? (
               <MainImgWrapper>
                 <MainImg src={room.img} alt="방탈출 이미지" />
-                <Overlay className='overlay'>
+                <Overlay className="overlay">
                   <CircleWrapper>
                     <CircleTag>난이도</CircleTag>
                     <Circle>
@@ -173,15 +168,13 @@ export default function GenreInfoPage() {
                       <OverlayText>{getKoreanGenre(room.themeGenre)}</OverlayText>
                     </Circle>
                   </CircleWrapper>
-                  
                 </Overlay>
               </MainImgWrapper>
-              
             ) : (
               <NoImgWrapper>
                 <NoImg src={NoImage} alt="이미지 없음" />
                 <NoImgText>No Image</NoImgText>
-                <Overlay className='overlay'>
+                <Overlay className="overlay">
                   <CircleWrapper>
                     <CircleTag>난이도</CircleTag>
                     <Circle>
@@ -200,14 +193,13 @@ export default function GenreInfoPage() {
                       <OverlayText>{getKoreanGenre(room.themeGenre)}</OverlayText>
                     </Circle>
                   </CircleWrapper>
-                  
                 </Overlay>
               </NoImgWrapper>
             )}
             <InfoFooter>
               {/* <TextWrapper> */}
-                <MainText>{room.pointName}</MainText>
-                {/* <SubText>{room.stationName}</SubText> */}
+              <MainText>{room.pointName}</MainText>
+              {/* <SubText>{room.stationName}</SubText> */}
               {/* </TextWrapper> */}
               <InfoDetail>{room.name}</InfoDetail>
             </InfoFooter>
@@ -250,7 +242,7 @@ const InfoBoxWrapper = styled.div`
 const InfoBox = styled.div`
   width: 16em;
   height: 20.3125em;
-  border-radius:  0.3125em;
+  border-radius: 0.3125em;
   margin: 1em;
   padding-top: 1em;
   padding-right: 1.8em;
@@ -262,7 +254,7 @@ const InfoBox = styled.div`
   justify-content: space-between;
   align-items: center;
 
-  background-color: #3B3B3B;
+  background-color: #3b3b3b;
 
   &:hover .overlay {
     opacity: 1;
@@ -277,7 +269,7 @@ const InfoHeader = styled.div`
   margin-top: 0.5em;
   padding-left: 1em;
   gap: 1.3em;
-  background-color: #3B3B3B;
+  background-color: #3b3b3b;
   border-radius: 1.25em;
 `;
 
@@ -287,7 +279,7 @@ const HeaderIcon = styled.img`
   padding: 0.1em;
   border-radius: 100%;
   object-fit: contain;
-  background: radial-gradient(50% 50% at 50% 50%, #1A1A1A 0%, #808080 100%);
+  background: radial-gradient(50% 50% at 50% 50%, #1a1a1a 0%, #808080 100%);
 `;
 
 const LevelText = styled.div`
@@ -303,15 +295,15 @@ const MainText = styled.div`
 `;
 
 const InputWrapper = styled.div`
-    border: 3px solid rgba(148,0,0.8);
-    border-radius: 1em;
-    width: 100%;
-    height: 3em;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: rgba(148,0,0,0.15);
-    box-shadow: 0 0.3em 1em 0.1em #111111;
+  border: 3px solid rgba(148, 0, 0.8);
+  border-radius: 1em;
+  width: 100%;
+  height: 3em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(148, 0, 0, 0.15);
+  box-shadow: 0 0.3em 1em 0.1em #111111;
 `;
 
 const MainImgWrapper = styled.div`
@@ -369,7 +361,7 @@ const Circle = styled.div`
   height: 3.5em;
   // padding: 0.5em;
   border-radius: 50%;
-  background:  #383838;
+  background: #383838;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -399,7 +391,7 @@ const NoImgWrapper = styled.div`
   align-items: center;
   gap: 1em;
   border-radius: 0.625em;
-  position: relative; 
+  position: relative;
 `;
 
 const NoImg = styled.img`
@@ -435,11 +427,11 @@ const Button = styled.div`
   height: 2.8em;
   border: none;
   border-radius: 0.3125em;
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  background-color: #940000
+  background-color: #940000;
 `;
 
 const ButtonText = styled.div`
