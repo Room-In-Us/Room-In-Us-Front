@@ -17,7 +17,7 @@ function SignupModal({ isOpen }) {
           지금 입력하지 않더라도 나중에 마이페이지에서 설정이 가능합니다.
         </p>
         <ButtonWrapper>
-          <StyledButton onClick={() => navigate('/')}>다음에 할게요</StyledButton>
+          <StyledButton onClick={() => navigate('/login')}>다음에 할게요</StyledButton>
           <StyledButton onClick={() => navigate('/userInfo')}>입력하기</StyledButton>
         </ButtonWrapper>
       </ModalWrapper>
@@ -43,7 +43,7 @@ const ContentWrapper = styled.div`
   left: 0;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 2000;
   backdrop-filter: blur(3px);
 `;
 

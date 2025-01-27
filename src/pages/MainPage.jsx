@@ -1,62 +1,43 @@
-import { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { useDrag } from 'react-use-gesture';
-import LocationCard from '../shared/assets/images/main/locationCard.png';
-import GenreCard from '../shared/assets/images/main/genreCard.png';
-import LevelCard from '../shared/assets/images/main/levelCard.png';
-import CenterLine from '../shared/assets/images/main/cardCenterLine.png';
 import SearchIcon from '../shared/assets/icons/main/searchIcon.svg?react';
 import EnterIcon from '../shared/assets/icons/main/enterIcon.svg?react';
+import LogoIcon from '../shared/assets/icons/common/logo.svg?react';
+import LocationSection from '../features/main/ui/LocationSection';
+import LevelSection from '../features/main/ui/LevelSection';
+import GenreSection from '../features/main/ui/GenreSection';
 
 function MainPage() {
-  // state 관리
-  const [positions, setPositions] = useState(['left', 'center', 'right']);
-
-  // 카드 드래깅 함수
-  const bind = useDrag(({ direction: [dx], down, distance }) => {
-    if (!down && distance > 10) {
-      if (dx > 0) {
-        // 오른쪽으로 드래깅
-        setPositions(([left, center, right]) => [center, right, left]);
-      } else {
-        // 왼쪽으로 드래깅
-        setPositions(([left, center, right]) => [right, left, center]);
-      }
-    }
-  });
-
-  // navigate
   const navigate = useNavigate();
 
   return (
     <PageWrapper>
+      {/* 로고 영역 */}
+      <LogoWrapper>
+        <StyledLogoIcon/>
+      </LogoWrapper>
+      
       {/* 검색 영역 */}
       <InputWrapper>
         <StyledSearchIcon />
-        <StyledInput placeholder="검색어를 입력하세요." />
+        <StyledInput placeholder="오늘 에약하고 싶은 테마는?" />
         <StyledEnterIcon />
       </InputWrapper>
+      <CategoryButtonWrapper>
+        <CategoryButton onClick={() => navigate('/location')}>지역별로 모아보기</CategoryButton>
+        <CategoryButton onClick={() => navigate('/level')}>숙련도별로 모아보기</CategoryButton>
+        <CategoryButton onClick={() => navigate('/genre')}>장르별로 모아보기</CategoryButton>
+      </CategoryButtonWrapper>
 
-      {/* 카드 영역 */}
-      <CardWrapper {...bind()}>
-        <Card className={positions[0]} onClick={() => navigate('/Level')}>
-          <StyledImg src={LevelCard} alt="숙련도" />
-        </Card>
-        <Card className={positions[1]} onClick={() => navigate('/location')}>
-          <StyledImg src={LocationCard} alt="위치" />
-        </Card>
-        <Card className={positions[2]} onClick={() => navigate('/Genre')}>
-          <StyledImg src={GenreCard} alt="장르" />
-        </Card>
-      </CardWrapper>
+      {/* 지역 영역 */}
+      <LocationSection/>
 
-      {/* 하단 라인 영역 */}
-      <CardLineWrapper>
-        <StyledCenterLine className={positions[0]} src={CenterLine} alt="하단라인" />
-        <StyledCenterLine className={positions[1]} src={CenterLine} alt="하단라인" />
-        <StyledCenterLine className={positions[2]} src={CenterLine} alt="하단라인" />
-      </CardLineWrapper>
+      {/* 숙련도 영역 */}
+      <LevelSection/>
+
+      {/* 장르 영역 */}
+      <GenreSection/>
+
     </PageWrapper>
   );
 }
@@ -73,11 +54,17 @@ const PageWrapper = styled.div`
   align-items: center;
 `;
 
+const LogoWrapper = styled.div`
+`;
+
+const StyledLogoIcon = styled(LogoIcon)`
+`;
+
 const InputWrapper = styled.div`
-  margin-bottom: 5em;
+  margin-bottom: 2em;
   border: 3px solid rgba(148, 0, 0.8);
   border-radius: 1em;
-  width: 70vw;
+  width: 30rem;
   height: 3em;
   display: flex;
   justify-content: space-between;
@@ -107,87 +94,15 @@ export const StyledEnterIcon = styled(EnterIcon)`
   cursor: pointer;
 `;
 
-const CardWrapper = styled.div`
-  position: relative;
-  margin: 0 10%;
-  width: 80%;
-  height: 25em;
+const CategoryButtonWrapper = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  perspective: 1500px;
 `;
 
-const Card = styled.div`
-  position: absolute;
-  border-radius: 2em;
-  width: 28.40574em;
-  height: 26.22818em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.5s ease;
-  will-change: transform;
-  backface-visibility: hidden;
+const CategoryButton = styled.button`
+  margin: 0 1rem;
+  border: none;
+  border-radius: 10px;
+  width: 10rem;
+  height: 4rem;
   cursor: pointer;
-
-  &.left {
-    transform: translateX(-23em) scale(0.7) rotateY(70deg);
-    z-index: 1;
-    filter: brightness(70%);
-  }
-
-  &.center {
-    transform: translateX(0) scale(1) rotateY(0deg);
-    z-index: 2;
-  }
-
-  &.right {
-    transform: translateX(23em) scale(0.7) rotateY(-70deg);
-    z-index: 1;
-    filter: brightness(70%);
-  }
-`;
-
-const StyledImg = styled.img`
-  border-radius: 2em;
-  width: 100%;
-  height: 100%;
-`;
-
-const CardLineWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  perspective: 1500px;
-`;
-
-const StyledCenterLine = styled.img`
-  position: absolute;
-  margin: 3em 3em 0 3em;
-  width: 42.024em;
-  height: 2.228em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.5s ease;
-  will-change: transform;
-  backface-visibility: hidden;
-  cursor: pointer;
-
-  &.left {
-    transform: translateX(-28em) scale(0.2) rotate(20deg);
-    z-index: 1;
-  }
-
-  &.center {
-    transform: translateY(3em) scale(1) rotateY(0deg);
-    z-index: 2;
-  }
-
-  &.right {
-    transform: translateX(28em) scale(0.2) rotate(-20deg);
-    z-index: 1;
-  }
 `;
