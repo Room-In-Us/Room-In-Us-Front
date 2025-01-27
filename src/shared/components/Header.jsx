@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import useDevice from '../../shared/hooks/useDevice';
 import MenuIcon from '../../shared/assets/icons/common/menuIcon.svg?react';
 import CancelIcon from '../../shared/assets/icons/common/cancelIcon.svg?react';
-import LogoIcon from '../../shared/assets/icons/common/logo.svg?react';
+// import LogoIcon from '../../shared/assets/icons/common/logo.svg?react';
 import { getAccessToken } from '../../app/API';
 
 function Header() {
@@ -89,10 +89,14 @@ function Header() {
       <HeaderWrapper>
         {isDesktop && (
           <>
-            <StyledLogoIcon onClick={() => handleNavigation('/')} />
+            {/* <StyledLogoIcon onClick={() => handleNavigation('/')} /> */}
             <ButtonWrapper>
               <StyledButton onClick={() => handleNavigation('/')}>홈</StyledButton>
-              <StyledButton onClick={() => handleNavigation('/board')}>게시판</StyledButton>
+              <StyledButton onClick={() => handleNavigation('/location')}>지역</StyledButton>
+              <StyledButton onClick={() => handleNavigation('/level')}>숙련도</StyledButton>
+              <StyledButton onClick={() => handleNavigation('/genre')}>장르</StyledButton>
+            </ButtonWrapper>
+            <ButtonWrapper>
               <StyledButton onClick={() => handleNavigation('/mypage')}>마이페이지</StyledButton>
               {isLoggedIn ? (
                 <StyledButton onClick={handleLogout}>로그아웃</StyledButton>
@@ -104,10 +108,14 @@ function Header() {
         )}
         {isTablet && (
           <>
-            <StyledLogoIcon onClick={() => handleNavigation('/')} />
+            {/* <StyledLogoIcon onClick={() => handleNavigation('/')} /> */}
             <ButtonWrapper>
               <StyledButton onClick={() => handleNavigation('/')}>홈</StyledButton>
-              <StyledButton onClick={() => handleNavigation('/board')}>게시판</StyledButton>
+              <StyledButton onClick={() => handleNavigation('/location')}>지역</StyledButton>
+              <StyledButton onClick={() => handleNavigation('/level')}>숙련도</StyledButton>
+              <StyledButton onClick={() => handleNavigation('/genre')}>장르</StyledButton>
+            </ButtonWrapper>
+            <ButtonWrapper>
               <StyledButton onClick={() => handleNavigation('/mypage')}>마이페이지</StyledButton>
               {isLoggedIn ? (
                 <StyledButton onClick={handleLogout}>로그아웃</StyledButton>
@@ -119,7 +127,7 @@ function Header() {
         )}
         {isMobile && (
           <>
-            <StyledLogoIcon onClick={() => handleNavigation('/')} />
+            {/* <StyledLogoIcon onClick={() => handleNavigation('/')} /> */}
             <StyledMenuIcon onClick={() => handleMenu()} />
           </>
         )}
@@ -131,7 +139,9 @@ function Header() {
           <StyledCancelIcon onClick={() => handleMenu()} />
           <MobileButtonWrapper>
             <MobileButton onClick={() => handleNavigation('/')}>홈</MobileButton>
-            <MobileButton onClick={() => handleNavigation('/board')}>게시판</MobileButton>
+            <MobileButton onClick={() => handleNavigation('/location')}>지역</MobileButton>
+            <MobileButton onClick={() => handleNavigation('/level')}>숙련도</MobileButton>
+            <MobileButton onClick={() => handleNavigation('/genre')}>장르</MobileButton>
             <MobileButton onClick={() => handleNavigation('/mypage')}>마이페이지</MobileButton>
             {isLoggedIn ? (
               <MobileButton onClick={handleLogout}>로그아웃</MobileButton>
@@ -159,7 +169,7 @@ const HeaderWrapper = styled.div`
   background-color: #1a1a1a;
   background-color: rgba(26, 26, 26, 0.9);
   backdrop-filter: blur(15px);
-  z-index: 2000;
+  z-index: 1900;
   box-sizing: border-box;
 
   @media (max-width: 1024px) {
@@ -172,19 +182,19 @@ const HeaderWrapper = styled.div`
   }
 `;
 
-const StyledLogoIcon = styled(LogoIcon)`
-  height: 4.5em;
-  cursor: pointer;
+// const StyledLogoIcon = styled(LogoIcon)`
+//   height: 4.5em;
+//   cursor: pointer;
 
-  @media (max-width: 1024px) {
-    // 태블릿
-    height: 3.8em;
-  }
-  @media (max-width: 768px) {
-    // 모바일
-    height: 3em;
-  }
-`;
+//   @media (max-width: 1024px) {
+//     // 태블릿
+//     height: 3.8em;
+//   }
+//   @media (max-width: 768px) {
+//     // 모바일
+//     height: 3em;
+//   }
+// `;
 
 const ButtonWrapper = styled.div`
   height: 2em;
