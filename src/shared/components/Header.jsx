@@ -93,7 +93,7 @@ function Header() {
             <ButtonWrapper>
               <StyledButton onClick={() => handleNavigation('/')}>홈</StyledButton>
               <StyledButton onClick={() => handleNavigation('/location')}>지역</StyledButton>
-              <StyledButton onClick={() => handleNavigation('/level')}>숙련도</StyledButton>
+              <StyledButton onClick={() => handleNavigation('/levelSearch')}>숙련도</StyledButton>
               <StyledButton onClick={() => handleNavigation('/genre')}>장르</StyledButton>
             </ButtonWrapper>
             <ButtonWrapper>
@@ -112,7 +112,7 @@ function Header() {
             <ButtonWrapper>
               <StyledButton onClick={() => handleNavigation('/')}>홈</StyledButton>
               <StyledButton onClick={() => handleNavigation('/location')}>지역</StyledButton>
-              <StyledButton onClick={() => handleNavigation('/level')}>숙련도</StyledButton>
+              <StyledButton onClick={() => handleNavigation('/levelSearch')}>숙련도</StyledButton>
               <StyledButton onClick={() => handleNavigation('/genre')}>장르</StyledButton>
             </ButtonWrapper>
             <ButtonWrapper>
@@ -140,7 +140,7 @@ function Header() {
           <MobileButtonWrapper>
             <MobileButton onClick={() => handleNavigation('/')}>홈</MobileButton>
             <MobileButton onClick={() => handleNavigation('/location')}>지역</MobileButton>
-            <MobileButton onClick={() => handleNavigation('/level')}>숙련도</MobileButton>
+            <MobileButton onClick={() => handleNavigation('/levelSearch')}>숙련도</MobileButton>
             <MobileButton onClick={() => handleNavigation('/genre')}>장르</MobileButton>
             <MobileButton onClick={() => handleNavigation('/mypage')}>마이페이지</MobileButton>
             {isLoggedIn ? (
