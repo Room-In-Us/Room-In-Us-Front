@@ -16,6 +16,7 @@ import EditUserInfoPage from '../pages/EditUserInfoPage';
 import { LoadScript } from '@react-google-maps/api';
 import { useSetRecoilState } from 'recoil';
 import { mapsLoadedState } from '../features/location/model/locationAtom';
+import LevelSearchPage from '../pages/LevelSearchPage';
 
 function App() {
   const setMapsLoaded = useSetRecoilState(mapsLoadedState);
@@ -47,6 +48,7 @@ function App() {
           {/* 숙련도 페이지 */}
           <Route path="/level" element={<LevelPage />} />
           <Route path="/levelInfo" element={<LevelInfoPage />} />
+          <Route path='/levelSearch' element={<LevelSearchPage/>}/>
 
           {/* 장르 페이지 */}
           <Route path="/genre" element={<GenrePage />} />
