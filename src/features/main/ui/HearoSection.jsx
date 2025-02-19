@@ -119,15 +119,6 @@ const ButtonWrapper = styled.div`
   gap: 1.875rem;
 `;
 
-const StyledButton = styled.div`
-  width: 7.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-`;
-
 const ButtonTop = styled.div`
   border-radius: 0.46875rem 0.46875rem 0 0;
   width: 100%;
@@ -136,6 +127,24 @@ const ButtonTop = styled.div`
   justify-content: center;
   align-items: center;
   background-color: #F9F9FB;
+  transition: background 0.3s ease-in-out;
+`;
+
+const StyledButton = styled.div`
+  width: 7.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  
+  &:hover ${ButtonTop} {
+    background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
+    transition: background 0.3s ease-in-out;
+  }
+  &:hover svg {
+    fill: #F9F9FB;
+  }
 `;
 
 const ButtonBottom = styled.div`

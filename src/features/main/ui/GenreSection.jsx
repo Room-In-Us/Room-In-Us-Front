@@ -44,7 +44,7 @@ export default GenreSection;
 // CSS
 const SectionWrapper = styled.div`
   margin-top: 2rem;
-  width: 50rem;
+  width: 70rem;
   display: flex;
   flex-direction: column;
   align-items: center;
