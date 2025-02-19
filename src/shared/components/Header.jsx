@@ -113,8 +113,8 @@ function Header() {
                   isActive={location.pathname === '/location'}
                 >지역 검색</StyledButton>
                 <StyledButton
-                  onClick={() => handleNavigation('/levelSearch')}
-                  isActive={location.pathname === '/levelSearch'}
+                  onClick={() => handleNavigation('/level')}
+                  isActive={location.pathname === '/level'}
                 >숙련도 검색</StyledButton>
                 <StyledButton
                   onClick={() => handleNavigation('/genre')}
@@ -142,37 +142,10 @@ function Header() {
           </>
         )}
 
+        {/* 태블릿 버전 */}
         {isTablet && (
           <>
-            <SectionWrapper>
-              <StyledLogoIcon onClick={() => handleNavigation('/')} />
-              <ButtonWrapper>
-                <StyledButton
-                  onClick={() => handleNavigation('/')}
-                  isActive={location.pathname === '/'}
-                >홈 피드</StyledButton>
-                <StyledButton
-                  onClick={() => handleNavigation('/location')}
-                  isActive={location.pathname === '/location'}
-                >지역 검색</StyledButton>
-                <StyledButton
-                  onClick={() => handleNavigation('/levelSearch')}
-                  isActive={location.pathname === '/levelSearch'}
-                >숙련도 검색</StyledButton>
-                <StyledButton
-                  onClick={() => handleNavigation('/genre')}
-                  isActive={location.pathname === '/genre'}
-                >장르 검색</StyledButton>
-              </ButtonWrapper>
-            </SectionWrapper>
-            <SectionWrapper>
-              <StyledButton onClick={() => handleNavigation('/mypage')}>마이페이지</StyledButton>
-              {isLoggedIn ? (
-                <StyledButton onClick={handleLogout}>로그아웃</StyledButton>
-              ) : (
-                <StyledButton onClick={() => handleNavigation('/login')}>로그인</StyledButton>
-              )}
-            </SectionWrapper>
+
           </>
         )}
         {isMobile && (
@@ -219,7 +192,7 @@ border: 1px solid red;
   justify-content: space-between;
   align-items: center;
   z-index: 1900;
-  backdrop-filter: blur(15px);
+  // backdrop-filter: blur(15px);
 
   @media (max-width: 1024px) {
     // 태블릿

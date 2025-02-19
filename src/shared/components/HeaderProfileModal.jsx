@@ -6,10 +6,12 @@ import MypageIcon from "../assets/icons/common/myPageIcon.svg?react"
 import LogoutIcon from "../assets/icons/common/logoutIcon.svg?react";
 import { useNavigate } from "react-router-dom";
 import { getAccessToken } from '../../app/API';
+import { getMemberInfoAPI } from "../../features/auth/api/memberAPI";
 
 function HeaderProfileModal({ visible }) {
   const navigate = useNavigate();
   const [, setIsLoggedIn] = useState(false);
+  const [nickname, setNickname] = useState('');
 
   // 로그인 상태 확인
   const token = getAccessToken(); // 토큰 가져오기
@@ -37,10 +39,24 @@ function HeaderProfileModal({ visible }) {
     navigate('/login');
   };
 
+  // 닉네임 가져오기
+  useEffect(() => {
+    const fetchNickName = async () => {
+      try {
+        const response = await getMemberInfoAPI();
+        console.log('api로 받은 닉네임:', response.nickname);
+        setNickname(response.nickname);
+      } catch (error) {
+        console.error('닉네임 불러오는 중 오류 발생:', error);
+      }
+    };
+    fetchNickName();
+  }, []);
+
   return (
     <ModalWrapper visible={visible}>
       <StyledColorR />
-      <StyledText>선방 님</StyledText>
+      <StyledText>{nickname} 님</StyledText>
       <StyledHr/>
       <ButtonWrapper>
         <StyledMypageIcon onClick={() => navigate('/mypage')}/>
