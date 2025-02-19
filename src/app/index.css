@@ -13,7 +13,7 @@ body {
   }
   &:hover::-webkit-scrollbar-thumb {
     border-radius: 30px;
-    background-color: darkgray;
+    background-color: #8DA3FF;
   }
 }
 

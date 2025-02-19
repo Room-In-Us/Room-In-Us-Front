@@ -15,6 +15,7 @@ function Header() {
   // state 관리
   const [isVisibleProfile, setIsVisibleProfile] = useState(false);
   const [isVisibleMenu, setIsVisibleMenu] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
 
   // navigate, location
@@ -95,9 +96,24 @@ function Header() {
     setIsVisibleProfile(false);
   }, [location.pathname]);
 
+  // 스크롤 이벤트 핸들러
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {  // 10px 이상 스크롤 시 효과 적용
+        setHasScrolled(true);
+      } else {
+        setHasScrolled(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <>
-      <HeaderWrapper>
+      <HeaderWrapper hasScrolled={hasScrolled}>
         {/* PC 버전 */}
         {isDesktop && (
           <>
@@ -182,7 +198,6 @@ export default Header;
 
 // CSS
 const HeaderWrapper = styled.div`
-border: 1px solid red;
   padding: 0 3.75rem;
   box-sizing: border-box;
   width: 100%;
@@ -192,14 +207,14 @@ border: 1px solid red;
   justify-content: space-between;
   align-items: center;
   z-index: 1900;
-  // backdrop-filter: blur(15px);
+  background: ${({ hasScrolled }) => (hasScrolled ? 'rgba(255, 255, 255, 0.3)' : 'transparent')};
+  backdrop-filter: ${({ hasScrolled }) => (hasScrolled ? 'blur(15px)' : 'none')};
+  transition: all 0.3s ease-in-out;
 
   @media (max-width: 1024px) {
-    // 태블릿
     padding-left: 2.5em;
   }
   @media (max-width: 768px) {
-    // 모바일
     padding-left: 1em;
   }
 `;

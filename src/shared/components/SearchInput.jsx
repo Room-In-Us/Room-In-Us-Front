@@ -5,11 +5,12 @@ import SearchIcon from '../../shared/assets/icons/common/searchIcon.svg?react';
 import CancelIcon from '../../shared/assets/icons/common/cancelIcon.svg?react';
 
 function SearchInput({ type }) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(type !== 'header');
 
   return (
     <InputWrapper
       expanded={expanded}
+      isHeader={type === 'header'}
       onClick={() => setExpanded(true)}
     >
       <StyledSearchIcon />
@@ -18,13 +19,15 @@ function SearchInput({ type }) {
         type="text"
         placeholder='오늘 예약하고 싶은 테마는?'
       />
-      <StyledCancelIcon
-        expanded={expanded}
-        onClick={(event) => {
-          event.stopPropagation();
-          setExpanded(false);
-        }}
-      />
+      {type === 'header' && (
+        <StyledCancelIcon
+          expanded={expanded}
+          onClick={(event) => {
+            event.stopPropagation();
+            setExpanded(false);
+          }}
+        />
+      )}
     </InputWrapper>
   );
 }
@@ -41,7 +44,6 @@ const InputWrapper = styled.div`
   border-radius: 30px;
   padding: 0 0.703125rem;
   box-sizing: border-box;
-  margin-left: 1.25rem;
   width: ${({ expanded }) => (expanded ? '21.875rem' : '2.8125rem')};
   height: 2.8125rem;
   display: flex;
