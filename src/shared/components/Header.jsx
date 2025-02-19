@@ -1,19 +1,25 @@
 import styled from 'styled-components';
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useDevice from '../../shared/hooks/useDevice';
 import MenuIcon from '../../shared/assets/icons/common/menuIcon.svg?react';
 import CancelIcon from '../../shared/assets/icons/common/cancelIcon.svg?react';
-// import LogoIcon from '../../shared/assets/icons/common/logo.svg?react';
+import LogoIcon from '../../shared/assets/icons/common/logo.svg?react';
+import LoginIcon from '../../shared/assets/icons/common/loginIcon.svg?react';
+import ProfileIcon from '../../shared/assets/icons/common/profileIcon.svg?react';
 import { getAccessToken } from '../../app/API';
+import SearchInput from './SearchInput';
+import HeaderProfileModal from './HeaderProfileModal';
 
 function Header() {
   // state 관리
+  const [isVisibleProfile, setIsVisibleProfile] = useState(false);
   const [isVisibleMenu, setIsVisibleMenu] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
 
-  // navigate
+  // navigate, location
   const navigate = useNavigate();
+  const location = useLocation();
 
   // 페이지 이동
   const handleNavigation = (path) => {
@@ -84,50 +90,94 @@ function Header() {
     navigate('/login');
   };
 
+  // 페이지 이동 시 프로필 모달 닫기
+  useEffect(() => {
+    setIsVisibleProfile(false);
+  }, [location.pathname]);
+
   return (
     <>
       <HeaderWrapper>
+        {/* PC 버전 */}
         {isDesktop && (
           <>
-            {/* <StyledLogoIcon onClick={() => handleNavigation('/')} /> */}
-            <ButtonWrapper>
-              <StyledButton onClick={() => handleNavigation('/')}>홈</StyledButton>
-              <StyledButton onClick={() => handleNavigation('/location')}>지역</StyledButton>
-              <StyledButton onClick={() => handleNavigation('/levelSearch')}>숙련도</StyledButton>
-              <StyledButton onClick={() => handleNavigation('/genre')}>장르</StyledButton>
-            </ButtonWrapper>
-            <ButtonWrapper>
-              <StyledButton onClick={() => handleNavigation('/mypage')}>마이페이지</StyledButton>
+            <SectionWrapper>
+              <StyledLogoIcon onClick={() => handleNavigation('/')} />
+              <ButtonWrapper>
+                <StyledButton
+                  onClick={() => handleNavigation('/')}
+                  isActive={location.pathname === '/'}
+                >홈 피드</StyledButton>
+                <StyledButton
+                  onClick={() => handleNavigation('/location')}
+                  isActive={location.pathname === '/location'}
+                >지역 검색</StyledButton>
+                <StyledButton
+                  onClick={() => handleNavigation('/levelSearch')}
+                  isActive={location.pathname === '/levelSearch'}
+                >숙련도 검색</StyledButton>
+                <StyledButton
+                  onClick={() => handleNavigation('/genre')}
+                  isActive={location.pathname === '/genre'}
+                >장르 검색</StyledButton>
+              </ButtonWrapper>
+            </SectionWrapper>
+            <SectionWrapper>
+              {/* 검색 */}
+              <SearchInput type="header"/>
+              {/* 로그인, 프로필 */}
               {isLoggedIn ? (
-                <StyledButton onClick={handleLogout}>로그아웃</StyledButton>
+                <ProfileWrapper>
+                  <CircleButton onClick={() => setIsVisibleProfile(!isVisibleProfile)}>
+                    <StyledProfileIcon/>
+                  </CircleButton>
+                  <HeaderProfileModal visible={isVisibleProfile}/>
+                </ProfileWrapper>
               ) : (
-                <StyledButton onClick={() => handleNavigation('/login')}>로그인</StyledButton>
+                <CircleButton onClick={() => handleNavigation('/login')}>
+                  <StyledLoginIcon/>
+                </CircleButton>
               )}
-            </ButtonWrapper>
+            </SectionWrapper>
           </>
         )}
+
         {isTablet && (
           <>
-            {/* <StyledLogoIcon onClick={() => handleNavigation('/')} /> */}
-            <ButtonWrapper>
-              <StyledButton onClick={() => handleNavigation('/')}>홈</StyledButton>
-              <StyledButton onClick={() => handleNavigation('/location')}>지역</StyledButton>
-              <StyledButton onClick={() => handleNavigation('/levelSearch')}>숙련도</StyledButton>
-              <StyledButton onClick={() => handleNavigation('/genre')}>장르</StyledButton>
-            </ButtonWrapper>
-            <ButtonWrapper>
+            <SectionWrapper>
+              <StyledLogoIcon onClick={() => handleNavigation('/')} />
+              <ButtonWrapper>
+                <StyledButton
+                  onClick={() => handleNavigation('/')}
+                  isActive={location.pathname === '/'}
+                >홈 피드</StyledButton>
+                <StyledButton
+                  onClick={() => handleNavigation('/location')}
+                  isActive={location.pathname === '/location'}
+                >지역 검색</StyledButton>
+                <StyledButton
+                  onClick={() => handleNavigation('/levelSearch')}
+                  isActive={location.pathname === '/levelSearch'}
+                >숙련도 검색</StyledButton>
+                <StyledButton
+                  onClick={() => handleNavigation('/genre')}
+                  isActive={location.pathname === '/genre'}
+                >장르 검색</StyledButton>
+              </ButtonWrapper>
+            </SectionWrapper>
+            <SectionWrapper>
               <StyledButton onClick={() => handleNavigation('/mypage')}>마이페이지</StyledButton>
               {isLoggedIn ? (
                 <StyledButton onClick={handleLogout}>로그아웃</StyledButton>
               ) : (
                 <StyledButton onClick={() => handleNavigation('/login')}>로그인</StyledButton>
               )}
-            </ButtonWrapper>
+            </SectionWrapper>
           </>
         )}
         {isMobile && (
           <>
-            {/* <StyledLogoIcon onClick={() => handleNavigation('/')} /> */}
+            <StyledLogoIcon onClick={() => handleNavigation('/')} />
             <StyledMenuIcon onClick={() => handleMenu()} />
           </>
         )}
@@ -137,7 +187,7 @@ function Header() {
         // 메뉴바
         <MenuWrapper isVisible={isVisibleMenu} ref={menuRef}>
           <StyledCancelIcon onClick={() => handleMenu()} />
-          <MobileButtonWrapper>
+          <MobileSectionWrapper>
             <MobileButton onClick={() => handleNavigation('/')}>홈</MobileButton>
             <MobileButton onClick={() => handleNavigation('/location')}>지역</MobileButton>
             <MobileButton onClick={() => handleNavigation('/levelSearch')}>숙련도</MobileButton>
@@ -148,7 +198,7 @@ function Header() {
             ) : (
               <MobileButton onClick={() => handleNavigation('/login')}>로그인</MobileButton>
             )}
-          </MobileButtonWrapper>
+          </MobileSectionWrapper>
         </MenuWrapper>
       )}
     </>
@@ -159,18 +209,17 @@ export default Header;
 
 // CSS
 const HeaderWrapper = styled.div`
-  position: fixed;
-  padding: 0 3em;
+border: 1px solid red;
+  padding: 0 3.75rem;
+  box-sizing: border-box;
   width: 100%;
-  height: 6em;
+  height: 5.625rem;
+  position: fixed;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #1a1a1a;
-  background-color: rgba(26, 26, 26, 0.9);
-  backdrop-filter: blur(15px);
   z-index: 1900;
-  box-sizing: border-box;
+  backdrop-filter: blur(15px);
 
   @media (max-width: 1024px) {
     // 태블릿
@@ -182,38 +231,90 @@ const HeaderWrapper = styled.div`
   }
 `;
 
-// const StyledLogoIcon = styled(LogoIcon)`
-//   height: 4.5em;
-//   cursor: pointer;
+const SectionWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
 
-//   @media (max-width: 1024px) {
-//     // 태블릿
-//     height: 3.8em;
-//   }
-//   @media (max-width: 768px) {
-//     // 모바일
-//     height: 3em;
-//   }
-// `;
+const StyledLogoIcon = styled(LogoIcon)`
+  margin-right: 0.9375rem;
+  width: 3.75rem;
+  cursor: pointer;
+
+  @media (max-width: 1024px) {
+    // 태블릿
+    height: 3.8em;
+  }
+  @media (max-width: 768px) {
+    // 모바일
+    height: 3em;
+  }
+`;
 
 const ButtonWrapper = styled.div`
-  height: 2em;
-  line-height: 2em;
+  border-radius: 1.40625rem;
+  padding: 0 0.5625rem;
+  box-sizing: border-box;
+  width: 34.6875rem;
+  height: 2.8125rem;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #FFF;
 `;
 
 const StyledButton = styled.div`
-  margin-left: 4em;
-  color: white;
-  font-family: 'Pretendard-SemiBold';
-  font-size: 1.2em;
-  font-weight: 600;
+  border-radius: 1.40625rem;
+  width: 7.5rem;
+  height: 1.875rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: ${({ isActive }) => (isActive ? '#E8EAFF' : 'transparent')};
+  color: ${({ isActive }) => (isActive ? '#6680DF' : '#515467')};
+  font-family: 'Pretendard-Medium';
+  font-size: 0.875rem;
   cursor: pointer;
+  transition: all 0.2s ease;
+  &:hover{
+    background-color: #E7E8ED;
+    font-weight: 700;
+  }
 
   @media (max-width: 1024px) {
     // 태블릿
     font-size: 1em;
   }
+`;
+
+const ProfileWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const CircleButton = styled.div`
+  border-radius: 30px;
+  margin-left: 1.25rem;
+  width: 2.8125rem;
+  height: 2.8125rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #F9F9FB;
+  cursor: pointer;
+  &:hover {
+    background: linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%);
+  }
+  &:hover svg {
+    fill: #F9F9FB;
+  }
+`;
+
+const StyledLoginIcon = styled(LoginIcon)`
+  width: 1.40625rem;
+`;
+const StyledProfileIcon = styled(ProfileIcon)`
+  width: 1.40625rem;
 `;
 
 // 모바일 반응형
@@ -246,7 +347,7 @@ const StyledCancelIcon = styled(CancelIcon)`
   cursor: pointer;
 `;
 
-const MobileButtonWrapper = styled.div`
+const MobileSectionWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;

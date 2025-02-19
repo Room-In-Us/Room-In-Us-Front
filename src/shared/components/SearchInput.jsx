@@ -1,0 +1,99 @@
+import PropTypes from "prop-types";
+import styled from 'styled-components';
+import { useState } from 'react';
+import SearchIcon from '../../shared/assets/icons/common/searchIcon.svg?react';
+import CancelIcon from '../../shared/assets/icons/common/cancelIcon.svg?react';
+
+function SearchInput({ type }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <InputWrapper
+      expanded={expanded}
+      onClick={() => setExpanded(true)}
+    >
+      <StyledSearchIcon />
+      <StyledInput
+        expanded={expanded}
+        type="text"
+        placeholder='오늘 예약하고 싶은 테마는?'
+      />
+      <StyledCancelIcon
+        expanded={expanded}
+        onClick={(event) => {
+          event.stopPropagation();
+          setExpanded(false);
+        }}
+      />
+    </InputWrapper>
+  );
+}
+
+// PropTypes 정의 추가
+SearchInput.propTypes = {
+  type: PropTypes.string.isRequired,
+};
+
+export default SearchInput;
+
+// CSS
+const InputWrapper = styled.div`
+  border-radius: 30px;
+  padding: 0 0.703125rem;
+  box-sizing: border-box;
+  margin-left: 1.25rem;
+  width: ${({ expanded }) => (expanded ? '21.875rem' : '2.8125rem')};
+  height: 2.8125rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #F9F9FB;
+  transition: width 0.3s ease-in-out;
+
+  ${({ expanded }) =>
+    !expanded &&
+    `
+    &:hover, &:hover input {
+      cursor: pointer;
+      background: linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%);
+    }
+    &:hover svg {
+      fill: #F9F9FB;
+    }
+  `}
+`;
+
+const StyledSearchIcon = styled(SearchIcon)`
+  width: 1.40625rem;
+  flex-shrink: 0; /* 아이콘 크기 줄어드는 것 방지 */
+  transition: opacity 0.2s ease-in-out;
+  opacity: ${({ expanded }) => (expanded ? '0' : '1')}; /* input 나타날 때 아이콘 사라짐 */
+`;
+
+const StyledInput = styled.input`
+  border: none;
+  margin: 0 0.4375rem;
+  outline: none;
+  width: ${({ expanded }) => (expanded ? '100%' : '0')}; /* 초기 width 0으로 설정 */
+  min-width: 0;
+  flex-grow: 1;
+  background-color: #F9F9FB;
+  font-family: 'Pretendard-Medium';
+  font-size: 0.75rem;
+  opacity: ${({ expanded }) => (expanded ? '1' : '0')}; /* 자연스럽게 나타나고 사라지도록 */
+  visibility: ${({ expanded }) => (expanded ? 'visible' : 'hidden')};
+  transition: width 0.3s ease-in-out, opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  
+  &::placeholder {
+    color: #818496;
+  }
+`;
+
+const StyledCancelIcon = styled(CancelIcon)`
+  width: 0.875rem;
+  flex-shrink: 0;
+  cursor: pointer;
+  opacity: ${({ expanded }) => (expanded ? '1' : '0')};
+  visibility: ${({ expanded }) => (expanded ? 'visible' : 'hidden')};
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+`;
