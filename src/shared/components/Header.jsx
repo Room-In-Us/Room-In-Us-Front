@@ -3,13 +3,17 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useDevice from '../../shared/hooks/useDevice';
 import MenuIcon from '../../shared/assets/icons/common/menuIcon.svg?react';
-import CancelIcon from '../../shared/assets/icons/common/cancelIcon.svg?react';
 import LogoIcon from '../../shared/assets/icons/common/logo.svg?react';
+import LogoIcon2 from '../../shared/assets/icons/common/logo_light.svg?react';
 import LoginIcon from '../../shared/assets/icons/common/loginIcon.svg?react';
 import ProfileIcon from '../../shared/assets/icons/common/profileIcon.svg?react';
 import { getAccessToken } from '../../app/API';
 import SearchInput from './SearchInput';
 import HeaderProfileModal from './HeaderProfileModal';
+import TextLogo from '../assets/icons/common/emptyTextLogo.svg?react';
+import InstagramIcon from '../assets/icons/common/instagramIcon.svg?react';
+import EmailIcon from '../assets/icons/common/emailIcon.svg?react';
+import InquiryIcon from '../assets/icons/common/inquiryIcon.svg?react';
 
 function Header() {
   // state 관리
@@ -114,27 +118,35 @@ function Header() {
   return (
     <>
       <HeaderWrapper hasScrolled={hasScrolled}>
-        {/* PC 버전 */}
-        {isDesktop && (
+        {/* PC, 태블릿 버전 */}
+        {(isDesktop || isTablet) && (
           <>
             <SectionWrapper>
               <StyledLogoIcon onClick={() => handleNavigation('/')} />
-              <ButtonWrapper>
+              <ButtonWrapper isDesktop={isDesktop} isTablet={isTablet}>
                 <StyledButton
                   onClick={() => handleNavigation('/')}
                   isActive={location.pathname === '/'}
+                  isDesktop={isDesktop}
+                  isTablet={isTablet}
                 >홈 피드</StyledButton>
                 <StyledButton
                   onClick={() => handleNavigation('/location')}
                   isActive={location.pathname === '/location'}
+                  isDesktop={isDesktop}
+                  isTablet={isTablet}
                 >지역 검색</StyledButton>
                 <StyledButton
                   onClick={() => handleNavigation('/level')}
                   isActive={location.pathname === '/level'}
+                  isDesktop={isDesktop}
+                  isTablet={isTablet}
                 >숙련도 검색</StyledButton>
                 <StyledButton
                   onClick={() => handleNavigation('/genre')}
                   isActive={location.pathname === '/genre'}
+                  isDesktop={isDesktop}
+                  isTablet={isTablet}
                 >장르 검색</StyledButton>
               </ButtonWrapper>
             </SectionWrapper>
@@ -157,38 +169,61 @@ function Header() {
             </SectionWrapper>
           </>
         )}
-
-        {/* 태블릿 버전 */}
-        {isTablet && (
-          <>
-
-          </>
-        )}
-        {isMobile && (
-          <>
-            <StyledLogoIcon onClick={() => handleNavigation('/')} />
-            <StyledMenuIcon onClick={() => handleMenu()} />
-          </>
-        )}
       </HeaderWrapper>
 
+      {/* 모바일 버전 */}
       {isMobile && (
-        // 메뉴바
-        <MenuWrapper isVisible={isVisibleMenu} ref={menuRef}>
-          <StyledCancelIcon onClick={() => handleMenu()} />
-          <MobileSectionWrapper>
-            <MobileButton onClick={() => handleNavigation('/')}>홈</MobileButton>
-            <MobileButton onClick={() => handleNavigation('/location')}>지역</MobileButton>
-            <MobileButton onClick={() => handleNavigation('/levelSearch')}>숙련도</MobileButton>
-            <MobileButton onClick={() => handleNavigation('/genre')}>장르</MobileButton>
-            <MobileButton onClick={() => handleNavigation('/mypage')}>마이페이지</MobileButton>
-            {isLoggedIn ? (
-              <MobileButton onClick={handleLogout}>로그아웃</MobileButton>
-            ) : (
-              <MobileButton onClick={() => handleNavigation('/login')}>로그인</MobileButton>
-            )}
-          </MobileSectionWrapper>
-        </MenuWrapper>
+        <>
+          <MobileHeaderWrapper>
+            <StyledMenuIcon onClick={() => handleMenu()} />
+            <StyledLogoIcon2 onClick={() => handleNavigation('/')} />
+          </MobileHeaderWrapper>
+
+          {/* 메뉴바 */}
+          <MenuWrapper isVisible={isVisibleMenu} ref={menuRef}>
+            <MenuTopWrapper>
+              <SearchInputWrapper>
+                <SearchInput type="header-mobile" />
+              </SearchInputWrapper>
+              <MobileButtonWrapper>
+                <MobileButton
+                  onClick={() => handleNavigation('/')}
+                  isActive={location.pathname === '/'}
+                >홈 피드</MobileButton>
+                <MobileButton
+                  onClick={() => handleNavigation('/location')}
+                  isActive={location.pathname === '/location'}
+                >지역 검색</MobileButton>
+                <MobileButton
+                  onClick={() => handleNavigation('/level')}
+                  isActive={location.pathname === '/level'}
+                >숙련도 검색</MobileButton>
+                <MobileButton
+                  onClick={() => handleNavigation('/genre')}
+                  isActive={location.pathname === '/genre'}
+                >장르 검색</MobileButton>
+              </MobileButtonWrapper>
+              <ProfileButtonWrapper>
+                <ProfileButton onClick={() => handleNavigation('/mypage')}>마이페이지</ProfileButton>
+                {isLoggedIn ? (
+                  <ProfileButton onClick={handleLogout}>로그아웃</ProfileButton>
+                ) : (
+                  <ProfileButton onClick={() => handleNavigation('/login')}>로그인</ProfileButton>
+                )}
+              </ProfileButtonWrapper>
+            </MenuTopWrapper>
+            <MenuBottomWrapper>
+              <StyledTextLogo/>
+              <IconWrapper>
+                <StyledInstagramIcon/>
+                <StyledEmailIcon/>
+              </IconWrapper>
+              <LegalNoticesText>이용약관</LegalNoticesText>
+              <LegalNoticesText>개인정보처리방침</LegalNoticesText>
+              <InquiryButton><StyledInquiryIcon/>문의하기</InquiryButton>
+            </MenuBottomWrapper>
+          </MenuWrapper>
+        </>
       )}
     </>
   );
@@ -210,13 +245,6 @@ const HeaderWrapper = styled.div`
   background: ${({ hasScrolled }) => (hasScrolled ? 'rgba(255, 255, 255, 0.3)' : 'transparent')};
   backdrop-filter: ${({ hasScrolled }) => (hasScrolled ? 'blur(15px)' : 'none')};
   transition: all 0.3s ease-in-out;
-
-  @media (max-width: 1024px) {
-    padding-left: 2.5em;
-  }
-  @media (max-width: 768px) {
-    padding-left: 1em;
-  }
 `;
 
 const SectionWrapper = styled.div`
@@ -228,22 +256,13 @@ const StyledLogoIcon = styled(LogoIcon)`
   margin-right: 0.9375rem;
   width: 3.75rem;
   cursor: pointer;
-
-  @media (max-width: 1024px) {
-    // 태블릿
-    height: 3.8em;
-  }
-  @media (max-width: 768px) {
-    // 모바일
-    height: 3em;
-  }
 `;
 
 const ButtonWrapper = styled.div`
   border-radius: 1.40625rem;
   padding: 0 0.5625rem;
   box-sizing: border-box;
-  width: 34.6875rem;
+  width: ${(props) => (props.isDesktop ? "34.6875rem" : "26.25rem")};
   height: 2.8125rem;
   display: flex;
   justify-content: space-between;
@@ -253,7 +272,7 @@ const ButtonWrapper = styled.div`
 
 const StyledButton = styled.div`
   border-radius: 1.40625rem;
-  width: 7.5rem;
+  width: ${(props) => (props.isDesktop ? "7.5rem" : "5.625rem")};
   height: 1.875rem;
   display: flex;
   justify-content: center;
@@ -267,11 +286,6 @@ const StyledButton = styled.div`
   &:hover{
     background-color: #E7E8ED;
     font-weight: 700;
-  }
-
-  @media (max-width: 1024px) {
-    // 태블릿
-    font-size: 1em;
   }
 `;
 
@@ -306,50 +320,173 @@ const StyledProfileIcon = styled(ProfileIcon)`
 `;
 
 // 모바일 반응형
+const MobileHeaderWrapper = styled.div`
+  padding: 0 1.25rem;
+  box-sizing: border-box;
+  width: 100%;
+  height: 4.375rem;
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1900;
+  background: ${({ hasScrolled }) => (hasScrolled ? 'rgba(255, 255, 255, 0.3)' : 'transparent')};
+  backdrop-filter: ${({ hasScrolled }) => (hasScrolled ? 'blur(15px)' : 'none')};
+  transition: all 0.3s ease-in-out;
+`;
+
+const StyledLogoIcon2 = styled(LogoIcon2)`
+  width: 2.5rem;
+  cursor: pointer;
+`;
+
 const StyledMenuIcon = styled(MenuIcon)`
-  width: 2em;
-  height: 2em;
+  width: 1.25rem;
   cursor: pointer;
 `;
 
 const MenuWrapper = styled.div`
-  width: 15em;
+  padding: 1.25rem;
+  box-sizing: border-box;
+  width: 15rem;
   height: 100vh;
   position: fixed;
   top: 0;
-  right: 0;
+  left: 0;
   z-index: 100;
   display: flex;
   flex-direction: column;
-  background-color: rgba(26, 26, 26, 0.7);
+  justify-content: space-between;
+  background: var(--RIU_Primary-Gradient-03, linear-gradient(180deg, #E7E8ED 53.14%, #334EAB 100%));
   backdrop-filter: blur(15px);
-  transform: ${({ isVisible }) => (isVisible ? 'translateX(0)' : 'translateX(100%)')};
+  transform: ${({ isVisible }) => (isVisible ? 'translateX(0)' : 'translateX(-100%)')};
   transition: transform 0.3s ease;
   z-index: 3000;
 `;
 
-const StyledCancelIcon = styled(CancelIcon)`
-  margin: 2.5em 1em 1em 1em;
-  width: 2.3em;
-  height: 2.3em;
+const MenuTopWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+`;
+
+const SearchInputWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+
+  div {
+    width: 100%;
+    height: 1.875rem;
+  }
+  svg {
+    width: 0.9375rem;
+  }
+`;
+
+const MobileButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+`;
+
+const MobileButton = styled.div`
+  border-bottom: 1px solid var(--RIU_Primary-200, #6680DF);
+  padding: 0.75rem 1.25rem;
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.75rem;
+  align-self: stretch;
+  color: ${({ isActive }) => (isActive ? '#303281' : '#515DBA')};
+  font-family: 'Pretendard-Medium';
+  font-size: 0.875rem;
+  line-height: 150%;
+  cursor: pointer;
+  &:hover {
+    transform: translateX(0.25rem);
+  }
+  transition: all 0.3s ease;
+`;
+
+const ProfileButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.125rem;
+`;
+
+const ProfileButton = styled.div`
+  color: var(--RIU_Primary-700, #1B1C5C);
+  text-align: center;
+  font-family: 'Pretendard-Bold';
+  font-size: 0.75rem;
+  line-height: 150%;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-skip-ink: none;
+  text-decoration-thickness: auto;
+  text-underline-offset: auto;
+  text-underline-position: from-font;
   cursor: pointer;
 `;
 
-const MobileSectionWrapper = styled.div`
+const MenuBottomWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
 
-const MobileButton = styled.div`
-  margin-left: 3em;
-  margin-bottom: 1.5em;
-  color: white;
-  font-family: 'Pretendard-SemiBold';
-  font-size: 1.2em;
-  font-weight: 600;
-  cursor: pointer;
-  &:hover {
-    transform: translateX(5px);
+const StyledTextLogo = styled(TextLogo)`
+  width: 8.75rem;
+  height: 3.78125rem;
+  fill: #4648A7;
+  line {
+    stroke: #4648A7;
   }
-  transition: all 0.3s ease;
+`;
+
+const IconWrapper = styled.div`
+  margin: 0.875rem 0;
+  display: flex;
+  gap: 0.5625rem;
+`;
+
+const StyledInstagramIcon = styled(InstagramIcon)`
+  width: 1.25rem;
+  cursor: pointer;
+`;
+const StyledEmailIcon = styled(EmailIcon)`
+  width: 1.25rem;
+  cursor: pointer;
+`;
+
+const LegalNoticesText = styled.p`
+  margin: 0 0 0.625rem 0;
+  color: var(--RIU_Primary-0, #E8EAFF);
+  font-family: 'Pretendard-Bold';
+  font-size: 0.625rem;
+  line-height: 150%;
+  cursor: pointer;
+`;
+
+const InquiryButton = styled.div`
+  border-radius: 0.625rem;
+  width: 4.625rem;
+  height: 1.6875rem;
+  background: var(--RIU_Primary-80, #8DA3FF);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  color: var(--RIU_Primary-0, #E8EAFF);
+  font-family: 'Pretendard-Bold';
+  font-size: 0.625rem;
+  line-height: 150%;
+  cursor: pointer;
+`;
+
+const StyledInquiryIcon = styled(InquiryIcon)`
+  width: 0.9375rem;
 `;
