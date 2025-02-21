@@ -18,7 +18,9 @@ function HearoSection() {
 
       <SearchWrapper>
         {/* 검색창 */}
-        <SearchInput type='main'/>
+        <InputWrapper>
+          <SearchInput type='main'/>
+        </InputWrapper>
 
         <ButtonWrapper>
           {/* 지역 버튼 */}
@@ -96,12 +98,33 @@ const HearoWrapper = styled.div`
     opacity: 0.5;
     pointer-events: none;
   }
+
+  @media (max-width: 1024px) {
+    height: 48.75rem;
+    flex-direction: column;
+    gap: 3.125rem;
+  }
+  @media (max-width: 768px) {
+    padding-bottom: 2.5rem;
+    box-sizing: border-box;
+    height: 23.4375rem;
+    justify-content: end;
+    gap: 1.875rem;
+  }
 `;
 
 const StyledTextLogo = styled(TextLogo)`
   width: 26.25rem;
   flex-shrink: 0;
   z-index: 100;
+
+  @media (max-width: 1024px) {
+    width: 27.75rem;
+  }
+  @media (max-width: 768px) {
+    width: 17.5rem;
+    height: 7.5625rem;
+  }
 `;
 
 const SearchWrapper = styled.div`
@@ -111,18 +134,38 @@ const SearchWrapper = styled.div`
   justify-content: center;
   gap: 1.875rem;
   z-index: 100;
+  @media (max-width: 768px) {
+    gap: 0.9375rem;
+  }
+`;
+
+const InputWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  @media (max-width: 768px) {
+    div {
+      width: 16.40625rem;
+      height: 1.96875rem;
+    }
+    svg {
+      width: 0.9375rem;
+    }
+  }
 `;
 
 const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 1.875rem;
+  gap: 1.875em;
+  @media (max-width: 768px) {
+    font-size: 0.5rem;
+  }
 `;
 
 const ButtonTop = styled.div`
-  border-radius: 0.46875rem 0.46875rem 0 0;
+  border-radius: 0.46875em 0.46875em 0 0;
   width: 100%;
-  height: 4.375rem;
+  height: 4.375em;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -131,7 +174,7 @@ const ButtonTop = styled.div`
 `;
 
 const StyledButton = styled.div`
-  width: 7.5rem;
+  width: 7.5em;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -148,9 +191,9 @@ const StyledButton = styled.div`
 `;
 
 const ButtonBottom = styled.div`
-  border-radius: 0 0 0.46875rem 0.46875rem;
+  border-radius: 0 0 0.46875em 0.46875em;
   width: 100%;
-  height: 3.125rem;
+  height: 3.125em;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -158,16 +201,16 @@ const ButtonBottom = styled.div`
   color: #F9F9FB;
   text-align: center;
   font-family: 'Pretendard-Medium';
-  font-size: 0.875rem;
+  font-size: 0.875em;
   line-height: 130%;
 `;
 
 const StyledLocationIcon = styled(LocationIcon)`
-  width: 2.34375rem;
+  width: 2.34375em;
 `;
 const StyledLevelIcon = styled(LevelIcon)`
-  width: 2.34375rem;
+  width: 2.34375em;
 `;
 const StyledGenreIcon = styled(GenreIcon)`
-  width: 2.34375rem;
+  width: 2.34375em;
 `;
