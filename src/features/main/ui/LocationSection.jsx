@@ -64,7 +64,7 @@ const TitleWrapper = styled.div`
   align-items: center;
 `;
 
-const Title = styled.h3`
+const Title = styled.p`
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Bold';
   font-size: 1.40625rem;
@@ -102,10 +102,24 @@ const PopularLocationButton = styled.div`
   gap: 1.1875rem;
   justify-content: space-between;
   align-items: center;
-  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
+  background: var(--RIU_Primary-Gradient-01, linear-gradient(101deg, #9FABF7 0.85%, #85BFB3 100%));
   cursor: pointer;
-  &:hover {
-    background: var(--RIU_Primary-Gradient-01, linear-gradient(101deg, #9FABF7 0.85%, #85BFB3 100%));
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(19, 26, 115, 0.5);
+    transition: all 0.1s ease-in-out;
+  }
+
+  &:hover::before {
+    opacity: 0;
   }
 `;
 
@@ -114,6 +128,7 @@ const ButtonTitle = styled.div`
   color: var(--RIU_Monochrome-10, #F9F9FB);
   font-family: 'Pretendard-Bold';
   font-size: 1.6875rem;
+  z-index: 1;
 `;
 
 const ButtonSubTitle = styled.div`
@@ -121,6 +136,7 @@ const ButtonSubTitle = styled.div`
   color: var(--RIU_Monochrome-10, #F9F9FB);
   font-family: 'Pretendard-Bold';
   text-align: right;
+  z-index: 1;
 `;
 
 const LocationButtonWrapper = styled.div`
@@ -143,6 +159,7 @@ const LocationButton = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1.5rem;
   cursor: pointer;
+  transition: all 0.1s ease-in-out;
   &:hover {
     background: var(--RIU_Primary-60, #A2ADFF);
     color: var(--RIU_Monochrome-10, #F9F9FB);
