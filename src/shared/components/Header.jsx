@@ -117,64 +117,62 @@ function Header() {
 
   return (
     <>
-      <HeaderWrapper hasScrolled={hasScrolled}>
-        {/* PC, 태블릿 버전 */}
-        {(isDesktop || isTablet) && (
-          <>
-            <SectionWrapper>
-              <StyledLogoIcon onClick={() => handleNavigation('/')} />
-              <ButtonWrapper isDesktop={isDesktop} isTablet={isTablet}>
-                <StyledButton
-                  onClick={() => handleNavigation('/')}
-                  isActive={location.pathname === '/'}
-                  isDesktop={isDesktop}
-                  isTablet={isTablet}
-                >홈 피드</StyledButton>
-                <StyledButton
-                  onClick={() => handleNavigation('/location')}
-                  isActive={location.pathname === '/location'}
-                  isDesktop={isDesktop}
-                  isTablet={isTablet}
-                >지역 검색</StyledButton>
-                <StyledButton
-                  onClick={() => handleNavigation('/level')}
-                  isActive={location.pathname === '/level'}
-                  isDesktop={isDesktop}
-                  isTablet={isTablet}
-                >숙련도 검색</StyledButton>
-                <StyledButton
-                  onClick={() => handleNavigation('/genre')}
-                  isActive={location.pathname === '/genre'}
-                  isDesktop={isDesktop}
-                  isTablet={isTablet}
-                >장르 검색</StyledButton>
-              </ButtonWrapper>
-            </SectionWrapper>
-            <SectionWrapper>
-              {/* 검색 */}
-              <SearchInput type="header"/>
-              {/* 로그인, 프로필 */}
-              {isLoggedIn ? (
-                <ProfileWrapper>
-                  <CircleButton onClick={() => setIsVisibleProfile(!isVisibleProfile)}>
-                    <StyledProfileIcon/>
-                  </CircleButton>
-                  <HeaderProfileModal visible={isVisibleProfile}/>
-                </ProfileWrapper>
-              ) : (
-                <CircleButton onClick={() => handleNavigation('/login')}>
-                  <StyledLoginIcon/>
+      {/* PC, 태블릿 버전 */}
+      {(isDesktop || isTablet) && (
+        <HeaderWrapper hasScrolled={hasScrolled}>
+          <SectionWrapper>
+            <StyledLogoIcon onClick={() => handleNavigation('/')} />
+            <ButtonWrapper isDesktop={isDesktop} isTablet={isTablet}>
+              <StyledButton
+                onClick={() => handleNavigation('/')}
+                isActive={location.pathname === '/'}
+                isDesktop={isDesktop}
+                isTablet={isTablet}
+              >홈 피드</StyledButton>
+              <StyledButton
+                onClick={() => handleNavigation('/location')}
+                isActive={location.pathname === '/location'}
+                isDesktop={isDesktop}
+                isTablet={isTablet}
+              >지역 검색</StyledButton>
+              <StyledButton
+                onClick={() => handleNavigation('/level')}
+                isActive={location.pathname === '/level'}
+                isDesktop={isDesktop}
+                isTablet={isTablet}
+              >숙련도 검색</StyledButton>
+              <StyledButton
+                onClick={() => handleNavigation('/genre')}
+                isActive={location.pathname === '/genre'}
+                isDesktop={isDesktop}
+                isTablet={isTablet}
+              >장르 검색</StyledButton>
+            </ButtonWrapper>
+          </SectionWrapper>
+          <SectionWrapper>
+            {/* 검색 */}
+            <SearchInput type="header"/>
+            {/* 로그인, 프로필 */}
+            {isLoggedIn ? (
+              <ProfileWrapper>
+                <CircleButton onClick={() => setIsVisibleProfile(!isVisibleProfile)}>
+                  <StyledProfileIcon/>
                 </CircleButton>
-              )}
-            </SectionWrapper>
-          </>
-        )}
-      </HeaderWrapper>
+                <HeaderProfileModal visible={isVisibleProfile}/>
+              </ProfileWrapper>
+            ) : (
+              <CircleButton onClick={() => handleNavigation('/login')}>
+                <StyledLoginIcon/>
+              </CircleButton>
+            )}
+          </SectionWrapper>
+        </HeaderWrapper>
+      )}
 
       {/* 모바일 버전 */}
       {isMobile && (
         <>
-          <MobileHeaderWrapper>
+          <MobileHeaderWrapper  hasScrolled={hasScrolled}>
             <StyledMenuIcon onClick={() => handleMenu()} />
             <StyledLogoIcon2 onClick={() => handleNavigation('/')} />
           </MobileHeaderWrapper>
