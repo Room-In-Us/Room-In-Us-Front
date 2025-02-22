@@ -73,6 +73,13 @@ const SectionWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 1.875rem;
+
+  @media (max-width: 1024px) {
+    width: 57.75rem;
+  }
+  @media (max-width: 768px) {
+    width: 20.9375rem;
+  }
 `;
 
 const TitleWrapper = styled.div`
@@ -87,6 +94,13 @@ const Title = styled.p`
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Bold';
   font-size: 1.40625rem;
+
+  @media (max-width: 1024px) {
+    font-size: 1.875rem;
+  }
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const LocationSearchButton = styled.p`
@@ -96,11 +110,27 @@ const LocationSearchButton = styled.p`
   font-family: 'Pretendard-Regular';
   font-size: 0.9375rem;
   cursor: pointer;
+
+  @media (max-width: 1024px) {
+    font-size: 1.25rem;
+  }
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
 
 const StyledRightArrow = styled(RightArrow)`
   margin-left: 0.75rem;
   width: 0.5rem;
+
+  @media (max-width: 1024px) {
+    margin-left: 0.625rem;
+    width: 1.25rem;
+  }
+  @media (max-width: 768px) {
+    margin-left: 0.125rem;
+    width: 0.9375rem;
+  }
 `;
 
 const LevelWrapper = styled.div`

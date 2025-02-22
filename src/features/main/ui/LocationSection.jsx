@@ -55,6 +55,13 @@ const SectionWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media (max-width: 1024px) {
+    width: 57.75rem;
+  }
+  @media (max-width: 768px) {
+    width: 20.9375rem;
+  }
 `;
 
 const TitleWrapper = styled.div`
@@ -68,6 +75,13 @@ const Title = styled.p`
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Bold';
   font-size: 1.40625rem;
+
+  @media (max-width: 1024px) {
+    font-size: 1.875rem;
+  }
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const LocationSearchButton = styled.p`
@@ -77,11 +91,27 @@ const LocationSearchButton = styled.p`
   font-family: 'Pretendard-Regular';
   font-size: 0.9375rem;
   cursor: pointer;
+
+  @media (max-width: 1024px) {
+    font-size: 1.25rem;
+  }
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
 
 const StyledRightArrow = styled(RightArrow)`
   margin-left: 0.75rem;
   width: 0.5rem;
+
+  @media (max-width: 1024px) {
+    margin-left: 0.625rem;
+    width: 1.25rem;
+  }
+  @media (max-width: 768px) {
+    margin-left: 0.125rem;
+    width: 0.9375rem;
+  }
 `;
 
 const PopularLocatioinButtonWrapper = styled.div`
@@ -89,6 +119,11 @@ const PopularLocatioinButtonWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  gap: 1.25rem;
+
+  @media (max-width: 768px) {
+    gap: 0.9375rem;
+  }
 `;
 
 const PopularLocationButton = styled.div`
@@ -121,6 +156,19 @@ const PopularLocationButton = styled.div`
   &:hover::before {
     opacity: 0;
   }
+
+  @media (max-width: 1024px) {
+    border-radius: 0.625rem;
+    width: 28.25rem;
+    height: 10.25rem;
+  }
+  @media (max-width: 768px) {
+    border-radius: 0.3125rem;
+    padding: 0.9375rem;
+    width: 10rem;
+    height: 5rem;
+    gap: 0.625rem;
+  }
 `;
 
 const ButtonTitle = styled.div`
@@ -129,6 +177,13 @@ const ButtonTitle = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1.6875rem;
   z-index: 1;
+
+  @media (max-width: 1024px) {
+    font-size: 1.75rem;
+  }
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const ButtonSubTitle = styled.div`
@@ -137,6 +192,10 @@ const ButtonSubTitle = styled.div`
   font-family: 'Pretendard-Bold';
   text-align: right;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
 
 const LocationButtonWrapper = styled.div`
@@ -145,6 +204,10 @@ const LocationButtonWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  gap: 1.25rem;
+  @media (max-width: 768px) {
+    gap: 0.625rem;
+  }
 `;
 
 const LocationButton = styled.div`
@@ -163,5 +226,17 @@ const LocationButton = styled.div`
   &:hover {
     background: var(--RIU_Primary-60, #A2ADFF);
     color: var(--RIU_Monochrome-10, #F9F9FB);
+  }
+
+  @media (max-width: 1024px) {
+    border-radius: 0.46875rem;
+    width: 28.25rem;
+    height: 5rem;
+  }
+  @media (max-width: 768px) {
+    border-radius: 0.234375rem;
+    width: 4.75rem;
+    height: 2.5rem;
+    font-size: 0.75rem;
   }
 `;
