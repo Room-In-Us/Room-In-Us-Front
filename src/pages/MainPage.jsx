@@ -33,10 +33,10 @@ const PageWrapper = styled.div`
   align-items: center;
   gap: 4.375rem;
 
-  @media (max-width: 1024) {
+  @media (max-width: 1024px) {
     gap: 5.625rem;
   }
-  @media (max-width: 768) {
+  @media (max-width: 768px) {
     gap: 1.875rem;
   }
 `;

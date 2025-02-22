@@ -111,6 +111,7 @@ const SectionWrapper = styled.div`
   }
   @media (max-width: 768px) {
     width: 20.9375rem;
+    gap: 1.25rem;
   }
 `;
 
@@ -169,6 +170,14 @@ const LevelWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
+
+  @media (max-width: 768px) {
+    align-items: flex-start;
+    align-content: flex-start;
+    row-gap: 1rem;
+    align-self: stretch;
+    flex-wrap: wrap;
+  }
 `;
 
 const ButtonText = styled.div`
@@ -178,6 +187,10 @@ const ButtonText = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.875rem;
   transition: color 0.1s ease-in-out;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
 
 const ButtonLine =  styled.div`
@@ -186,47 +199,87 @@ const ButtonLine =  styled.div`
   height: 0.25rem;
   background-color: #D6D6DF;
   transition: background-color 0.1s ease-in-out;
+
+  @media (max-width: 1024px) {
+    width: 12.8125rem;
+  }
+  @media (max-width: 768px) {
+    width: 4.375rem;
+    height: 0.1875rem;
+  }
 `;
 
 const StyledEmotional = styled(Emotional)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  @media (max-width: 768px) {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
 `;
 const StyledHorror = styled(Horror)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  @media (max-width: 768px) {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
 `;
 const StyledDetective = styled(Detective)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  @media (max-width: 768px) {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
 `;
 const StyledMystery = styled(Mystery)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  @media (max-width: 768px) {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
 `;
 const StyledComic = styled(Comic)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  @media (max-width: 768px) {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
 `;
 const StyledFantasy = styled(Fantasy)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  @media (max-width: 768px) {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
 `;
 const StyledAdventure = styled(Adventure)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  @media (max-width: 768px) {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
 `;
 const StyledDrama = styled(Drama)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  @media (max-width: 768px) {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
 `;
 
 const LevelButton = styled.div`
@@ -256,6 +309,14 @@ const LevelButton = styled.div`
   &:hover ${StyledDrama} {
     fill: var(--RIU_Primary-100, #718FF2);
   }
+
+  @media (max-width: 1024px) {
+    width: 14.0625rem;
+  }
+  @media (max-width: 768px) {
+    width: 5rem;
+    height: 1.7rem;
+  }
 `;
 
 const ListWrapper = styled.div`
@@ -264,4 +325,8 @@ const ListWrapper = styled.div`
   flex-wrap: wrap;
   gap: 1.25rem;
   justify-content: space-between;
+
+  @media (max-width: 768px) {
+    gap: 0.625rem;
+  }
 `;

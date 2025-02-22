@@ -4,7 +4,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import useDevice from '../../shared/hooks/useDevice';
 import MenuIcon from '../../shared/assets/icons/common/menuIcon.svg?react';
 import LogoIcon from '../../shared/assets/icons/common/logo.svg?react';
-import LogoIcon2 from '../../shared/assets/icons/common/logo_light.svg?react';
 import LoginIcon from '../../shared/assets/icons/common/loginIcon.svg?react';
 import ProfileIcon from '../../shared/assets/icons/common/profileIcon.svg?react';
 import { getAccessToken } from '../../app/API';
@@ -20,6 +19,7 @@ function Header() {
   const [isVisibleProfile, setIsVisibleProfile] = useState(false);
   const [isVisibleMenu, setIsVisibleMenu] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [isScrolledBeyond, setIsScrolledBeyond] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
 
   // navigate, location
@@ -103,17 +103,16 @@ function Header() {
   // 스크롤 이벤트 핸들러
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {  // 10px 이상 스크롤 시 효과 적용
-        setHasScrolled(true);
-      } else {
-        setHasScrolled(false);
-      }
+      const scrollY = window.scrollY;
+      setHasScrolled(scrollY > 10);
+      setIsScrolledBeyond(location.pathname === '/' && isMobile && scrollY > 350);  // 히어로 영역 벗어나면 true
     };
+
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [location.pathname]);
 
   return (
     <>
@@ -174,7 +173,7 @@ function Header() {
         <>
           <MobileHeaderWrapper  hasScrolled={hasScrolled}>
             <StyledMenuIcon onClick={() => handleMenu()} />
-            <StyledLogoIcon2 onClick={() => handleNavigation('/')} />
+            <StyledLogoIcon isScrolledBeyond={isScrolledBeyond} onClick={() => handleNavigation('/')} />
           </MobileHeaderWrapper>
 
           {/* 메뉴바 */}
@@ -254,6 +253,14 @@ const StyledLogoIcon = styled(LogoIcon)`
   margin-right: 0.9375rem;
   width: 3.75rem;
   cursor: pointer;
+  transition: all 0.3s ease-in-out;
+
+  @media (max-width: 768px) {
+    width: 2.5rem;
+    path#Vector_2 {
+      fill: ${({ isScrolledBeyond }) => (isScrolledBeyond ? "#718FF2" : "#E8EAFF")};
+    }
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -331,11 +338,6 @@ const MobileHeaderWrapper = styled.div`
   background: ${({ hasScrolled }) => (hasScrolled ? 'rgba(255, 255, 255, 0.3)' : 'transparent')};
   backdrop-filter: ${({ hasScrolled }) => (hasScrolled ? 'blur(15px)' : 'none')};
   transition: all 0.3s ease-in-out;
-`;
-
-const StyledLogoIcon2 = styled(LogoIcon2)`
-  width: 2.5rem;
-  cursor: pointer;
 `;
 
 const StyledMenuIcon = styled(MenuIcon)`

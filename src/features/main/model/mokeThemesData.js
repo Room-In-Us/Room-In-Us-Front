@@ -7,7 +7,7 @@ export const mokeThemesData = [
     themeLevel: 1,
     themePlayTime: 60,
     pointName: "키이스케이프 홍대점",
-    themeName: "삐릿-뽀",
+    themeName: "필름 바이 스티브필름 바이 스티브",
     themePricePerHeadcount: "100000"
   },
   {

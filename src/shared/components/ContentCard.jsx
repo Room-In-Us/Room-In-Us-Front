@@ -6,6 +6,8 @@ import ThumbnailImg from '../assets/images/common/thumbnailImg.png';
 import HeartIcon from '../assets/icons/common/heart_default.svg?react';
 import HeartIcon2 from '../assets/icons/common/heart_hover.svg?react';
 import HeartIcon3 from '../assets/icons/common/heart_active.svg?react';
+import { formatNumberWithCommas } from '../utils/formatUtils';
+import useDevice from '../hooks/useDevice';
 
 function ContentCard({ data }) {
   const {
@@ -25,61 +27,87 @@ function ContentCard({ data }) {
   // navigate
   const navigate = useNavigate();
 
-  // 세자리마다 콤마 기능
-  const formatNumberWithCommas = (number) => {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
+  // 반응형 함수
+  const { isMobile } = useDevice();
 
   return (
-    <ItemWrapper onClick={() => navigate('/level')}>
+    <ContentWrapper onClick={() => navigate('/level')}>
       {/* 이미지 영역 */}
       <ImageSection imgUrl={themeImg}>
         <LocationTag>{stationName}</LocationTag>
       </ImageSection>
 
-      {/* 태그 영역 */}
-      <TagSection>
-        <ScoreTag>⭐&nbsp;&nbsp;&nbsp;4.4</ScoreTag>
-        <Tag>어려움</Tag>
-        <Tag>{themePlayTime}분</Tag>
-      </TagSection>
+      <ItemWrapper>
+        <TagAndTitleWrapper>
+          {/* 태그 영역 */}
+          <TagSection>
+            <ScoreTag>⭐&nbsp;&nbsp;&nbsp;4.4</ScoreTag>
+            <Tag>어려움</Tag>
+            <Tag>{themePlayTime}분</Tag>
+          </TagSection>
 
-      {/* 제목 영역 */}
-      <TitleSection>
-        <TitleWrapper>
-          <CafeName>{pointName}</CafeName>
-          <Title>{themeName}</Title>
-        </TitleWrapper>
-        {/* 하트 아이콘 영역 */}
-        <HeartWrapper
-          onClick={(event) => {
-            event.stopPropagation();
-            setIsHeartActive(!isHeartActive);
-          }}
-        >
-          {isHeartActive ? (
-            <HeartIcon3 />
-          ) : (
-            <>
-              <HeartIcon className="default" />
-              <HeartIcon2 className="hover" />
-            </>
-          )}
-        </HeartWrapper>
-      </TitleSection>
+          {/* 제목 영역 */}
+          <TitleSection>
+            <TitleWrapper>
+              <CafeName>{pointName}</CafeName>
+              <Title>{themeName}</Title>
+            </TitleWrapper>
+            {!isMobile && (
+              <>
+                {/* 하트 아이콘 영역 */}
+                <HeartWrapper
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setIsHeartActive(!isHeartActive);
+                  }}
+                >
+                  {isHeartActive ? (
+                    <HeartIcon3 />
+                  ) : (
+                    <>
+                      <HeartIcon className="default" />
+                      <HeartIcon2 className="hover" />
+                    </>
+                  )}
+                </HeartWrapper>
+              </>
+            )}
+          </TitleSection>
 
-      {/* 장르 영역 */}
-      <GenreSection>
-        <Tag>잠입</Tag>
-        <Tag>스릴러</Tag>
-      </GenreSection>
+          {/* 장르 영역 */}
+          <GenreSection>
+            <Tag>잠입</Tag>
+            <Tag>스릴러</Tag>
+          </GenreSection>
+        </TagAndTitleWrapper>
 
-      {/* 가격 영역 */}
-      <PriceSection>
-        1인
-        <Price>₩ {formatNumberWithCommas(themePricePerHeadcount)} ~</Price>
-      </PriceSection>
-    </ItemWrapper>
+        {/* 가격 영역 */}
+        <PriceSection>
+          1인
+          <Price>₩ {formatNumberWithCommas(themePricePerHeadcount)} ~</Price>
+          {isMobile && (
+              <>
+                {/* 모바일 하트 아이콘 영역 */}
+                <HeartWrapper
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setIsHeartActive(!isHeartActive);
+                  }}
+                >
+                  {isHeartActive ? (
+                    <HeartIcon3 />
+                  ) : (
+                    <>
+                      <HeartIcon className="default" />
+                      <HeartIcon2 className="hover" />
+                    </>
+                  )}
+                </HeartWrapper>
+              </>
+            )}
+        </PriceSection>
+      </ItemWrapper>
+    </ContentWrapper>
   )
 }
 
@@ -91,7 +119,7 @@ ContentCard.propTypes = {
 export default ContentCard;
 
 // CSS
-const ItemWrapper = styled.div`
+const ContentWrapper = styled.div`
   border-radius: 0.9375rem;
   padding: 0.84375rem;
   box-sizing: border-box;
@@ -106,6 +134,19 @@ const ItemWrapper = styled.div`
 
   &:hover {
     background: var(--RIU_Primary-0, #E8EAFF);
+  }
+
+  @media (max-width: 1024px) {
+    padding: 0.9375rem;
+    width: 28.25rem;
+    height: 28.125rem;
+  }
+  @media (max-width: 768px) {
+    padding: 0.625rem;
+    width: 20.9375rem;
+    height: 10rem;
+    flex-direction: row;
+    justify-content: space-between;
   }
 `;
 
@@ -122,6 +163,15 @@ const ImageSection = styled.div`
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+
+  @media (max-width: 1024px) {
+    height: 15.65625rem;
+  }
+  @media (max-width: 768px) {
+    border-radius: 0.375rem;
+    width: 8.75rem;
+    height: 8.75rem;
+  }
 `;
 
 const LocationTag = styled.div`
@@ -136,6 +186,34 @@ const LocationTag = styled.div`
   color: var(--RIU_Monochrome-10, #F9F9FB);
   font-family: 'Pretendard-Bold';
   font-size: 0.65625rem;
+
+  @media (max-width: 1024px) {
+    height: 1.4375rem;
+    font-size: 0.75rem;
+  }
+  @media (max-width: 768px) {
+    height: 1.125rem;
+    font-size: 0.625rem;
+  }
+`;
+
+const ItemWrapper = styled.div`
+  width: 100%;
+  height: 10.59375rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  @media (max-width: 768px) {
+    width: 10.4375rem;
+    height: 8.75rem;
+  }
+`;
+
+const TagAndTitleWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 const TagSection = styled.div`
@@ -144,6 +222,11 @@ const TagSection = styled.div`
   display: flex;
   align-items: center;
   gap: 0.375rem;
+
+  @media (max-width: 768px) {
+    margin-top: 0;
+    gap: 0.25rem;
+  }
 `;
 
 const ScoreTag = styled.div`
@@ -157,6 +240,16 @@ const ScoreTag = styled.div`
   color: var(--RIU_Monochrome-10, #F9F9FB);
   font-family: 'Pretendard-Bold';
   font-size: 0.65625rem;
+
+  @media (max-width: 1024px) {
+    height: 1.4375rem;
+    font-size: 0.75rem;
+  }
+  @media (max-width: 768px) {
+    height: 1rem;
+    font-size: 0.5rem;
+    padding: 0 0.3rem;
+  }
 `;
 
 const Tag = styled.div`
@@ -172,9 +265,18 @@ const Tag = styled.div`
   font-size: 0.65625rem;
   transition: background 0.2s ease-in-out;
 
-  ${ItemWrapper}:hover & {
+  ${ContentWrapper}:hover & {
     background: var(--RIU_Primary-20, #D0D8FF);
     color: var(--RIU_Primary-200, #6680DF);
+  }
+
+  @media (max-width: 1024px) {
+    height: 1.4375rem;
+    font-size: 0.75rem;
+  }
+  @media (max-width: 768px) {
+    height: 1rem;
+    font-size: 0.5rem;
   }
 `;
 
@@ -183,26 +285,50 @@ const TitleSection = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
+
+  @media (max-width: 768px) {
+    margin-top: 0.5rem;
+  }
 `;
 
 const TitleWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.3125rem;
+
+  @media (max-width: 768px) {
+    gap: 0;
+  }
 `;
 
 const CafeName = styled.div`
   color: var(--RIU_Primary-80, #8DA3FF);
   font-family: 'Pretendard-Bold';
   font-size: 0.65625rem;
+
+  @media (max-width: 1024px) {
+    font-size: 0.75rem;
+  }
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
 
 const Title = styled.div`
-  width: 13rem;
+  width: 11.5rem;
   color: var(--RIU_Primary-600, #303281);
   font-family: 'Pretendard-ExtraBold';
   font-size: 1.3125rem;
   word-break: keep-all;
+
+  @media (max-width: 1024px) {
+    width: 21rem;
+    font-size: 1.5rem;
+  }
+  @media (max-width: 768px) {
+    width: 8.5rem;
+    font-size: 1rem;
+  }
 `;
 
 const HeartWrapper = styled.div`
@@ -230,6 +356,13 @@ const HeartWrapper = styled.div`
   &:hover .hover {
     opacity: 1;
   }
+
+  @media (max-width: 768px) {
+    width: 1rem;
+    height: 1rem;
+    bottom: 0.4rem;
+    left: 2.9rem;
+  }
 `;
 
 const GenreSection = styled.div`
@@ -238,10 +371,13 @@ const GenreSection = styled.div`
   display: flex;
   align-items: center;
   gap: 0.1875rem;
+
+  @media (max-width: 768px) {
+    gap: 0.5rem;
+  }
 `;
 
 const PriceSection = styled.div`
-  margin-top: 0.9375rem;
   width: 100%;
   display: flex;
   align-items: center;
@@ -252,10 +388,18 @@ const PriceSection = styled.div`
   ${ItemWrapper}:hover & {
     color: var(--RIU_Primary-80, #8DA3FF);
   }
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const Price = styled.div`
   color: var(--RIU_Primary-80, #8DA3FF);
   font-family: 'Pretendard-ExtraBold';
   font-size: 0.84375rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
