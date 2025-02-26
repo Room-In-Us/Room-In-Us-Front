@@ -132,7 +132,7 @@ function LoginPage() {
             {/* 회원가입 섹션 */}
             <SignupSection>
               <SignupText onClick={() => navigate('/signup')}>루미너스 회원이 아니신가요?</SignupText>
-              <SignupText onClick={() => navigate('/')}>비밀번호 찾기</SignupText>
+              <SignupText onClick={() => navigate('/signup')}>비밀번호 찾기</SignupText>
             </SignupSection>
           </Form>
         </ContentWrapper>
@@ -259,12 +259,15 @@ const StyledInput = styled.input`
   width: 90%;
   height: 2em;
   outline: none;
-  font-size: 0.75em;
 
   &::placeholder {
     color: var(--Grayscale-200, #C6C5D7);
     font-family: 'Pretendard-Medium';
     line-height: 130%;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
   }
 `;
 
@@ -339,6 +342,7 @@ const ButtonSection = styled.div`
 `;
 
 const LoginButton = styled.button`
+  all: unset;
   border: none;
   display: flex;
   height: 3.125em;
