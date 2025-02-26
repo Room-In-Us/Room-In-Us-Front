@@ -181,6 +181,7 @@ font-size: 0.75rem;
   }
 
   @media (max-width: 768px) {
+    font-size: 1rem;
     gap: 2.5em;
   }
 `;
@@ -207,6 +208,12 @@ const ContentWrapper = styled.div`
   align-items: stretch;
   background-color: #FFF;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    border-radius: 0.9375em;
+    width: 19.6875em;
+    padding: 1.25em;
+  }
 `;
 
 const Form = styled.form`
@@ -214,12 +221,20 @@ const Form = styled.form`
   flex-direction: column;
   justify-content: center;
   gap: 1.875em;
+
+  @media (max-width: 768px) {
+    gap: 1.25em;
+  }
 `;
 
 const InputSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.25em;
+
+  @media (max-width: 768px) {
+    gap: 0.9375em;
+  }
 `;
 
 const InputWrapper = styled.div`
@@ -233,6 +248,10 @@ const InputText = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.875em;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.625em;
+  }
 `;
 
 const StyledInput = styled.input`
@@ -240,6 +259,7 @@ const StyledInput = styled.input`
   width: 90%;
   height: 2em;
   outline: none;
+  font-size: 0.75em;
 
   &::placeholder {
     color: var(--Grayscale-200, #C6C5D7);
@@ -258,11 +278,21 @@ const StyledEyeSlashIcon = styled(EyeSlashIcon)`
   width: 1em;
   height: 1em;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    width: 0.75em;
+    height: 0.75em;
+  }
 `;
 const StyledEyeIcon = styled(EyeIcon)`
   width: 1em;
   height: 1em;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    width: 0.75em;
+    height: 0.75em;
+  }
 `;
 
 const LoginStateWrapper = styled.div`
@@ -283,6 +313,10 @@ const StyledCheckbox = styled.div`
   color: ${(props) => (props.isCheck ? '#FFF' : 'transparent')};
   transition: all 0.2s ease;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 0.65625em;
+  }
 `;
 
 const CheckboxText = styled.div`
@@ -292,6 +326,10 @@ const CheckboxText = styled.div`
   font-size: 0.875em;
   line-height: 130%;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 0.65625em;
+  }
 `;
 
 const ButtonSection = styled.div`
@@ -329,6 +367,11 @@ const LoginButton = styled.button`
   &:hover::before {
     opacity: 0.5;
   }
+
+  @media (max-width: 768px) {
+    height: 2.25em;
+    gap: 0.46875em;
+  }
 `;
 
 const LoginText = styled.div`
@@ -336,6 +379,10 @@ const LoginText = styled.div`
   font-family: 'Pretendard-Bold';
   line-height: 130%;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const SocialLoginButton = styled.div`
@@ -367,18 +414,33 @@ const SocialLoginButton = styled.div`
   &:hover::before {
     opacity: 0.2;
   }
+  
+  @media (max-width: 768px) {
+    height: 2.25em;
+    gap: 0.46875em;
+  }
 `;
 
 const StyledKakaoLogo = styled(KakaoLogo)`
   width: 1.5625em;
   height: 1.458125em;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    width: 1.171875em;
+    height: 1.09375em;
+  }
 `;
 
 const StyledGoogleLogo = styled(GoogleLogo)`
   width: 1.5625em;
   height: 1.5625em;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    width: 1.171875em;
+    height: 1.171875em;
+  }
 `;
 
 const SignupSection = styled.div`
@@ -387,6 +449,10 @@ const SignupSection = styled.div`
   justify-content: center;
   align-items: center;
   gap: 0.625em;
+
+  @media (max-width: 768px) {
+    gap: 0.46875em;
+  }
 `;
 
 const SignupText = styled.div`
@@ -401,9 +467,17 @@ const SignupText = styled.div`
   text-underline-offset: auto;
   text-underline-position: from-font;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 0.65625em;
+  }
 `;
 
 const ErrorMessage = styled.div`
   color: red;
   font-size: 0.8em;
+
+  @media (max-width: 768px) {
+    font-size: 0.65625em;
+  }
 `;
