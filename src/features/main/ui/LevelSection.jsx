@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { mokeThemesData } from "../model/mokeThemesData";
@@ -14,11 +15,19 @@ import "swiper/css";
 import "swiper/css/pagination";
 
 function LevelSection() {
+  // state 관리
+  const [activeLevel, setActiveLevel] = useState('beginner');
+  
   // navigate
   const navigate = useNavigate();
 
   // 반응형 함수
   const { isDesktop, isMobile } = useDevice();
+
+  // 버튼 활성화 함수
+  const handleLevelClick = (level) => {
+    setActiveLevel(level);
+  };
 
   return (
     <SectionWrapper>
@@ -33,34 +42,24 @@ function LevelSection() {
 
       {/* 레벨 버튼 영역 */}
       <LevelWrapper>
-        <LevelButton>
-          <ButtonText>
-            <StyledLevel1Icon />
-            방세포
-          </ButtonText>
-          <ButtonLine></ButtonLine>
-        </LevelButton>
-        <LevelButton>
-          <ButtonText>
-            <StyledLevel2Icon />
-            방초보
-          </ButtonText>
-          <ButtonLine></ButtonLine>
-        </LevelButton>
-        <LevelButton>
-          <ButtonText>
-            <StyledLevel3Icon />
-            방중수
-          </ButtonText>
-          <ButtonLine></ButtonLine>
-        </LevelButton>
-        <LevelButton>
-          <ButtonText>
-            <StyledLevel4Icon />
-            방고수
-          </ButtonText>
-          <ButtonLine></ButtonLine>
-        </LevelButton>
+        {[
+          { icon: StyledLevel1Icon, text: "방세포", level: "beginner" },
+          { icon: StyledLevel2Icon, text: "방초보", level: "junior" },
+          { icon: StyledLevel3Icon, text: "방중수", level: "senior" },
+          { icon: StyledLevel4Icon, text: "방고수", level: "master" },
+        ].map(({ icon: Icon, text, level }) => (
+          <LevelButton 
+            key={level} 
+            onClick={() => handleLevelClick(level)}
+            isActive={activeLevel === level}
+          >
+            <ButtonText isActive={activeLevel === level}>
+              <Icon isActive={activeLevel === level} />
+              {text}
+            </ButtonText>
+            <ButtonLine isActive={activeLevel === level}></ButtonLine>
+          </LevelButton>
+        ))}
       </LevelWrapper>
 
       {/* 콘텐츠 카드 영역 */}
@@ -186,7 +185,7 @@ const LevelWrapper = styled.div`
 const ButtonText = styled.div`
   display: flex;
   align-items: center;
-  color: var(--RIU_Monochrome-100, #818496);
+  color: ${props => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "var(--RIU_Monochrome-100, #818496)")};
   font-family: 'Pretendard-Bold';
   font-size: 0.875rem;
   transition: color 0.1s ease-in-out;
@@ -196,11 +195,11 @@ const ButtonText = styled.div`
   }
 `;
 
-const ButtonLine =  styled.div`
+const ButtonLine = styled.div`
   border-radius: 1.875rem;
   width: 15.0625rem;
   height: 0.25rem;
-  background-color: #D6D6DF;
+  background-color: ${props => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "#D6D6DF")};
   transition: background-color 0.1s ease-in-out;
 
   @media (max-width: 1024px) {
@@ -216,6 +215,8 @@ const StyledLevel1Icon = styled(Level1Icon)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
+
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -225,6 +226,8 @@ const StyledLevel2Icon = styled(Level2Icon)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
+
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -234,6 +237,8 @@ const StyledLevel3Icon = styled(Level3Icon)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
+
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -243,6 +248,8 @@ const StyledLevel4Icon = styled(Level4Icon)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
+
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -258,18 +265,21 @@ const LevelButton = styled.div`
   align-items: center;
   cursor: pointer;
   
-  &:hover ${ButtonText} {
-    color: var(--RIU_Primary-100, #718FF2);
-  }
+  ${props => props.isActive && `
+    ${ButtonText} {
+      color: var(--RIU_Primary-100, #718FF2);
+    }
+    ${ButtonLine} {
+      background-color: var(--RIU_Primary-100, #718FF2);
+    }
+  `}
 
   &:hover ${ButtonLine} {
     background-color: var(--RIU_Primary-100, #718FF2);
   }
 
-  &:hover ${StyledLevel1Icon}, 
-  &:hover ${StyledLevel2Icon}, 
-  &:hover ${StyledLevel3Icon}, 
-  &:hover ${StyledLevel4Icon} {
+  &:hover ${ButtonText}, &:hover svg {
+    color: var(--RIU_Primary-100, #718FF2);
     fill: var(--RIU_Primary-100, #718FF2);
   }
 

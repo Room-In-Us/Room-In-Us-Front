@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { mokeThemesData } from "../model/mokeThemesData";
@@ -18,12 +19,19 @@ import "swiper/css";
 import "swiper/css/pagination";
 
 function GenreSection() {
+  // state 관리
+  const [activeGenre, setActiveGenre] = useState('emotional');
+
   // navigate
   const navigate = useNavigate();
 
   // 반응형 함수
   const { isDesktop, isMobile } = useDevice();
 
+  // 버튼 활성화 함수
+  const handleGenreClick = (genre) => {
+    setActiveGenre(genre);
+  };
 
   return (
     <SectionWrapper>
@@ -38,62 +46,28 @@ function GenreSection() {
 
       {/* 레벨 버튼 영역 */}
       <LevelWrapper>
-        <LevelButton>
-          <ButtonText>
-            <StyledEmotional />
-            감성
-          </ButtonText>
-          <ButtonLine></ButtonLine>
-        </LevelButton>
-        <LevelButton>
-          <ButtonText>
-            <StyledHorror />
-            공포/스릴러
-          </ButtonText>
-          <ButtonLine></ButtonLine>
-        </LevelButton>
-        <LevelButton>
-          <ButtonText>
-            <StyledDetective />
-            추리
-          </ButtonText>
-          <ButtonLine></ButtonLine>
-        </LevelButton>
-        <LevelButton>
-          <ButtonText>
-            <StyledMystery />
-            미스테리
-          </ButtonText>
-          <ButtonLine></ButtonLine>
-        </LevelButton>
-        <LevelButton>
-          <ButtonText>
-            <StyledComic />
-            코믹
-          </ButtonText>
-          <ButtonLine></ButtonLine>
-        </LevelButton>
-        <LevelButton>
-          <ButtonText>
-            <StyledFantasy />
-            판타지
-          </ButtonText>
-          <ButtonLine></ButtonLine>
-        </LevelButton>
-        <LevelButton>
-          <ButtonText>
-            <StyledAdventure />
-            탐험/모험
-          </ButtonText>
-          <ButtonLine></ButtonLine>
-        </LevelButton>
-        <LevelButton>
-          <ButtonText>
-            <StyledDrama />
-            드라마
-          </ButtonText>
-          <ButtonLine></ButtonLine>
-        </LevelButton>
+        {[
+          { icon: StyledEmotional, text: "감성", genre: "emotional" },
+          { icon: StyledHorror, text: "공포/스릴러", genre: "horror" },
+          { icon: StyledDetective, text: "추리", genre: "detective" },
+          { icon: StyledMystery, text: "미스테리", genre: "mystery" },
+          { icon: StyledComic, text: "코믹", genre: "comic" },
+          { icon: StyledFantasy, text: "판타지", genre: "fantasy" },
+          { icon: StyledAdventure, text: "탐험/모험", genre: "adventure" },
+          { icon: StyledDrama, text: "드라마", genre: "drama" },
+        ].map(({ icon: Icon, text, genre }) => (
+          <LevelButton 
+            key={genre} 
+            onClick={() => handleGenreClick(genre)}
+            isActive={activeGenre === genre}
+          >
+            <ButtonText isActive={activeGenre === genre}>
+              <Icon isActive={activeGenre === genre} />
+              {text}
+            </ButtonText>
+            <ButtonLine isActive={activeGenre === genre}></ButtonLine>
+          </LevelButton>
+        ))}
       </LevelWrapper>
 
       {/* 콘텐츠 카드 영역 */}
@@ -219,7 +193,7 @@ const LevelWrapper = styled.div`
 const ButtonText = styled.div`
   display: flex;
   align-items: center;
-  color: var(--RIU_Monochrome-100, #818496);
+  color: ${props => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "var(--RIU_Monochrome-100, #818496)")};
   font-family: 'Pretendard-Bold';
   font-size: 0.875rem;
   transition: color 0.1s ease-in-out;
@@ -229,11 +203,11 @@ const ButtonText = styled.div`
   }
 `;
 
-const ButtonLine =  styled.div`
+const ButtonLine = styled.div`
   border-radius: 1.875rem;
   width: 6.625rem;
   height: 0.25rem;
-  background-color: #D6D6DF;
+  background-color: ${props => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "#D6D6DF")};
   transition: background-color 0.1s ease-in-out;
 
   @media (max-width: 1024px) {
@@ -249,6 +223,8 @@ const StyledEmotional = styled(Emotional)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
+
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -258,6 +234,8 @@ const StyledHorror = styled(Horror)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
+
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -267,6 +245,8 @@ const StyledDetective = styled(Detective)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
+
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -276,6 +256,8 @@ const StyledMystery = styled(Mystery)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
+
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -285,6 +267,8 @@ const StyledComic = styled(Comic)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
+
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -294,6 +278,8 @@ const StyledFantasy = styled(Fantasy)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
+
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -303,6 +289,8 @@ const StyledAdventure = styled(Adventure)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
+
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -312,6 +300,8 @@ const StyledDrama = styled(Drama)`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
+  fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
+
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -327,22 +317,21 @@ const LevelButton = styled.div`
   align-items: center;
   cursor: pointer;
   
-  &:hover ${ButtonText} {
-    color: var(--RIU_Primary-100, #718FF2);
-  }
+  ${props => props.isActive && `
+    ${ButtonText} {
+      color: var(--RIU_Primary-100, #718FF2);
+    }
+    ${ButtonLine} {
+      background-color: var(--RIU_Primary-100, #718FF2);
+    }
+  `}
 
   &:hover ${ButtonLine} {
     background-color: var(--RIU_Primary-100, #718FF2);
   }
 
-  &:hover ${StyledEmotional}, 
-  &:hover ${StyledHorror}, 
-  &:hover ${StyledDetective}, 
-  &:hover ${StyledMystery},
-  &:hover ${StyledComic}, 
-  &:hover ${StyledFantasy}, 
-  &:hover ${StyledAdventure}, 
-  &:hover ${StyledDrama} {
+  &:hover ${ButtonText}, &:hover svg {
+    color: var(--RIU_Primary-100, #718FF2);
     fill: var(--RIU_Primary-100, #718FF2);
   }
 
