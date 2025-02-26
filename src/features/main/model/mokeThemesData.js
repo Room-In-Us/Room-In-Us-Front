@@ -1,7 +1,7 @@
 export const mokeThemesData = [
   {
     themeId: 1,
-    stationName: "홍대입구역",
+    stationName: "강남",
     themeImg: null,
     themeRecommendedRatio: 80,
     themeLevel: 1,
@@ -17,8 +17,8 @@ export const mokeThemesData = [
     themeRecommendedRatio: 80,
     themeLevel: 1,
     themePlayTime: 60,
-    pointName: "키이스케이프 홍대점",
-    themeName: "삐릿-뽀",
+    pointName: "어쩌구 저쩌구 어쩌구 저쩌구 어쩌구 저쩌구 어쩌구 저쩌구",
+    themeName: "어쩌구 저쩌구 어쩌구 저쩌구 어쩌구 저쩌구 어쩌구 저쩌구",
     themePricePerHeadcount: "100000"
   },
   {

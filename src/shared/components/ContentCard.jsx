@@ -302,14 +302,23 @@ const TitleWrapper = styled.div`
 `;
 
 const CafeName = styled.div`
+  width: 11.5rem;
   color: var(--RIU_Primary-80, #8DA3FF);
   font-family: 'Pretendard-Bold';
   font-size: 0.65625rem;
 
+  // 말줄임 표시
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  word-break: break-all;
+
   @media (max-width: 1024px) {
+    width: 21rem;
     font-size: 0.75rem;
   }
   @media (max-width: 768px) {
+    width: 8.5rem;
     font-size: 0.625rem;
   }
 `;
@@ -319,7 +328,14 @@ const Title = styled.div`
   color: var(--RIU_Primary-600, #303281);
   font-family: 'Pretendard-ExtraBold';
   font-size: 1.3125rem;
-  word-break: keep-all;
+
+  // 말줄임 표시
+  text-overflow: ellipsis;
+  overflow: hidden;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 
   @media (max-width: 1024px) {
     width: 21rem;
