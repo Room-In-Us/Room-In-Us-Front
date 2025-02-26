@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom';
 import MainLayOut from '../widgets/MainLayOut';
 import MainPage from '../pages/MainPage';
 import LoginPage from '../pages/LoginPage';
-import LevelPage from '../pages/LevelPage';
 import LevelInfoPage from '../pages/LevelInfoPage';
 import GenrePage from '../pages/GenrePage';
 import GenreInfoPage from '../pages/GenreInfoPage';
@@ -46,9 +45,8 @@ function App() {
           <Route path="/location" element={<LocationPage />} />
 
           {/* 숙련도 페이지 */}
-          <Route path="/level" element={<LevelPage />} />
+          <Route path="/level" element={<LevelSearchPage/>} />
           <Route path="/levelInfo" element={<LevelInfoPage />} />
-          <Route path='/levelSearch' element={<LevelSearchPage/>}/>
 
           {/* 장르 페이지 */}
           <Route path="/genre" element={<GenrePage />} />

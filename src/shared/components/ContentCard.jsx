@@ -1,0 +1,405 @@
+import { useState } from 'react';
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import PropTypes from 'prop-types';
+import ThumbnailImg from '../assets/images/common/thumbnailImg.png';
+import HeartIcon from '../assets/icons/common/heart_default.svg?react';
+import HeartIcon2 from '../assets/icons/common/heart_hover.svg?react';
+import HeartIcon3 from '../assets/icons/common/heart_active.svg?react';
+import { formatNumberWithCommas } from '../utils/formatUtils';
+import useDevice from '../hooks/useDevice';
+
+function ContentCard({ data }) {
+  const {
+    stationName,
+    themeImg,
+    themeRecommendedRatio,
+    themeLevel,
+    themePlayTime,
+    pointName,
+    themeName,
+    themePricePerHeadcount,
+  } = data;
+
+  // state 관리
+  const [isHeartActive, setIsHeartActive] = useState(false);
+  
+  // navigate
+  const navigate = useNavigate();
+
+  // 반응형 함수
+  const { isMobile } = useDevice();
+
+  return (
+    <ContentWrapper onClick={() => navigate('/level')}>
+      {/* 이미지 영역 */}
+      <ImageSection imgUrl={themeImg}>
+        <LocationTag>{stationName}</LocationTag>
+      </ImageSection>
+
+      <ItemWrapper>
+        <TagAndTitleWrapper>
+          {/* 태그 영역 */}
+          <TagSection>
+            <ScoreTag>⭐&nbsp;&nbsp;&nbsp;4.4</ScoreTag>
+            <Tag>어려움</Tag>
+            <Tag>{themePlayTime}분</Tag>
+          </TagSection>
+
+          {/* 제목 영역 */}
+          <TitleSection>
+            <TitleWrapper>
+              <CafeName>{pointName}</CafeName>
+              <Title>{themeName}</Title>
+            </TitleWrapper>
+            {!isMobile && (
+              <>
+                {/* 하트 아이콘 영역 */}
+                <HeartWrapper
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setIsHeartActive(!isHeartActive);
+                  }}
+                >
+                  {isHeartActive ? (
+                    <HeartIcon3 />
+                  ) : (
+                    <>
+                      <HeartIcon className="default" />
+                      <HeartIcon2 className="hover" />
+                    </>
+                  )}
+                </HeartWrapper>
+              </>
+            )}
+          </TitleSection>
+
+          {/* 장르 영역 */}
+          <GenreSection>
+            <Tag>잠입</Tag>
+            <Tag>스릴러</Tag>
+          </GenreSection>
+        </TagAndTitleWrapper>
+
+        {/* 가격 영역 */}
+        <PriceSection>
+          1인
+          <Price>₩ {formatNumberWithCommas(themePricePerHeadcount)} ~</Price>
+          {isMobile && (
+              <>
+                {/* 모바일 하트 아이콘 영역 */}
+                <HeartWrapper
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setIsHeartActive(!isHeartActive);
+                  }}
+                >
+                  {isHeartActive ? (
+                    <HeartIcon3 />
+                  ) : (
+                    <>
+                      <HeartIcon className="default" />
+                      <HeartIcon2 className="hover" />
+                    </>
+                  )}
+                </HeartWrapper>
+              </>
+            )}
+        </PriceSection>
+      </ItemWrapper>
+    </ContentWrapper>
+  )
+}
+
+// PropTypes 정의 (eslint 에러 방지)
+ContentCard.propTypes = {
+  data: PropTypes.object.isRequired,
+};
+
+export default ContentCard;
+
+// CSS
+const ContentWrapper = styled.div`
+  border-radius: 0.9375rem;
+  padding: 0.84375rem;
+  box-sizing: border-box;
+  width: 16.5625rem;
+  height: 28.125rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: var(--RIU_Monochrome-10, #F9F9FB);
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+
+  &:hover {
+    background: var(--RIU_Primary-0, #E8EAFF);
+  }
+
+  @media (max-width: 1024px) {
+    padding: 0.9375rem;
+    width: 28.25rem;
+    height: 28.125rem;
+  }
+  @media (max-width: 768px) {
+    padding: 0.625rem;
+    width: 20.9375rem;
+    height: 10rem;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+`;
+
+const ImageSection = styled.div`
+  display: flex;
+  border-radius: 0.5625rem;
+  width: 100%;
+  height: 15.65625rem;
+  align-self: stretch;
+  background-image: ${(props) =>
+    props.imgUrl && typeof props.imgUrl === "string" && props.imgUrl.trim() !== ""
+      ? `url(${props.imgUrl})`
+      : `url(${ThumbnailImg})`};
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  @media (max-width: 1024px) {
+    height: 15.65625rem;
+  }
+  @media (max-width: 768px) {
+    border-radius: 0.375rem;
+    width: 8.75rem;
+    height: 8.75rem;
+  }
+`;
+
+const LocationTag = styled.div`
+  padding: 0 13.5px;
+  margin: 0.5rem 0 0 0.5rem;
+  height: 1.375rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.9375rem;
+  background: var(--RIU_Primary-400, #515DBA);
+  color: var(--RIU_Monochrome-10, #F9F9FB);
+  font-family: 'Pretendard-Bold';
+  font-size: 0.65625rem;
+
+  @media (max-width: 1024px) {
+    height: 1.4375rem;
+    font-size: 0.75rem;
+  }
+  @media (max-width: 768px) {
+    height: 1.125rem;
+    font-size: 0.625rem;
+  }
+`;
+
+const ItemWrapper = styled.div`
+  width: 100%;
+  height: 10.59375rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  @media (max-width: 768px) {
+    width: 10.4375rem;
+    height: 8.75rem;
+  }
+`;
+
+const TagAndTitleWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const TagSection = styled.div`
+  margin-top: 0.46875rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+
+  @media (max-width: 768px) {
+    margin-top: 0;
+    gap: 0.25rem;
+  }
+`;
+
+const ScoreTag = styled.div`
+  border-radius: 0.1875rem;
+  padding: 0 0.46875rem;
+  height: 1.375rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--RIU_Primary-100, #718FF2);
+  color: var(--RIU_Monochrome-10, #F9F9FB);
+  font-family: 'Pretendard-Bold';
+  font-size: 0.65625rem;
+
+  @media (max-width: 1024px) {
+    height: 1.4375rem;
+    font-size: 0.75rem;
+  }
+  @media (max-width: 768px) {
+    height: 1rem;
+    font-size: 0.5rem;
+    padding: 0 0.3rem;
+  }
+`;
+
+const Tag = styled.div`
+  border-radius: 0.1875rem;
+  padding: 0 0.46875rem;
+  height: 1.375rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--RIU_Monochrome-20, #F0F0F4);
+  color: var(--RIU_Monochrome-80, #A1A4B5);
+  font-family: 'Pretendard-Medium';
+  font-size: 0.65625rem;
+  transition: background 0.2s ease-in-out;
+
+  ${ContentWrapper}:hover & {
+    background: var(--RIU_Primary-20, #D0D8FF);
+    color: var(--RIU_Primary-200, #6680DF);
+  }
+
+  @media (max-width: 1024px) {
+    height: 1.4375rem;
+    font-size: 0.75rem;
+  }
+  @media (max-width: 768px) {
+    height: 1rem;
+    font-size: 0.5rem;
+  }
+`;
+
+const TitleSection = styled.div`
+  margin-top: 0.9375rem;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+
+  @media (max-width: 768px) {
+    margin-top: 0.5rem;
+  }
+`;
+
+const TitleWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125rem;
+
+  @media (max-width: 768px) {
+    gap: 0;
+  }
+`;
+
+const CafeName = styled.div`
+  color: var(--RIU_Primary-80, #8DA3FF);
+  font-family: 'Pretendard-Bold';
+  font-size: 0.65625rem;
+
+  @media (max-width: 1024px) {
+    font-size: 0.75rem;
+  }
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
+`;
+
+const Title = styled.div`
+  width: 11.5rem;
+  color: var(--RIU_Primary-600, #303281);
+  font-family: 'Pretendard-ExtraBold';
+  font-size: 1.3125rem;
+  word-break: keep-all;
+
+  @media (max-width: 1024px) {
+    width: 21rem;
+    font-size: 1.5rem;
+  }
+  @media (max-width: 768px) {
+    width: 8.5rem;
+    font-size: 1rem;
+  }
+`;
+
+const HeartWrapper = styled.div`
+  width: 1.5rem;
+  height: 1.5rem;
+  position: relative;
+
+  svg {
+    position: absolute;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .default {
+    opacity: 1;
+  }
+
+  .hover {
+    opacity: 0;
+  }
+
+  &:hover .default {
+    opacity: 0;
+  }
+
+  &:hover .hover {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    width: 1rem;
+    height: 1rem;
+    bottom: 0.4rem;
+    left: 2.9rem;
+  }
+`;
+
+const GenreSection = styled.div`
+  margin-top: 0.46875rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.1875rem;
+
+  @media (max-width: 768px) {
+    gap: 0.5rem;
+  }
+`;
+
+const PriceSection = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.234375rem;
+  color: var(--RIU_Monochrome-80, #A1A4B5);
+  font-family: 'Pretendard-SemiBold';
+  font-size: 0.84375rem;
+  ${ItemWrapper}:hover & {
+    color: var(--RIU_Primary-80, #8DA3FF);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
+`;
+
+const Price = styled.div`
+  color: var(--RIU_Primary-80, #8DA3FF);
+  font-family: 'Pretendard-ExtraBold';
+  font-size: 0.84375rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
+`;

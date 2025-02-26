@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import JokerHeadIcon from '../shared/assets/images/genre/jokerheadicon.png';
 import NoImage from '../shared/assets/images/common/nophotos.png';
 import { getGenreRoomListAPI } from '../features/genreInfo/api/genreInfoAPI';
-import { StyledSearchIcon, StyledInput, StyledEnterIcon } from './MainPage';
 
 export default function GenreInfoPage() {
   const location = useLocation();
@@ -137,9 +136,9 @@ export default function GenreInfoPage() {
         </InfoHeader>
 
         <InputWrapper>
-          <StyledSearchIcon />
+          {/* <StyledSearchIcon />
           <StyledInput placeholder="검색어를 입력하세요." />
-          <StyledEnterIcon />
+          <StyledEnterIcon /> */}
         </InputWrapper>
       </InfoHeaderWrapper>
 
