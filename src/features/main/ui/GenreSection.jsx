@@ -3,17 +3,27 @@ import { useNavigate } from "react-router-dom";
 import { mokeThemesData } from "../model/mokeThemesData";
 import ContentCard from "../../../shared/components/ContentCard";
 import RightArrow from "../../../shared/assets/icons/main/rightArrow.svg?react";
-import Emotional from "../../../shared/assets/icons/main/genreSection/emotional.svg?react";
-import Horror from "../../../shared/assets/icons/main/genreSection/horror.svg?react";
-import Detective from "../../../shared/assets/icons/main/genreSection/detective.svg?react";
-import Mystery from "../../../shared/assets/icons/main/genreSection/mystery.svg?react";
-import Comic from "../../../shared/assets/icons/main/genreSection/comic.svg?react";
-import Fantasy from "../../../shared/assets/icons/main/genreSection/fantasy.svg?react";
-import Adventure from "../../../shared/assets/icons/main/genreSection/adventure.svg?react";
-import Drama from "../../../shared/assets/icons/main/genreSection/drama.svg?react";
+import Emotional from "../../../shared/assets/icons/common/genreIcon/emotional.svg?react";
+import Horror from "../../../shared/assets/icons/common/genreIcon/horror.svg?react";
+import Detective from "../../../shared/assets/icons/common/genreIcon/detective.svg?react";
+import Mystery from "../../../shared/assets/icons/common/genreIcon/mystery.svg?react";
+import Comic from "../../../shared/assets/icons/common/genreIcon/comic.svg?react";
+import Fantasy from "../../../shared/assets/icons/common/genreIcon/fantasy.svg?react";
+import Adventure from "../../../shared/assets/icons/common/genreIcon/adventure.svg?react";
+import Drama from "../../../shared/assets/icons/common/genreIcon/drama.svg?react";
+import useDevice from "../../../shared/hooks/useDevice";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination } from 'swiper/modules';
+import "swiper/css";
+import "swiper/css/pagination";
 
 function GenreSection() {
+  // navigate
   const navigate = useNavigate();
+
+  // 반응형 함수
+  const { isTablet, isMobile } = useDevice();
+
 
   return (
     <SectionWrapper>
@@ -87,11 +97,36 @@ function GenreSection() {
       </LevelWrapper>
 
       {/* 콘텐츠 카드 영역 */}
-      <ListWrapper>
-        {mokeThemesData.map((items) => (
-          <ContentCard key={items.id} data={items} />
-        ))}
-      </ListWrapper>
+      { !isMobile && (
+        <ListWrapper>
+          {mokeThemesData.map((items) => (
+            <ContentCard key={items.id} data={items} />
+          ))}
+        </ListWrapper>
+      )}
+      { isMobile && (
+        <StyledSwiper 
+          pagination={true} 
+          modules={[Pagination]}
+          spaceBetween={30}
+          slidesPerView={1}
+        >
+          <StyledSwiperSlide1>
+            <ListWrapper>
+              {mokeThemesData.slice(0, 4).map((items) => (
+                <ContentCard key={items.id} data={items} />
+              ))}
+            </ListWrapper>
+          </StyledSwiperSlide1>
+          <StyledSwiperSlide2>
+            <ListWrapper>
+              {mokeThemesData.slice(4, 8).map((items) => (
+                <ContentCard key={items.id} data={items} />
+              ))}
+            </ListWrapper>
+          </StyledSwiperSlide2>
+        </StyledSwiper>
+      )}
     </SectionWrapper>
   )
 }
@@ -329,4 +364,37 @@ const ListWrapper = styled.div`
   @media (max-width: 768px) {
     gap: 0.625rem;
   }
+`;
+
+const StyledSwiper = styled(Swiper)`
+  width: 100%;
+  height: auto;
+  padding-bottom: 2.3rem;
+
+  .swiper-pagination {
+    gap: 0.375rem;
+  }
+
+  .swiper-pagination-bullet {
+    width: 0.375rem;
+    height: 0.375rem;
+    background-color: var(--RIU_Monochrome-70, #B3B6C3);
+    opacity: 1;
+  }
+
+  .swiper-pagination-bullet-active {
+    background-color: var(--RIU_Primary-80, #8DA3FF);
+  }
+`;
+const StyledSwiperSlide1 = styled(SwiperSlide)`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+`;
+const StyledSwiperSlide2 = styled(SwiperSlide)`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
 `;
