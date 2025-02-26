@@ -22,7 +22,7 @@ function GenreSection() {
   const navigate = useNavigate();
 
   // 반응형 함수
-  const { isTablet, isMobile } = useDevice();
+  const { isDesktop, isMobile } = useDevice();
 
 
   return (
@@ -97,18 +97,19 @@ function GenreSection() {
       </LevelWrapper>
 
       {/* 콘텐츠 카드 영역 */}
-      { !isMobile && (
+      { isDesktop && (
         <ListWrapper>
           {mokeThemesData.map((items) => (
             <ContentCard key={items.id} data={items} />
           ))}
         </ListWrapper>
       )}
-      { isMobile && (
-        <StyledSwiper 
+      { !isDesktop && (
+        <StyledSwiper
+          isMobile={isMobile}
           pagination={true} 
           modules={[Pagination]}
-          spaceBetween={30}
+          spaceBetween={isMobile ? 30 : 70} 
           slidesPerView={1}
         >
           <StyledSwiperSlide1>
@@ -369,15 +370,15 @@ const ListWrapper = styled.div`
 const StyledSwiper = styled(Swiper)`
   width: 100%;
   height: auto;
-  padding-bottom: 2.3rem;
+  padding-bottom: ${({ isMobile }) => (isMobile ? "2.3rem" : "4rem")};
 
   .swiper-pagination {
     gap: 0.375rem;
   }
 
   .swiper-pagination-bullet {
-    width: 0.375rem;
-    height: 0.375rem;
+    width: ${({ isMobile }) => (isMobile ? "0.375rem" : "0.5rem")};
+    height: ${({ isMobile }) => (isMobile ? "0.375rem" : "0.5rem")};
     background-color: var(--RIU_Monochrome-70, #B3B6C3);
     opacity: 1;
   }
