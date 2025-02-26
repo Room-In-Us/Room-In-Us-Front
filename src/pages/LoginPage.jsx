@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import useDevice from '../shared/hooks/useDevice';
-import BackgroundImg from '../shared/assets/images/login/background2.png';
+import NoiseFilter from '../shared/assets/icons/login/loginNoiseFilter.svg';
+import TextLogo from '../shared/assets/icons/common/textLogo.svg?react'
+import EyeSlashIcon from '../shared/assets/icons/login/eyeSlashIcon.svg?react';
+import EyeIcon from '../shared/assets/icons/login/eyeIcon.svg?react';
 import KakaoLogo from '../shared/assets/icons/login/kakaoLogo.svg?react';
 import GoogleLogo from '../shared/assets/icons/login/googleLogo.svg?react';
 import { useForm } from 'react-hook-form';
@@ -12,10 +14,16 @@ import { postLoginAPI } from '../features/auth/api/authAPI';
 
 function LoginPage() {
   // state 관리
+  const [isPasswordHide, setIsPasswordHide] = useState(true);
   const [isCheck, setIsCheck] = useState(false);
 
   // navigate
   const navigate = useNavigate();
+
+  // 비밀번호 숨기기
+  const handlePasswordHide = () => {
+    setIsPasswordHide(!isPasswordHide);
+  }
 
   // 로그인 상태 유지 함수
   const handleCheckBox = () => {
@@ -52,376 +60,347 @@ function LoginPage() {
     }
   };
 
-  // 반응형 함수
-  const { isDesktop, isTablet, isMobile } = useDevice();
-
   return (
     <PageWrapper>
-      {/* PC 버전 */}
-      {isDesktop && (
+      <StyledTextLogo/>
         <ContentWrapper>
-          <LeftWrapper>
-            후기와 예약까지
-            <br />한 번에 살필 수 있는,
-          </LeftWrapper>
-          <RightWrapper>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <UpWrapper>
-                {/* 이메일 */}
-                <InputWrapper>
-                  <InputText>이메일</InputText>
-                  <StyledInput {...register('email')} />
-                  {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
-                </InputWrapper>
-                {/* 비밀번호 */}
-                <InputWrapper>
-                  <InputText>비밀번호</InputText>
-                  <StyledInput type="password" {...register('password')} />
-                  {errors.password && <ErrorMessage>{errors.password.message}</ErrorMessage>}
-                </InputWrapper>
-                {/* 로그인 상태 유지 */}
-                <LoginStateWrapper>
-                  <StyledCheckbox onClick={handleCheckBox} isCheck={isCheck}>
-                    ✓
-                  </StyledCheckbox>
-                  <CheckboxText onClick={handleCheckBox}>로그인 상태 유지하기</CheckboxText>
-                </LoginStateWrapper>
-              </UpWrapper>
-              <DownWrapper>
-                <SocialLoginButton onClick={() => navigate('/')}>
-                  <StyledKakaoLogo />
-                  카카오로 시작하기
-                </SocialLoginButton>
-                <SocialLoginButton onClick={() => navigate('/')}>
-                  <StyledGoogleLogo />
-                  구글로 시작하기
-                </SocialLoginButton>
-                <LoginButton type="submit">로그인</LoginButton>
-                <SignupText onClick={() => navigate('/signup')}>회원가입 하기</SignupText>
-              </DownWrapper>
-            </form>
-          </RightWrapper>
+          <Form onSubmit={handleSubmit(onSubmit)}>
+            <InputSection>
+
+              {/* 이메일 */}
+              <InputWrapper>
+                <InputText>이메일</InputText>
+                <StyledInput
+                  {...register('email')}
+                  placeholder='이메일을 입력하세요.'
+                />
+              </InputWrapper>
+              {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
+
+              {/* 비밀번호 */}
+              <InputWrapper>
+                <InputText>비밀번호</InputText>
+                <PassWordInputWrapper>
+                  <StyledInput
+                    type={isPasswordHide ? 'password' : 'text'}
+                    {...register('password')}
+                    placeholder='비밀번호를 입력하세요.'
+                  />
+                  {isPasswordHide ? (
+                    <StyledEyeSlashIcon onClick={handlePasswordHide} />
+                  ) : (
+                    <StyledEyeIcon onClick={handlePasswordHide} />
+                  )}  
+                </PassWordInputWrapper>
+              </InputWrapper>
+              {errors.password && <ErrorMessage>{errors.password.message}</ErrorMessage>}
+
+              {/* 로그인 상태 유지 */}
+              <LoginStateWrapper>
+                <StyledCheckbox onClick={handleCheckBox} isCheck={isCheck}>
+                  ✓
+                </StyledCheckbox>
+                <CheckboxText onClick={handleCheckBox}>자동으로 로그인하기</CheckboxText>
+              </LoginStateWrapper>
+            </InputSection>
+
+            <ButtonSection>
+              {/* 로그인 버튼 */}
+              <LoginButton type="submit">
+                <LoginText>로그인</LoginText>
+              </LoginButton>
+
+              {/* 카카오 로그인 */}
+              <SocialLoginButton
+                type='kakao'
+                onClick={() => navigate('/')}
+              >
+                <StyledKakaoLogo />
+                <LoginText type='social'>카카오 계정으로 로그인</LoginText>
+              </SocialLoginButton>
+
+              {/* 구글 로그인 */}
+              <SocialLoginButton
+                type='google'
+                onClick={() => navigate('/')}
+              >
+                <StyledGoogleLogo />
+                <LoginText type='social'>구글 계정으로 로그인</LoginText>
+              </SocialLoginButton>
+            </ButtonSection>
+
+            {/* 회원가입 섹션 */}
+            <SignupSection>
+              <SignupText onClick={() => navigate('/signup')}>루미너스 회원이 아니신가요?</SignupText>
+              <SignupText onClick={() => navigate('/')}>비밀번호 찾기</SignupText>
+            </SignupSection>
+          </Form>
         </ContentWrapper>
-      )}
-
-      {/* 태블릿 버전 */}
-      {isTablet && (
-        <TabletContentWrapper>
-          {/* 좌측 영역 */}
-          <TabletLeftWrapper>
-            후기와 예약까지
-            <br />한 번에 살필 수 있는,
-          </TabletLeftWrapper>
-
-          {/* 우측 영역 */}
-          <TabletRightWrapper>
-            <UpWrapper>
-              {/* 아이디 */}
-              <InputWrapper>
-                <InputText>아이디</InputText>
-                <TabletStyledInput />
-              </InputWrapper>
-              {/* 비밀번호 */}
-              <InputWrapper>
-                <InputText>비밀번호</InputText>
-                <TabletStyledInput type="password" />
-              </InputWrapper>
-              {/* 로그인상태유지 버튼 */}
-              <LoginStateWrapper>
-                <StyledCheckbox onClick={handleCheckBox} isCheck={isCheck}>
-                  ✓
-                </StyledCheckbox>
-                <CheckboxText onClick={handleCheckBox}>로그인 상태 유지하기</CheckboxText>
-              </LoginStateWrapper>
-            </UpWrapper>
-            <DownWrapper>
-              <LoginButton onClick={() => navigate('/')}>로그인</LoginButton>
-              <SignupText onClick={() => navigate('/signup')}>회원가입 하기</SignupText>
-            </DownWrapper>
-          </TabletRightWrapper>
-        </TabletContentWrapper>
-      )}
-
-      {/* 모바일 버전 */}
-      {isMobile && (
-        <MobileContentWrapper>
-          {/* 좌측 영역 */}
-          <MobileLeftWrapper>
-            후기와 예약까지
-            <br />한 번에 살필 수 있는,
-          </MobileLeftWrapper>
-
-          {/* 우측 영역 */}
-          <MobileRightWrapper>
-            <UpWrapper>
-              {/* 아이디 */}
-              <InputWrapper>
-                <InputText>아이디</InputText>
-                <MobileStyledInput />
-              </InputWrapper>
-              {/* 비밀번호 */}
-              <InputWrapper>
-                <InputText>비밀번호</InputText>
-                <MobileStyledInput type="password" />
-              </InputWrapper>
-              {/* 로그인상태유지 버튼 */}
-              <LoginStateWrapper>
-                <StyledCheckbox onClick={handleCheckBox} isCheck={isCheck}>
-                  ✓
-                </StyledCheckbox>
-                <CheckboxText onClick={handleCheckBox}>로그인 상태 유지하기</CheckboxText>
-              </LoginStateWrapper>
-            </UpWrapper>
-            <DownWrapper>
-              <MobileLoginButton onClick={() => navigate('/')}>로그인</MobileLoginButton>
-              <SignupText onClick={() => navigate('/signup')}>회원가입 하기</SignupText>
-            </DownWrapper>
-          </MobileRightWrapper>
-        </MobileContentWrapper>
-      )}
     </PageWrapper>
   );
 }
 
 export default LoginPage;
 
-// CSS
 const PageWrapper = styled.div`
+font-size: 0.75rem;
+  width: 100vw;
+  height: calc(100vh - 2.375rem);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
+  gap: 4.375em;
+  position: relative;
+  z-index: 0;
+  
+  background-color:hsla(231,100%,89%,1);
+  background-image:
+    radial-gradient(at 0% 49%, hsla(212,19%,78%,1) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(216,38%,77%,1) 0px, transparent 50%),
+    radial-gradient(at 51% 100%, hsla(228,28%,65%,1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, hsla(232,33%,55%,1) 0px, transparent 50%),
+    radial-gradient(at 100% 44%, hsla(239,57%,59%,1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(235,68%,66%,1) 0px, transparent 50%),
+    radial-gradient(at 52% 0%, hsla(228,60%,81%,1) 0px, transparent 50%),
+    radial-gradient(at 0% 0%, hsla(213,20%,80%,1) 0px, transparent 50%);
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(${NoiseFilter});
+    background-repeat: repeat;
+    background-size: cover;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    gap: 2.5em;
+  }
+`;
+
+const StyledTextLogo = styled(TextLogo)`
+  width: 35em;
+  height: 15.125em;
+  z-index: 1;
+
+  @media (max-width: 768px) {
+    width: 17.5em;
+    height: 7.5625em;
+  }
 `;
 
 const ContentWrapper = styled.div`
-  margin-top: 1em;
-  border-radius: 1em;
-  display: flex;
-  justify-content: space-between;
-  width: 65em;
-  // height: 36em;
-  height: 80vh;
-  background-color: #030303;
-  background-image: url(${BackgroundImg});
-  background-size: 55em;
-  background-repeat: no-repeat;
-`;
-
-const LeftWrapper = styled.div`
-  margin: 1.5em;
-  width: 10em;
-  color: #eaeaea;
-  font-family: 'Pretendard-SemiBold';
-  font-weight: 600;
-  font-size: 2.3em;
-`;
-
-const RightWrapper = styled.div`
-  padding: 1.5em 2.5em 2.5em 2.5em;
+  border-radius: 1.875em;
+  padding: 1.875em 2.5em;
   box-sizing: border-box;
-  margin: 3.45em;
-  border-radius: 0.7em;
-  width: 30%;
+  width: 32.5em;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  background-color: #1a1a1a;
+  justify-content: center;
+  align-items: stretch;
+  background-color: #FFF;
+  z-index: 1;
 `;
 
-const UpWrapper = styled.div`
-  // 필요 시 작성
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.875em;
+`;
+
+const InputSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.25em;
 `;
 
 const InputWrapper = styled.div`
-  width: 100%;
+  border-bottom: 1px solid var(--Grayscale-900, #383846);
+  display: flex;
+  flex-direction: column;
 `;
 
 const InputText = styled.div`
-  margin-top: 1em;
-  color: #fbe8e9;
-  font-family: 'Pretendard-Medium';
-  font-size: 0.9em;
-  font-weight: 500;
+  color: var(--Grayscale-1000, #1E1E2B);
+  font-family: 'Pretendard-Bold';
+  font-size: 0.875em;
+  line-height: 130%;
 `;
 
 const StyledInput = styled.input`
-  padding: 0 1em;
-  box-sizing: border-box;
-  margin: 0.5em 0;
   border: none;
-  border-radius: 0.6em;
-  width: 100%;
-  height: 3.2em;
-  background-color: #322f35;
-  color: #fbe8e9;
+  width: 90%;
+  height: 2em;
   outline: none;
+
+  &::placeholder {
+    color: var(--Grayscale-200, #C6C5D7);
+    font-family: 'Pretendard-Medium';
+    line-height: 130%;
+  }
+`;
+
+const PassWordInputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const StyledEyeSlashIcon = styled(EyeSlashIcon)`
+  width: 1em;
+  height: 1em;
+  cursor: pointer;
+`;
+const StyledEyeIcon = styled(EyeIcon)`
+  width: 1em;
+  height: 1em;
+  cursor: pointer;
 `;
 
 const LoginStateWrapper = styled.div`
-  height: 2em;
   display: flex;
   flex-directon: column;
   align-items: center;
+  justify-content: end;
 `;
 
 const StyledCheckbox = styled.div`
-  border: 1px solid white;
-  border: ${(props) => (props.isCheck ? '1px solid #940000' : '1px solid white')};
-  border-radius: 3px;
-  width: 0.9em;
-  height: 0.9em;
+  border: ${(props) => (props.isCheck ? '1px solid #718FF2' : '1px solid #1E1E2B')};
+  border-radius: 0.2em;
+  width: 0.75em;
+  height: 0.75em;
+  line-height: 0.9em;
   text-align: center;
-  background-color: ${(props) => (props.isCheck ? '#940000' : 'transparent')};
-  color: ${(props) => (props.isCheck ? 'white' : 'transparent')};
+  background-color: ${(props) => (props.isCheck ? '#718FF2' : 'transparent')};
+  color: ${(props) => (props.isCheck ? '#FFF' : 'transparent')};
   transition: all 0.2s ease;
   cursor: pointer;
 `;
 
 const CheckboxText = styled.div`
-  margin-left: 0.6em;
-  color: white;
-  font-family: 'Pretendard-Regular';
-  font-weight: 400;
-  font-size: 0.75em;
-  cursor: pointer;
-`;
-
-const DownWrapper = styled.div`
-  text-align: center;
-`;
-
-const StyledKakaoLogo = styled(KakaoLogo)`
-  margin-right: 0.5em;
-  width: 0.9em;
-  height: 0.9em;
-`;
-
-const StyledGoogleLogo = styled(GoogleLogo)`
-  margin-right: 0.4em;
-  width: 1.1em;
-  height: 1.1em;
-`;
-
-const SocialLoginButton = styled.div`
-  margin: 1em 0;
-  border: none;
-  border-radius: 0.5em;
-  width: 100%;
-  height: 3em;
-  line-height: 3em;
-  text-align: center;
-  background-color: #252525;
-  color: white;
+  padding-left: 0.4em;
+  color: var(--Grayscale-1000, #1E1E2B);
   font-family: 'Pretendard-Medium';
-  font-size: 0.9em;
-  font-weight: 500;
+  font-size: 0.875em;
+  line-height: 130%;
   cursor: pointer;
-  transition: all 0.3s ease;
-  &:hover {
-    filter: brightness(85%);
-  }
+`;
+
+const ButtonSection = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.625em;
 `;
 
 const LoginButton = styled.button`
   border: none;
-  border-radius: 0.5em;
-  width: 100%;
-  height: 3em;
-  line-height: 3em;
-  text-align: center;
-  background-color: #940000;
-  color: white;
-  font-family: 'Pretendard-Medium';
-  font-size: 0.9em;
-  font-weight: 500;
+  display: flex;
+  height: 3.125em;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625em;
+  align-self: stretch;
+  border-radius: 2.5em;
+  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
   cursor: pointer;
-  transition: all 0.3s ease;
-  &:hover {
-    filter: brightness(80%);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(19, 26, 115, 0.5);
+    opacity: 0;
+    transition: all 0.1s ease-in-out;
+  }
+
+  &:hover::before {
+    opacity: 0.5;
   }
 `;
 
-const SignupText = styled.div`
-  margin-top: 1em;
-  color: white;
-  font-family: 'Pretendard-regular';
-  font-size: 0.85em;
-  font-weight: 400;
-  cursor: pointer;
+const LoginText = styled.div`
+  color: ${({type}) => (type == 'social' ? '#000' : '#FFF')};;
+  font-family: 'Pretendard-Bold';
+  line-height: 130%;
+  z-index: 1;
 `;
 
-// 태블릿 반응형
-const TabletContentWrapper = styled.div`
-  margin-top: 1em;
-  border-radius: 1em;
+const SocialLoginButton = styled.div`
+  border: ${({type}) => (type == 'kakao' ? 'none' : '1px solid #B7C1D4')};
   display: flex;
-  flex-direction: column;
-  width: 40em;
-  height: 36em;
-  background-color: #030303;
-  background-image: url(${BackgroundImg});
-  background-size: 30em;
-  background-position: right -10em top -4em;
-  background-repeat: no-repeat;
-`;
-
-const TabletLeftWrapper = styled(LeftWrapper)`
-  font-size: 2em;
-`;
-
-const TabletRightWrapper = styled.div`
-  padding: 2em 3em 3em 3em;
-  box-sizing: border-box;
-  margin: 3em auto;
-  border-radius: 0.7em;
-  width: 60%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background-color: #1a1a1a;
-  font-size: 0.8125em;
-`;
-
-const TabletStyledInput = styled(StyledInput)`
-  height: 2.8em;
-`;
-
-// 모바일 반응형
-const MobileContentWrapper = styled.div`
-  margin-top: 1em;
-  border-radius: 1em;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  height: 3.125em;
+  justify-content: center;
   align-items: center;
-  width: 20em;
-  height: 36em;
-  background-color: #030303;
-  background-image: url(${BackgroundImg});
-  background-size: 28em;
-  background-repeat: no-repeat;
+  gap: 0.625em;
+  align-self: stretch;
+  border-radius: 2.5em;
+  background: ${({type}) => (type == 'kakao' ? '#FEE500' : '#FFF')};
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(19, 26, 115, 0.5);
+    opacity: 0;
+    transition: all 0.1s ease-in-out;
+  }
+
+  &:hover::before {
+    opacity: 0.2;
+  }
 `;
 
-const MobileLeftWrapper = styled(LeftWrapper)`
-  font-size: 1.5em;
+const StyledKakaoLogo = styled(KakaoLogo)`
+  width: 1.5625em;
+  height: 1.458125em;
+  z-index: 1;
 `;
 
-const MobileRightWrapper = styled(RightWrapper)`
-  padding: 1em 2em;
-  width: 70%;
-  height: 26em;
-  font-size: 0.7em;
+const StyledGoogleLogo = styled(GoogleLogo)`
+  width: 1.5625em;
+  height: 1.5625em;
+  z-index: 1;
 `;
 
-const MobileStyledInput = styled(StyledInput)`
-  height: 2.3em;
+const SignupSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625em;
 `;
 
-const MobileLoginButton = styled(LoginButton)`
-  // height: 2.8em;
-  // line-height: 2.8em;
+const SignupText = styled.div`
+  color: var(--Grayscale-1000, #1E1E2B);
+  font-family: 'Pretendard-Medium';
+  font-size: 0.875em;
+  line-height: 130%;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-skip-ink: auto;
+  text-decoration-thickness: auto;
+  text-underline-offset: auto;
+  text-underline-position: from-font;
+  cursor: pointer;
 `;
 
 const ErrorMessage = styled.div`

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import TextLogo from '../../../shared/assets/icons/main/textLogo.svg?react';
+import TextLogo from '../../../shared/assets/icons/main/mainTextLogo.svg?react';
 import SearchInput from "../../../shared/components/SearchInput";
 import LocationIcon from '../../../shared/assets/icons/main/locationIcon.svg?react';
 import LevelIcon from '../../../shared/assets/icons/main/levelIcon.svg?react';
