@@ -9,7 +9,7 @@ import ProfileIcon from '../../shared/assets/icons/common/profileIcon.svg?react'
 import { getAccessToken } from '../../app/API';
 import SearchInput from './SearchInput';
 import HeaderProfileModal from './HeaderProfileModal';
-import TextLogo from '../assets/icons/common/emptyTextLogo.svg?react';
+import TextLogo from '../assets/icons/common/textLogo.svg?react';
 import InstagramIcon from '../assets/icons/common/instagramIcon.svg?react';
 import EmailIcon from '../assets/icons/common/emailIcon.svg?react';
 import InquiryIcon from '../assets/icons/common/inquiryIcon.svg?react';
