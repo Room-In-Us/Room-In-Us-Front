@@ -6,7 +6,7 @@ import CancelIcon from '../../shared/assets/icons/common/cancelIcon.svg?react';
 
 function SearchInput({ type }) {
   const [expanded, setExpanded] = useState(type !== 'header');
-
+  
   return (
     <InputWrapper
       expanded={expanded}
@@ -44,7 +44,8 @@ const InputWrapper = styled.div`
   border-radius: 30px;
   padding: 0 0.703125rem;
   box-sizing: border-box;
-  width: ${({ expanded }) => (expanded ? '21.875rem' : '2.8125rem')};
+  width: ${({ expanded }) => (expanded ? 'min(21.875rem, 100%)' : '2.8125rem')};
+  max-width: 100%;
   height: 2.8125rem;
   display: flex;
   justify-content: space-between;
@@ -88,6 +89,13 @@ const StyledInput = styled.input`
   
   &::placeholder {
     color: #818496;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.5625rem;
+    &::placeholder {
+      font-size: 0.5625rem;
+    }
   }
 `;
 

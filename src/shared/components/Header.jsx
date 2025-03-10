@@ -120,7 +120,7 @@ function Header() {
       {(isDesktop || isTablet) && (
         <HeaderWrapper hasScrolled={hasScrolled}>
           <SectionWrapper>
-            <StyledLogoIcon onClick={() => handleNavigation('/')} />
+            <StyledLogoIcon onClick={() => handleNavigation('/')} location={location}/>
             <ButtonWrapper isDesktop={isDesktop} isTablet={isTablet}>
               <StyledButton
                 onClick={() => handleNavigation('/')}
@@ -150,7 +150,9 @@ function Header() {
           </SectionWrapper>
           <SectionWrapper>
             {/* 검색 */}
-            <SearchInput type="header"/>
+            <SearchInputWrapper>
+              <SearchInput type="header"/>
+            </SearchInputWrapper>
             {/* 로그인, 프로필 */}
             {isLoggedIn ? (
               <ProfileWrapper>
@@ -183,9 +185,9 @@ function Header() {
           {/* 메뉴바 */}
           <MenuWrapper isVisible={isVisibleMenu} ref={menuRef}>
             <MenuTopWrapper>
-              <SearchInputWrapper>
+              <MobileSearchInputWrapper>
                 <SearchInput type="header-mobile" />
-              </SearchInputWrapper>
+              </MobileSearchInputWrapper>
               <MobileButtonWrapper>
                 <MobileButton
                   onClick={() => handleNavigation('/')}
@@ -242,6 +244,7 @@ const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1.25rem;
   z-index: 1900;
   background: ${({ hasScrolled }) => (hasScrolled ? 'rgba(255, 255, 255, 0.3)' : 'transparent')};
   backdrop-filter: ${({ hasScrolled }) => (hasScrolled ? 'blur(15px)' : 'none')};
@@ -249,6 +252,7 @@ const HeaderWrapper = styled.div`
 `;
 
 const SectionWrapper = styled.div`
+  width: 100%;
   display: flex;
   align-items: center;
 `;
@@ -299,6 +303,13 @@ const StyledButton = styled.div`
   }
 `;
 
+const SearchInputWrapper = styled.div`
+  margin-right: 1.25rem;
+  width: 100%;
+  display: flex;
+  justify-content: end;
+`;
+
 const ProfileWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -306,7 +317,6 @@ const ProfileWrapper = styled.div`
 
 const CircleButton = styled.div`
   border-radius: 30px;
-  margin-left: 1.25rem;
   width: 2.8125rem;
   height: 2.8125rem;
   display: flex;
@@ -375,7 +385,7 @@ const MenuTopWrapper = styled.div`
   gap: 1.25rem;
 `;
 
-const SearchInputWrapper = styled.div`
+const MobileSearchInputWrapper = styled.div`
   display: flex;
   justify-content: center;
 

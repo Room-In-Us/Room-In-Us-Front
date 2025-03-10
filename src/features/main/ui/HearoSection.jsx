@@ -140,6 +140,7 @@ const SearchWrapper = styled.div`
 `;
 
 const InputWrapper = styled.div`
+  width: 21.875rem;
   display: flex;
   justify-content: center;
   @media (max-width: 768px) {
