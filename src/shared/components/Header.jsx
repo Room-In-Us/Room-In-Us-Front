@@ -469,6 +469,7 @@ const StyledEmailIcon = styled(EmailIcon)`
 
 const LegalNoticesText = styled.p`
   margin: 0 0 0.625rem 0;
+  width: fit-content;
   color: var(--RIU_Primary-0, #E8EAFF);
   font-family: 'Pretendard-Bold';
   font-size: 0.625rem;
