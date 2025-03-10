@@ -15,16 +15,16 @@ import EmailIcon from '../assets/icons/common/emailIcon.svg?react';
 import InquiryIcon from '../assets/icons/common/inquiryIcon.svg?react';
 
 function Header() {
+  // navigate, location
+  const navigate = useNavigate();
+  const location = useLocation();
+
   // state 관리
   const [isVisibleProfile, setIsVisibleProfile] = useState(false);
   const [isVisibleMenu, setIsVisibleMenu] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
   const [isScrolledBeyond, setIsScrolledBeyond] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
-
-  // navigate, location
-  const navigate = useNavigate();
-  const location = useLocation();
 
   // 페이지 이동
   const handleNavigation = (path) => {
@@ -173,7 +173,11 @@ function Header() {
         <>
           <MobileHeaderWrapper  hasScrolled={hasScrolled}>
             <StyledMenuIcon onClick={() => handleMenu()} />
-            <StyledLogoIcon isScrolledBeyond={isScrolledBeyond} onClick={() => handleNavigation('/')} />
+            <StyledLogoIcon
+              isScrolledBeyond={isScrolledBeyond}
+              onClick={() => handleNavigation('/')}
+              location={location}
+            />
           </MobileHeaderWrapper>
 
           {/* 메뉴바 */}
@@ -258,7 +262,8 @@ const StyledLogoIcon = styled(LogoIcon)`
   @media (max-width: 768px) {
     width: 2.5rem;
     path#Vector_2 {
-      fill: ${({ isScrolledBeyond }) => (isScrolledBeyond ? "#718FF2" : "#E8EAFF")};
+      fill: ${({ isScrolledBeyond, location }) =>
+        location.pathname === '/' ? (isScrolledBeyond ? "#718FF2" : "#E8EAFF") : "#718FF2"};
     }
   }
 `;
