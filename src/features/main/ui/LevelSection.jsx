@@ -109,7 +109,8 @@ const SectionWrapper = styled.div`
   gap: 1.875rem;
 
   @media (max-width: 1024px) {
-    width: 57.75rem;
+    width: 43.3125rem;
+    gap: 1.40625rem;
   }
   @media (max-width: 768px) {
     width: 20.9375rem;
@@ -123,6 +124,10 @@ const TitleWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media (max-width: 1024px) {
+    height: 1.265625rem;
+  }
 `;
 
 const Title = styled.p`
@@ -131,7 +136,7 @@ const Title = styled.p`
   font-size: 1.40625rem;
 
   @media (max-width: 1024px) {
-    font-size: 1.875rem;
+    font-size: 1.40625rem;
   }
   @media (max-width: 768px) {
     font-size: 0.875rem;
@@ -147,7 +152,7 @@ const LocationSearchButton = styled.p`
   cursor: pointer;
 
   @media (max-width: 1024px) {
-    font-size: 1.25rem;
+    font-size: 0.9375rem;
   }
   @media (max-width: 768px) {
     font-size: 0.625rem;
@@ -159,8 +164,8 @@ const StyledRightArrow = styled(RightArrow)`
   width: 0.5rem;
 
   @media (max-width: 1024px) {
-    margin-left: 0.625rem;
-    width: 1.25rem;
+    margin-left: 0.46875rem;
+    width: 0.9375rem;
   }
   @media (max-width: 768px) {
     margin-left: 0.125rem;
@@ -190,6 +195,9 @@ const ButtonText = styled.div`
   font-size: 0.875rem;
   transition: color 0.1s ease-in-out;
 
+  @media (max-width: 1024px) {
+    font-size: 0.65625rem;
+  }
   @media (max-width: 768px) {
     font-size: 0.625rem;
   }
@@ -203,7 +211,8 @@ const ButtonLine = styled.div`
   transition: background-color 0.1s ease-in-out;
 
   @media (max-width: 1024px) {
-    width: 12.8125rem;
+    width: 9.609375rem;
+    height: 0.1875rem;
   }
   @media (max-width: 768px) {
     width: 4.375rem;
@@ -217,6 +226,10 @@ const StyledLevel1Icon = styled(Level1Icon)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -228,6 +241,10 @@ const StyledLevel2Icon = styled(Level2Icon)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -239,6 +256,10 @@ const StyledLevel3Icon = styled(Level3Icon)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -250,6 +271,10 @@ const StyledLevel4Icon = styled(Level4Icon)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -284,7 +309,7 @@ const LevelButton = styled.div`
   }
 
   @media (max-width: 1024px) {
-    width: 14.0625rem;
+    width: 10.546875rem;
   }
   @media (max-width: 768px) {
     width: 5rem;
@@ -299,6 +324,9 @@ const ListWrapper = styled.div`
   gap: 1.25rem;
   justify-content: space-between;
 
+  @media (max-width: 1024px) {
+    gap: 0.9375rem;
+  }
   @media (max-width: 768px) {
     gap: 0.625rem;
   }
@@ -327,12 +355,20 @@ const StyledSwiper = styled(Swiper)`
 const StyledSwiperSlide1 = styled(SwiperSlide)`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1rem;
   align-items: center;
+
+  @media (max-width: 1024px) {
+    gap: 0.75rem;
+  }
 `;
 const StyledSwiperSlide2 = styled(SwiperSlide)`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1rem;
   align-items: center;
+
+  @media (max-width: 1024px) {
+    gap: 0.75rem;
+  }
 `;

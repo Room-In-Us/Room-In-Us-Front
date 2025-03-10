@@ -322,6 +322,7 @@ const CircleButton = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
   background-color: #F9F9FB;
   cursor: pointer;
   &:hover {

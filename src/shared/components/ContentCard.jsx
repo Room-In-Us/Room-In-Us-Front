@@ -137,9 +137,9 @@ const ContentWrapper = styled.div`
   }
 
   @media (max-width: 1024px) {
-    padding: 0.9375rem;
-    width: 28.25rem;
-    height: 28.125rem;
+    padding: 0.703125rem;
+    width: 21.1875rem;
+    height: 21.09375rem;
   }
   @media (max-width: 768px) {
     padding: 0.625rem;
@@ -165,7 +165,7 @@ const ImageSection = styled.div`
   background-repeat: no-repeat;
 
   @media (max-width: 1024px) {
-    height: 15.65625rem;
+    height: 11.7421875rem;
   }
   @media (max-width: 768px) {
     border-radius: 0.375rem;
@@ -175,7 +175,7 @@ const ImageSection = styled.div`
 `;
 
 const LocationTag = styled.div`
-  padding: 0 13.5px;
+  padding: 0 0.84375rem;
   margin: 0.5rem 0 0 0.5rem;
   height: 1.375rem;
   display: flex;
@@ -188,8 +188,10 @@ const LocationTag = styled.div`
   font-size: 0.65625rem;
 
   @media (max-width: 1024px) {
-    height: 1.4375rem;
-    font-size: 0.75rem;
+    padding: 0 0.6328125rem;
+    margin: 0.375rem 0 0 0.375rem;
+    height: 1.078125rem;
+    font-size: 0.5625rem;
   }
   @media (max-width: 768px) {
     height: 1.125rem;
@@ -204,6 +206,9 @@ const ItemWrapper = styled.div`
   flex-direction: column;
   justify-content: space-between;
 
+  @media (max-width: 1024px) {
+    height: 7.9453125rem;
+  }
   @media (max-width: 768px) {
     width: 10.4375rem;
     height: 8.75rem;
@@ -224,6 +229,10 @@ const TagSection = styled.div`
   gap: 0.375rem;
 
   @media (max-width: 768px) {
+    margin-top: 0.3515625rem;
+    gap: 0.28125rem;
+  }
+  @media (max-width: 768px) {
     margin-top: 0;
     gap: 0.25rem;
   }
@@ -242,8 +251,9 @@ const ScoreTag = styled.div`
   font-size: 0.65625rem;
 
   @media (max-width: 1024px) {
-    height: 1.4375rem;
-    font-size: 0.75rem;
+    padding: 0 0.3515625rem;
+    height: 1.078125rem;
+    font-size: 0.5625rem;
   }
   @media (max-width: 768px) {
     height: 1rem;
@@ -271,8 +281,9 @@ const Tag = styled.div`
   }
 
   @media (max-width: 1024px) {
-    height: 1.4375rem;
-    font-size: 0.75rem;
+    padding: 0 0.3515625rem;
+    height: 1.078125rem;
+    font-size: 0.5625rem;
   }
   @media (max-width: 768px) {
     height: 1rem;
@@ -286,6 +297,9 @@ const TitleSection = styled.div`
   display: flex;
   justify-content: space-between;
 
+  @media (max-width: 1024px) {
+    margin-top: 0.703125rem;
+  }
   @media (max-width: 768px) {
     margin-top: 0.5rem;
   }
@@ -296,6 +310,9 @@ const TitleWrapper = styled.div`
   flex-direction: column;
   gap: 0.3125rem;
 
+  @media (max-width: 1024px) {
+    gap: 0.234375rem;
+  }
   @media (max-width: 768px) {
     gap: 0;
   }
@@ -314,8 +331,8 @@ const CafeName = styled.div`
   word-break: break-all;
 
   @media (max-width: 1024px) {
-    width: 21rem;
-    font-size: 0.75rem;
+    width: 15.75rem;
+    font-size: 0.5625rem;
   }
   @media (max-width: 768px) {
     width: 8.5rem;
@@ -336,10 +353,11 @@ const Title = styled.div`
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  overflow-wrap: break-word;
 
   @media (max-width: 1024px) {
-    width: 21rem;
-    font-size: 1.5rem;
+    width: 15.75rem;
+    font-size: 1.125rem;
   }
   @media (max-width: 768px) {
     width: 8.5rem;
@@ -373,6 +391,11 @@ const HeartWrapper = styled.div`
     opacity: 1;
   }
 
+  @media (max-width: 1024px) {
+    width: 1.125rem;
+    height: 1.125rem;
+    right: 0.5rem;
+  }
   @media (max-width: 768px) {
     width: 1rem;
     height: 1rem;
@@ -388,6 +411,9 @@ const GenreSection = styled.div`
   align-items: center;
   gap: 0.1875rem;
 
+  @media (max-width: 1024px) {
+    gap: 0.375rem;
+  }
   @media (max-width: 768px) {
     gap: 0.5rem;
   }
@@ -405,6 +431,10 @@ const PriceSection = styled.div`
     color: var(--RIU_Primary-80, #8DA3FF);
   }
 
+  @media (max-width: 1024px) {
+    gap: 0.17578125rem;
+    font-size: 0.5625rem;
+  }
   @media (max-width: 768px) {
     font-size: 0.75rem;
   }
@@ -415,6 +445,9 @@ const Price = styled.div`
   font-family: 'Pretendard-ExtraBold';
   font-size: 0.84375rem;
 
+  @media (max-width: 1024px) {
+    font-size: 0.6328125rem;
+  }
   @media (max-width: 768px) {
     font-size: 0.75rem;
   }

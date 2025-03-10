@@ -11,7 +11,6 @@ function HearoSection() {
   const navigate = useNavigate();
 
   return (
-    <>
     <HearoWrapper>
       {/* 로고 영역 */}
       <StyledTextLogo/>
@@ -55,7 +54,6 @@ function HearoSection() {
         </ButtonWrapper>
       </SearchWrapper>
     </HearoWrapper>
-    </>
   )
 }
 
@@ -100,9 +98,9 @@ const HearoWrapper = styled.div`
   }
 
   @media (max-width: 1024px) {
-    height: 48.75rem;
+    height: 36.5625rem;
     flex-direction: column;
-    gap: 3.125rem;
+    gap: 2.34375rem;
   }
   @media (max-width: 768px) {
     padding-bottom: 2.5rem;
@@ -119,7 +117,7 @@ const StyledTextLogo = styled(TextLogo)`
   z-index: 100;
 
   @media (max-width: 1024px) {
-    width: 27.75rem;
+    width: 20.8125rem;
   }
   @media (max-width: 768px) {
     width: 17.5rem;
@@ -134,6 +132,10 @@ const SearchWrapper = styled.div`
   justify-content: center;
   gap: 1.875rem;
   z-index: 100;
+
+  @media (max-width: 1024px) {
+    gap: 1.40625rem;
+  }
   @media (max-width: 768px) {
     gap: 0.9375rem;
   }
@@ -143,6 +145,10 @@ const InputWrapper = styled.div`
   width: 21.875rem;
   display: flex;
   justify-content: center;
+
+  @media (max-width: 768px) {
+    width: 16.40625rem;
+  }
   @media (max-width: 768px) {
     div {
       width: 16.40625rem;
@@ -157,25 +163,33 @@ const InputWrapper = styled.div`
 const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 1.875em;
+  gap: 1.875rem;
+
+  @media (max-width: 1024px) {
+    gap: 1.40625rem;
+  }
   @media (max-width: 768px) {
     font-size: 0.5rem;
   }
 `;
 
 const ButtonTop = styled.div`
-  border-radius: 0.46875em 0.46875em 0 0;
+  border-radius: 0.46875rem 0.46875rem 0 0;
   width: 100%;
-  height: 4.375em;
+  height: 4.375rem;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #F9F9FB;
   transition: background 0.3s ease-in-out;
+
+  @media (max-width: 1024px) {
+    height: 3.28125rem;
+  }
 `;
 
 const StyledButton = styled.div`
-  width: 7.5em;
+  width: 7.5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -189,12 +203,16 @@ const StyledButton = styled.div`
   &:hover svg {
     fill: #F9F9FB;
   }
+
+  @media (max-width: 1024px) {
+    width: 5.625rem;
+  }
 `;
 
 const ButtonBottom = styled.div`
-  border-radius: 0 0 0.46875em 0.46875em;
+  border-radius: 0 0 0.46875rem 0.46875rem;
   width: 100%;
-  height: 3.125em;
+  height: 3.125rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -202,16 +220,30 @@ const ButtonBottom = styled.div`
   color: #F9F9FB;
   text-align: center;
   font-family: 'Pretendard-Medium';
-  font-size: 0.875em;
+  font-size: 0.875rem;
   line-height: 130%;
+
+  @media (max-width: 1024px) {
+    height: 2.34375rem;
+    font-size: 0.65625rem;
+  }
 `;
 
 const StyledLocationIcon = styled(LocationIcon)`
-  width: 2.34375em;
+  width: 2.34375rem;
+  @media (max-width: 1024px) {
+    width: 1.7578125rem;
+  }
 `;
 const StyledLevelIcon = styled(LevelIcon)`
-  width: 2.34375em;
+  width: 2.34375rem;
+  @media (max-width: 1024px) {
+    width: 1.7578125rem;
+  }
 `;
 const StyledGenreIcon = styled(GenreIcon)`
-  width: 2.34375em;
+  width: 2.34375rem;
+  @media (max-width: 1024px) {
+    width: 1.7578125rem;
+  }
 `;
