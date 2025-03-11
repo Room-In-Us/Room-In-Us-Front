@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
@@ -7,22 +7,26 @@ import HeartIcon from '../assets/icons/common/heart_default.svg?react';
 import HeartIcon2 from '../assets/icons/common/heart_hover.svg?react';
 import HeartIcon3 from '../assets/icons/common/heart_active.svg?react';
 import { formatNumberWithCommas } from '../utils/formatUtils';
+import { levelTextConversion } from '../utils/dataUtils';
+import { genreListConversion } from '../utils/dataUtils';
 import useDevice from '../hooks/useDevice';
 
-function ContentCard({ data }) {
+function ContentCard({ data, headCount }) {
   const {
-    stationName,
-    themeImg,
-    themeRecommendedRatio,
-    themeLevel,
-    themePlayTime,
-    pointName,
+    locationName,
+    img,
+    satisfactionLevel,
+    level,
+    playTime,
+    storeName,
     themeName,
-    themePricePerHeadcount,
+    genreList,
+    price,
   } = data;
 
   // state 관리
   const [isHeartActive, setIsHeartActive] = useState(false);
+  const [imageUrl, setImageUrl] = useState(img);
   
   // navigate
   const navigate = useNavigate();
@@ -30,26 +34,37 @@ function ContentCard({ data }) {
   // 반응형 함수
   const { isMobile } = useDevice();
 
+  // 이미지 로드 실패 시, 기본 썸네일로 변경
+  useEffect(() => {
+    setImageUrl(img);
+  }, [img]);
+  
+  const handleImageError = () => {
+    setImageUrl(ThumbnailImg);
+  };
+
   return (
     <ContentWrapper onClick={() => navigate('/level')}>
       {/* 이미지 영역 */}
-      <ImageSection imgUrl={themeImg}>
-        <LocationTag>{stationName}</LocationTag>
+      <ImageSection imgUrl={imageUrl}>
+        <LocationTag>{locationName}</LocationTag>
+        {/* 보이지 않는 img 태그 추가 (onError 감지용) */}
+        <img src={imageUrl} alt="테마 이미지" onError={handleImageError} />
       </ImageSection>
 
       <ItemWrapper>
         <TagAndTitleWrapper>
           {/* 태그 영역 */}
           <TagSection>
-            <ScoreTag>⭐&nbsp;&nbsp;&nbsp;4.4</ScoreTag>
-            <Tag>어려움</Tag>
-            <Tag>{themePlayTime}분</Tag>
+            <ScoreTag>⭐&nbsp;&nbsp;&nbsp;{satisfactionLevel}</ScoreTag>
+            <Tag>{levelTextConversion(level)}</Tag>
+            <Tag>{playTime}분</Tag>
           </TagSection>
 
           {/* 제목 영역 */}
           <TitleSection>
             <TitleWrapper>
-              <CafeName>{pointName}</CafeName>
+              <CafeName>{storeName}</CafeName>
               <Title>{themeName}</Title>
             </TitleWrapper>
             {!isMobile && (
@@ -76,15 +91,18 @@ function ContentCard({ data }) {
 
           {/* 장르 영역 */}
           <GenreSection>
-            <Tag>잠입</Tag>
-            <Tag>스릴러</Tag>
+            {genreListConversion(genreList).map((genre, index) => (
+              <Tag key={index}>{genre}</Tag>
+            ))}
           </GenreSection>
         </TagAndTitleWrapper>
 
         {/* 가격 영역 */}
         <PriceSection>
-          1인
-          <Price>₩ {formatNumberWithCommas(themePricePerHeadcount)} ~</Price>
+          <PriceWrapper>
+            {headCount}인
+            <Price>₩ {formatNumberWithCommas(price)} ~</Price>
+          </PriceWrapper>
           {isMobile && (
               <>
                 {/* 모바일 하트 아이콘 영역 */}
@@ -114,6 +132,7 @@ function ContentCard({ data }) {
 // PropTypes 정의 (eslint 에러 방지)
 ContentCard.propTypes = {
   data: PropTypes.object.isRequired,
+  headCount: PropTypes.number.isRequired,
 };
 
 export default ContentCard;
@@ -156,13 +175,16 @@ const ImageSection = styled.div`
   width: 100%;
   height: 15.65625rem;
   align-self: stretch;
-  background-image: ${(props) =>
-    props.imgUrl && typeof props.imgUrl === "string" && props.imgUrl.trim() !== ""
-      ? `url(${props.imgUrl})`
-      : `url(${ThumbnailImg})`};
+  background-image: url(${props => props.imgUrl});
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+  position: relative; // 🔹 내부에 <img> 추가하기 위해 필요
+
+  // 🔹 보이지 않는 <img>를 넣어 이미지 로드 실패 감지
+  img {
+    display: none;
+  }
 
   @media (max-width: 1024px) {
     height: 11.7421875rem;
@@ -400,7 +422,6 @@ const HeartWrapper = styled.div`
     width: 1rem;
     height: 1rem;
     bottom: 0.4rem;
-    left: 2.9rem;
   }
 `;
 
@@ -423,6 +444,12 @@ const PriceSection = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+`;
+
+const PriceWrapper = styled.div`
+  display: flex;
+  align-items: center;
   gap: 0.234375rem;
   color: var(--RIU_Monochrome-80, #A1A4B5);
   font-family: 'Pretendard-SemiBold';
@@ -433,7 +460,7 @@ const PriceSection = styled.div`
 
   @media (max-width: 1024px) {
     gap: 0.17578125rem;
-    font-size: 0.5625rem;
+    font-size: 0.6328125rem;
   }
   @media (max-width: 768px) {
     font-size: 0.75rem;
