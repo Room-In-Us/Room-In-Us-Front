@@ -9,7 +9,7 @@ import FantasyGenre from '../shared/assets/images/genre/fantasy.png';
 import AdventureGenre from '../shared/assets/images/genre/adventure.png';
 import Others from '../shared/assets/images/genre/others.png';
 import { useNavigate } from 'react-router-dom';
-import { getGenresListAPI } from '../features/genre/api/genreAPI';
+import { getGenreListAPI } from '../features/genre/api/genreAPI';
 
 export default function GenrePage() {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ export default function GenrePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getGenresListAPI();
+        const response = await getGenreListAPI();
         console.log('받은 데이터: ', response);
         setGenres(response);
       } catch (error) {

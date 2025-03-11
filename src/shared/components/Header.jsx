@@ -15,16 +15,16 @@ import EmailIcon from '../assets/icons/common/emailIcon.svg?react';
 import InquiryIcon from '../assets/icons/common/inquiryIcon.svg?react';
 
 function Header() {
+  // navigate, location
+  const navigate = useNavigate();
+  const location = useLocation();
+
   // state 관리
   const [isVisibleProfile, setIsVisibleProfile] = useState(false);
   const [isVisibleMenu, setIsVisibleMenu] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
   const [isScrolledBeyond, setIsScrolledBeyond] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
-
-  // navigate, location
-  const navigate = useNavigate();
-  const location = useLocation();
 
   // 페이지 이동
   const handleNavigation = (path) => {
@@ -120,7 +120,7 @@ function Header() {
       {(isDesktop || isTablet) && (
         <HeaderWrapper hasScrolled={hasScrolled}>
           <SectionWrapper>
-            <StyledLogoIcon onClick={() => handleNavigation('/')} />
+            <StyledLogoIcon onClick={() => handleNavigation('/')} location={location}/>
             <ButtonWrapper isDesktop={isDesktop} isTablet={isTablet}>
               <StyledButton
                 onClick={() => handleNavigation('/')}
@@ -150,7 +150,9 @@ function Header() {
           </SectionWrapper>
           <SectionWrapper>
             {/* 검색 */}
-            <SearchInput type="header"/>
+            <SearchInputWrapper>
+              <SearchInput type="header"/>
+            </SearchInputWrapper>
             {/* 로그인, 프로필 */}
             {isLoggedIn ? (
               <ProfileWrapper>
@@ -173,15 +175,19 @@ function Header() {
         <>
           <MobileHeaderWrapper  hasScrolled={hasScrolled}>
             <StyledMenuIcon onClick={() => handleMenu()} />
-            <StyledLogoIcon isScrolledBeyond={isScrolledBeyond} onClick={() => handleNavigation('/')} />
+            <StyledLogoIcon
+              isScrolledBeyond={isScrolledBeyond}
+              onClick={() => handleNavigation('/')}
+              location={location}
+            />
           </MobileHeaderWrapper>
 
           {/* 메뉴바 */}
           <MenuWrapper isVisible={isVisibleMenu} ref={menuRef}>
             <MenuTopWrapper>
-              <SearchInputWrapper>
+              <MobileSearchInputWrapper>
                 <SearchInput type="header-mobile" />
-              </SearchInputWrapper>
+              </MobileSearchInputWrapper>
               <MobileButtonWrapper>
                 <MobileButton
                   onClick={() => handleNavigation('/')}
@@ -238,6 +244,7 @@ const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1.25rem;
   z-index: 1900;
   background: ${({ hasScrolled }) => (hasScrolled ? 'rgba(255, 255, 255, 0.3)' : 'transparent')};
   backdrop-filter: ${({ hasScrolled }) => (hasScrolled ? 'blur(15px)' : 'none')};
@@ -245,6 +252,7 @@ const HeaderWrapper = styled.div`
 `;
 
 const SectionWrapper = styled.div`
+  width: 100%;
   display: flex;
   align-items: center;
 `;
@@ -258,7 +266,8 @@ const StyledLogoIcon = styled(LogoIcon)`
   @media (max-width: 768px) {
     width: 2.5rem;
     path#Vector_2 {
-      fill: ${({ isScrolledBeyond }) => (isScrolledBeyond ? "#718FF2" : "#E8EAFF")};
+      fill: ${({ isScrolledBeyond, location }) =>
+        location.pathname === '/' ? (isScrolledBeyond ? "#718FF2" : "#E8EAFF") : "#718FF2"};
     }
   }
 `;
@@ -294,6 +303,13 @@ const StyledButton = styled.div`
   }
 `;
 
+const SearchInputWrapper = styled.div`
+  margin-right: 1.25rem;
+  width: 100%;
+  display: flex;
+  justify-content: end;
+`;
+
 const ProfileWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -301,12 +317,12 @@ const ProfileWrapper = styled.div`
 
 const CircleButton = styled.div`
   border-radius: 30px;
-  margin-left: 1.25rem;
   width: 2.8125rem;
   height: 2.8125rem;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
   background-color: #F9F9FB;
   cursor: pointer;
   &:hover {
@@ -370,7 +386,7 @@ const MenuTopWrapper = styled.div`
   gap: 1.25rem;
 `;
 
-const SearchInputWrapper = styled.div`
+const MobileSearchInputWrapper = styled.div`
   display: flex;
   justify-content: center;
 
@@ -464,6 +480,7 @@ const StyledEmailIcon = styled(EmailIcon)`
 
 const LegalNoticesText = styled.p`
   margin: 0 0 0.625rem 0;
+  width: fit-content;
   color: var(--RIU_Primary-0, #E8EAFF);
   font-family: 'Pretendard-Bold';
   font-size: 0.625rem;

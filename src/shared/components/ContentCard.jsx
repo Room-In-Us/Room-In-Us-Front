@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
@@ -7,22 +7,26 @@ import HeartIcon from '../assets/icons/common/heart_default.svg?react';
 import HeartIcon2 from '../assets/icons/common/heart_hover.svg?react';
 import HeartIcon3 from '../assets/icons/common/heart_active.svg?react';
 import { formatNumberWithCommas } from '../utils/formatUtils';
+import { levelTextConversion } from '../utils/dataUtils';
+import { genreListConversion } from '../utils/dataUtils';
 import useDevice from '../hooks/useDevice';
 
-function ContentCard({ data }) {
+function ContentCard({ data, headCount }) {
   const {
-    stationName,
-    themeImg,
-    themeRecommendedRatio,
-    themeLevel,
-    themePlayTime,
-    pointName,
+    locationName,
+    img,
+    satisfactionLevel,
+    level,
+    playTime,
+    storeName,
     themeName,
-    themePricePerHeadcount,
+    genreList,
+    price,
   } = data;
 
   // state 관리
   const [isHeartActive, setIsHeartActive] = useState(false);
+  const [imageUrl, setImageUrl] = useState(img);
   
   // navigate
   const navigate = useNavigate();
@@ -30,26 +34,37 @@ function ContentCard({ data }) {
   // 반응형 함수
   const { isMobile } = useDevice();
 
+  // 이미지 로드 실패 시, 기본 썸네일로 변경
+  useEffect(() => {
+    setImageUrl(img);
+  }, [img]);
+  
+  const handleImageError = () => {
+    setImageUrl(ThumbnailImg);
+  };
+
   return (
     <ContentWrapper onClick={() => navigate('/level')}>
       {/* 이미지 영역 */}
-      <ImageSection imgUrl={themeImg}>
-        <LocationTag>{stationName}</LocationTag>
+      <ImageSection imgUrl={imageUrl}>
+        <LocationTag>{locationName}</LocationTag>
+        {/* 보이지 않는 img 태그 추가 (onError 감지용) */}
+        <img src={imageUrl} alt="테마 이미지" onError={handleImageError} />
       </ImageSection>
 
       <ItemWrapper>
         <TagAndTitleWrapper>
           {/* 태그 영역 */}
           <TagSection>
-            <ScoreTag>⭐&nbsp;&nbsp;&nbsp;4.4</ScoreTag>
-            <Tag>어려움</Tag>
-            <Tag>{themePlayTime}분</Tag>
+            <ScoreTag>⭐&nbsp;&nbsp;&nbsp;{satisfactionLevel}</ScoreTag>
+            <Tag>{levelTextConversion(level)}</Tag>
+            <Tag>{playTime}분</Tag>
           </TagSection>
 
           {/* 제목 영역 */}
           <TitleSection>
             <TitleWrapper>
-              <CafeName>{pointName}</CafeName>
+              <CafeName>{storeName}</CafeName>
               <Title>{themeName}</Title>
             </TitleWrapper>
             {!isMobile && (
@@ -76,15 +91,18 @@ function ContentCard({ data }) {
 
           {/* 장르 영역 */}
           <GenreSection>
-            <Tag>잠입</Tag>
-            <Tag>스릴러</Tag>
+            {genreListConversion(genreList).map((genre, index) => (
+              <Tag key={index}>{genre}</Tag>
+            ))}
           </GenreSection>
         </TagAndTitleWrapper>
 
         {/* 가격 영역 */}
         <PriceSection>
-          1인
-          <Price>₩ {formatNumberWithCommas(themePricePerHeadcount)} ~</Price>
+          <PriceWrapper>
+            {headCount}인
+            <Price>₩ {formatNumberWithCommas(price)} ~</Price>
+          </PriceWrapper>
           {isMobile && (
               <>
                 {/* 모바일 하트 아이콘 영역 */}
@@ -114,6 +132,7 @@ function ContentCard({ data }) {
 // PropTypes 정의 (eslint 에러 방지)
 ContentCard.propTypes = {
   data: PropTypes.object.isRequired,
+  headCount: PropTypes.number.isRequired,
 };
 
 export default ContentCard;
@@ -137,9 +156,9 @@ const ContentWrapper = styled.div`
   }
 
   @media (max-width: 1024px) {
-    padding: 0.9375rem;
-    width: 28.25rem;
-    height: 28.125rem;
+    padding: 0.703125rem;
+    width: 21.1875rem;
+    height: 21.09375rem;
   }
   @media (max-width: 768px) {
     padding: 0.625rem;
@@ -156,16 +175,19 @@ const ImageSection = styled.div`
   width: 100%;
   height: 15.65625rem;
   align-self: stretch;
-  background-image: ${(props) =>
-    props.imgUrl && typeof props.imgUrl === "string" && props.imgUrl.trim() !== ""
-      ? `url(${props.imgUrl})`
-      : `url(${ThumbnailImg})`};
+  background-image: url(${props => props.imgUrl});
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+  position: relative; // 🔹 내부에 <img> 추가하기 위해 필요
+
+  // 🔹 보이지 않는 <img>를 넣어 이미지 로드 실패 감지
+  img {
+    display: none;
+  }
 
   @media (max-width: 1024px) {
-    height: 15.65625rem;
+    height: 11.7421875rem;
   }
   @media (max-width: 768px) {
     border-radius: 0.375rem;
@@ -175,7 +197,7 @@ const ImageSection = styled.div`
 `;
 
 const LocationTag = styled.div`
-  padding: 0 13.5px;
+  padding: 0 0.84375rem;
   margin: 0.5rem 0 0 0.5rem;
   height: 1.375rem;
   display: flex;
@@ -188,8 +210,10 @@ const LocationTag = styled.div`
   font-size: 0.65625rem;
 
   @media (max-width: 1024px) {
-    height: 1.4375rem;
-    font-size: 0.75rem;
+    padding: 0 0.6328125rem;
+    margin: 0.375rem 0 0 0.375rem;
+    height: 1.078125rem;
+    font-size: 0.5625rem;
   }
   @media (max-width: 768px) {
     height: 1.125rem;
@@ -204,6 +228,9 @@ const ItemWrapper = styled.div`
   flex-direction: column;
   justify-content: space-between;
 
+  @media (max-width: 1024px) {
+    height: 7.9453125rem;
+  }
   @media (max-width: 768px) {
     width: 10.4375rem;
     height: 8.75rem;
@@ -224,6 +251,10 @@ const TagSection = styled.div`
   gap: 0.375rem;
 
   @media (max-width: 768px) {
+    margin-top: 0.3515625rem;
+    gap: 0.28125rem;
+  }
+  @media (max-width: 768px) {
     margin-top: 0;
     gap: 0.25rem;
   }
@@ -242,8 +273,9 @@ const ScoreTag = styled.div`
   font-size: 0.65625rem;
 
   @media (max-width: 1024px) {
-    height: 1.4375rem;
-    font-size: 0.75rem;
+    padding: 0 0.3515625rem;
+    height: 1.078125rem;
+    font-size: 0.5625rem;
   }
   @media (max-width: 768px) {
     height: 1rem;
@@ -271,8 +303,9 @@ const Tag = styled.div`
   }
 
   @media (max-width: 1024px) {
-    height: 1.4375rem;
-    font-size: 0.75rem;
+    padding: 0 0.3515625rem;
+    height: 1.078125rem;
+    font-size: 0.5625rem;
   }
   @media (max-width: 768px) {
     height: 1rem;
@@ -286,6 +319,9 @@ const TitleSection = styled.div`
   display: flex;
   justify-content: space-between;
 
+  @media (max-width: 1024px) {
+    margin-top: 0.703125rem;
+  }
   @media (max-width: 768px) {
     margin-top: 0.5rem;
   }
@@ -296,6 +332,9 @@ const TitleWrapper = styled.div`
   flex-direction: column;
   gap: 0.3125rem;
 
+  @media (max-width: 1024px) {
+    gap: 0.234375rem;
+  }
   @media (max-width: 768px) {
     gap: 0;
   }
@@ -314,8 +353,8 @@ const CafeName = styled.div`
   word-break: break-all;
 
   @media (max-width: 1024px) {
-    width: 21rem;
-    font-size: 0.75rem;
+    width: 15.75rem;
+    font-size: 0.5625rem;
   }
   @media (max-width: 768px) {
     width: 8.5rem;
@@ -336,10 +375,11 @@ const Title = styled.div`
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  overflow-wrap: break-word;
 
   @media (max-width: 1024px) {
-    width: 21rem;
-    font-size: 1.5rem;
+    width: 15.75rem;
+    font-size: 1.125rem;
   }
   @media (max-width: 768px) {
     width: 8.5rem;
@@ -373,11 +413,15 @@ const HeartWrapper = styled.div`
     opacity: 1;
   }
 
+  @media (max-width: 1024px) {
+    width: 1.125rem;
+    height: 1.125rem;
+    right: 0.5rem;
+  }
   @media (max-width: 768px) {
     width: 1rem;
     height: 1rem;
     bottom: 0.4rem;
-    left: 2.9rem;
   }
 `;
 
@@ -388,6 +432,9 @@ const GenreSection = styled.div`
   align-items: center;
   gap: 0.1875rem;
 
+  @media (max-width: 1024px) {
+    gap: 0.375rem;
+  }
   @media (max-width: 768px) {
     gap: 0.5rem;
   }
@@ -395,6 +442,12 @@ const GenreSection = styled.div`
 
 const PriceSection = styled.div`
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const PriceWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 0.234375rem;
@@ -405,6 +458,10 @@ const PriceSection = styled.div`
     color: var(--RIU_Primary-80, #8DA3FF);
   }
 
+  @media (max-width: 1024px) {
+    gap: 0.17578125rem;
+    font-size: 0.6328125rem;
+  }
   @media (max-width: 768px) {
     font-size: 0.75rem;
   }
@@ -415,6 +472,9 @@ const Price = styled.div`
   font-family: 'Pretendard-ExtraBold';
   font-size: 0.84375rem;
 
+  @media (max-width: 1024px) {
+    font-size: 0.6328125rem;
+  }
   @media (max-width: 768px) {
     font-size: 0.75rem;
   }

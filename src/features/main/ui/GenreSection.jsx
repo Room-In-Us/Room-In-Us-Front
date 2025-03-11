@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { mokeThemesData } from "../model/mokeThemesData";
 import ContentCard from "../../../shared/components/ContentCard";
 import RightArrow from "../../../shared/assets/icons/main/rightArrow.svg?react";
 import Emotional from "../../../shared/assets/icons/common/genreIcon/emotional.svg?react";
@@ -17,10 +16,12 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from 'swiper/modules';
 import "swiper/css";
 import "swiper/css/pagination";
+import { getGenreListAPI } from "../../genre/api/genreAPI";
 
 function GenreSection() {
   // state 관리
-  const [activeGenre, setActiveGenre] = useState('emotional');
+  const [activeGenre, setActiveGenre] = useState('SENTIMENTAL');
+  const [themeList, setThemeList] = useState([]);
 
   // navigate
   const navigate = useNavigate();
@@ -32,6 +33,23 @@ function GenreSection() {
   const handleGenreClick = (genre) => {
     setActiveGenre(genre);
   };
+
+  // 가격 기준 인원
+  const headCount = 1;
+
+  // 숙련도 목록 조회
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getGenreListAPI(activeGenre, 2, 1, 8);
+        console.log('숙련도 기반 방탈출 테마 목록: ', response.contents);
+        setThemeList(response.contents);
+      } catch (error) {
+        console.error('장르 기반 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
+      }
+    };
+    fetchData();
+  }, [activeGenre]);
 
   return (
     <SectionWrapper>
@@ -47,14 +65,14 @@ function GenreSection() {
       {/* 레벨 버튼 영역 */}
       <LevelWrapper>
         {[
-          { icon: StyledEmotional, text: "감성", genre: "emotional" },
-          { icon: StyledHorror, text: "공포/스릴러", genre: "horror" },
-          { icon: StyledDetective, text: "추리", genre: "detective" },
-          { icon: StyledMystery, text: "미스테리", genre: "mystery" },
-          { icon: StyledComic, text: "코믹", genre: "comic" },
-          { icon: StyledFantasy, text: "판타지", genre: "fantasy" },
-          { icon: StyledAdventure, text: "탐험/모험", genre: "adventure" },
-          { icon: StyledDrama, text: "드라마", genre: "drama" },
+          { icon: StyledEmotional, text: "감성", genre: "SENTIMENTAL" },
+          { icon: StyledHorror, text: "공포/스릴러", genre: "HORROR" },
+          { icon: StyledDetective, text: "추리", genre: "DETECTIVE" },
+          { icon: StyledMystery, text: "미스테리", genre: "MYSTERY" },
+          { icon: StyledComic, text: "코믹", genre: "COMIC" },
+          { icon: StyledFantasy, text: "판타지", genre: "FANTASY" },
+          { icon: StyledAdventure, text: "탐험/모험", genre: "ADVENTURE" },
+          { icon: StyledDrama, text: "드라마", genre: "DRAMA" },
         ].map(({ icon: Icon, text, genre }) => (
           <LevelButton 
             key={genre} 
@@ -73,8 +91,8 @@ function GenreSection() {
       {/* 콘텐츠 카드 영역 */}
       { isDesktop && (
         <ListWrapper>
-          {mokeThemesData.map((items) => (
-            <ContentCard key={items.id} data={items} />
+          {themeList.map((items) => (
+            <ContentCard key={items.id} data={items} headCount={headCount}/>
           ))}
         </ListWrapper>
       )}
@@ -88,15 +106,15 @@ function GenreSection() {
         >
           <StyledSwiperSlide1>
             <ListWrapper>
-              {mokeThemesData.slice(0, 4).map((items) => (
-                <ContentCard key={items.id} data={items} />
+              {themeList.slice(0, 4).map((items) => (
+                <ContentCard key={items.id} data={items} headCount={headCount}/>
               ))}
             </ListWrapper>
           </StyledSwiperSlide1>
           <StyledSwiperSlide2>
             <ListWrapper>
-              {mokeThemesData.slice(4, 8).map((items) => (
-                <ContentCard key={items.id} data={items} />
+              {themeList.slice(4, 8).map((items) => (
+                <ContentCard key={items.id} data={items} headCount={headCount}/>
               ))}
             </ListWrapper>
           </StyledSwiperSlide2>
@@ -117,7 +135,8 @@ const SectionWrapper = styled.div`
   gap: 1.875rem;
 
   @media (max-width: 1024px) {
-    width: 57.75rem;
+    width: 43.3125rem;
+    gap: 1.40625rem;
   }
   @media (max-width: 768px) {
     width: 20.9375rem;
@@ -131,6 +150,10 @@ const TitleWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media (max-width: 1024px) {
+    height: 1.265625rem;
+  }
 `;
 
 const Title = styled.p`
@@ -139,7 +162,7 @@ const Title = styled.p`
   font-size: 1.40625rem;
 
   @media (max-width: 1024px) {
-    font-size: 1.875rem;
+    font-size: 1.40625rem;
   }
   @media (max-width: 768px) {
     font-size: 0.875rem;
@@ -155,7 +178,7 @@ const LocationSearchButton = styled.p`
   cursor: pointer;
 
   @media (max-width: 1024px) {
-    font-size: 1.25rem;
+    font-size: 0.9375rem;
   }
   @media (max-width: 768px) {
     font-size: 0.625rem;
@@ -167,8 +190,8 @@ const StyledRightArrow = styled(RightArrow)`
   width: 0.5rem;
 
   @media (max-width: 1024px) {
-    margin-left: 0.625rem;
-    width: 1.25rem;
+    margin-left: 0.46875rem;
+    width: 0.9375rem;
   }
   @media (max-width: 768px) {
     margin-left: 0.125rem;
@@ -181,7 +204,7 @@ const LevelWrapper = styled.div`
   display: flex;
   justify-content: space-between;
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     align-items: flex-start;
     align-content: flex-start;
     row-gap: 1rem;
@@ -198,6 +221,9 @@ const ButtonText = styled.div`
   font-size: 0.875rem;
   transition: color 0.1s ease-in-out;
 
+  @media (max-width: 1024px) {
+    font-size: 0.65625rem;
+  }
   @media (max-width: 768px) {
     font-size: 0.625rem;
   }
@@ -211,7 +237,9 @@ const ButtonLine = styled.div`
   transition: background-color 0.1s ease-in-out;
 
   @media (max-width: 1024px) {
-    width: 12.8125rem;
+    border-radius: 1.40625rem;
+    width: 9.609375rem;
+    height: 0.1875rem;
   }
   @media (max-width: 768px) {
     width: 4.375rem;
@@ -225,6 +253,10 @@ const StyledEmotional = styled(Emotional)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -236,6 +268,10 @@ const StyledHorror = styled(Horror)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -247,6 +283,10 @@ const StyledDetective = styled(Detective)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -258,6 +298,10 @@ const StyledMystery = styled(Mystery)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -269,6 +313,10 @@ const StyledComic = styled(Comic)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -280,6 +328,10 @@ const StyledFantasy = styled(Fantasy)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -291,6 +343,10 @@ const StyledAdventure = styled(Adventure)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -302,6 +358,10 @@ const StyledDrama = styled(Drama)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -336,7 +396,7 @@ const LevelButton = styled.div`
   }
 
   @media (max-width: 1024px) {
-    width: 14.0625rem;
+    width: 10.546875rem;
   }
   @media (max-width: 768px) {
     width: 5rem;
@@ -349,8 +409,10 @@ const ListWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 1.25rem;
-  justify-content: space-between;
 
+  @media (max-width: 1024px) {
+    gap: 0.9375rem;
+  }
   @media (max-width: 768px) {
     gap: 0.625rem;
   }
@@ -381,10 +443,18 @@ const StyledSwiperSlide1 = styled(SwiperSlide)`
   flex-direction: column;
   gap: 16px;
   align-items: center;
+
+  @media (max-width: 1024px) {
+    gap: 0.75rem;
+  }
 `;
 const StyledSwiperSlide2 = styled(SwiperSlide)`
   display: flex;
   flex-direction: column;
   gap: 16px;
   align-items: center;
+
+  @media (max-width: 1024px) {
+    gap: 0.75rem;
+  }
 `;

@@ -34,7 +34,7 @@ const PageWrapper = styled.div`
   gap: 4.375rem;
 
   @media (max-width: 1024px) {
-    gap: 5.625rem;
+    gap: 4.21875rem;
   }
   @media (max-width: 768px) {
     gap: 1.875rem;

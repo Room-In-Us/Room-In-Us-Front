@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { mokeThemesData } from "../model/mokeThemesData";
 import ContentCard from "../../../shared/components/ContentCard";
 import RightArrow from "../../../shared/assets/icons/main/rightArrow.svg?react";
 import Level1Icon from "../../../shared/assets/icons/common/levelIcon/level1.svg?react";
@@ -13,11 +12,13 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from 'swiper/modules';
 import "swiper/css";
 import "swiper/css/pagination";
+import { getLevelListAPI } from "../../level/api/levelAPI";
 
 function LevelSection() {
   // state 관리
-  const [activeLevel, setActiveLevel] = useState('beginner');
-  
+  const [activeLevel, setActiveLevel] = useState('BEGINNER');
+  const [themeList, setThemeList] = useState([]);
+
   // navigate
   const navigate = useNavigate();
 
@@ -28,6 +29,23 @@ function LevelSection() {
   const handleLevelClick = (level) => {
     setActiveLevel(level);
   };
+
+  // 가격 기준 인원
+  const headCount = 1;
+  
+  // 숙련도 목록 조회
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getLevelListAPI(activeLevel, "HIGH_RECOMMENDED_RATIO", 2, 1, 8);
+        console.log('숙련도 기반 방탈출 테마 목록: ', response.contents);
+        setThemeList(response.contents);
+      } catch (error) {
+        console.error('장르 기반 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
+      }
+    };
+    fetchData();
+  }, [activeLevel]);
 
   return (
     <SectionWrapper>
@@ -43,10 +61,10 @@ function LevelSection() {
       {/* 레벨 버튼 영역 */}
       <LevelWrapper>
         {[
-          { icon: StyledLevel1Icon, text: "방세포", level: "beginner" },
-          { icon: StyledLevel2Icon, text: "방초보", level: "junior" },
-          { icon: StyledLevel3Icon, text: "방중수", level: "senior" },
-          { icon: StyledLevel4Icon, text: "방고수", level: "master" },
+          { icon: StyledLevel1Icon, text: "방세포", level: "BEGINNER" },
+          { icon: StyledLevel2Icon, text: "방초보", level: "JUNIOR" },
+          { icon: StyledLevel3Icon, text: "방중수", level: "SENIOR" },
+          { icon: StyledLevel4Icon, text: "방고수", level: "MASTER" },
         ].map(({ icon: Icon, text, level }) => (
           <LevelButton 
             key={level} 
@@ -65,8 +83,8 @@ function LevelSection() {
       {/* 콘텐츠 카드 영역 */}
       { isDesktop && (
         <ListWrapper>
-          {mokeThemesData.map((items) => (
-            <ContentCard key={items.id} data={items} />
+          {themeList.map((items) => (
+            <ContentCard key={items.id} data={items} headCount={headCount}/>
           ))}
         </ListWrapper>
       )}
@@ -80,15 +98,15 @@ function LevelSection() {
         >
           <StyledSwiperSlide1>
             <ListWrapper>
-              {mokeThemesData.slice(0, 4).map((items) => (
-                <ContentCard key={items.id} data={items} />
+              {themeList.slice(0, 4).map((items) => (
+                <ContentCard key={items.id} data={items} headCount={headCount}/>
               ))}
             </ListWrapper>
           </StyledSwiperSlide1>
           <StyledSwiperSlide2>
             <ListWrapper>
-              {mokeThemesData.slice(4, 8).map((items) => (
-                <ContentCard key={items.id} data={items} />
+              {themeList.slice(4, 8).map((items) => (
+                <ContentCard key={items.id} data={items} headCount={headCount}/>
               ))}
             </ListWrapper>
           </StyledSwiperSlide2>
@@ -109,7 +127,8 @@ const SectionWrapper = styled.div`
   gap: 1.875rem;
 
   @media (max-width: 1024px) {
-    width: 57.75rem;
+    width: 43.3125rem;
+    gap: 1.40625rem;
   }
   @media (max-width: 768px) {
     width: 20.9375rem;
@@ -123,6 +142,10 @@ const TitleWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media (max-width: 1024px) {
+    height: 1.265625rem;
+  }
 `;
 
 const Title = styled.p`
@@ -131,7 +154,7 @@ const Title = styled.p`
   font-size: 1.40625rem;
 
   @media (max-width: 1024px) {
-    font-size: 1.875rem;
+    font-size: 1.40625rem;
   }
   @media (max-width: 768px) {
     font-size: 0.875rem;
@@ -147,7 +170,7 @@ const LocationSearchButton = styled.p`
   cursor: pointer;
 
   @media (max-width: 1024px) {
-    font-size: 1.25rem;
+    font-size: 0.9375rem;
   }
   @media (max-width: 768px) {
     font-size: 0.625rem;
@@ -159,8 +182,8 @@ const StyledRightArrow = styled(RightArrow)`
   width: 0.5rem;
 
   @media (max-width: 1024px) {
-    margin-left: 0.625rem;
-    width: 1.25rem;
+    margin-left: 0.46875rem;
+    width: 0.9375rem;
   }
   @media (max-width: 768px) {
     margin-left: 0.125rem;
@@ -190,6 +213,9 @@ const ButtonText = styled.div`
   font-size: 0.875rem;
   transition: color 0.1s ease-in-out;
 
+  @media (max-width: 1024px) {
+    font-size: 0.65625rem;
+  }
   @media (max-width: 768px) {
     font-size: 0.625rem;
   }
@@ -203,7 +229,8 @@ const ButtonLine = styled.div`
   transition: background-color 0.1s ease-in-out;
 
   @media (max-width: 1024px) {
-    width: 12.8125rem;
+    width: 9.609375rem;
+    height: 0.1875rem;
   }
   @media (max-width: 768px) {
     width: 4.375rem;
@@ -217,6 +244,10 @@ const StyledLevel1Icon = styled(Level1Icon)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -228,6 +259,10 @@ const StyledLevel2Icon = styled(Level2Icon)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -239,6 +274,10 @@ const StyledLevel3Icon = styled(Level3Icon)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -250,6 +289,10 @@ const StyledLevel4Icon = styled(Level4Icon)`
   transition: all 0.1s ease-in-out;
   fill: ${(props) => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "currentColor")};
 
+  @media (max-width: 1024px) {
+    margin-right: 0.3515625rem;
+    width: 1.265625rem;
+  }
   @media (max-width: 768px) {
     width: 1.2rem;
     height: 1.2rem;
@@ -284,7 +327,7 @@ const LevelButton = styled.div`
   }
 
   @media (max-width: 1024px) {
-    width: 14.0625rem;
+    width: 10.546875rem;
   }
   @media (max-width: 768px) {
     width: 5rem;
@@ -297,8 +340,10 @@ const ListWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 1.25rem;
-  justify-content: space-between;
 
+  @media (max-width: 1024px) {
+    gap: 0.9375rem;
+  }
   @media (max-width: 768px) {
     gap: 0.625rem;
   }
@@ -327,12 +372,20 @@ const StyledSwiper = styled(Swiper)`
 const StyledSwiperSlide1 = styled(SwiperSlide)`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1rem;
   align-items: center;
+
+  @media (max-width: 1024px) {
+    gap: 0.75rem;
+  }
 `;
 const StyledSwiperSlide2 = styled(SwiperSlide)`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1rem;
   align-items: center;
+
+  @media (max-width: 1024px) {
+    gap: 0.75rem;
+  }
 `;

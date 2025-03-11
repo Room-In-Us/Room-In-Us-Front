@@ -57,7 +57,7 @@ const SectionWrapper = styled.div`
   align-items: center;
 
   @media (max-width: 1024px) {
-    width: 57.75rem;
+    width: 43.3125rem;
   }
   @media (max-width: 768px) {
     width: 20.9375rem;
@@ -77,7 +77,7 @@ const Title = styled.p`
   font-size: 1.40625rem;
 
   @media (max-width: 1024px) {
-    font-size: 1.875rem;
+    font-size: 1.40625rem;
   }
   @media (max-width: 768px) {
     font-size: 0.875rem;
@@ -93,7 +93,7 @@ const LocationSearchButton = styled.p`
   cursor: pointer;
 
   @media (max-width: 1024px) {
-    font-size: 1.25rem;
+    font-size: 0.9375rem;
   }
   @media (max-width: 768px) {
     font-size: 0.625rem;
@@ -105,8 +105,8 @@ const StyledRightArrow = styled(RightArrow)`
   width: 0.5rem;
 
   @media (max-width: 1024px) {
-    margin-left: 0.625rem;
-    width: 1.25rem;
+    margin-left: 0.46875rem;
+    width: 0.9375rem;
   }
   @media (max-width: 768px) {
     margin-left: 0.125rem;
@@ -121,6 +121,9 @@ const PopularLocatioinButtonWrapper = styled.div`
   justify-content: space-between;
   gap: 1.25rem;
 
+  @media (max-width: 1024px) {
+    gap: 0.703125rem;
+  }
   @media (max-width: 768px) {
     gap: 0.9375rem;
   }
@@ -158,9 +161,11 @@ const PopularLocationButton = styled.div`
   }
 
   @media (max-width: 1024px) {
-    border-radius: 0.625rem;
-    width: 28.25rem;
-    height: 10.25rem;
+    border-radius: 0.46875rem;
+    padding: 1.40625rem;
+    width: 21.1875rem;
+    height: 7.6875rem;
+    gap: 0.890625rem;
   }
   @media (max-width: 768px) {
     border-radius: 0.3125rem;
@@ -179,7 +184,7 @@ const ButtonTitle = styled.div`
   z-index: 1;
 
   @media (max-width: 1024px) {
-    font-size: 1.75rem;
+    font-size: 1.3125rem;
   }
   @media (max-width: 768px) {
     font-size: 0.875rem;
@@ -205,6 +210,11 @@ const LocationButtonWrapper = styled.div`
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 1.25rem;
+
+  @media (max-width: 1024px) {
+    margin-top: 0.9375rem;
+    gap: 0.9375rem;
+  }
   @media (max-width: 768px) {
     gap: 0.625rem;
   }
@@ -229,9 +239,10 @@ const LocationButton = styled.div`
   }
 
   @media (max-width: 1024px) {
-    border-radius: 0.46875rem;
-    width: 28.25rem;
-    height: 5rem;
+    border-radius: 0.3515625rem;
+    width: 21.1875rem;
+    height: 3.75rem;
+    font-size: 1.125rem;
   }
   @media (max-width: 768px) {
     border-radius: 0.234375rem;
