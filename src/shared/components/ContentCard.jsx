@@ -9,6 +9,7 @@ import HeartIcon3 from '../assets/icons/common/heart_active.svg?react';
 import { formatNumberWithCommas } from '../utils/formatUtils';
 import { levelTextConversion } from '../utils/dataUtils';
 import { genreListConversion } from '../utils/dataUtils';
+import { locationTagConversion } from '../utils/dataUtils';
 import useDevice from '../hooks/useDevice';
 
 function ContentCard({ data, headCount }) {
@@ -47,7 +48,7 @@ function ContentCard({ data, headCount }) {
     <ContentWrapper onClick={() => navigate('/level')}>
       {/* 이미지 영역 */}
       <ImageSection imgUrl={imageUrl}>
-        <LocationTag>{locationName}</LocationTag>
+        <LocationTag>{locationTagConversion(locationName)}</LocationTag>
         {/* 보이지 않는 img 태그 추가 (onError 감지용) */}
         <img src={imageUrl} alt="테마 이미지" onError={handleImageError} />
       </ImageSection>
