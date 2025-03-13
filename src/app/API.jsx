@@ -29,7 +29,18 @@ api.interceptors.request.use(
       console.warn('Access token이 없어서 테스트 토큰을 사용합니다.');
       token = testToken; // 로컬스토리지에 없으면 테스트 토큰 사용
     }
-    config.headers['Authorization'] = `Bearer ${token}`; // Authorization 헤더에 토큰 추가
+
+    // Authorization 헤더를 제외해야 하는 경로 리스트
+    const noAuthPaths = [
+      'themes/proficiency',
+      'themes/genre',
+    ];
+
+    // noAuthPaths 제외하고 Authorization 헤더에 토큰 추가
+    if (!noAuthPaths.some(path => config.url?.includes(path))) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+
     return config;
   },
   (error) => {
