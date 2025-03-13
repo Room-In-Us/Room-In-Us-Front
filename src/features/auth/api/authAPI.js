@@ -1,10 +1,10 @@
 import { api } from '../../../app/API';
 
-// 회원가입 api
+// 회원가입 api (레거시)
 export const postSignupAPI = async (data) => {
   try {
     console.log(data);
-    const response = await api.post('sign-up', data);
+    const response = await api.post('v0/sign-up', data);
     console.log('회원가입 api 전체 응답:', response);
 
     return response.data;
