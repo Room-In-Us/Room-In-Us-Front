@@ -35,3 +35,9 @@ export const genreListConversion = (genreList) => {
   };
   return genreList.map((genre) => genreMap[genre] || "알 수 없음");
 };
+
+// 위치 태그 변환 함수 (문자열에서 "(" 이전까지만 반환)
+export const locationTagConversion = (location) => {
+  if (!location || typeof location !== "string") return "알 수 없음";
+  return location.split("(")[0].trim();
+};

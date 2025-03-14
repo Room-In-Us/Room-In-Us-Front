@@ -39,25 +39,39 @@ function LoginPage() {
     resolver: yupResolver(loginSchema),
   });
 
-  // 폼 제출 핸들러
+  // 로그인 요청
   const onSubmit = async (data) => {
     try {
-      console.log('로그인 데이터:', data);
-      const response = await postLoginAPI(data);
-      console.log('로그인 성공:', response);
+      console.log("로그인 데이터:", data);
+      const response = await postLoginAPI({ ...data, rememberMe: isCheck });
 
-      // 토큰 저장
-      localStorage.setItem('accessToken', response.accessToken); // 서버에서 반환된 accessToken 저장
-      if (response.refreshToken) {
-        localStorage.setItem('refreshToken', response.refreshToken); // 필요 시 refreshToken도 저장
+      console.log("로그인 API 응답 데이터:", response);
+
+      // 서버에서 받은 토큰 저장
+      const token = response.accessToken;
+      if (token) {
+        localStorage.setItem("accessToken", token);
+        console.log("로컬 스토리지에 토큰 저장:", token);
       }
 
-      alert('로그인에 성공했습니다.');
-      navigate('/');
+      alert("로그인에 성공했습니다.");
+      navigate("/");
     } catch (error) {
-      console.error('로그인 실패:', error.response?.data || error.message);
-      alert('로그인에 실패했습니다. 이메일 또는 비밀번호를 확인하세요.');
+      console.error("로그인 실패:", error.response?.data || error.message);
+      alert("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인하세요.");
     }
+  };
+
+  // 카카오 로그인
+  const handleKakaoLogin = () => {
+    // window.location.href = `${process.env.REACT_APP_API_URL}/auth/kakao`;
+    navigate('/');
+  };
+
+  // 구글 로그인
+  const handleGoogleLogin = () => {
+    // window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`;
+    navigate('/');
   };
 
   return (
@@ -113,7 +127,7 @@ function LoginPage() {
               {/* 카카오 로그인 */}
               <SocialLoginButton
                 type='kakao'
-                onClick={() => navigate('/')}
+                onClick={handleKakaoLogin()}
               >
                 <StyledKakaoLogo />
                 <LoginText type='social'>카카오 계정으로 로그인</LoginText>
@@ -122,7 +136,7 @@ function LoginPage() {
               {/* 구글 로그인 */}
               <SocialLoginButton
                 type='google'
-                onClick={() => navigate('/')}
+                onClick={handleGoogleLogin()}
               >
                 <StyledGoogleLogo />
                 <LoginText type='social'>구글 계정으로 로그인</LoginText>

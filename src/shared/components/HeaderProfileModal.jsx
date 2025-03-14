@@ -5,53 +5,36 @@ import ColorR from "../assets/icons/common/colorR.svg?react";
 import MypageIcon from "../assets/icons/common/myPageIcon.svg?react"
 import LogoutIcon from "../assets/icons/common/logoutIcon.svg?react";
 import { useNavigate } from "react-router-dom";
-import { getAccessToken } from '../../app/API';
 import { getMemberInfoAPI } from "../../features/auth/api/memberAPI";
 
 function HeaderProfileModal({ visible }) {
   const navigate = useNavigate();
-  const [, setIsLoggedIn] = useState(false);
   const [nickname, setNickname] = useState('');
 
-  // 로그인 상태 확인
-  const token = getAccessToken(); // 토큰 가져오기
+  // 로컬 스토리지에서 토큰 호출
+  const isLoggedIn = !!localStorage.getItem("accessToken");
+
+  // 닉네임 가져오기 (로그인 상태일 때만 실행)
   useEffect(() => {
-    setIsLoggedIn(!!token); // 토큰 여부에 따라 상태 설정
+    if (isLoggedIn) {
+      const fetchNickName = async () => {
+        try {
+          const response = await getMemberInfoAPI();
+          setNickname(response.nickname);
+        } catch (error) {
+          console.error("닉네임 불러오는 중 오류 발생:", error);
+        }
+      };
+      fetchNickName();
+    }
+  }, [isLoggedIn]);
 
-    const handleStorageChange = () => {
-      const token = getAccessToken();
-      setIsLoggedIn(!!token);
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, [token]);
-
-  // 로그아웃 처리 함수
+  // 로그아웃 함수
   const handleLogout = () => {
-    localStorage.removeItem('accessToken'); // localStorage에서 토큰 제거
-    localStorage.removeItem('refreshToken'); // 필요시 refreshToken도 제거
-    setIsLoggedIn(false); // 상태 업데이트
-    alert('로그아웃 되었습니다.');
-    navigate('/login');
+    localStorage.removeItem("accessToken");
+    alert("로그아웃 되었습니다.");
+    navigate("/login");
   };
-
-  // 닉네임 가져오기
-  useEffect(() => {
-    const fetchNickName = async () => {
-      try {
-        const response = await getMemberInfoAPI();
-        console.log('api로 받은 닉네임:', response.nickname);
-        setNickname(response.nickname);
-      } catch (error) {
-        console.error('닉네임 불러오는 중 오류 발생:', error);
-      }
-    };
-    fetchNickName();
-  }, []);
 
   return (
     <ModalWrapper visible={visible}>

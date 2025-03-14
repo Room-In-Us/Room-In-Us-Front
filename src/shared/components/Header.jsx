@@ -6,7 +6,6 @@ import MenuIcon from '../../shared/assets/icons/common/menuIcon.svg?react';
 import LogoIcon from '../../shared/assets/icons/common/logo.svg?react';
 import LoginIcon from '../../shared/assets/icons/common/loginIcon.svg?react';
 import ProfileIcon from '../../shared/assets/icons/common/profileIcon.svg?react';
-import { getAccessToken } from '../../app/API';
 import SearchInput from './SearchInput';
 import HeaderProfileModal from './HeaderProfileModal';
 import TextLogo from '../assets/icons/common/textLogo.svg?react';
@@ -24,7 +23,9 @@ function Header() {
   const [isVisibleMenu, setIsVisibleMenu] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
   const [isScrolledBeyond, setIsScrolledBeyond] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
+
+  // 로컬 스토리지에서 토큰 호출
+  const isLoggedIn = !!localStorage.getItem("accessToken");
 
   // 페이지 이동
   const handleNavigation = (path) => {
@@ -69,32 +70,6 @@ function Header() {
     };
   }, [isVisibleMenu]);
 
-  // 로그인 상태 확인
-  const token = getAccessToken(); // 토큰 가져오기
-  useEffect(() => {
-    setIsLoggedIn(!!token); // 토큰 여부에 따라 상태 설정
-
-    const handleStorageChange = () => {
-      const token = getAccessToken();
-      setIsLoggedIn(!!token);
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, [token]);
-
-  // 로그아웃 처리 함수
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken'); // localStorage에서 토큰 제거
-    localStorage.removeItem('refreshToken'); // 필요시 refreshToken도 제거
-    setIsLoggedIn(false); // 상태 업데이트
-    alert('로그아웃 되었습니다.');
-    navigate('/login');
-  };
-
   // 페이지 이동 시 프로필 모달 닫기
   useEffect(() => {
     setIsVisibleProfile(false);
@@ -113,6 +88,13 @@ function Header() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [location.pathname]);
+
+  // 로그아웃 함수
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    alert("로그아웃 되었습니다.");
+    navigate("/login");
+  };
 
   return (
     <>
