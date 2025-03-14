@@ -42,15 +42,23 @@ function LoginPage() {
   // 로그인 요청
   const onSubmit = async (data) => {
     try {
-      console.log('로그인 데이터:', data);
-      const response = await postLoginAPI({ ...data, rememberMe: isCheck }, { withCredentials: true });
+      console.log("로그인 데이터:", data);
+      const response = await postLoginAPI({ ...data, rememberMe: isCheck });
 
-      console.log('로그인 성공:', response);
-      alert('로그인에 성공했습니다.');
-      navigate('/');
+      console.log("로그인 API 응답 데이터:", response);
+
+      // 서버에서 받은 토큰 저장
+      const token = response.accessToken;
+      if (token) {
+        localStorage.setItem("accessToken", token);
+        console.log("로컬 스토리지에 토큰 저장:", token);
+      }
+
+      alert("로그인에 성공했습니다.");
+      navigate("/");
     } catch (error) {
-      console.error('로그인 실패:', error.response?.data || error.message);
-      alert('로그인에 실패했습니다. 이메일 또는 비밀번호를 확인하세요.');
+      console.error("로그인 실패:", error.response?.data || error.message);
+      alert("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인하세요.");
     }
   };
 

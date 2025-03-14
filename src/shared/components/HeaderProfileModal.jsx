@@ -7,50 +7,12 @@ import LogoutIcon from "../assets/icons/common/logoutIcon.svg?react";
 import { useNavigate } from "react-router-dom";
 import { getMemberInfoAPI } from "../../features/auth/api/memberAPI";
 
-// 쿠키에서 accessToken 가져오는 함수
-const getAccessTokenFromCookie = () => {
-  const cookie = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("accessToken="));
-  return cookie ? cookie.split("=")[1] : null;
-};
-
 function HeaderProfileModal({ visible }) {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickname] = useState('');
 
-  // 로그인 상태 확인
-  useEffect(() => {
-    const checkLoginStatus = () => {
-      const token = getAccessTokenFromCookie();
-      setIsLoggedIn(!!token);
-    };
-
-    checkLoginStatus(); // 초기 상태 확인
-
-    const handleStorageChange = () => {
-      checkLoginStatus();
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
-
-
-  // 로그아웃 처리
-  const handleLogout = async () => {
-    try {
-      // await axios.post("/auth/logout", {}, { withCredentials: true });
-      // setIsLoggedIn(false);
-      alert("로그아웃 되었습니다.");
-      navigate("/login");
-    } catch (error) {
-      console.error("로그아웃 실패:", error);
-    }
-  };
+  // 로컬 스토리지에서 토큰 호출
+  const isLoggedIn = !!localStorage.getItem("accessToken");
 
   // 닉네임 가져오기 (로그인 상태일 때만 실행)
   useEffect(() => {
@@ -66,6 +28,13 @@ function HeaderProfileModal({ visible }) {
       fetchNickName();
     }
   }, [isLoggedIn]);
+
+  // 로그아웃 함수
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    alert("로그아웃 되었습니다.");
+    navigate("/login");
+  };
 
   return (
     <ModalWrapper visible={visible}>

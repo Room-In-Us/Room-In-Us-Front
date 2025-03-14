@@ -16,6 +16,7 @@
     "@reduxjs/toolkit": "^2.2.7",
     "@use-gesture/react": "^10.3.1",
     "axios": "^1.7.5",
+    "mkcert": "^3.2.0",
     "prop-types": "^15.8.1",
     "props-type": "^1.0.1",
     "rc-slider": "^11.1.8",
@@ -48,6 +49,7 @@
     "globals": "^15.9.0",
     "prettier": "^3.4.2",
     "vite": "^5.4.1",
+    "vite-plugin-mkcert": "^1.17.7",
     "vite-plugin-svgr": "^4.2.0"
   }
 }

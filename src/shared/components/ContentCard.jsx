@@ -102,7 +102,7 @@ function ContentCard({ data, headCount }) {
         <PriceSection>
           <PriceWrapper>
             {headCount}인
-            <Price>₩ {formatNumberWithCommas(price)} ~</Price>
+            <Price>₩ {formatNumberWithCommas(price ?? 0)} ~</Price>
           </PriceWrapper>
           {isMobile && (
               <>

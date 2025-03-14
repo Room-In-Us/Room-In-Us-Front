@@ -13,14 +13,6 @@ import InstagramIcon from '../assets/icons/common/instagramIcon.svg?react';
 import EmailIcon from '../assets/icons/common/emailIcon.svg?react';
 import InquiryIcon from '../assets/icons/common/inquiryIcon.svg?react';
 
-// 쿠키에서 accessToken 가져오는 함수
-const getAccessTokenFromCookie = () => {
-  const cookie = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('accessToken='));
-  return cookie ? cookie.split('=')[1] : null;
-};
-
 function Header() {
   // navigate, location
   const navigate = useNavigate();
@@ -31,7 +23,9 @@ function Header() {
   const [isVisibleMenu, setIsVisibleMenu] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
   const [isScrolledBeyond, setIsScrolledBeyond] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // 로컬 스토리지에서 토큰 호출
+  const isLoggedIn = !!localStorage.getItem("accessToken");
 
   // 페이지 이동
   const handleNavigation = (path) => {
@@ -76,45 +70,6 @@ function Header() {
     };
   }, [isVisibleMenu]);
 
-  // 로그인 상태 확인
-  const updateLoginStatus = () => {
-    const token = getAccessTokenFromCookie();
-    setIsLoggedIn(!!token);
-  };
-
-  // 상태 업데이트 이후 값 확인
-useEffect(() => {
-  console.log('토큰 상태 변경됨: ', isLoggedIn);
-}, [isLoggedIn]);
-
-
-  useEffect(() => {
-    updateLoginStatus(); // 초기 로그인 상태 확인
-
-    // 페이지 이동 시 로그인 상태 업데이트
-    const unlisten = () => updateLoginStatus();
-    return () => unlisten();
-  }, [location.pathname]);
-
-  // 다른 탭에서 로그인/로그아웃 감지
-  useEffect(() => {
-    const handleStorageChange = () => {
-      updateLoginStatus();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
-
-  // 로그아웃 처리 함수
-  const handleLogout = () => {
-    setIsLoggedIn(false); // 상태 업데이트
-    alert('로그아웃 되었습니다.');
-    navigate('/login');
-  };
-
   // 페이지 이동 시 프로필 모달 닫기
   useEffect(() => {
     setIsVisibleProfile(false);
@@ -133,6 +88,13 @@ useEffect(() => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [location.pathname]);
+
+  // 로그아웃 함수
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    alert("로그아웃 되었습니다.");
+    navigate("/login");
+  };
 
   return (
     <>
