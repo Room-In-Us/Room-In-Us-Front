@@ -64,14 +64,12 @@ function LoginPage() {
 
   // 카카오 로그인
   const handleKakaoLogin = () => {
-    // window.location.href = `${process.env.REACT_APP_API_URL}/auth/kakao`;
-    navigate('/');
+    window.location.href = `${import.meta.env.VITE_SERVER_URL_API}oauth2/authorization/kakao`;
   };
 
   // 구글 로그인
   const handleGoogleLogin = () => {
-    // window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`;
-    navigate('/');
+    window.location.href = `${import.meta.env.VITE_SERVER_URL_API}oauth2/authorization/google`;
   };
 
   return (
@@ -127,7 +125,7 @@ function LoginPage() {
               {/* 카카오 로그인 */}
               <SocialLoginButton
                 type='kakao'
-                onClick={handleKakaoLogin()}
+                onClick={handleKakaoLogin}
               >
                 <StyledKakaoLogo />
                 <LoginText type='social'>카카오 계정으로 로그인</LoginText>
@@ -136,7 +134,7 @@ function LoginPage() {
               {/* 구글 로그인 */}
               <SocialLoginButton
                 type='google'
-                onClick={handleGoogleLogin()}
+                onClick={handleGoogleLogin}
               >
                 <StyledGoogleLogo />
                 <LoginText type='social'>구글 계정으로 로그인</LoginText>

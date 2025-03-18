@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { signupSchema } from '../features/auth/model/authSchema';
-import { postSignupAPI } from '../features/auth/api/authAPI';
+import { postLegacySignupAPI } from '../features/auth/api/authAPI';
 import SignupModal from '../features/auth/ui/SignupModal';
 
 function SignupPage() {
@@ -34,7 +34,7 @@ function SignupPage() {
       console.log('전송 데이터:', payload);
 
       // 회원가입 API 호출
-      const response = await postSignupAPI(payload);
+      const response = await postLegacySignupAPI(payload);
       console.log('API 응답:', response);
 
       setIsModalOpen(true);
