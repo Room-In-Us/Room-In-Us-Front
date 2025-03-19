@@ -16,6 +16,8 @@ import { LoadScript } from '@react-google-maps/api';
 import { useSetRecoilState } from 'recoil';
 import { mapsLoadedState } from '../features/location/model/locationAtom';
 import LevelSearchPage from '../pages/LevelSearchPage';
+import AuthCallback from '../features/auth/ui/AuthCallback';
+import AuthError from '../features/auth/ui/AuthError';
 
 function App() {
   const setMapsLoaded = useSetRecoilState(mapsLoadedState);
@@ -37,6 +39,12 @@ function App() {
 
           {/* 회원가입 페이지 */}
           <Route path="/signup" element={<SignupPage />} />
+
+          {/* 소셜 로그인 콜백 페이지 */}
+          <Route path="/auth/callback" element={<AuthCallback />} />
+
+          {/* 소셜 로그인 에러 페이지 */}
+          <Route path="/auth/error" element={<AuthError />} />
 
           {/* 유저 정보 페이지 */}
           <Route path="/userInfo" element={<EditUserInfoPage />} />
