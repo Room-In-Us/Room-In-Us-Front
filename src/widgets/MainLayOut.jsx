@@ -5,11 +5,12 @@ import styled from 'styled-components';
 
 function MainLayOut() {
   const location = useLocation();
-  const isLoginPage = location.pathname === '/login';
+  const authPages = ['/login', '/signup'];
+  const isAuthPage = authPages.includes(location.pathname);
   
   return (
     <MainWrapper>
-      { !isLoginPage && <Header /> }
+      { !isAuthPage && <Header /> }
       <ContentWrapper>
         <Outlet />
       </ContentWrapper>

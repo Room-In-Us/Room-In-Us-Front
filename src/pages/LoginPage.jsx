@@ -391,7 +391,7 @@ const LoginButton = styled.button`
 `;
 
 const LoginText = styled.div`
-  color: ${({type}) => (type == 'social' ? '#000' : '#FFF')};;
+  color: ${({type}) => (type == 'social' ? '#000' : '#FFF')};
   font-family: 'Pretendard-Bold';
   line-height: 130%;
   z-index: 1;
