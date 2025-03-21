@@ -5,6 +5,7 @@ import NoiseFilter from '../shared/assets/icons/login/loginNoiseFilter.svg';
 import TextLogo from '../shared/assets/icons/common/textLogo.svg?react'
 import NicknameSection from '../features/auth/ui/NicknameSection';
 import AgreeSection from '../features/auth/ui/AgreeSection';
+import CompleteSection from '../features/auth/ui/CompleteSection';
 
 function SignupPage() {
   const [signupSection,] = useRecoilState(signupSectionState);
@@ -18,6 +19,9 @@ function SignupPage() {
 
       {/* 약관동의 섹션 */}
       {(signupSection === "agree") && <AgreeSection />}
+
+      {/* 가입완료 섹션 */}
+      {(signupSection === "complete") && <CompleteSection />}
 
     </PageWrapper>
   );
