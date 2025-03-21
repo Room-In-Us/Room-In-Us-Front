@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
-import { signupSectionState } from "../model/authAtom";
+import { signupSectionState, nicknameBackupState } from "../model/authAtom";
 import { postNicknameAPI } from "../api/authAPI";
 
 function NicknameSection() {
@@ -10,6 +10,7 @@ function NicknameSection() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const [, setSignupSection] = useRecoilState(signupSectionState);
+  const [, setNicknameBackup] = useRecoilState(nicknameBackupState);
 
   // 닉네임 중복 검사 실행
   const handleNicknameCheck = async () => {
@@ -28,6 +29,7 @@ function NicknameSection() {
         setIsVisible(false);
         setErrorMessage("");
         setSignupSection("agree");
+        setNicknameBackup(nickname)
       }
 
     } catch (error) {

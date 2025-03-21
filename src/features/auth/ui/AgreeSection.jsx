@@ -1,16 +1,16 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
-import { signupSectionState } from "../model/authAtom";
-import { postNicknameAPI } from "../api/authAPI";
+import { signupSectionState, nicknameBackupState } from "../model/authAtom";
+import { postSignupAPI } from "../api/authAPI";
 
 function AgreeSection() {
   // state 관리
-  // const [agreeAll, setAgreeAll] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreePrivacy, setAgreePrivacy] = useState(false);
   const [agreeMarketing, setAgreeMarketing] = useState(false);
   const [, setSignupSection] = useRecoilState(signupSectionState);
+  const [nicknameBackup,] = useRecoilState(nicknameBackupState);
 
   // 동의하기 핸들러
   const handleAgree = (option) => {
@@ -34,8 +34,27 @@ function AgreeSection() {
   }
   
   // 회원 가입
-  const handleNicknameCheck = async () => {
+  const onSubmit = async () => {
+    try {
+      // 서버로 보낼 데이터 가공
+      const payload = {
+        code: localStorage.getItem("userCode"),
+        nickname: nicknameBackup,
+        isTermAgreed: agreeTerms,
+        isPrivacyAgreed: agreePrivacy,
+        isMarketingAgreed: agreeMarketing,
+      };
+      console.log('전송 데이터:', payload);
 
+      // 회원가입 API 호출
+      const response = await postSignupAPI(payload);
+      console.log('회원가입 API 응답:', response);
+
+      setSignupSection("complete");
+    } catch (error) {
+      console.error('회원가입 실패:', error);
+      alert('회원가입 중 문제가 발생했습니다. 다시 시도해 주세요.');
+    }
   };
 
   return (
@@ -69,7 +88,7 @@ function AgreeSection() {
         </ListWrapper>
       </ContentWrapper>
 
-      <LoginButton onClick={handleNicknameCheck} disabled={!agreeTerms || !agreePrivacy}>
+      <LoginButton onClick={onSubmit} disabled={!agreeTerms || !agreePrivacy}>
         <LoginText disabled={!agreeTerms || !agreePrivacy}>회원가입 완료</LoginText>
       </LoginButton>
     </SectionWrapper>
@@ -162,6 +181,7 @@ const StyledCheckkBox = styled.button`
   font-size: 0.75em;
   font-family: 'Pretendard-Medium';
   cursor: pointer;
+  transition: all 0.1s ease-in-out;
 `;
 
 const Text = styled.div`
