@@ -4,16 +4,20 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 const AuthCallback = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const userCode = searchParams.get('userCode'); // URL에서 인가코드 가져오기
+  const userCode = searchParams.get('userCode'); // URL에서 유저코드 추출
+  const accessToken = searchParams.get('accessToken'); // URL에서 토큰 추출
 
   useEffect(() => {
     if (userCode) {
-      localStorage.setItem("userCode", userCode); // 로컬 스토리지에 인가코드 저장
-      console.log("userCode 저장:", userCode);
+      localStorage.setItem("userCode", userCode);
+      console.log("userCode:", userCode);
+      navigate('/signup');
+    } else {
+      localStorage.setItem("accessToken", accessToken);
+      console.log("accessToken:", accessToken);
+      navigate('/');
     }
-
-    navigate('/signup');
-  }, [userCode, navigate]);
+  }, [userCode, accessToken, navigate]);
 
   return null;
 };
