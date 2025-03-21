@@ -1,26 +1,19 @@
 import { useState } from "react";
 import styled from "styled-components";
+import { useRecoilState } from 'recoil';
+import { signupSectionState } from "../model/authAtom";
 import { postNicknameAPI } from "../api/authAPI";
 
 function NicknameSection() {
+  // state 관리
   const [nickname, setNickname] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isVisible, setIsVisible] = useState(false);
+  const [, setSignupSection] = useRecoilState(signupSectionState);
 
   // 닉네임 중복 검사 실행
   const handleNicknameCheck = async () => {
     try {
-      if (!nickname.trim()) {
-        setErrorMessage("닉네임을 입력해주세요.");
-        setIsVisible(true);
-
-        setTimeout(() => {
-          setIsVisible(false);
-          setTimeout(() => setErrorMessage(""), 200);
-        }, 3000);
-        return;
-      }
-
       const response = await postNicknameAPI({ nickname });
 
       if (response.isAvailable === false) {
@@ -34,7 +27,7 @@ function NicknameSection() {
       } else {
         setIsVisible(false);
         setErrorMessage("");
-        alert("사용 가능한 닉네임입니다!");
+        setSignupSection("agree");
       }
 
     } catch (error) {
@@ -47,7 +40,7 @@ function NicknameSection() {
         setTimeout(() => setErrorMessage(""), 200);
       }, 3000);
     }
-};
+  };
 
   return (
     <SectionWrapper>
@@ -70,8 +63,8 @@ function NicknameSection() {
         <ErrorMessage isVisible={isVisible}>{errorMessage}</ErrorMessage>
       </InputSection>
 
-      <LoginButton onClick={handleNicknameCheck}>
-        <LoginText>다음으로</LoginText>
+      <LoginButton onClick={handleNicknameCheck} disabled={!nickname.trim()}>
+        <LoginText disabled={!nickname.trim()}>다음으로</LoginText>
       </LoginButton>
     </SectionWrapper>
   )
@@ -162,10 +155,15 @@ const LoginButton = styled.button`
   gap: 0.625em;
   align-self: stretch;
   border-radius: 2.5em;
-  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
-  cursor: pointer;
+  background: ${({ disabled }) =>
+    disabled
+      ? "var(--RIU_Monochrome-40, #DFDFE6);"
+      : "var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%))"};
+  cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
+  pointer-events: ${({ disabled }) => (disabled ? "none" : "auto")};
   position: relative;
   overflow: hidden;
+  transition: all 0.2s ease-in-out;
 
   &::before {
     content: "";
@@ -180,15 +178,16 @@ const LoginButton = styled.button`
   }
 
   &:hover::before {
-    opacity: 0.5;
+    opacity: ${({ disabled }) => (disabled ? "0" : "0.5")};
   }
 `;
 
 const LoginText = styled.div`
-  color: #FFF;
+  color: ${({ disabled }) => (disabled ? "var(--RIU_Monochrome-100, #818496)" : "#FFF")};
   font-family: 'Pretendard-Bold';
   line-height: 130%;
   z-index: 1;
+  transition: all 0.2s ease-in-out;
 `;
 
 const ErrorMessage = styled.div`

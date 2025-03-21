@@ -1,15 +1,23 @@
 import styled from 'styled-components';
+import { useRecoilState } from 'recoil';
+import { signupSectionState } from '../features/auth/model/authAtom';
 import NoiseFilter from '../shared/assets/icons/login/loginNoiseFilter.svg';
 import TextLogo from '../shared/assets/icons/common/textLogo.svg?react'
 import NicknameSection from '../features/auth/ui/NicknameSection';
+import AgreeSection from '../features/auth/ui/AgreeSection';
 
 function SignupPage() {
+  const [signupSection,] = useRecoilState(signupSectionState);
+  
   return (
     <PageWrapper>
       <StyledTextLogo/>
 
       {/* 닉네임 섹션 */}
-      <NicknameSection />
+      {(signupSection === "nickname") && <NicknameSection />}
+
+      {/* 약관동의 섹션 */}
+      {(signupSection === "agree") && <AgreeSection />}
 
     </PageWrapper>
   );
