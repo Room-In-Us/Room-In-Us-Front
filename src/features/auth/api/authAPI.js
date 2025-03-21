@@ -17,7 +17,7 @@ export const postLegacySignupAPI = async (data) => {
 // 회원가입 api
 export const postSignupAPI = async (data) => {
   try {
-    const response = await api.post('/sign-up', data);
+    const response = await api.post('sign-up', data);
     console.log('회원가입 성공: ', response.data);
     return response.data;
   } catch (error) {
@@ -35,6 +35,18 @@ export const postLoginAPI = async (data) => {
     return response.data;
   } catch (error) {
     console.error('로그인 api 요청 중 오류 발생: ', error);
+    throw error;
+  }
+};
+
+// 닉네임 중복검사 api
+export const postNicknameAPI = async (data) => {
+  try {
+    console.log(data);
+    const response = await api.post('sign-up/nickname', data);
+    return response.data;
+  } catch (error) {
+    console.error('닉네임 중복검사 api 요청 중 오류 발생: ', error);
     throw error;
   }
 };

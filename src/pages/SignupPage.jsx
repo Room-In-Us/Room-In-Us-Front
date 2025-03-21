@@ -1,138 +1,73 @@
-import { useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { signupSchema } from '../features/auth/model/authSchema';
-import { postLegacySignupAPI } from '../features/auth/api/authAPI';
-import SignupModal from '../features/auth/ui/SignupModal';
+import { useRecoilState } from 'recoil';
+import { signupSectionState } from '../features/auth/model/authAtom';
+import NoiseFilter from '../shared/assets/icons/login/loginNoiseFilter.svg';
+import TextLogo from '../shared/assets/icons/common/textLogo.svg?react'
+import NicknameSection from '../features/auth/ui/NicknameSection';
+import AgreeSection from '../features/auth/ui/AgreeSection';
+import CompleteSection from '../features/auth/ui/CompleteSection';
 
 function SignupPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate();
-
-  // React Hook Form 설정
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(signupSchema), // yup 스키마 연결
-  });
-
-  // 폼 제출 핸들러
-  const onSubmit = async (data) => {
-    try {
-      // 서버로 보낼 데이터 가공
-      const { name, email, password } = data;
-      const payload = {
-        nickname: name,
-        email,
-        password,
-      };
-
-      console.log('전송 데이터:', payload);
-
-      // 회원가입 API 호출
-      const response = await postLegacySignupAPI(payload);
-      console.log('API 응답:', response);
-
-      setIsModalOpen(true);
-    } catch (error) {
-      console.error('회원가입 실패:', error);
-      alert('회원가입 중 문제가 발생했습니다. 다시 시도해 주세요.');
-    }
-  };
-
+  const [signupSection,] = useRecoilState(signupSectionState);
+  
   return (
-    <>
-      <FormWrapper onSubmit={handleSubmit(onSubmit)}>
-        <PageWrapper>
-          <h2>회원가입</h2>
-          <ContentWrapper>
-            <InputWrapper>
-              <Title>닉네임</Title>
-              <StyledInput type="text" {...register('name')} />
-              {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
-            </InputWrapper>
-            <InputWrapper>
-              <Title>이메일</Title>
-              <StyledInput type="email" {...register('email')} />
-              {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
-            </InputWrapper>
-            <InputWrapper>
-              <Title>비밀번호</Title>
-              <StyledInput type="password" {...register('password')} />
-              {errors.password && <ErrorMessage>{errors.password.message}</ErrorMessage>}
-            </InputWrapper>
-            <InputWrapper>
-              <Title>비밀번호 확인</Title>
-              <StyledInput type="password" {...register('confirmPassword')} />
-              {errors.confirmPassword && <ErrorMessage>{errors.confirmPassword.message}</ErrorMessage>}
-            </InputWrapper>
-          </ContentWrapper>
-          <ButtonWrapper>
-            <StyledButton onClick={() => navigate('/login')}>이전</StyledButton>
-            <StyledButton type="submit">완료</StyledButton>
-          </ButtonWrapper>
-        </PageWrapper>
-      </FormWrapper>
+    <PageWrapper>
+      <StyledTextLogo/>
 
-      {/* 모달 */}
-      <SignupModal isOpen={isModalOpen} />
-    </>
+      {/* 닉네임 섹션 */}
+      {(signupSection === "nickname") && <NicknameSection />}
+
+      {/* 약관동의 섹션 */}
+      {(signupSection === "agree") && <AgreeSection />}
+
+      {/* 가입완료 섹션 */}
+      {(signupSection === "complete") && <CompleteSection />}
+
+    </PageWrapper>
   );
 }
 
 export default SignupPage;
 
-// CSS
-const FormWrapper = styled.form`
-  width: 100%;
-`;
-
 const PageWrapper = styled.div`
+font-size: 0.75rem;
+  width: 100vw;
+  height: calc(100vh - 2.375rem);
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: white;
+  gap: 6.25em;
+  position: relative;
+  z-index: 0;
+  
+  background-color:hsla(231,100%,89%,1);
+  background-image:
+    radial-gradient(at 0% 49%, hsla(212,19%,78%,1) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(216,38%,77%,1) 0px, transparent 50%),
+    radial-gradient(at 51% 100%, hsla(228,28%,65%,1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, hsla(232,33%,55%,1) 0px, transparent 50%),
+    radial-gradient(at 100% 44%, hsla(239,57%,59%,1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(235,68%,66%,1) 0px, transparent 50%),
+    radial-gradient(at 52% 0%, hsla(228,60%,81%,1) 0px, transparent 50%),
+    radial-gradient(at 0% 0%, hsla(213,20%,80%,1) 0px, transparent 50%);
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(${NoiseFilter});
+    background-repeat: repeat;
+    background-size: cover;
+    opacity: 0.5;
+    pointer-events: none;
+  }
 `;
 
-const ContentWrapper = styled.div`
-  border: 1px solid white;
-  border-radius: 10px;
-  width: 30em;
-  height: 30em;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
-const InputWrapper = styled.div`
-  margin: 1em 0;
-  width: 80%;
-`;
-
-const Title = styled.div``;
-
-const StyledInput = styled.input`
-  width: 98%;
-  height: 2em;
-`;
-
-const ButtonWrapper = styled.div``;
-
-const StyledButton = styled.button`
-  margin: 1em;
-  width: 8em;
-  height: 2em;
-  cursor: pointer;
-`;
-
-const ErrorMessage = styled.div`
-  color: red;
-  font-size: 0.8em;
-  margin-top: 0.3em;
+const StyledTextLogo = styled(TextLogo)`
+  width: 35em;
+  height: 15.125em;
+  z-index: 1;
 `;

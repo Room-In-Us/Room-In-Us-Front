@@ -1,0 +1,164 @@
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import CuteHapyStar from "../../../shared/assets/images/auth/cuteHappyStar.png";
+
+function CompleteSection() {
+  const navigate = useNavigate();
+
+  return (
+    <SectionWrapper>
+      <ContentWrapper>
+        <PageNumber>
+          Hi! 👋
+        </PageNumber>
+        <TextWrapper>
+          <Title>회원가입이 완료되었습니다</Title>
+          <Description>루미너스에 가입해주셔서 감사합니다!</Description>
+        </TextWrapper>
+        <ImageWrapper>
+          <StyledImg src={CuteHapyStar}/>
+          <ImageText>
+            간단한 조사를 통해 방탈출 성향을 등록해주시면 <br/>
+            루미너스가 좋은 서비스로 보답할게요!
+          </ImageText>
+        </ImageWrapper>
+      </ContentWrapper>
+
+      <ButtonWrapper>
+        <StyledButton onClick={() => navigate('/')}>
+          <ButtonText>성향조사 하기</ButtonText>
+        </StyledButton>
+        <PassButton onClick={() => navigate('/')}>다음에 할게요</PassButton>
+      </ButtonWrapper>
+    </SectionWrapper>
+  )
+}
+
+export default CompleteSection;
+
+// CSS
+const SectionWrapper = styled.div`
+  border-radius: 1.875em;
+  padding: 1.875em 2.5em;
+  box-sizing: border-box;
+  width: 32.5em;
+  height: 50em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  background-color: #FFF;
+  z-index: 1;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5625em;
+`;
+
+const PageNumber = styled.div`
+  color: var(--RIU_Monochrome-200, #717486);
+  font-family: 'Pretendard-Bold';
+  line-height: 130%;
+`;
+
+const TextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.625em;
+`;
+
+const Title = styled.div`
+  color: var(--RIU_Primary-100, #718FF2);
+  font-family: 'Pretendard-Bold';
+  font-size: 1.5em;
+  line-height: 130%;
+`;
+
+const Description = styled.div`
+  color: var(--RIU_Monochrome-200, #717486);
+  font-family: 'Pretendard-Medium';
+  line-height: 130%;
+`;
+
+const ImageWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5em;
+`;
+
+const StyledImg = styled.img`
+  width: 13.1875em;
+`;
+
+const ImageText = styled.div`
+  color: var(--RIU_Monochrome-200, #717486);
+  text-align: center;
+  font-family: 'Pretendard-Medium';
+  line-height: 160%;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25em;
+`;
+
+const StyledButton = styled.button`
+  all: unset;
+  border: none;
+  display: flex;
+  height: 3.125em;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625em;
+  align-self: stretch;
+  border-radius: 2.5em;
+  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease-in-out;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(19, 26, 115, 0.5);
+    opacity: 0;
+    transition: all 0.1s ease-in-out;
+  }
+
+  &:hover::before {
+    opacity: 0.5;
+  }
+`;
+
+const ButtonText = styled.div`
+  color: #FFF;
+  font-family: 'Pretendard-Bold';
+  line-height: 130%;
+  z-index: 1;
+  transition: all 0.2s ease-in-out;
+`;
+
+const PassButton = styled.div`
+  color: var(--RIU_Monochrome-200, #717486);
+  font-family: 'Pretendard-Medium';
+  font-size: 0.875em;
+  line-height: 130%;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-skip-ink: auto;
+  text-decoration-thickness: auto;
+  text-underline-offset: auto;
+  text-underline-position: from-font;
+  cursor: pointer;
+`;
