@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
+import AwardsIcon from '../assets/icons/common/awards.svg?react';
 import ThumbnailImg from '../assets/images/common/thumbnailImg.png';
 import HeartIcon from '../assets/icons/common/heart_default.svg?react';
 import HeartIcon2 from '../assets/icons/common/heart_hover.svg?react';
@@ -13,6 +14,7 @@ import useDevice from '../hooks/useDevice';
 function ContentCard({ data, headCount }) {
   const {
     locationName,
+    awardsYear,
     img,
     satisfactionLevel,
     level,
@@ -47,6 +49,7 @@ function ContentCard({ data, headCount }) {
       {/* 이미지 영역 */}
       <ImageSection imgUrl={imageUrl}>
         <LocationTag>{locationName}</LocationTag>
+        {awardsYear && <AwardsTag><StyledAwards/>{awardsYear}</AwardsTag>}
         {/* 보이지 않는 img 태그 추가 (onError 감지용) */}
         <img src={imageUrl} alt="테마 이미지" onError={handleImageError} />
       </ImageSection>
@@ -178,9 +181,8 @@ const ImageSection = styled.div`
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  position: relative; // 🔹 내부에 <img> 추가하기 위해 필요
+  position: relative;
 
-  // 🔹 보이지 않는 <img>를 넣어 이미지 로드 실패 감지
   img {
     display: none;
   }
@@ -192,12 +194,16 @@ const ImageSection = styled.div`
     border-radius: 0.375rem;
     width: 8.75rem;
     height: 8.75rem;
+    display: flex;
+    flex-direction: column;
   }
 `;
 
 const LocationTag = styled.div`
-  padding: 0 0.84375rem;
+  padding: 0 0.75rem;
+  box-sizing: border-box;
   margin: 0.5rem 0 0 0.5rem;
+  width: fit-content;
   height: 1.375rem;
   display: flex;
   justify-content: center;
@@ -218,6 +224,39 @@ const LocationTag = styled.div`
     height: 1.125rem;
     font-size: 0.625rem;
   }
+`;
+
+const AwardsTag = styled.div`
+  border: 1px solid var(--RIU_Monochrome-80, #A1A4B5);
+  border-radius: 0.9375rem;
+  padding: 0 0.75rem;
+  box-sizing: border-box;
+  margin: 0.5rem 0 0 0.5rem;
+  width: fit-content;
+  height: 1.375rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--RIU_Monochrome-10, #F9F9FB);
+  color: var(--RIU_Primary-80, #8DA3FF);
+  font-family: 'Pretendard-Bold';
+  font-size: 0.65625rem;
+
+  @media (max-width: 1024px) {
+    padding: 0 0.6328125rem;
+    margin: 0.375rem 0 0 0.375rem;
+    height: 1.078125rem;
+    font-size: 0.5625rem;
+  }
+  @media (max-width: 768px) {
+    height: 1.125rem;
+    font-size: 0.625rem;
+  }
+`;
+
+const StyledAwards = styled(AwardsIcon)`
+  width: 0.625rem;
 `;
 
 const ItemWrapper = styled.div`
