@@ -7,9 +7,7 @@ import HeartIcon from '../assets/icons/common/heart_default.svg?react';
 import HeartIcon2 from '../assets/icons/common/heart_hover.svg?react';
 import HeartIcon3 from '../assets/icons/common/heart_active.svg?react';
 import { formatNumberWithCommas } from '../utils/formatUtils';
-import { levelTextConversion } from '../utils/dataUtils';
-import { genreListConversion } from '../utils/dataUtils';
-import { locationTagConversion } from '../utils/dataUtils';
+import { levelTextConversion, genreListConversion, satisfactionConversion } from '../utils/dataUtils';
 import useDevice from '../hooks/useDevice';
 
 function ContentCard({ data, headCount }) {
@@ -48,7 +46,7 @@ function ContentCard({ data, headCount }) {
     <ContentWrapper onClick={() => navigate('/level')}>
       {/* 이미지 영역 */}
       <ImageSection imgUrl={imageUrl}>
-        <LocationTag>{locationTagConversion(locationName)}</LocationTag>
+        <LocationTag>{locationName}</LocationTag>
         {/* 보이지 않는 img 태그 추가 (onError 감지용) */}
         <img src={imageUrl} alt="테마 이미지" onError={handleImageError} />
       </ImageSection>
@@ -57,7 +55,7 @@ function ContentCard({ data, headCount }) {
         <TagAndTitleWrapper>
           {/* 태그 영역 */}
           <TagSection>
-            <ScoreTag>⭐&nbsp;&nbsp;&nbsp;{satisfactionLevel}</ScoreTag>
+            <ScoreTag>⭐&nbsp;&nbsp;&nbsp;{satisfactionConversion(satisfactionLevel)}</ScoreTag>
             <Tag>{levelTextConversion(level)}</Tag>
             <Tag>{playTime}분</Tag>
           </TagSection>
