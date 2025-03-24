@@ -34,14 +34,14 @@ function GenreSection() {
     setActiveGenre(genre);
   };
 
-  // 가격 기준 인원
-  const headCount = 1;
+  // 인원수 기준
+  const headCount = 2;
 
   // 숙련도 목록 조회
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getGenreListAPI(activeGenre, 2, 1, 8);
+        const response = await getGenreListAPI(activeGenre, headCount, 1, 8);
         console.log('숙련도 기반 방탈출 테마 목록: ', response.contents);
         setThemeList(response.contents);
       } catch (error) {
@@ -92,7 +92,7 @@ function GenreSection() {
       { isDesktop && (
         <ListWrapper>
           {themeList.map((items) => (
-            <ContentCard key={items.id} data={items} headCount={headCount}/>
+            <ContentCard key={items.id} data={items} headCount={headCount} type="home"/>
           ))}
         </ListWrapper>
       )}
@@ -107,14 +107,14 @@ function GenreSection() {
           <StyledSwiperSlide1>
             <ListWrapper>
               {themeList.slice(0, 4).map((items) => (
-                <ContentCard key={items.id} data={items} headCount={headCount}/>
+                <ContentCard key={items.id} data={items} headCount={headCount} type="home"/>
               ))}
             </ListWrapper>
           </StyledSwiperSlide1>
           <StyledSwiperSlide2>
             <ListWrapper>
               {themeList.slice(4, 8).map((items) => (
-                <ContentCard key={items.id} data={items} headCount={headCount}/>
+                <ContentCard key={items.id} data={items} headCount={headCount} type="home"/>
               ))}
             </ListWrapper>
           </StyledSwiperSlide2>

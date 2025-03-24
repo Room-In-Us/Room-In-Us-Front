@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
-import AwardsIcon from '../assets/icons/common/awards.svg?react';
 import ThumbnailImg from '../assets/images/common/thumbnailImg.png';
+import AwardsIcon from '../assets/icons/common/awards.svg?react';
+import CautionIcon from '../assets/icons/common/cautionIcon.svg?react';
 import HeartIcon from '../assets/icons/common/heart_default.svg?react';
 import HeartIcon2 from '../assets/icons/common/heart_hover.svg?react';
 import HeartIcon3 from '../assets/icons/common/heart_active.svg?react';
@@ -11,7 +12,7 @@ import { formatNumberWithCommas } from '../utils/formatUtils';
 import { levelTextConversion, genreListConversion, satisfactionConversion } from '../utils/dataUtils';
 import useDevice from '../hooks/useDevice';
 
-function ContentCard({ data, headCount }) {
+function ContentCard({ data, headCount, type }) {
   const {
     locationName,
     awardsYear,
@@ -23,6 +24,7 @@ function ContentCard({ data, headCount }) {
     themeName,
     genreList,
     price,
+    maxHeadcount,
   } = data;
 
   // state 관리
@@ -101,10 +103,34 @@ function ContentCard({ data, headCount }) {
 
         {/* 가격 영역 */}
         <PriceSection>
-          <PriceWrapper>
-            {headCount}인
-            <Price>₩ {formatNumberWithCommas(price ?? 0)} ~</Price>
-          </PriceWrapper>
+          {price === null && maxHeadcount === null ? (
+            <CautionWrapper type="priceCaution">
+              <StyledCautionIcon />
+              가격 정보 없음
+            </CautionWrapper>
+          ) : price === null && maxHeadcount !== null ? (
+            headCount > maxHeadcount ? (
+              <CautionWrapper type="headCountCaution">
+                <StyledCautionIcon />
+                {maxHeadcount}인까지 플레이 가능
+              </CautionWrapper>
+            ) : (
+              <CautionWrapper type="headCountCaution">
+                <StyledCautionIcon />
+                {maxHeadcount}인까지 플레이 가능
+              </CautionWrapper>
+            )
+          ) : price !== null && maxHeadcount === null ? (
+            <CautionWrapper type="priceCaution">
+              <StyledCautionIcon />
+              가격 정보 없음
+            </CautionWrapper>
+          ) : (
+            <PriceWrapper>
+              {type === 'home' && '1인'}
+              <Price>₩ {formatNumberWithCommas(price ?? 0)} ~</Price>
+            </PriceWrapper>
+          )}
           {isMobile && (
               <>
                 {/* 모바일 하트 아이콘 영역 */}
@@ -134,6 +160,7 @@ function ContentCard({ data, headCount }) {
 // PropTypes 정의 (eslint 에러 방지)
 ContentCard.propTypes = {
   data: PropTypes.object.isRequired,
+  type: PropTypes.string.isRequired,
   headCount: PropTypes.number.isRequired,
 };
 
@@ -464,7 +491,7 @@ const HeartWrapper = styled.div`
 `;
 
 const GenreSection = styled.div`
-  margin-top: 0.46875rem;
+  margin-top: 0.3125rem;
   width: 100%;
   display: flex;
   align-items: center;
@@ -503,6 +530,35 @@ const PriceWrapper = styled.div`
   @media (max-width: 768px) {
     font-size: 0.75rem;
   }
+`;
+
+const CautionWrapper = styled.div`
+  border-radius: 1.875rem;
+  padding: ${(props) => (props.type === 'headCountCaution') ? '0.25rem 0.625rem' : '0'};
+  width: ${(props) => (props.type === 'headCountCaution') ? '100%' : 'auto'};
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: ${(props) => (props.type === 'headCountCaution') ? 'var(--RIU_Primary-500, #4648A7)' : 'transparent'};
+  color: ${(props) => (props.type === 'headCountCaution') ? 'var(--RIU_Monochrome-10, #F9F9FB)' : 'var(--RIU_Monochrome-60, #C4C6D1)'};
+  font-family: 'Pretendard-SemiBold';
+  font-size: 0.84375rem;
+  line-height: normal;
+
+  @media (max-width: 1024px) {
+    gap: 0.17578125rem;
+    font-size: 0.6328125rem;
+  }
+  @media (max-width: 768px) {
+    padding: ${(props) => (props.type === 'headCountCaution') ? '0.125rem 0.5rem' : '0'};
+    width: ${(props) => (props.type === 'headCountCaution') ? '70%' : 'auto'};
+    font-size: 0.75rem;
+  }
+`;
+
+const StyledCautionIcon = styled(CautionIcon)`
+  width: 0.75rem;
+  height: 0.75rem;
 `;
 
 const Price = styled.div`
