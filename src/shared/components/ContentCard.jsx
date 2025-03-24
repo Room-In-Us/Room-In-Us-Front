@@ -95,8 +95,9 @@ function ContentCard({ data, headCount, type }) {
 
           {/* 장르 영역 */}
           <GenreSection>
-            {genreListConversion(genreList).map((genre, index) => (
-              <Tag key={index}>{genre}</Tag>
+            {genreList &&
+              genreListConversion(genreList).map((genre, index) => (
+                <Tag key={index}>{genre}</Tag>
             ))}
           </GenreSection>
         </TagAndTitleWrapper>
