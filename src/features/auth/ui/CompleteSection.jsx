@@ -73,13 +73,14 @@ const TextWrapper = styled.div`
 const Title = styled.div`
   color: var(--RIU_Primary-100, #718FF2);
   font-family: 'Pretendard-Bold';
-  font-size: 1.5em;
+  font-size: 1.125em;
   line-height: 130%;
 `;
 
 const Description = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Medium';
+  font-size: 0.875em;
   line-height: 130%;
 `;
 
@@ -98,6 +99,7 @@ const ImageText = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   text-align: center;
   font-family: 'Pretendard-Medium';
+  font-size: 0.875em;
   line-height: 160%;
 `;
 

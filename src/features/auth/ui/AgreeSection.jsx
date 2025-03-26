@@ -88,9 +88,9 @@ function AgreeSection() {
         </ListWrapper>
       </ContentWrapper>
 
-      <LoginButton onClick={onSubmit} disabled={!agreeTerms || !agreePrivacy}>
-        <LoginText disabled={!agreeTerms || !agreePrivacy}>회원가입 완료</LoginText>
-      </LoginButton>
+      <SignupButton onClick={onSubmit} disabled={!agreeTerms || !agreePrivacy}>
+        <SignupText disabled={!agreeTerms || !agreePrivacy}>회원가입 완료</SignupText>
+      </SignupButton>
     </SectionWrapper>
   )
 }
@@ -134,13 +134,14 @@ const TitleWrapper = styled.div`
 const Title = styled.div`
   color: var(--RIU_Primary-100, #718FF2);
   font-family: 'Pretendard-Bold';
-  font-size: 1.5em;
+  font-size: 1.125em;
   line-height: 130%;
 `;
 
 const Description = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Medium';
+  font-size: 0.875em;
   line-height: 130%;
 `;
 
@@ -195,7 +196,7 @@ const Option = styled.span`
   font-family: 'Pretendard-Bold';
 `;
 
-const LoginButton = styled.button`
+const SignupButton = styled.button`
   all: unset;
   border: none;
   display: flex;
@@ -232,7 +233,7 @@ const LoginButton = styled.button`
   }
 `;
 
-const LoginText = styled.div`
+const SignupText = styled.div`
   color: ${({ disabled }) => (disabled ? "var(--RIU_Monochrome-100, #818496)" : "#FFF")};
   font-family: 'Pretendard-Bold';
   line-height: 130%;
