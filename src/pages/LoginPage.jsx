@@ -4,8 +4,12 @@ import TextLogo from '../shared/assets/icons/common/textLogo.svg?react'
 import LogoIcon from '../shared/assets/icons/common/logo.svg?react';
 import KakaoLogo from '../shared/assets/icons/login/kakaoLogo.svg?react';
 import GoogleLogo from '../shared/assets/icons/login/googleLogo.svg?react';
+import useDevice from '../shared/hooks/useDevice';
 
 function LoginPage() {
+  // 반응형 함수
+  const { isMobile } = useDevice();
+
   // 카카오 로그인
   const handleKakaoLogin = () => {
     window.location.href = `${import.meta.env.VITE_SERVER_URL_API}oauth2/authorization/kakao`;
@@ -18,34 +22,35 @@ function LoginPage() {
 
   return (
     <PageWrapper>
-      <StyledTextLogo/>
-        <ContentWrapper>
-          {/* 로고 영역 */}
-          <StyledLogo/>
-          <DescriptionWrapper>
-            방탈출 후기와 예약을 한 눈에 살필 수 있는
-            <BoldText>루미너스</BoldText>
-          </DescriptionWrapper>
+      {!isMobile && <StyledTextLogo/>}
+      <ContentWrapper>
+        {/* 로고 영역 */}
+        {isMobile && <StyledTextLogo/>}
+        <StyledLogo/>
+        <DescriptionWrapper>
+          방탈출 후기와 예약을 한 눈에 살필 수 있는
+          <BoldText>루미너스</BoldText>
+        </DescriptionWrapper>
 
-          <ButtonSection>
-            {/* 카카오 로그인 */}
-            <SocialLoginButton
-              type='kakao'
-              onClick={handleKakaoLogin}
-            >
-              <StyledKakaoLogo />
-              <LoginText type='social'>카카오 계정으로 로그인</LoginText>
-            </SocialLoginButton>
+        <ButtonSection>
+          {/* 카카오 로그인 */}
+          <SocialLoginButton
+            type='kakao'
+            onClick={handleKakaoLogin}
+          >
+            <StyledKakaoLogo />
+            <LoginText type='kakao'>카카오 계정으로 로그인</LoginText>
+          </SocialLoginButton>
 
-            {/* 구글 로그인 */}
-            <SocialLoginButton
-              type='google'
-              onClick={handleGoogleLogin}
-            >
-              <StyledGoogleLogo />
-              <LoginText type='social'>구글 계정으로 로그인</LoginText>
-            </SocialLoginButton>
-          </ButtonSection>
+          {/* 구글 로그인 */}
+          <SocialLoginButton
+            type='google'
+            onClick={handleGoogleLogin}
+          >
+            <StyledGoogleLogo />
+            <LoginText type='google'>구글 계정으로 로그인</LoginText>
+          </SocialLoginButton>
+        </ButtonSection>
       </ContentWrapper>
     </PageWrapper>
   );
@@ -94,6 +99,13 @@ const StyledTextLogo = styled(TextLogo)`
   width: 35em;
   height: 15.1em;
   z-index: 1;
+  @media (max-width: 768px) {
+    height: 5.67188em;
+    fill: #718FF2;
+    line {
+      stroke: #718FF2;
+    }
+  }
 `;
 
 const ContentWrapper = styled.div`
@@ -109,12 +121,26 @@ const ContentWrapper = styled.div`
   gap: 2.5em;
   background-color: #FFF;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    border-radius: 0.9375em;
+    width: 20.9375em;
+    height: 40.625em;
+    padding: 0em 1.875em;
+    gap: 1.25em;
+  }
 `;
 
 const StyledLogo = styled(LogoIcon)`
   width: 10.5em;
   height: 10.5em;
   flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    width: 12.5em;
+    height: 12.5em;
+    aspect-ratio: 1/1;
+  }
 `;
 
 const DescriptionWrapper = styled.div`
@@ -126,13 +152,22 @@ const DescriptionWrapper = styled.div`
   font-family: 'Pretendard-Regular';
   font-size: 0.875em;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    gap: 0.375em;
+    font-size: 0.625em;
+  }
 `;
 
 const BoldText = styled.div`
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Bold';
-  font-size: 1.25em;
+  font-size: 1.42857em;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 1.6em;
+  }
 `;
 
 const ButtonSection = styled.div`
@@ -143,10 +178,14 @@ const ButtonSection = styled.div`
 `;
 
 const LoginText = styled.div`
-  color: ${({type}) => (type == 'social' ? '#000' : '#FFF')};
+  color: ${({type}) => (type == 'kakao' ? '#000' : '#1E1E2B')};
   font-family: 'Pretendard-Bold';
   line-height: 130%;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const SocialLoginButton = styled.div`
@@ -179,17 +218,34 @@ const SocialLoginButton = styled.div`
   &:hover::before {
     opacity: 0.2;
   }
+
+  @media (max-width: 768px) {
+    height: 2.25em;
+    gap: 0.46875em;
+  }
 `;
 
 const StyledKakaoLogo = styled(KakaoLogo)`
   width: 1.5625em;
   height: 1.458125em;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    width: 1.17188em;
+    height: 1.09375em;
+    flex-shrink: 0;
+  }
 `;
 
 const StyledGoogleLogo = styled(GoogleLogo)`
   width: 1.5625em;
   height: 1.5625em;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    width: 1.17188em;
+    height: 1.17188em;
+    flex-shrink: 0;
+  }
 `;
 
