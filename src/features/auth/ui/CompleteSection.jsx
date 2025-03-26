@@ -49,6 +49,13 @@ const SectionWrapper = styled.div`
   align-items: stretch;
   background-color: #FFF;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    border-radius: 0.9375em;
+    padding: 1.25em;
+    width: 20.9375em;
+    height: 40.625em;
+  }
 `;
 
 const ContentWrapper = styled.div`
@@ -61,6 +68,10 @@ const PageNumber = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Bold';
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const TextWrapper = styled.div`
@@ -82,6 +93,10 @@ const Description = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875em;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const ImageWrapper = styled.div`
@@ -89,10 +104,18 @@ const ImageWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 2.5em;
+
+  @media (max-width: 768px) {
+    gap: 1.5625em;
+  }
 `;
 
 const StyledImg = styled.img`
   width: 13.1875em;
+
+  @media (max-width: 768px) {
+    width: 8.6875em;
+  }
 `;
 
 const ImageText = styled.div`
@@ -101,6 +124,10 @@ const ImageText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875em;
   line-height: 160%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -108,6 +135,10 @@ const ButtonWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 1.25em;
+
+  @media (max-width: 768px) {
+    gap: 0.875em;
+  }
 `;
 
 const StyledButton = styled.button`
@@ -141,6 +172,10 @@ const StyledButton = styled.button`
   &:hover::before {
     opacity: 0.5;
   }
+
+  @media (max-width: 768px) {
+    height: 2.5em;
+  }
 `;
 
 const ButtonText = styled.div`
@@ -149,6 +184,10 @@ const ButtonText = styled.div`
   line-height: 130%;
   z-index: 1;
   transition: all 0.2s ease-in-out;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const PassButton = styled.div`
@@ -163,4 +202,8 @@ const PassButton = styled.div`
   text-underline-offset: auto;
   text-underline-position: from-font;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;

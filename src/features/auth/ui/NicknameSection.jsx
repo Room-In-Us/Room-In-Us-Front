@@ -97,6 +97,13 @@ const SectionWrapper = styled.div`
   align-items: stretch;
   background-color: #FFF;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    border-radius: 0.9375em;
+    padding: 1.25em;
+    width: 20.9375em;
+    height: 40.625em;
+  }
 `;
 
 const InputSection = styled.div`
@@ -108,6 +115,10 @@ const PageNumber = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Bold';
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const TextWrapper = styled.div`
@@ -130,6 +141,10 @@ const Description = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875em;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const NicknameWrapper = styled.div`
@@ -143,6 +158,10 @@ const InputText = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.875em;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const InputWrapper = styled.div`
@@ -157,27 +176,30 @@ const StyledInput = styled.input`
   border-bottom: 1px solid var(--RIU_Monochrome-300, #696C7E);
   width: 68%;
   height: 100%;
+  font-size: 0.875em;
   outline: none;
 
   &::placeholder {
     color: var(--Grayscale-200, #C6C5D7);
     font-family: 'Pretendard-Medium';
-    font-size: 0.875em;
     line-height: 130%;
     color: var(--RIU_Monochrome-70, #B3B6C3);
+  }
+
+  @media (max-width: 768px) {
+    width: 52%;
+    font-size: 0.8571em;
   }
 `;
 
 const NicknameCheckButton = styled.button`
   all: unset;
-  border-radius: 0.625em;
-  padding: 0 0.625em;
-  width: 7.25em;
+  border-radius: 0.7142em;
+  width: 8.2857em;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.625em;
   background: ${({ disabled }) =>
     disabled
       ? "var(--RIU_Monochrome-40, #DFDFE6)"
@@ -226,6 +248,10 @@ const LoginButton = styled.button`
   &:hover::before {
     opacity: ${({ disabled }) => (disabled ? "0" : "0.5")};
   }
+
+  @media (max-width: 768px) {
+    height: 2.5em;
+  }
 `;
 
 const LoginText = styled.div`
@@ -234,6 +260,10 @@ const LoginText = styled.div`
   line-height: 130%;
   z-index: 1;
   transition: all 0.2s ease-in-out;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const ErrorMessage = styled.div`

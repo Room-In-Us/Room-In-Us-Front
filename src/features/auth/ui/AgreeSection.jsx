@@ -110,6 +110,13 @@ const SectionWrapper = styled.div`
   align-items: stretch;
   background-color: #FFF;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    border-radius: 0.9375em;
+    padding: 1.25em;
+    width: 20.9375em;
+    height: 40.625em;
+  }
 `;
 
 const ContentWrapper = styled.div`
@@ -121,6 +128,10 @@ const PageNumber = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Bold';
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const TitleWrapper = styled.div`
@@ -143,6 +154,10 @@ const Description = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875em;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const AgreeWrapper = styled.div`
@@ -157,6 +172,10 @@ const SubTitle = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.875em;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const ListWrapper = styled.div`
@@ -164,6 +183,10 @@ const ListWrapper = styled.div`
   height: 1.25em;
   display: flex;
   align-items: center;
+
+  @media (max-width: 768px) {
+    height: 0.9375em;
+  }
 `;
 
 const StyledCheckkBox = styled.button`
@@ -183,6 +206,10 @@ const StyledCheckkBox = styled.button`
   font-family: 'Pretendard-Medium';
   cursor: pointer;
   transition: all 0.1s ease-in-out;
+
+  @media (max-width: 768px) {
+    font-size: 0.65em;
+  }
 `;
 
 const Text = styled.div`
@@ -190,6 +217,10 @@ const Text = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875em;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const Option = styled.span`
@@ -231,6 +262,10 @@ const SignupButton = styled.button`
   &:hover::before {
     opacity: ${({ disabled }) => (disabled ? "0" : "0.5")};
   }
+
+  @media (max-width: 768px) {
+    height: 2.5em;
+  }
 `;
 
 const SignupText = styled.div`
@@ -239,4 +274,8 @@ const SignupText = styled.div`
   line-height: 130%;
   z-index: 1;
   transition: all 0.2s ease-in-out;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
