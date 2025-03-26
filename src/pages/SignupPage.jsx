@@ -70,4 +70,8 @@ const StyledTextLogo = styled(TextLogo)`
   width: 35em;
   height: 15.125em;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;

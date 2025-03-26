@@ -88,9 +88,9 @@ function AgreeSection() {
         </ListWrapper>
       </ContentWrapper>
 
-      <LoginButton onClick={onSubmit} disabled={!agreeTerms || !agreePrivacy}>
-        <LoginText disabled={!agreeTerms || !agreePrivacy}>회원가입 완료</LoginText>
-      </LoginButton>
+      <SignupButton onClick={onSubmit} disabled={!agreeTerms || !agreePrivacy}>
+        <SignupText disabled={!agreeTerms || !agreePrivacy}>회원가입 완료</SignupText>
+      </SignupButton>
     </SectionWrapper>
   )
 }
@@ -110,6 +110,13 @@ const SectionWrapper = styled.div`
   align-items: stretch;
   background-color: #FFF;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    border-radius: 0.9375em;
+    padding: 1.25em;
+    width: 20.9375em;
+    height: 40.625em;
+  }
 `;
 
 const ContentWrapper = styled.div`
@@ -121,6 +128,10 @@ const PageNumber = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Bold';
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const TitleWrapper = styled.div`
@@ -134,14 +145,19 @@ const TitleWrapper = styled.div`
 const Title = styled.div`
   color: var(--RIU_Primary-100, #718FF2);
   font-family: 'Pretendard-Bold';
-  font-size: 1.5em;
+  font-size: 1.125em;
   line-height: 130%;
 `;
 
 const Description = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Medium';
+  font-size: 0.875em;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const AgreeWrapper = styled.div`
@@ -156,6 +172,10 @@ const SubTitle = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.875em;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const ListWrapper = styled.div`
@@ -163,6 +183,10 @@ const ListWrapper = styled.div`
   height: 1.25em;
   display: flex;
   align-items: center;
+
+  @media (max-width: 768px) {
+    height: 0.9375em;
+  }
 `;
 
 const StyledCheckkBox = styled.button`
@@ -182,6 +206,10 @@ const StyledCheckkBox = styled.button`
   font-family: 'Pretendard-Medium';
   cursor: pointer;
   transition: all 0.1s ease-in-out;
+
+  @media (max-width: 768px) {
+    font-size: 0.65em;
+  }
 `;
 
 const Text = styled.div`
@@ -189,13 +217,17 @@ const Text = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875em;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const Option = styled.span`
   font-family: 'Pretendard-Bold';
 `;
 
-const LoginButton = styled.button`
+const SignupButton = styled.button`
   all: unset;
   border: none;
   display: flex;
@@ -230,12 +262,20 @@ const LoginButton = styled.button`
   &:hover::before {
     opacity: ${({ disabled }) => (disabled ? "0" : "0.5")};
   }
+
+  @media (max-width: 768px) {
+    height: 2.5em;
+  }
 `;
 
-const LoginText = styled.div`
+const SignupText = styled.div`
   color: ${({ disabled }) => (disabled ? "var(--RIU_Monochrome-100, #818496)" : "#FFF")};
   font-family: 'Pretendard-Bold';
   line-height: 130%;
   z-index: 1;
   transition: all 0.2s ease-in-out;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;

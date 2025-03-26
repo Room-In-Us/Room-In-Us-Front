@@ -1,66 +1,14 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import NoiseFilter from '../shared/assets/icons/login/loginNoiseFilter.svg';
 import TextLogo from '../shared/assets/icons/common/textLogo.svg?react'
-import EyeSlashIcon from '../shared/assets/icons/login/eyeSlashIcon.svg?react';
-import EyeIcon from '../shared/assets/icons/login/eyeIcon.svg?react';
+import LogoIcon from '../shared/assets/icons/common/logo.svg?react';
 import KakaoLogo from '../shared/assets/icons/login/kakaoLogo.svg?react';
 import GoogleLogo from '../shared/assets/icons/login/googleLogo.svg?react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { loginSchema } from '../features/auth/model/authSchema';
-import { postLoginAPI } from '../features/auth/api/authAPI';
+import useDevice from '../shared/hooks/useDevice';
 
 function LoginPage() {
-  // state 관리
-  const [isPasswordHide, setIsPasswordHide] = useState(true);
-  const [isCheck, setIsCheck] = useState(false);
-
-  // navigate
-  const navigate = useNavigate();
-
-  // 비밀번호 숨기기
-  const handlePasswordHide = () => {
-    setIsPasswordHide(!isPasswordHide);
-  }
-
-  // 로그인 상태 유지 함수
-  const handleCheckBox = () => {
-    setIsCheck(!isCheck);
-  };
-
-  // React Hook Form 설정
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(loginSchema),
-  });
-
-  // 로그인 요청
-  const onSubmit = async (data) => {
-    try {
-      console.log("로그인 데이터:", data);
-      const response = await postLoginAPI({ ...data, rememberMe: isCheck });
-
-      console.log("로그인 API 응답 데이터:", response);
-
-      // 서버에서 받은 토큰 저장
-      const token = response.accessToken;
-      if (token) {
-        localStorage.setItem("accessToken", token);
-        console.log("로컬 스토리지에 토큰 저장:", token);
-      }
-
-      alert("로그인에 성공했습니다.");
-      navigate("/");
-    } catch (error) {
-      console.error("로그인 실패:", error.response?.data || error.message);
-      alert("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인하세요.");
-    }
-  };
+  // 반응형 함수
+  const { isMobile } = useDevice();
 
   // 카카오 로그인
   const handleKakaoLogin = () => {
@@ -74,80 +22,36 @@ function LoginPage() {
 
   return (
     <PageWrapper>
-      <StyledTextLogo/>
-        <ContentWrapper>
-          <Form onSubmit={handleSubmit(onSubmit)}>
-            <InputSection>
+      {!isMobile && <StyledTextLogo/>}
+      <ContentWrapper>
+        {/* 로고 영역 */}
+        {isMobile && <StyledTextLogo/>}
+        <StyledLogo/>
+        <DescriptionWrapper>
+          방탈출 후기와 예약을 한 눈에 살필 수 있는
+          <BoldText>루미너스</BoldText>
+        </DescriptionWrapper>
 
-              {/* 이메일 */}
-              <InputWrapper>
-                <InputText>이메일</InputText>
-                <StyledInput
-                  {...register('email')}
-                  placeholder='이메일을 입력하세요.'
-                />
-              </InputWrapper>
-              {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
+        <ButtonSection>
+          {/* 카카오 로그인 */}
+          <SocialLoginButton
+            type='kakao'
+            onClick={handleKakaoLogin}
+          >
+            <StyledKakaoLogo />
+            <LoginText type='kakao'>카카오 계정으로 로그인</LoginText>
+          </SocialLoginButton>
 
-              {/* 비밀번호 */}
-              <InputWrapper>
-                <InputText>비밀번호</InputText>
-                <PassWordInputWrapper>
-                  <StyledInput
-                    type={isPasswordHide ? 'password' : 'text'}
-                    {...register('password')}
-                    placeholder='비밀번호를 입력하세요.'
-                  />
-                  {isPasswordHide ? (
-                    <StyledEyeSlashIcon onClick={handlePasswordHide} />
-                  ) : (
-                    <StyledEyeIcon onClick={handlePasswordHide} />
-                  )}  
-                </PassWordInputWrapper>
-              </InputWrapper>
-              {errors.password && <ErrorMessage>{errors.password.message}</ErrorMessage>}
-
-              {/* 로그인 상태 유지 */}
-              <LoginStateWrapper>
-                <StyledCheckbox onClick={handleCheckBox} isCheck={isCheck}>
-                  ✓
-                </StyledCheckbox>
-                <CheckboxText onClick={handleCheckBox}>자동으로 로그인하기</CheckboxText>
-              </LoginStateWrapper>
-            </InputSection>
-
-            <ButtonSection>
-              {/* 로그인 버튼 */}
-              <LoginButton type="submit">
-                <LoginText>로그인</LoginText>
-              </LoginButton>
-
-              {/* 카카오 로그인 */}
-              <SocialLoginButton
-                type='kakao'
-                onClick={handleKakaoLogin}
-              >
-                <StyledKakaoLogo />
-                <LoginText type='social'>카카오 계정으로 로그인</LoginText>
-              </SocialLoginButton>
-
-              {/* 구글 로그인 */}
-              <SocialLoginButton
-                type='google'
-                onClick={handleGoogleLogin}
-              >
-                <StyledGoogleLogo />
-                <LoginText type='social'>구글 계정으로 로그인</LoginText>
-              </SocialLoginButton>
-            </ButtonSection>
-
-            {/* 회원가입 섹션 */}
-            <SignupSection>
-              <SignupText onClick={() => navigate('/signup')}>루미너스 회원이 아니신가요?</SignupText>
-              <SignupText onClick={() => navigate('/signup')}>비밀번호 찾기</SignupText>
-            </SignupSection>
-          </Form>
-        </ContentWrapper>
+          {/* 구글 로그인 */}
+          <SocialLoginButton
+            type='google'
+            onClick={handleGoogleLogin}
+          >
+            <StyledGoogleLogo />
+            <LoginText type='google'>구글 계정으로 로그인</LoginText>
+          </SocialLoginButton>
+        </ButtonSection>
+      </ContentWrapper>
     </PageWrapper>
   );
 }
@@ -159,11 +63,9 @@ font-size: 0.75rem;
   width: 100vw;
   height: calc(100vh - 2.375rem);
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  flex-shrink: 0;
-  gap: 4.375em;
+  gap: 6.25em;
   position: relative;
   z-index: 0;
   
@@ -191,21 +93,18 @@ font-size: 0.75rem;
     opacity: 0.5;
     pointer-events: none;
   }
-
-  @media (max-width: 768px) {
-    font-size: 1rem;
-    gap: 2.5em;
-  }
 `;
 
 const StyledTextLogo = styled(TextLogo)`
   width: 35em;
-  height: 15.125em;
+  height: 15.1em;
   z-index: 1;
-
   @media (max-width: 768px) {
-    width: 17.5em;
-    height: 7.5625em;
+    height: 5.67188em;
+    fill: #718FF2;
+    line {
+      stroke: #718FF2;
+    }
   }
 `;
 
@@ -214,184 +113,72 @@ const ContentWrapper = styled.div`
   padding: 1.875em 2.5em;
   box-sizing: border-box;
   width: 32.5em;
+  height: 48.75em;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: stretch;
+  align-items: center;
+  gap: 2.5em;
   background-color: #FFF;
   z-index: 1;
 
   @media (max-width: 768px) {
     border-radius: 0.9375em;
-    width: 19.6875em;
-    padding: 1.25em;
-  }
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1.875em;
-
-  @media (max-width: 768px) {
+    width: 20.9375em;
+    height: 40.625em;
+    padding: 0em 1.875em;
     gap: 1.25em;
   }
 `;
 
-const InputSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1.25em;
+const StyledLogo = styled(LogoIcon)`
+  width: 10.5em;
+  height: 10.5em;
+  flex-shrink: 0;
 
   @media (max-width: 768px) {
-    gap: 0.9375em;
+    width: 12.5em;
+    height: 12.5em;
+    aspect-ratio: 1/1;
   }
 `;
 
-const InputWrapper = styled.div`
-  border-bottom: 1px solid var(--Grayscale-900, #383846);
+const DescriptionWrapper = styled.div`
   display: flex;
   flex-direction: column;
-`;
-
-const InputText = styled.div`
-  color: var(--Grayscale-1000, #1E1E2B);
-  font-family: 'Pretendard-Bold';
+  align-items: center;
+  gap: 0.625em;
+  color: var(--RIU_Monochrome-500, #515467);
+  font-family: 'Pretendard-Regular';
   font-size: 0.875em;
-  line-height: 130%;
+  line-height: normal;
 
   @media (max-width: 768px) {
+    gap: 0.375em;
     font-size: 0.625em;
   }
 `;
 
-const StyledInput = styled.input`
-  border: none;
-  width: 90%;
-  height: 2em;
-  outline: none;
-
-  &::placeholder {
-    color: var(--Grayscale-200, #C6C5D7);
-    font-family: 'Pretendard-Medium';
-    line-height: 130%;
-  }
+const BoldText = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  font-family: 'Pretendard-Bold';
+  font-size: 1.42857em;
+  line-height: normal;
 
   @media (max-width: 768px) {
-    font-size: 0.75em;
-  }
-`;
-
-const PassWordInputWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const StyledEyeSlashIcon = styled(EyeSlashIcon)`
-  width: 1em;
-  height: 1em;
-  cursor: pointer;
-
-  @media (max-width: 768px) {
-    width: 0.75em;
-    height: 0.75em;
-  }
-`;
-const StyledEyeIcon = styled(EyeIcon)`
-  width: 1em;
-  height: 1em;
-  cursor: pointer;
-
-  @media (max-width: 768px) {
-    width: 0.75em;
-    height: 0.75em;
-  }
-`;
-
-const LoginStateWrapper = styled.div`
-  display: flex;
-  flex-directon: column;
-  align-items: center;
-  justify-content: end;
-`;
-
-const StyledCheckbox = styled.div`
-  border: ${(props) => (props.isCheck ? '1px solid #718FF2' : '1px solid #1E1E2B')};
-  border-radius: 0.2em;
-  width: 0.75em;
-  height: 0.75em;
-  line-height: 0.9em;
-  text-align: center;
-  background-color: ${(props) => (props.isCheck ? '#718FF2' : 'transparent')};
-  color: ${(props) => (props.isCheck ? '#FFF' : 'transparent')};
-  transition: all 0.2s ease;
-  cursor: pointer;
-
-  @media (max-width: 768px) {
-    font-size: 0.65625em;
-  }
-`;
-
-const CheckboxText = styled.div`
-  padding-left: 0.4em;
-  color: var(--Grayscale-1000, #1E1E2B);
-  font-family: 'Pretendard-Medium';
-  font-size: 0.875em;
-  line-height: 130%;
-  cursor: pointer;
-
-  @media (max-width: 768px) {
-    font-size: 0.65625em;
+    font-size: 1.6em;
   }
 `;
 
 const ButtonSection = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 0.625em;
 `;
 
-const LoginButton = styled.button`
-  all: unset;
-  border: none;
-  display: flex;
-  height: 3.125em;
-  justify-content: center;
-  align-items: center;
-  gap: 0.625em;
-  align-self: stretch;
-  border-radius: 2.5em;
-  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(19, 26, 115, 0.5);
-    opacity: 0;
-    transition: all 0.1s ease-in-out;
-  }
-
-  &:hover::before {
-    opacity: 0.5;
-  }
-
-  @media (max-width: 768px) {
-    height: 2.25em;
-    gap: 0.46875em;
-  }
-`;
-
 const LoginText = styled.div`
-  color: ${({type}) => (type == 'social' ? '#000' : '#FFF')};
+  color: ${({type}) => (type == 'kakao' ? '#000' : '#1E1E2B')};
   font-family: 'Pretendard-Bold';
   line-height: 130%;
   z-index: 1;
@@ -404,6 +191,7 @@ const LoginText = styled.div`
 const SocialLoginButton = styled.div`
   border: ${({type}) => (type == 'kakao' ? 'none' : '1px solid #B7C1D4')};
   display: flex;
+  width: 100%;
   height: 3.125em;
   justify-content: center;
   align-items: center;
@@ -430,7 +218,7 @@ const SocialLoginButton = styled.div`
   &:hover::before {
     opacity: 0.2;
   }
-  
+
   @media (max-width: 768px) {
     height: 2.25em;
     gap: 0.46875em;
@@ -443,8 +231,9 @@ const StyledKakaoLogo = styled(KakaoLogo)`
   z-index: 1;
 
   @media (max-width: 768px) {
-    width: 1.171875em;
+    width: 1.17188em;
     height: 1.09375em;
+    flex-shrink: 0;
   }
 `;
 
@@ -454,46 +243,9 @@ const StyledGoogleLogo = styled(GoogleLogo)`
   z-index: 1;
 
   @media (max-width: 768px) {
-    width: 1.171875em;
-    height: 1.171875em;
+    width: 1.17188em;
+    height: 1.17188em;
+    flex-shrink: 0;
   }
 `;
 
-const SignupSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 0.625em;
-
-  @media (max-width: 768px) {
-    gap: 0.46875em;
-  }
-`;
-
-const SignupText = styled.div`
-  color: var(--Grayscale-1000, #1E1E2B);
-  font-family: 'Pretendard-Medium';
-  font-size: 0.875em;
-  line-height: 130%;
-  text-decoration-line: underline;
-  text-decoration-style: solid;
-  text-decoration-skip-ink: auto;
-  text-decoration-thickness: auto;
-  text-underline-offset: auto;
-  text-underline-position: from-font;
-  cursor: pointer;
-
-  @media (max-width: 768px) {
-    font-size: 0.65625em;
-  }
-`;
-
-const ErrorMessage = styled.div`
-  color: red;
-  font-size: 0.8em;
-
-  @media (max-width: 768px) {
-    font-size: 0.65625em;
-  }
-`;
