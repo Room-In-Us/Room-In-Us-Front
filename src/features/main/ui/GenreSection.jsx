@@ -56,7 +56,7 @@ function GenreSection() {
       {/* 제목 영역 */}
       <TitleWrapper>
         <Title>장르 기반 추천</Title>
-        <LocationSearchButton onClick={() => navigate('/level')}>
+        <LocationSearchButton onClick={() => navigate('/genre')}>
           더 많은 테마 둘러보기
           <StyledRightArrow/>
         </LocationSearchButton>

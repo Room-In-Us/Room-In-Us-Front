@@ -116,9 +116,9 @@ function ContentCard({ data, headCount, type }) {
                 {maxHeadcount}인까지 플레이 가능
               </CautionWrapper>
             ) : (
-              <CautionWrapper type="headCountCaution">
+              <CautionWrapper type="priceCaution">
                 <StyledCautionIcon />
-                {maxHeadcount}인까지 플레이 가능
+                가격 정보 없음
               </CautionWrapper>
             )
           ) : price !== null && maxHeadcount === null ? (
@@ -129,7 +129,7 @@ function ContentCard({ data, headCount, type }) {
           ) : (
             <PriceWrapper>
               {type === 'home' && '1인'}
-              <Price>₩ {formatNumberWithCommas(price ?? 0)} ~</Price>
+              <Price>₩ {formatNumberWithCommas(price ?? 0)} {type !== 'home' && '~'}</Price>
             </PriceWrapper>
           )}
           {isMobile && (
