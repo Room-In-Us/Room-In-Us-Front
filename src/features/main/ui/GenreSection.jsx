@@ -42,7 +42,7 @@ function GenreSection() {
     const fetchData = async () => {
       try {
         const response = await getGenreListAPI(activeGenre, headCount, 1, 8);
-        console.log('숙련도 기반 방탈출 테마 목록: ', response.contents);
+        console.log('장르 기반 방탈출 테마 목록: ', response.contents);
         setThemeList(response.contents);
       } catch (error) {
         console.error('장르 기반 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
