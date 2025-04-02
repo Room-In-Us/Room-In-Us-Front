@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
 import { surveySectionState } from "../model/surveyAtom";
@@ -6,78 +6,77 @@ import { useNavigate } from "react-router-dom";
 import RightArrow from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrow from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
 import SurveyImage from "../../../shared/assets/images/survey/surveyImage.png";
+import { surveyGenreList } from "../model/surveyGenreList";
+import SurveyTag from "./SurveyTag";
 
-function SurveyProficiencySection() {
+function SurveyGenreSection() {
   // state 관리
-  const [selectedLevel, setSelectedLevel] = useState(null);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedLevel, setSelectedLevel] = useState(false);
   const [, setSurveySection] = useRecoilState(surveySectionState);
 
   // navigate
   const navigate = useNavigate();
 
+  // 태그 선택 핸들러
+  const handleTagClick = (tag) => {
+    setSelectedTags(prev => {
+      if (prev.includes(tag)) {
+        return prev.filter(t => t !== tag); // 선택 해제
+      } else if (prev.length < 4) {
+        return [...prev, tag]; // 새로 선택
+      } else {
+        return prev; // 4개 이상이면 무시
+      }
+    });
+  };
+
+  useEffect(() => {
+    setSelectedLevel(selectedTags.length > 0);
+  }, [selectedTags]);
+
   return (
     <SectionWrapper>
       <ContentWrapper>
         <ArrowWrapper>
-          <StyledLeftArrow/>
+          <StyledLeftArrow onClick={() => setSurveySection("proficiency")}/>
           <PageNumber>
-            1/6
+            2/6
           </PageNumber>
-          <StyledRightArrow onClick={() => setSurveySection("genre")}/>
+          <StyledRightArrow onClick={() => setSurveySection("headcount")}/>
         </ArrowWrapper>
         <StyeldSurveyImage src={SurveyImage}/>
         <TitleWrapper>
           <Title>
-            나의 방탈출 숙련도는?
+            내가 선호하는 장르는?
           </Title>
           <Description>
-            초보부터 고수까지! 경험치에 맞는 테마를 추천해 드릴게요.
+            <div>나는 감성적인 이야기파? 아니면 짜릿한 스릴러 마니아?</div>
+            <div>취향을 골라보세요.</div>
           </Description>
         </TitleWrapper>
 
         {/* 선택 영역 */}
+        <CheckWrapper>
         <ListWrapper>
-          <List>
-            <RadioButton
-              selected={selectedLevel === '방세포'}
-              onClick={() =>
-                setSelectedLevel(selectedLevel === '방세포' ? null : '방세포')
-              }
+          {surveyGenreList.map((item) => (
+            <SurveyTag
+              key={item.id}
+              item={item.genre}
+              selected={selectedTags.includes(item.genre)}
+              onClick={() => handleTagClick(item.genre)}
+              disabled={!selectedTags.includes(item.genre) && selectedTags.length >= 4}
             />
-            방세포 : 0~5방 정도로 아직 방탈출에 대한 느낌을 잘 몰라요!
-          </List>
-          <List>
-            <RadioButton
-              selected={selectedLevel === '방초보'}
-              onClick={() =>
-                setSelectedLevel(selectedLevel === '방초보' ? null : '방초보')
-              }
-            />
-            방초보 : 5~20방 정도 경험이 있어 어떤 느낌인지는 알아요!
-          </List>
-          <List>
-            <RadioButton
-              selected={selectedLevel === '방중수'}
-              onClick={() =>
-                setSelectedLevel(selectedLevel === '방중수' ? null : '방중수')
-              }
-            />
-            방중수 : 20~50방 정도의 경험이 있어 무난하게 할 수 있어요!
-          </List>
-          <List>
-            <RadioButton
-              selected={selectedLevel === '방고수'}
-              onClick={() =>
-                setSelectedLevel(selectedLevel === '방고수' ? null : '방고수')
-              }
-            />
-            방고수 : 50+ 방 정도 경험이 있어 난이도가 상관이 없어요!
-          </List>
+          ))}
         </ListWrapper>
+          <CheckDescription>
+            최대 4개까지 선택 가능합니다
+          </CheckDescription>
+        </CheckWrapper>
       </ContentWrapper>
 
       <ButtonWrapper>
-        <StyledButton onClick={() => setSurveySection("genre")} isPass={!selectedLevel}>
+        <StyledButton onClick={() => setSurveySection("headcount")} isPass={!selectedLevel}>
           <ButtonText isPass={!selectedLevel}>{selectedLevel ? '다음으로' : '질문 넘기기'}</ButtonText>
         </StyledButton>
         <MainButton onClick={() => navigate('/')}>
@@ -88,7 +87,7 @@ function SurveyProficiencySection() {
   )
 }
 
-export default SurveyProficiencySection;
+export default SurveyGenreSection;
 
 // CSS
 const SectionWrapper = styled.div`
@@ -130,7 +129,7 @@ const ArrowWrapper = styled.div`
 const StyledLeftArrow = styled(LeftArrow)`
   width: 1.25em;
   height: 1.25em;
-  fill: #C4C6D1;
+  cursor: pointer;
 `;
 const StyledRightArrow = styled(RightArrow)`
   width: 1.25em;
@@ -166,52 +165,32 @@ const Description = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Medium';
   font-size: 0.875em;
-  font-style: normal;
-  font-weight: 500;
   line-height: 130%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const CheckWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.875em;
+  align-self: stretch;
 `;
 
 const ListWrapper = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1.25em;
-  align-self: stretch;
+  flex-flow: wrap;
+  gap: 0.875em;
 `;
 
-const List = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.625em;
-  align-self: stretch;
-  color: var(--RIU_Monochrome-300, #696C7E);
+const CheckDescription = styled.div`
+  color: var(--RIU_Monochrome-70, #B3B6C3);
   font-family: 'Pretendard-Medium';
-  font-size: 0.875em;
+  font-size: 0.75em;
   line-height: 130%;
-`;
-
-const RadioButton = styled.button`
-  all: unset;
-  border: 1.5px solid var(--RIU_Primary-100, #718FF2);
-  border-radius: 1.875em;
-  width: 1em;
-  height: 1em;
-  position: relative;
-  cursor: pointer;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0.5em;
-    height: 0.5em;
-    background-color: var(--RIU_Primary-100, #718FF2);
-    border-radius: 1.875em;
-    transform: translate(-50%, -50%);
-    opacity: ${props => (props.selected ? 1 : 0)};
-    transition: opacity 0.2s ease-in-out;
-  }
 `;
 
 const ButtonWrapper = styled.div`

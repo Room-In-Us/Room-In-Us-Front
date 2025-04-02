@@ -4,6 +4,7 @@ import { surveySectionState } from '../features/survey/model/surveyAtom';
 import NoiseFilter from '../shared/assets/icons/login/loginNoiseFilter.svg';
 import TextLogo from '../shared/assets/icons/common/textLogo.svg?react';
 import SurveyProficiencySection from '../features/survey/ui/SurveyProficiencySection';
+import SurveyGenreSection from '../features/survey/ui/SurveyGenreSection';
 
 function SignupPage() {
   const [surveySection,] = useRecoilState(surveySectionState);
@@ -16,7 +17,7 @@ function SignupPage() {
       {(surveySection === "proficiency") && <SurveyProficiencySection />}
 
       {/* 장르 섹션 */}
-      {(surveySection === "genre") && <SurveyProficiencySection />}
+      {(surveySection === "genre") && <SurveyGenreSection />}
 
       {/* 인원 섹션 */}
       {(surveySection === "headcount") && <SurveyProficiencySection />}
