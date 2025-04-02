@@ -18,6 +18,7 @@ import { mapsLoadedState } from '../features/location/model/locationAtom';
 import LevelSearchPage from '../pages/LevelSearchPage';
 import AuthCallback from '../features/auth/ui/AuthCallback';
 import AuthError from '../features/auth/ui/AuthError';
+import SurveyPage from '../pages/SurveyPage';
 
 function App() {
   const setMapsLoaded = useSetRecoilState(mapsLoadedState);
@@ -67,6 +68,9 @@ function App() {
 
           {/* 마이 페이지 */}
           <Route path="/mypage" element={<MainPage />} />
+
+          {/* 성향조사 페이지 */}
+          <Route path="/survey" element={<SurveyPage />} />
         </Route>
       </Routes>
     </LoadScript>
