@@ -8,6 +8,7 @@ import SurveyGenreSection from '../features/survey/ui/SurveyGenreSection';
 import SurveyHeadcountSection from '../features/survey/ui/SurveyHeadcountSection';
 import SurveyPreferenceSection from '../features/survey/ui/SurveyPreferenceSection';
 import SurveyPositionSection from '../features/survey/ui/SurveyPositionSection';
+import SurveyInfoSection from '../features/survey/ui/SurveyInfoSection';
 
 function SignupPage() {
   const [surveySection,] = useRecoilState(surveySectionState);
@@ -32,7 +33,7 @@ function SignupPage() {
       {(surveySection === "position") && <SurveyPositionSection />}
 
       {/* 추가정보 섹션 */}
-      {(surveySection === "info") && <SurveyProficiencySection />}
+      {(surveySection === "info") && <SurveyInfoSection />}
 
       {/* 완료 섹션 */}
       {(surveySection === "complete") && <SurveyProficiencySection />}

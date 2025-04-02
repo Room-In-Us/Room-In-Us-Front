@@ -324,7 +324,7 @@ const StyledButton = styled.button`
 `;
 
 const ButtonText = styled.div`
-  color: ${(props) => (props.isPass ? "var(--RIU_Monochrome-100, #818496)" : "#FFF")};
+  color: ${(props) => (props.isPass ? "var(--RIU_Monochrome-100, #818496)" : "#F9F9FB")};
   font-family: 'Pretendard-Bold';
   line-height: 130%;
   z-index: 1;

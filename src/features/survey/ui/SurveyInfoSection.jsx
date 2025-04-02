@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
 import { surveySectionState } from "../model/surveyAtom";
@@ -6,78 +5,45 @@ import { useNavigate } from "react-router-dom";
 import RightArrow from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrow from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
 import SurveyImage from "../../../shared/assets/images/survey/surveyImage.png";
-import { surveyGenreList } from "../model/surveyGenreList";
-import SurveyTag from "./SurveyTag";
 
-function SurveyGenreSection() {
+function SurveyInfoSection() {
   // state 관리
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [isSelected, setIsSelected] = useState(false);
   const [, setSurveySection] = useRecoilState(surveySectionState);
 
   // navigate
   const navigate = useNavigate();
 
-  // 태그 선택 핸들러
-  const handleTagClick = (tag) => {
-    setSelectedTags(prev => {
-      if (prev.includes(tag)) {
-        return prev.filter(t => t !== tag); // 선택 해제
-      } else if (prev.length < 4) {
-        return [...prev, tag]; // 새로 선택
-      } else {
-        return prev; // 4개 이상이면 무시
-      }
-    });
-  };
-
-  useEffect(() => {
-    setIsSelected(selectedTags.length > 0);
-  }, [selectedTags]);
-
   return (
     <SectionWrapper>
       <ContentWrapper>
         <ArrowWrapper>
-          <StyledLeftArrow onClick={() => setSurveySection("proficiency")}/>
+          <StyledLeftArrow onClick={() => setSurveySection("position")}/>
           <PageNumber>
-            2/6
+            6/6
           </PageNumber>
-          <StyledRightArrow onClick={() => setSurveySection("headcount")}/>
+          <StyledRightArrow/>
         </ArrowWrapper>
         <StyeldSurveyImage src={SurveyImage}/>
         <TitleWrapper>
           <Title>
-            내가 선호하는 장르는?
+            그 외 설명하고픈 내 취향은?
           </Title>
           <Description>
-            <div>나는 감성적인 이야기파? 아니면 짜릿한 스릴러 마니아?</div>
-            <div>취향을 골라보세요.</div>
+            <div>이왕 하는 방탈출, 이런 건 꼭 있었으면 좋겠다!</div>
+            <div>나만의 방탈출 취향 TMI를 공유해 주세요.</div>
           </Description>
         </TitleWrapper>
 
         {/* 선택 영역 */}
-        <CheckWrapper>
-          <ListWrapper>
-            {surveyGenreList.map((item) => (
-              <SurveyTag
-                key={item.id}
-                item={item.genre}
-                selected={selectedTags.includes(item.genre)}
-                onClick={() => handleTagClick(item.genre)}
-                disabled={!selectedTags.includes(item.genre) && selectedTags.length >= 4}
-              />
-            ))}
-          </ListWrapper>
-          <CheckDescription>
-            최대 4개까지 선택 가능합니다
-          </CheckDescription>
-        </CheckWrapper>
+        <StyledTextarea
+          placeholder="선호, 기피하는 문제 유형 등 자유로운 취향 정보를 적어주세요"
+          maxLength={500}
+        />
       </ContentWrapper>
 
       <ButtonWrapper>
-        <StyledButton onClick={() => setSurveySection("headcount")} isPass={!isSelected}>
-          <ButtonText isPass={!isSelected}>{isSelected ? '다음으로' : '질문 넘기기'}</ButtonText>
+        <StyledButton onClick={() => setSurveySection("genre")}>
+          <ButtonText>제출하기</ButtonText>
         </StyledButton>
         <MainButton onClick={() => navigate('/')}>
           루미너스 메인으로 이동하기
@@ -87,7 +53,7 @@ function SurveyGenreSection() {
   )
 }
 
-export default SurveyGenreSection;
+export default SurveyInfoSection;
 
 // CSS
 const SectionWrapper = styled.div`
@@ -134,7 +100,7 @@ const StyledLeftArrow = styled(LeftArrow)`
 const StyledRightArrow = styled(RightArrow)`
   width: 1.25em;
   height: 1.25em;
-  cursor: pointer;
+  fill: #C4C6D1;
 `;
 
 const PageNumber = styled.div`
@@ -171,26 +137,27 @@ const Description = styled.div`
   align-items: center;
 `;
 
-const CheckWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 0.875em;
-  align-self: stretch;
-`;
+const StyledTextarea = styled.textarea`
+  border: 1px solid var(--RIU_Monochrome-60, #C4C6D1);
+  padding: 1.25em;
+  box-sizing: border-box;
+  width: 100%;
+  height: 12.5em;
+  resize: none;
+  background: var(--RIU_Monochrome-10, #F9F9FB);
+  font-family: 'Pretendard-Regular';
+  font-size: 1em;
+  line-height: 1.25em;
+  color: var(--RIU_Monochrome-500, #515467);
+  vertical-align: top;
+  outline: none;
 
-const ListWrapper = styled.div`
-  display: flex;
-  flex-flow: wrap;
-  gap: 0.875em;
-`;
-
-const CheckDescription = styled.div`
-  color: var(--RIU_Monochrome-70, #B3B6C3);
-  font-family: 'Pretendard-Medium';
-  font-size: 0.75em;
-  line-height: 130%;
+  &::placeholder {
+    color: var(--RIU_Monochrome-80, #A1A4B5);
+    font-family: 'Pretendard-Medium';
+    font-size: 0.875em;
+    line-height: 130%;
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -211,10 +178,7 @@ const StyledButton = styled.button`
   gap: 0.625em;
   align-self: stretch;
   border-radius: 2.5em;
-  background: ${(props) =>
-  (props.isPass)
-      ? "var(--RIU_Monochrome-40, #DFDFE6)"
-      : "var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%))"};
+  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -233,7 +197,7 @@ const StyledButton = styled.button`
   }
 
   &:hover::before {
-    opacity: ${(props) => (props.isPass ? "0" : "0.5")};
+    opacity: 0.5;
   }
 
   @media (max-width: 768px) {
@@ -242,7 +206,7 @@ const StyledButton = styled.button`
 `;
 
 const ButtonText = styled.div`
-  color: ${(props) => (props.isPass ? "var(--RIU_Monochrome-100, #818496)" : "#F9F9FB")};
+  color: #F9F9FB;
   font-family: 'Pretendard-Bold';
   line-height: 130%;
   z-index: 1;
