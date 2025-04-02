@@ -22,19 +22,19 @@ export default SurveyTag;
 // CSS
 const TagWrapper = styled.div`
   border: 1px solid var(--RIU_Primary-100, #718FF2);
-  border-radius: 1.5em;
-  padding: 0.875em 1em;
+  border-radius: 1.7143em;
+  padding: 1em 1.14286em;
   box-sizing: border-box;
   display: flex;
-  height: 2.0625em;
+  height: 2.3571em;
   justify-content: center;
   align-items: center;
   gap: 0.625em;
   font-family: 'Pretendard-Regular';
   font-size: 0.875em;
   font-weight: 400;
-  line-height: 1.25em;
-  letter-spacing: -0.02188em;
+  line-height: 1.42857em;
+  letter-spacing: -0.025em;
   cursor: pointer;
   background-color: ${({ selected }) => selected ? '#718FF2' : 'transparent'};
   color: ${({ selected }) => selected ? '#F9F9FB' : '#718FF2'};

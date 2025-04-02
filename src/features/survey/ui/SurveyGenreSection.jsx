@@ -12,7 +12,7 @@ import SurveyTag from "./SurveyTag";
 function SurveyGenreSection() {
   // state 관리
   const [selectedTags, setSelectedTags] = useState([]);
-  const [selectedLevel, setSelectedLevel] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
   const [, setSurveySection] = useRecoilState(surveySectionState);
 
   // navigate
@@ -32,7 +32,7 @@ function SurveyGenreSection() {
   };
 
   useEffect(() => {
-    setSelectedLevel(selectedTags.length > 0);
+    setIsSelected(selectedTags.length > 0);
   }, [selectedTags]);
 
   return (
@@ -58,17 +58,17 @@ function SurveyGenreSection() {
 
         {/* 선택 영역 */}
         <CheckWrapper>
-        <ListWrapper>
-          {surveyGenreList.map((item) => (
-            <SurveyTag
-              key={item.id}
-              item={item.genre}
-              selected={selectedTags.includes(item.genre)}
-              onClick={() => handleTagClick(item.genre)}
-              disabled={!selectedTags.includes(item.genre) && selectedTags.length >= 4}
-            />
-          ))}
-        </ListWrapper>
+          <ListWrapper>
+            {surveyGenreList.map((item) => (
+              <SurveyTag
+                key={item.id}
+                item={item.genre}
+                selected={selectedTags.includes(item.genre)}
+                onClick={() => handleTagClick(item.genre)}
+                disabled={!selectedTags.includes(item.genre) && selectedTags.length >= 4}
+              />
+            ))}
+          </ListWrapper>
           <CheckDescription>
             최대 4개까지 선택 가능합니다
           </CheckDescription>
@@ -76,8 +76,8 @@ function SurveyGenreSection() {
       </ContentWrapper>
 
       <ButtonWrapper>
-        <StyledButton onClick={() => setSurveySection("headcount")} isPass={!selectedLevel}>
-          <ButtonText isPass={!selectedLevel}>{selectedLevel ? '다음으로' : '질문 넘기기'}</ButtonText>
+        <StyledButton onClick={() => setSurveySection("headcount")} isPass={!isSelected}>
+          <ButtonText isPass={!isSelected}>{isSelected ? '다음으로' : '질문 넘기기'}</ButtonText>
         </StyledButton>
         <MainButton onClick={() => navigate('/')}>
           루미너스 메인으로 이동하기

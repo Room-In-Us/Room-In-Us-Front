@@ -9,7 +9,7 @@ import SurveyImage from "../../../shared/assets/images/survey/surveyImage.png";
 
 function SurveyProficiencySection() {
   // state 관리
-  const [selectedLevel, setSelectedLevel] = useState(null);
+  const [isSelected, setIsSelected] = useState(null);
   const [, setSurveySection] = useRecoilState(surveySectionState);
 
   // navigate
@@ -39,36 +39,36 @@ function SurveyProficiencySection() {
         <ListWrapper>
           <List>
             <RadioButton
-              selected={selectedLevel === '방세포'}
+              selected={isSelected === '방세포'}
               onClick={() =>
-                setSelectedLevel(selectedLevel === '방세포' ? null : '방세포')
+                setIsSelected(isSelected === '방세포' ? null : '방세포')
               }
             />
             방세포 : 0~5방 정도로 아직 방탈출에 대한 느낌을 잘 몰라요!
           </List>
           <List>
             <RadioButton
-              selected={selectedLevel === '방초보'}
+              selected={isSelected === '방초보'}
               onClick={() =>
-                setSelectedLevel(selectedLevel === '방초보' ? null : '방초보')
+                setIsSelected(isSelected === '방초보' ? null : '방초보')
               }
             />
             방초보 : 5~20방 정도 경험이 있어 어떤 느낌인지는 알아요!
           </List>
           <List>
             <RadioButton
-              selected={selectedLevel === '방중수'}
+              selected={isSelected === '방중수'}
               onClick={() =>
-                setSelectedLevel(selectedLevel === '방중수' ? null : '방중수')
+                setIsSelected(isSelected === '방중수' ? null : '방중수')
               }
             />
             방중수 : 20~50방 정도의 경험이 있어 무난하게 할 수 있어요!
           </List>
           <List>
             <RadioButton
-              selected={selectedLevel === '방고수'}
+              selected={isSelected === '방고수'}
               onClick={() =>
-                setSelectedLevel(selectedLevel === '방고수' ? null : '방고수')
+                setIsSelected(isSelected === '방고수' ? null : '방고수')
               }
             />
             방고수 : 50+ 방 정도 경험이 있어 난이도가 상관이 없어요!
@@ -77,8 +77,8 @@ function SurveyProficiencySection() {
       </ContentWrapper>
 
       <ButtonWrapper>
-        <StyledButton onClick={() => setSurveySection("genre")} isPass={!selectedLevel}>
-          <ButtonText isPass={!selectedLevel}>{selectedLevel ? '다음으로' : '질문 넘기기'}</ButtonText>
+        <StyledButton onClick={() => setSurveySection("genre")} isPass={!isSelected}>
+          <ButtonText isPass={!isSelected}>{isSelected ? '다음으로' : '질문 넘기기'}</ButtonText>
         </StyledButton>
         <MainButton onClick={() => navigate('/')}>
           루미너스 메인으로 이동하기

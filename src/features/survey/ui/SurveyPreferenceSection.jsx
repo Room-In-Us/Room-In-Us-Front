@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
 import { surveySectionState } from "../model/surveyAtom";
@@ -6,96 +6,127 @@ import { useNavigate } from "react-router-dom";
 import RightArrow from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrow from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
 import SurveyImage from "../../../shared/assets/images/survey/surveyImage.png";
+import { preferredElementList, preferredDeviceList, preferredActivityList } from "../model/surveyPreferenceList";
+import SurveyTag from "./SurveyTag";
 
-function SurveyHeadcountSection() {
+function SurveyPreferenceSection() {
   // state 관리
-  const [isSelected, setIsSelected] = useState(null);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedDevice, setSelectedDevice] = useState(null);
+  const [selectedActivity, setSelectedActivity] = useState(null);
+  const [isSelected, setIsSelected] = useState(false);
   const [, setSurveySection] = useRecoilState(surveySectionState);
 
   // navigate
   const navigate = useNavigate();
 
+  // 요소 태그 선택 핸들러
+  const handleTagClick = (tag) => {
+    setSelectedTags(prev => {
+      if (prev.includes(tag)) {
+        return prev.filter(t => t !== tag); // 선택 해제
+      } else if (prev.length < 3) {
+        return [...prev, tag]; // 새로 선택
+      } else {
+        return prev; // 3개 이상이면 무시
+      }
+    });
+  };
+
+  // 장치 태그 선택 핸들러
+  const handleDeviceClick = (device) => {
+    setSelectedDevice(prev => (prev === device ? null : device));
+  };
+
+  // 활동성 태그 선택 핸들러
+  const handleActivityClick = (activity) => {
+    setSelectedActivity(prev => (prev === activity ? null : activity));
+  };
+
+  useEffect(() => {
+    const hasSelection = selectedTags.length > 0 || selectedDevice !== null || selectedActivity !== null;
+    setIsSelected(hasSelection);
+  }, [selectedTags, selectedDevice, selectedActivity]);
+
   return (
     <SectionWrapper>
       <ContentWrapper>
         <ArrowWrapper>
-          <StyledLeftArrow onClick={() => setSurveySection("genre")}/>
+          <StyledLeftArrow onClick={() => setSurveySection("headcount")}/>
           <PageNumber>
-            3/6
+            4/6
           </PageNumber>
-          <StyledRightArrow onClick={() => setSurveySection("preference")}/>
+          <StyledRightArrow onClick={() => setSurveySection("position")}/>
         </ArrowWrapper>
         <StyeldSurveyImage src={SurveyImage}/>
         <TitleWrapper>
           <Title>
-            주로 플레이하는 인원은?
+            나의 방탈출 취향은?
           </Title>
           <Description>
-            방탈출을 몇 명이서 하는 게 가장 재미있을까요?
+            <div>방탈출에서 가장 중요하게 보는 요소는?</div>
+            <div>스토리? 연출? 문제?</div>
           </Description>
         </TitleWrapper>
 
         {/* 선택 영역 */}
-        <ListWrapper>
-          <List>
-            <RadioButton
-              selected={isSelected === 1}
-              onClick={() =>
-                setIsSelected(isSelected === 1 ? null : 1)
-              }
-            />
-            1인
-          </List>
-          <List>
-            <RadioButton
-              selected={isSelected === 2}
-              onClick={() =>
-                setIsSelected(isSelected === 2 ? null : 2)
-              }
-            />
-            2인
-          </List>
-          <List>
-            <RadioButton
-              selected={isSelected === 3}
-              onClick={() =>
-                setIsSelected(isSelected === 3 ? null : 3)
-              }
-            />
-            3인
-          </List>
-          <List>
-            <RadioButton
-              selected={isSelected === 4}
-              onClick={() =>
-                setIsSelected(isSelected === 4 ? null : 4)
-              }
-            />
-            4인
-          </List>
-          <List>
-            <RadioButton
-              selected={isSelected === 5}
-              onClick={() =>
-                setIsSelected(isSelected === 5 ? null : 5)
-              }
-            />
-            5인
-          </List>
-          <List>
-            <RadioButton
-              selected={isSelected === 6}
-              onClick={() =>
-                setIsSelected(isSelected === 6 ? null : 6)
-              }
-            />
-            6인 이상
-          </List>
-        </ListWrapper>
+        <CheckWrapper>
+          <ListWrapper>
+            <ListTitleWrapper>
+              <ListTitle>
+                중요하게 보는 요소
+              </ListTitle>
+              <ListDescription>
+                최대 3개까지 선택 가능합니다
+              </ListDescription>
+            </ListTitleWrapper>
+            <ElementList>
+              {preferredElementList.map((item) => (
+                <SurveyTag
+                  key={item.id}
+                  item={item.element}
+                  selected={selectedTags.includes(item.element)}
+                  onClick={() => handleTagClick(item.element)}
+                  disabled={!selectedTags.includes(item.element) && selectedTags.length >= 3}
+                />
+              ))}
+            </ElementList>
+          </ListWrapper>
+          <ListWrapper>
+            <ListTitle>
+              장치 vs 자물쇠
+            </ListTitle>
+            <List>
+              {preferredDeviceList.map((item) => (
+                <SurveyTag
+                  key={item.id}
+                  item={item.device}
+                  selected={selectedDevice === item.device}
+                  onClick={() => handleDeviceClick(item.device)}
+                />
+              ))}
+            </List>
+          </ListWrapper>
+          <ListWrapper>
+            <ListTitle>
+              활동성
+            </ListTitle>
+            <List>
+              {preferredActivityList.map((item) => (
+                <SurveyTag
+                  key={item.id}
+                  item={item.activity}
+                  selected={selectedActivity === item.activity}
+                  onClick={() => handleActivityClick(item.activity)}
+                />
+              ))}
+            </List>
+          </ListWrapper>
+        </CheckWrapper>
       </ContentWrapper>
 
       <ButtonWrapper>
-        <StyledButton onClick={() => setSurveySection("preference")} isPass={!isSelected}>
+        <StyledButton onClick={() => setSurveySection("position")} isPass={!isSelected}>
           <ButtonText isPass={!isSelected}>{isSelected ? '다음으로' : '질문 넘기기'}</ButtonText>
         </StyledButton>
         <MainButton onClick={() => navigate('/')}>
@@ -106,7 +137,7 @@ function SurveyHeadcountSection() {
   )
 }
 
-export default SurveyHeadcountSection;
+export default SurveyPreferenceSection;
 
 // CSS
 const SectionWrapper = styled.div`
@@ -184,52 +215,64 @@ const Description = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Medium';
   font-size: 0.875em;
-  font-style: normal;
-  font-weight: 500;
   line-height: 130%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const CheckWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1em;
+  align-self: stretch;
 `;
 
 const ListWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: flex-start;
-  gap: 1.25em;
+  gap: 0.625em;
   align-self: stretch;
+`;
+
+const ListTitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+`;
+
+const ListTitle = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  font-family: 'Pretendard-Bold';
+  font-size: 0.875em;
+  font-style: normK;
+  line-height: 1.25em;
+  letter-spacing: -0.02188em;
+`;
+
+const ListDescription =styled.div`
+  color: var(--RIU_Monochrome-70, #B3B6C3);
+  font-family: 'Pretendard-Medium';
+  font-size: 0.75em;
+  line-height: 130%;
+`;
+
+const ElementList = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const List = styled.div`
   display: flex;
+  width: 27.5em;
   align-items: center;
   gap: 0.625em;
-  align-self: stretch;
-  color: var(--RIU_Monochrome-300, #696C7E);
-  font-family: 'Pretendard-Medium';
-  font-size: 0.875em;
-  line-height: 130%;
-`;
-
-const RadioButton = styled.button`
-  all: unset;
-  border: 1.5px solid var(--RIU_Primary-100, #718FF2);
-  border-radius: 1.875em;
-  width: 1em;
-  height: 1em;
-  position: relative;
-  cursor: pointer;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0.5em;
-    height: 0.5em;
-    background-color: var(--RIU_Primary-100, #718FF2);
-    border-radius: 1.875em;
-    transform: translate(-50%, -50%);
-    opacity: ${props => (props.selected ? 1 : 0)};
-    transition: opacity 0.2s ease-in-out;
-  }
 `;
 
 const ButtonWrapper = styled.div`

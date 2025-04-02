@@ -6,6 +6,7 @@ import TextLogo from '../shared/assets/icons/common/textLogo.svg?react';
 import SurveyProficiencySection from '../features/survey/ui/SurveyProficiencySection';
 import SurveyGenreSection from '../features/survey/ui/SurveyGenreSection';
 import SurveyHeadcountSection from '../features/survey/ui/SurveyHeadcountSection';
+import SurveyPreferenceSection from '../features/survey/ui/SurveyPreferenceSection';
 
 function SignupPage() {
   const [surveySection,] = useRecoilState(surveySectionState);
@@ -24,7 +25,7 @@ function SignupPage() {
       {(surveySection === "headcount") && <SurveyHeadcountSection />}
 
       {/* 취향 섹션 */}
-      {(surveySection === "preference") && <SurveyProficiencySection />}
+      {(surveySection === "preference") && <SurveyPreferenceSection />}
 
       {/* 포지션 섹션 */}
       {(surveySection === "position") && <SurveyProficiencySection />}
