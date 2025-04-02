@@ -248,4 +248,3 @@ const StyledGoogleLogo = styled(GoogleLogo)`
     flex-shrink: 0;
   }
 `;
-

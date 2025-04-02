@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 function MainLayOut() {
   const location = useLocation();
-  const authPages = ['/login', '/signup'];
+  const authPages = ['/login', '/signup', '/survey'];
   const isAuthPage = authPages.includes(location.pathname);
   
   return (

@@ -129,7 +129,7 @@ function ContentCard({ data, headCount, type }) {
           ) : (
             <PriceWrapper>
               {type === 'home' && '1인'}
-              <Price>₩ {formatNumberWithCommas(price ?? 0)} {type !== 'home' && '~'}</Price>
+              <Price>₩ {formatNumberWithCommas(price ?? 0)} {type === 'home' && '~'}</Price>
             </PriceWrapper>
           )}
           {isMobile && (

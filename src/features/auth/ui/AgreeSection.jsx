@@ -49,6 +49,7 @@ function AgreeSection() {
       // 회원가입 API 호출
       const response = await postSignupAPI(payload);
       console.log('회원가입 API 응답:', response);
+      localStorage.setItem("accessToken", response.accessToken);
 
       setSignupSection("complete");
     } catch (error) {
