@@ -41,4 +41,8 @@ const TagWrapper = styled.div`
   pointer-events: ${({ disabled }) => disabled ? 'none' : 'auto'};
   opacity: ${({ disabled }) => disabled ? 0.4 : 1};
   transition: all 0.1s ease-in-out;
+
+  @media (max-width: 768px) {
+    font-size: 0.7143em;
+  }
 `;

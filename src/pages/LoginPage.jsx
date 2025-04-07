@@ -99,6 +99,7 @@ const StyledTextLogo = styled(TextLogo)`
   width: 35em;
   height: 15.1em;
   z-index: 1;
+
   @media (max-width: 768px) {
     height: 5.67188em;
     fill: #718FF2;

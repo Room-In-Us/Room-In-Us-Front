@@ -18,8 +18,8 @@ function SurveyPreferenceSection() {
 
   // 요소 선택 상태
   const selectedElements = survey.preferredElementList;
-  const selectedDevice = survey.preferredDeviceList;
-  const selectedActivity = survey.preferredActivityList;
+  const selectedDevice = survey.preferredDevice;
+  const selectedActivity = survey.preferredActivity;
   const isSelected = selectedElements.length > 0 || selectedDevice !== null || selectedActivity !== null;
   
   // 요소 태그 선택 핸들러
@@ -42,7 +42,7 @@ function SurveyPreferenceSection() {
   const handleDeviceClick = (enumValue) => {
     setSurvey(prev => ({
       ...prev,
-      preferredDeviceList: selectedDevice === enumValue ? null : enumValue,
+      preferredDevice: selectedDevice === enumValue ? null : enumValue,
     }));
   };
 
@@ -50,7 +50,7 @@ function SurveyPreferenceSection() {
   const handleActivityClick = (enumValue) => {
     setSurvey(prev => ({
       ...prev,
-      preferredActivityList: selectedActivity === enumValue ? null : enumValue,
+      preferredActivity: selectedActivity === enumValue ? null : enumValue,
     }));
   };
 
@@ -163,7 +163,7 @@ const SectionWrapper = styled.div`
     border-radius: 0.9375em;
     padding: 1.25em;
     width: 20.9375em;
-    height: 40.625em;
+    height: 43.75em;
   }
 `;
 
@@ -173,6 +173,10 @@ const ContentWrapper = styled.div`
   align-items: center;
   gap: 1.5625em;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 1.25em;
+  }
 `;
 
 const ArrowWrapper = styled.div`
@@ -197,10 +201,18 @@ const PageNumber = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Bold';
   line-height: 130%;
+
+  @media(max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const StyeldSurveyImage = styled.img`
   height: 15em;
+
+  @media(max-width: 768px) {
+    height: 11.875em;
+  }
 `;
 
 const TitleWrapper = styled.div`
@@ -225,6 +237,10 @@ const Description = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media(max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const CheckWrapper = styled.div`
@@ -258,6 +274,10 @@ const ListTitle = styled.div`
   font-style: normK;
   line-height: 1.25em;
   letter-spacing: -0.02188em;
+
+  @media (max-width: 768px) {
+    font-size: 0.7143em;
+  }
 `;
 
 const ListDescription =styled.div`
@@ -265,13 +285,22 @@ const ListDescription =styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.75em;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.7143em;
+  }
 `;
 
 const ElementList = styled.div`
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  flex-flow: wrap;
   align-items: center;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    gap: 0.8125em 0.625em;
+  }
 `;
 
 const List = styled.div`
@@ -279,6 +308,10 @@ const List = styled.div`
   width: 27.5em;
   align-items: center;
   gap: 0.625em;
+
+  @media (max-width: 768px) {
+    gap: 0.625em;
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -287,6 +320,10 @@ const ButtonWrapper = styled.div`
   align-items: center;
   gap: 1.25em;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 0.625em;
+  }
 `;
 
 const StyledButton = styled.button`
@@ -353,4 +390,8 @@ const MainButton = styled.div`
   text-underline-offset: auto;
   text-underline-position: from-font;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 0.625em;
+  }
 `;
