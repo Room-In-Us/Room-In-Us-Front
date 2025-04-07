@@ -1,7 +1,6 @@
 import styled from "styled-components";
-import { useRecoilState } from 'recoil';
-import { surveySectionState, surveyState } from "../model/surveyAtom";
-import { useNavigate } from "react-router-dom";
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { surveySectionState, surveyState, modalState } from "../model/surveyAtom";
 import RightArrow from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrow from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
 import SurveyImage from "../../../shared/assets/images/survey/surveyImage.png";
@@ -10,9 +9,7 @@ function SurveyProficiencySection() {
   // state 관리
   const [, setSurveySection] = useRecoilState(surveySectionState);
   const [survey, setSurvey] = useRecoilState(surveyState);
-
-  // navigate
-  const navigate = useNavigate();
+  const setModal = useSetRecoilState(modalState);
 
   // 숙련도 선택 상태
   const selected = survey.proficiency;
@@ -87,7 +84,7 @@ function SurveyProficiencySection() {
         <StyledButton onClick={goNext} isPass={!selected}>
           <ButtonText isPass={!selected}>{selected ? '다음으로' : '질문 넘기기'}</ButtonText>
         </StyledButton>
-        <MainButton onClick={() => navigate('/')}>
+        <MainButton onClick={() => setModal(true)}>
           루미너스 메인으로 이동하기
         </MainButton>
       </ButtonWrapper>
@@ -115,7 +112,7 @@ const SectionWrapper = styled.div`
     border-radius: 0.9375em;
     padding: 1.25em;
     width: 20.9375em;
-    height: 40.625em;
+    height: 43.75em;
   }
 `;
 
@@ -125,6 +122,10 @@ const ContentWrapper = styled.div`
   align-items: center;
   gap: 1.5625em;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 1.25em;
+  }
 `;
 
 const ArrowWrapper = styled.div`
@@ -149,17 +150,25 @@ const PageNumber = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Bold';
   line-height: 130%;
+
+  @media(max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const StyeldSurveyImage = styled.img`
   height: 15em;
+
+  @media(max-width: 768px) {
+    height: 11.875em;
+  }
 `;
 
 const TitleWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.62em;
+  gap: 0.625em;
 `;
 
 const Title = styled.div`
@@ -176,6 +185,10 @@ const Description = styled.div`
   font-style: normal;
   font-weight: 500;
   line-height: 130%;
+
+  @media(max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const ListWrapper = styled.div`
@@ -184,6 +197,10 @@ const ListWrapper = styled.div`
   align-items: flex-start;
   gap: 1.25em;
   align-self: stretch;
+
+  @media(max-width: 768px) {
+    gap: 1em;
+  }
 `;
 
 const List = styled.div`
@@ -195,6 +212,11 @@ const List = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875em;
   line-height: 130%;
+
+  @media(max-width: 768px) {
+    font-size: 0.65em;
+    line-height: 100%;
+  }
 `;
 
 const RadioButton = styled.button`
@@ -219,6 +241,10 @@ const RadioButton = styled.button`
     opacity: ${props => (props.selected ? 1 : 0)};
     transition: opacity 0.2s ease-in-out;
   }
+
+  @media(max-width: 768px) {
+    border-width: 1px;
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -227,6 +253,10 @@ const ButtonWrapper = styled.div`
   align-items: center;
   gap: 1.25em;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 0.625em;
+  }
 `;
 
 const StyledButton = styled.button`
@@ -293,4 +323,8 @@ const MainButton = styled.div`
   text-underline-offset: auto;
   text-underline-position: from-font;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 0.625em;
+  }
 `;

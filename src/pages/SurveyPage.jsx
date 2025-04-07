@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { useRecoilState } from 'recoil';
-import { surveySectionState } from '../features/survey/model/surveyAtom';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { surveySectionState, modalState } from '../features/survey/model/surveyAtom';
 import NoiseFilter from '../shared/assets/icons/login/loginNoiseFilter.svg';
 import TextLogo from '../shared/assets/icons/common/textLogo.svg?react';
 import SurveyProficiencySection from '../features/survey/ui/SurveyProficiencySection';
@@ -10,10 +10,14 @@ import SurveyPreferenceSection from '../features/survey/ui/SurveyPreferenceSecti
 import SurveyPositionSection from '../features/survey/ui/SurveyPositionSection';
 import SurveyInfoSection from '../features/survey/ui/SurveyInfoSection';
 import SurveyCompleteSection from '../features/survey/ui/SurveyCompleteSection';
+import QuitModal from '../features/survey/ui/QuitModal';
 
 function SignupPage() {
+  // 상태 관리
   const [surveySection,] = useRecoilState(surveySectionState);
-  
+  const setModal = useSetRecoilState(modalState);
+  const isModalOpen = useRecoilValue(modalState);
+
   return (
     <PageWrapper>
       <StyledTextLogo/>
@@ -39,6 +43,12 @@ function SignupPage() {
       {/* 완료 섹션 */}
       {(surveySection === "complete") && <SurveyCompleteSection />}
 
+      {/* 모달 표시 */}
+      {isModalOpen && (
+        <ModalBackdrop onClick={() => setModal(false)}>
+          <QuitModal />
+        </ModalBackdrop>
+      )}
     </PageWrapper>
   );
 }
@@ -80,6 +90,10 @@ font-size: 0.75rem;
     opacity: 0.5;
     pointer-events: none;
   }
+
+  @media (max-width: 768px) {
+    height: 100vh;
+  }
 `;
 
 const StyledTextLogo = styled(TextLogo)`
@@ -90,4 +104,17 @@ const StyledTextLogo = styled(TextLogo)`
   @media (max-width: 768px) {
     display: none;
   }
+`;
+
+const ModalBackdrop = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3500;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

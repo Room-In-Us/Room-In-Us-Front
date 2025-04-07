@@ -1,12 +1,13 @@
 import styled from "styled-components";
-import { useRecoilState } from 'recoil';
-import { surveySectionState } from "../model/surveyAtom";
+import { useRecoilState, useResetRecoilState } from 'recoil';
+import { surveySectionState, surveyState } from "../model/surveyAtom";
 import { useNavigate } from "react-router-dom";
 import SurveyImage from "../../../shared/assets/images/survey/surveyImage.png";
 
 function SurveyCompleteSection() {
   // state 관리
     const [, setSurveySection] = useRecoilState(surveySectionState);
+    const resetSurvey = useResetRecoilState(surveyState);
 
   // navigate
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ function SurveyCompleteSection() {
   // 홈 이동 핸들러
   const handleNavigateMain = () => {
     setSurveySection("proficiency");
+    resetSurvey();
     navigate('/');
   };
 
@@ -61,7 +63,7 @@ const SectionWrapper = styled.div`
     border-radius: 0.9375em;
     padding: 1.25em;
     width: 20.9375em;
-    height: 40.625em;
+    height: 43.75em;
   }
 `;
 
@@ -71,16 +73,28 @@ const ContentWrapper = styled.div`
   align-items: center;
   gap: 1.5625em;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 1.25em;
+  }
 `;
 
 const PageNumber = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Bold';
   line-height: 130%;
+
+  @media(max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const StyeldSurveyImage = styled.img`
   height: 15em;
+
+  @media(max-width: 768px) {
+    height: 11.875em;
+  }
 `;
 
 const TitleWrapper = styled.div`
@@ -105,6 +119,10 @@ const Description = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media(max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const StyledButton = styled.button`

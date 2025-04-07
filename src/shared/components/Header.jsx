@@ -36,6 +36,10 @@ function Header() {
   // 반응형 함수
   const { isDesktop, isTablet, isMobile } = useDevice();
 
+  // 로고 색상 변경을 위한 페이지 정리
+  const authPages = ['/login', '/signup', '/survey'];
+  const isAuthPage = authPages.includes(location.pathname);
+
   // 메뉴 열고 닫기
   const handleMenu = () => {
     setIsVisibleMenu(!isVisibleMenu);
@@ -161,6 +165,7 @@ function Header() {
               isScrolledBeyond={isScrolledBeyond}
               onClick={() => handleNavigation('/')}
               location={location}
+              isAuthPage={isAuthPage}
             />
           </MobileHeaderWrapper>
 
@@ -248,8 +253,12 @@ const StyledLogoIcon = styled(LogoIcon)`
   @media (max-width: 768px) {
     width: 2.5rem;
     path#Vector_2 {
-      fill: ${({ isScrolledBeyond, location }) =>
-        location.pathname === '/' ? (isScrolledBeyond ? "#718FF2" : "#E8EAFF") : "#718FF2"};
+      fill: ${({ isScrolledBeyond, location, isAuthPage }) =>
+        isAuthPage
+          ? "#E8EAFF"
+          : location.pathname === '/'
+          ? (isScrolledBeyond ? "#718FF2" : "#E8EAFF")
+          : "#718FF2"};
     }
   }
 `;
@@ -332,7 +341,7 @@ const MobileHeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 1900;
+  z-index: 3000;
   background: ${({ hasScrolled }) => (hasScrolled ? 'rgba(255, 255, 255, 0.3)' : 'transparent')};
   backdrop-filter: ${({ hasScrolled }) => (hasScrolled ? 'blur(15px)' : 'none')};
   transition: all 0.3s ease-in-out;

@@ -99,9 +99,4 @@ export const surveyGenreList = [
     "genre": "야외",
     "enum": "OUTDOOR",
   },
-  {
-    "id": 21,
-    "genre": "기타",
-    "enum": "ETC",
-  },
 ];

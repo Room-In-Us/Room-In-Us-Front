@@ -14,9 +14,15 @@ export const surveyState = atom({
     preferredGenreList: [],
     preferredHeadcount: null,
     preferredElementList: [],
-    preferredActivityList: null,
-    preferredDeviceList: null,
+    preferredActivity: null,
+    preferredDevice: null,
     horrorPos: null,
     preference: null,
   },
+});
+
+// 모달 상태
+export const modalState = atom({
+  key: 'modalState',
+  default: false,
 });

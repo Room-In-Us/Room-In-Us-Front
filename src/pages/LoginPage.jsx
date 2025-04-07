@@ -93,12 +93,17 @@ font-size: 0.75rem;
     opacity: 0.5;
     pointer-events: none;
   }
+
+  @media (max-width: 768px) {
+    height: 100vh;
+  }
 `;
 
 const StyledTextLogo = styled(TextLogo)`
   width: 35em;
   height: 15.1em;
   z-index: 1;
+
   @media (max-width: 768px) {
     height: 5.67188em;
     fill: #718FF2;

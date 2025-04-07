@@ -11,11 +11,21 @@ import { patchPreferencesAPI } from "../api/surveyAPI";
 function SurveyInfoSection() {
   // state 관리
   const [, setSurveySection] = useRecoilState(surveySectionState);
-  const [survey] = useRecoilState(surveyState);
-  const [text, setText] = useState("");
+  const [survey, setSurvey] = useRecoilState(surveyState);
+  const [text, setText] = useState(survey.preference || "");
 
   // navigate
   const navigate = useNavigate();
+
+  // 입력 핸들러
+  const handleTextChange = (e) => {
+    const newText = e.target.value;
+    setText(newText);
+    setSurvey(prev => ({
+      ...prev,
+      preference: newText.trim(),
+    }));
+  };
 
   // 성향조사 제출 핸들러
   const handleSubmitSurvey = async () => {
@@ -25,12 +35,13 @@ function SurveyInfoSection() {
         preferredGenreList: survey.preferredGenreList,
         preferredHeadcount: survey.preferredHeadcount,
         preferredElementList: survey.preferredElementList,
-        preferredActivity: survey.preferredActivityList,
-        preferredDevice: survey.preferredDeviceList,
+        preferredActivity: survey.preferredActivity,
+        preferredDevice: survey.preferredDevice,
         horrorPos: survey.horrorPos,
         preference: text.trim() || null,
       };
 
+      console.log("성향조사 제출 결과: ", payload);
       const response = await patchPreferencesAPI(payload);
       console.log("성향조사 제출 결과: ", response);
       setSurveySection("complete");
@@ -65,7 +76,7 @@ function SurveyInfoSection() {
           placeholder="선호, 기피하는 문제 유형 등 자유로운 취향 정보를 적어주세요"
           maxLength={500}
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={handleTextChange}
         />
       </ContentWrapper>
 
@@ -101,7 +112,7 @@ const SectionWrapper = styled.div`
     border-radius: 0.9375em;
     padding: 1.25em;
     width: 20.9375em;
-    height: 40.625em;
+    height: 43.75em;
   }
 `;
 
@@ -111,6 +122,10 @@ const ContentWrapper = styled.div`
   align-items: center;
   gap: 1.5625em;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 1.25em;
+  }
 `;
 
 const ArrowWrapper = styled.div`
@@ -135,10 +150,18 @@ const PageNumber = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Bold';
   line-height: 130%;
+
+  @media(max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const StyeldSurveyImage = styled.img`
   height: 15em;
+
+  @media(max-width: 768px) {
+    height: 11.875em;
+  }
 `;
 
 const TitleWrapper = styled.div`
@@ -163,6 +186,10 @@ const Description = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media(max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const StyledTextarea = styled.textarea`
@@ -186,6 +213,12 @@ const StyledTextarea = styled.textarea`
     font-size: 0.875em;
     line-height: 130%;
   }
+
+  @media (max-width: 768px) {
+    padding: 1.5em;
+    height: 17em;
+    font-size: 0.7143em;
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -194,6 +227,10 @@ const ButtonWrapper = styled.div`
   align-items: center;
   gap: 1.25em;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 0.625em;
+  }
 `;
 
 const StyledButton = styled.button`
@@ -257,4 +294,8 @@ const MainButton = styled.div`
   text-underline-offset: auto;
   text-underline-position: from-font;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 0.625em;
+  }
 `;

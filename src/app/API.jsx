@@ -12,6 +12,10 @@ export const api = axios.create({
 // 요청 인터셉터 (이제 Authorization 헤더는 사용하지 않음)
 api.interceptors.request.use(
   (config) => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {
