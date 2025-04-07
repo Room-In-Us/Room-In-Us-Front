@@ -25,7 +25,7 @@ function CompleteSection() {
       </ContentWrapper>
 
       <ButtonWrapper>
-        <StyledButton onClick={() => navigate('/')}>
+        <StyledButton onClick={() => navigate('/survey')}>
           <ButtonText>성향조사 하기</ButtonText>
         </StyledButton>
         <PassButton onClick={() => navigate('/')}>다음에 할게요</PassButton>

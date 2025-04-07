@@ -1,7 +1,6 @@
-import { useState } from "react";
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
-import { surveySectionState } from "../model/surveyAtom";
+import { surveySectionState, surveyState } from "../model/surveyAtom";
 import { useNavigate } from "react-router-dom";
 import RightArrow from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrow from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
@@ -9,11 +8,22 @@ import SurveyImage from "../../../shared/assets/images/survey/surveyImage.png";
 
 function SurveyHeadcountSection() {
   // state 관리
-  const [isSelected, setIsSelected] = useState(null);
+  const [survey, setSurvey] = useRecoilState(surveyState);
   const [, setSurveySection] = useRecoilState(surveySectionState);
 
   // navigate
   const navigate = useNavigate();
+
+  // 인원수 선택 상태
+  const selected = survey.preferredHeadcount;
+
+  // 인원수 선택 함수
+  const handleSelect = (value) => {
+    setSurvey(prev => ({
+      ...prev,
+      preferredHeadcount: prev.preferredHeadcount === value ? null : value
+    }));
+  };
 
   return (
     <SectionWrapper>
@@ -37,66 +47,21 @@ function SurveyHeadcountSection() {
 
         {/* 선택 영역 */}
         <ListWrapper>
-          <List>
-            <RadioButton
-              selected={isSelected === 1}
-              onClick={() =>
-                setIsSelected(isSelected === 1 ? null : 1)
-              }
-            />
-            1인
-          </List>
-          <List>
-            <RadioButton
-              selected={isSelected === 2}
-              onClick={() =>
-                setIsSelected(isSelected === 2 ? null : 2)
-              }
-            />
-            2인
-          </List>
-          <List>
-            <RadioButton
-              selected={isSelected === 3}
-              onClick={() =>
-                setIsSelected(isSelected === 3 ? null : 3)
-              }
-            />
-            3인
-          </List>
-          <List>
-            <RadioButton
-              selected={isSelected === 4}
-              onClick={() =>
-                setIsSelected(isSelected === 4 ? null : 4)
-              }
-            />
-            4인
-          </List>
-          <List>
-            <RadioButton
-              selected={isSelected === 5}
-              onClick={() =>
-                setIsSelected(isSelected === 5 ? null : 5)
-              }
-            />
-            5인
-          </List>
-          <List>
-            <RadioButton
-              selected={isSelected === 6}
-              onClick={() =>
-                setIsSelected(isSelected === 6 ? null : 6)
-              }
-            />
-            6인 이상
-          </List>
+          {[1, 2, 3, 4, 5, 6].map((num) => (
+            <List key={num}>
+              <RadioButton
+                selected={selected === num}
+                onClick={() => handleSelect(num)}
+              />
+              {num === 6 ? '6인 이상' : `${num}인`}
+            </List>
+          ))}
         </ListWrapper>
       </ContentWrapper>
 
       <ButtonWrapper>
-        <StyledButton onClick={() => setSurveySection("preference")} isPass={!isSelected}>
-          <ButtonText isPass={!isSelected}>{isSelected ? '다음으로' : '질문 넘기기'}</ButtonText>
+        <StyledButton onClick={() => setSurveySection("preference")} isPass={!selected}>
+          <ButtonText isPass={!selected}>{selected ? '다음으로' : '질문 넘기기'}</ButtonText>
         </StyledButton>
         <MainButton onClick={() => navigate('/')}>
           루미너스 메인으로 이동하기

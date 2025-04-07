@@ -1,7 +1,6 @@
-import { useState } from "react";
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
-import { surveySectionState } from "../model/surveyAtom";
+import { surveySectionState, surveyState } from "../model/surveyAtom";
 import { useNavigate } from "react-router-dom";
 import RightArrow from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrow from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
@@ -9,11 +8,27 @@ import SurveyImage from "../../../shared/assets/images/survey/surveyImage.png";
 
 function SurveyProficiencySection() {
   // state 관리
-  const [isSelected, setIsSelected] = useState(null);
   const [, setSurveySection] = useRecoilState(surveySectionState);
+  const [survey, setSurvey] = useRecoilState(surveyState);
 
   // navigate
   const navigate = useNavigate();
+
+  // 숙련도 선택 상태
+  const selected = survey.proficiency;
+
+  // 숙련도 저장 함수
+  const handleSelect = (value) => {
+    setSurvey(prev => ({
+      ...prev,
+      proficiency: prev.proficiency === value ? null : value,
+    }));
+  };
+
+  // 섹션 이동 함수
+  const goNext = () => {
+    setSurveySection("genre");
+  };
 
   return (
     <SectionWrapper>
@@ -39,37 +54,29 @@ function SurveyProficiencySection() {
         <ListWrapper>
           <List>
             <RadioButton
-              selected={isSelected === '방세포'}
-              onClick={() =>
-                setIsSelected(isSelected === '방세포' ? null : '방세포')
-              }
+              selected={selected === 'BEGINNER'}
+              onClick={() => handleSelect('BEGINNER')}
             />
             방세포 : 0~5방 정도로 아직 방탈출에 대한 느낌을 잘 몰라요!
           </List>
           <List>
             <RadioButton
-              selected={isSelected === '방초보'}
-              onClick={() =>
-                setIsSelected(isSelected === '방초보' ? null : '방초보')
-              }
+              selected={selected === 'JUNIOR'}
+              onClick={() => handleSelect('JUNIOR')}
             />
             방초보 : 5~20방 정도 경험이 있어 어떤 느낌인지는 알아요!
           </List>
           <List>
             <RadioButton
-              selected={isSelected === '방중수'}
-              onClick={() =>
-                setIsSelected(isSelected === '방중수' ? null : '방중수')
-              }
+              selected={selected === 'SENIOR'}
+              onClick={() => handleSelect('SENIOR')}
             />
             방중수 : 20~50방 정도의 경험이 있어 무난하게 할 수 있어요!
           </List>
           <List>
             <RadioButton
-              selected={isSelected === '방고수'}
-              onClick={() =>
-                setIsSelected(isSelected === '방고수' ? null : '방고수')
-              }
+              selected={selected === 'MASTER'}
+              onClick={() => handleSelect('MASTER')}
             />
             방고수 : 50+ 방 정도 경험이 있어 난이도가 상관이 없어요!
           </List>
@@ -77,8 +84,8 @@ function SurveyProficiencySection() {
       </ContentWrapper>
 
       <ButtonWrapper>
-        <StyledButton onClick={() => setSurveySection("genre")} isPass={!isSelected}>
-          <ButtonText isPass={!isSelected}>{isSelected ? '다음으로' : '질문 넘기기'}</ButtonText>
+        <StyledButton onClick={goNext} isPass={!selected}>
+          <ButtonText isPass={!selected}>{selected ? '다음으로' : '질문 넘기기'}</ButtonText>
         </StyledButton>
         <MainButton onClick={() => navigate('/')}>
           루미너스 메인으로 이동하기

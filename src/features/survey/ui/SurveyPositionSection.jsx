@@ -1,7 +1,6 @@
-import { useState } from "react";
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
-import { surveySectionState } from "../model/surveyAtom";
+import { surveySectionState, surveyState } from "../model/surveyAtom";
 import { useNavigate } from "react-router-dom";
 import RightArrow from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrow from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
@@ -9,11 +8,22 @@ import SurveyImage from "../../../shared/assets/images/survey/surveyImage.png";
 
 function SurveyPositionSection() {
   // state 관리
-  const [isSelected, setIsSelected] = useState(null);
+  const [survey, setSurvey] = useRecoilState(surveyState);
   const [, setSurveySection] = useRecoilState(surveySectionState);
 
   // navigate
   const navigate = useNavigate();
+
+  // 포지션 선택 상태
+  const selected = survey.horrorPos;
+
+  // 포지션 선택 함수
+  const handleSelect = (value) => {
+    setSurvey(prev => ({
+      ...prev,
+      horrorPos: prev.horrorPos === value ? null : value
+    }));
+  };
 
   return (
     <SectionWrapper>
@@ -38,66 +48,28 @@ function SurveyPositionSection() {
 
         {/* 선택 영역 */}
         <ListWrapper>
-          <List>
-            <RadioButton
-              selected={isSelected === '탱'}
-              onClick={() =>
-                setIsSelected(isSelected === '탱' ? null : '탱')
-              }
-            />
-            탱 : 공포 구간도 주저 없이! 웬만한 공포 연출엔 안 놀라요.
-          </List>
-          <List>
-            <RadioButton
-              selected={isSelected === '쫄탱'}
-              onClick={() =>
-                setIsSelected(isSelected === '쫄탱' ? null : '쫄탱')
-              }
-            />
-            쫄탱 : 떨면서도 탱 역할을 수행할 순 있어요.
-          </List>
-          <List>
-            <RadioButton
-              selected={isSelected === '마지모탱'}
-              onClick={() =>
-                setIsSelected(isSelected === '마지모탱' ? null : '마지모탱')
-              }
-            />
-            마지모탱 : 나서기는 무섭지만 떠밀려서 어쩔 수 없이 가요.
-          </List>
-          <List>
-            <RadioButton
-              selected={isSelected === '변쫄'}
-              onClick={() =>
-                setIsSelected(isSelected === '변쫄' ? null : '변쫄')
-              }
-            />
-            변쫄 : 공포 테마가 무섭지만 계속 하고 싶어요.
-          </List>
-          <List>
-            <RadioButton
-              selected={isSelected === '쫄'}
-              onClick={() =>
-                setIsSelected(isSelected === '쫄' ? null : '쫄')
-              }
-            />
-            쫄 : 공포 테마는 무서워서 잘 못해요.
-          </List>
-          <List>
-            <RadioButton
-              selected={isSelected === '극쫄'}
-              onClick={() =>
-                setIsSelected(isSelected === '극쫄' ? null : '극쫄')
-              }
-            />
-            극쫄 : 공포가 아니어도 웬만한 테마는 무서워요.
-          </List>
+          {[
+            { label: '탱', value: 'FEARLESS', description: '공포 구간도 주저 없이! 웬만한 공포 연출엔 안 놀라요.' },
+            { label: '쫄탱', value: 'FEARFUL_TANK', description: '떨면서도 탱 역할을 수행할 순 있어요.' },
+            { label: '마지모탱', value: 'RELUCTANT_TANK', description: '나서기는 무섭지만 떠밀려서 어쩔 수 없이 가요.' },
+            { label: '변쫄', value: 'NERVOUS', description: '공포 테마가 무섭지만 계속 하고 싶어요.' },
+            { label: '쫄', value: 'SCARED', description: '공포 테마는 무서워서 잘 못해요.' },
+            { label: '극쫄', value: 'EXTREME_SCARED', description: '공포가 아니어도 웬만한 테마는 무서워요.' },
+          ].map((item) => (
+            <List key={item.value}>
+              <RadioButton
+                selected={selected === item.value}
+                onClick={() => handleSelect(item.value)}
+              />
+              {item.label} : {item.description}
+            </List>
+          ))}
         </ListWrapper>
       </ContentWrapper>
 
       <ButtonWrapper>
-        <StyledButton onClick={() => setSurveySection("info")} isPass={!isSelected}>
-          <ButtonText isPass={!isSelected}>{isSelected ? '다음으로' : '질문 넘기기'}</ButtonText>
+        <StyledButton onClick={() => setSurveySection("info")} isPass={!selected}>
+          <ButtonText isPass={!selected}>{selected ? '다음으로' : '질문 넘기기'}</ButtonText>
         </StyledButton>
         <MainButton onClick={() => navigate('/')}>
           루미너스 메인으로 이동하기
