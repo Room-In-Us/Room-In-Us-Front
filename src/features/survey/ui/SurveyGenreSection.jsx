@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
-import { surveySectionState } from "../model/surveyAtom";
+import { surveySectionState, surveyState } from "../model/surveyAtom";
 import { useNavigate } from "react-router-dom";
 import RightArrow from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrow from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
@@ -11,29 +10,31 @@ import SurveyTag from "./SurveyTag";
 
 function SurveyGenreSection() {
   // state 관리
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [isSelected, setIsSelected] = useState(false);
+  const [survey, setSurvey] = useRecoilState(surveyState);
   const [, setSurveySection] = useRecoilState(surveySectionState);
 
   // navigate
   const navigate = useNavigate();
 
-  // 태그 선택 핸들러
-  const handleTagClick = (tag) => {
-    setSelectedTags(prev => {
-      if (prev.includes(tag)) {
-        return prev.filter(t => t !== tag); // 선택 해제
-      } else if (prev.length < 4) {
-        return [...prev, tag]; // 새로 선택
-      } else {
-        return prev; // 4개 이상이면 무시
-      }
-    });
-  };
+  // 장르 선택 상태
+  const selectedGenres = survey.preferredGenreList;
 
-  useEffect(() => {
-    setIsSelected(selectedTags.length > 0);
-  }, [selectedTags]);
+  // 태그 선택 핸들러
+  const handleTagClick = (enumValue) => {
+    const isSelected = selectedGenres.includes(enumValue);
+
+    if (isSelected) {
+      setSurvey(prev => ({
+        ...prev,
+        preferredGenreList: prev.preferredGenreList.filter(tag => tag !== enumValue)
+      }));
+    } else if (selectedGenres.length < 4) {
+      setSurvey(prev => ({
+        ...prev,
+        preferredGenreList: [...prev.preferredGenreList, enumValue]
+      }));
+    }
+  };
 
   return (
     <SectionWrapper>
@@ -63,9 +64,12 @@ function SurveyGenreSection() {
               <SurveyTag
                 key={item.id}
                 item={item.genre}
-                selected={selectedTags.includes(item.genre)}
-                onClick={() => handleTagClick(item.genre)}
-                disabled={!selectedTags.includes(item.genre) && selectedTags.length >= 4}
+                selected={selectedGenres.includes(item.enum)}
+                onClick={() => handleTagClick(item.enum)}
+                disabled={
+                  !selectedGenres.includes(item.enum) &&
+                  selectedGenres.length >= 4
+                }
               />
             ))}
           </ListWrapper>
@@ -76,8 +80,10 @@ function SurveyGenreSection() {
       </ContentWrapper>
 
       <ButtonWrapper>
-        <StyledButton onClick={() => setSurveySection("headcount")} isPass={!isSelected}>
-          <ButtonText isPass={!isSelected}>{isSelected ? '다음으로' : '질문 넘기기'}</ButtonText>
+        <StyledButton onClick={() => setSurveySection("headcount")} isPass={selectedGenres.length === 0}>
+          <ButtonText isPass={selectedGenres.length === 0}>
+            {selectedGenres.length > 0 ? '다음으로' : '질문 넘기기'}
+          </ButtonText>
         </StyledButton>
         <MainButton onClick={() => navigate('/')}>
           루미너스 메인으로 이동하기

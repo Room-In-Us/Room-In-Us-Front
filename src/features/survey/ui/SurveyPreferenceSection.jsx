@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
-import { surveySectionState } from "../model/surveyAtom";
+import { surveySectionState, surveyState } from "../model/surveyAtom";
 import { useNavigate } from "react-router-dom";
 import RightArrow from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrow from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
@@ -11,42 +10,49 @@ import SurveyTag from "./SurveyTag";
 
 function SurveyPreferenceSection() {
   // state 관리
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [selectedDevice, setSelectedDevice] = useState(null);
-  const [selectedActivity, setSelectedActivity] = useState(null);
-  const [isSelected, setIsSelected] = useState(false);
+  const [survey, setSurvey] = useRecoilState(surveyState);
   const [, setSurveySection] = useRecoilState(surveySectionState);
-
+ 
   // navigate
   const navigate = useNavigate();
 
+  // 요소 선택 상태
+  const selectedElements = survey.preferredElementList;
+  const selectedDevice = survey.preferredDeviceList;
+  const selectedActivity = survey.preferredActivityList;
+  const isSelected = selectedElements.length > 0 || selectedDevice !== null || selectedActivity !== null;
+  
   // 요소 태그 선택 핸들러
-  const handleTagClick = (tag) => {
-    setSelectedTags(prev => {
-      if (prev.includes(tag)) {
-        return prev.filter(t => t !== tag); // 선택 해제
-      } else if (prev.length < 3) {
-        return [...prev, tag]; // 새로 선택
-      } else {
-        return prev; // 3개 이상이면 무시
-      }
-    });
+  const handleElementClick = (enumValue) => {
+    const isSelected = selectedElements.includes(enumValue);
+    if (isSelected) {
+      setSurvey(prev => ({
+        ...prev,
+        preferredElementList: selectedElements.filter(e => e !== enumValue),
+      }));
+    } else if (selectedElements.length < 3) {
+      setSurvey(prev => ({
+        ...prev,
+        preferredElementList: [...selectedElements, enumValue],
+      }));
+    }
   };
 
   // 장치 태그 선택 핸들러
-  const handleDeviceClick = (device) => {
-    setSelectedDevice(prev => (prev === device ? null : device));
+  const handleDeviceClick = (enumValue) => {
+    setSurvey(prev => ({
+      ...prev,
+      preferredDeviceList: selectedDevice === enumValue ? null : enumValue,
+    }));
   };
 
   // 활동성 태그 선택 핸들러
-  const handleActivityClick = (activity) => {
-    setSelectedActivity(prev => (prev === activity ? null : activity));
+  const handleActivityClick = (enumValue) => {
+    setSurvey(prev => ({
+      ...prev,
+      preferredActivityList: selectedActivity === enumValue ? null : enumValue,
+    }));
   };
-
-  useEffect(() => {
-    const hasSelection = selectedTags.length > 0 || selectedDevice !== null || selectedActivity !== null;
-    setIsSelected(hasSelection);
-  }, [selectedTags, selectedDevice, selectedActivity]);
 
   return (
     <SectionWrapper>
@@ -84,10 +90,10 @@ function SurveyPreferenceSection() {
               {preferredElementList.map((item) => (
                 <SurveyTag
                   key={item.id}
-                  item={item.element}
-                  selected={selectedTags.includes(item.element)}
-                  onClick={() => handleTagClick(item.element)}
-                  disabled={!selectedTags.includes(item.element) && selectedTags.length >= 3}
+                  item={item.value}
+                  selected={selectedElements.includes(item.enum)}
+                  onClick={() => handleElementClick(item.enum)}
+                  disabled={!selectedElements.includes(item.enum) && selectedElements.length >= 3}
                 />
               ))}
             </ElementList>
@@ -100,9 +106,9 @@ function SurveyPreferenceSection() {
               {preferredDeviceList.map((item) => (
                 <SurveyTag
                   key={item.id}
-                  item={item.device}
-                  selected={selectedDevice === item.device}
-                  onClick={() => handleDeviceClick(item.device)}
+                  item={item.value}
+                  selected={selectedDevice === item.enum}
+                  onClick={() => handleDeviceClick(item.enum)}
                 />
               ))}
             </List>
@@ -115,9 +121,9 @@ function SurveyPreferenceSection() {
               {preferredActivityList.map((item) => (
                 <SurveyTag
                   key={item.id}
-                  item={item.activity}
-                  selected={selectedActivity === item.activity}
-                  onClick={() => handleActivityClick(item.activity)}
+                  item={item.value}
+                  selected={selectedActivity === item.enum}
+                  onClick={() => handleActivityClick(item.enum)}
                 />
               ))}
             </List>

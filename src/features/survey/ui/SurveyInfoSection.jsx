@@ -1,17 +1,43 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
-import { surveySectionState } from "../model/surveyAtom";
+import { surveySectionState, surveyState } from "../model/surveyAtom";
 import { useNavigate } from "react-router-dom";
 import RightArrow from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrow from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
 import SurveyImage from "../../../shared/assets/images/survey/surveyImage.png";
+import { patchPreferencesAPI } from "../api/surveyAPI";
 
 function SurveyInfoSection() {
   // state 관리
   const [, setSurveySection] = useRecoilState(surveySectionState);
+  const [survey] = useRecoilState(surveyState);
+  const [text, setText] = useState("");
 
   // navigate
   const navigate = useNavigate();
+
+  // 성향조사 제출 핸들러
+  const handleSubmitSurvey = async () => {
+    try {
+      const payload = {
+        proficiency: survey.proficiency,
+        preferredGenreList: survey.preferredGenreList,
+        preferredHeadcount: survey.preferredHeadcount,
+        preferredElementList: survey.preferredElementList,
+        preferredActivity: survey.preferredActivityList,
+        preferredDevice: survey.preferredDeviceList,
+        horrorPos: survey.horrorPos,
+        preference: text.trim() || null,
+      };
+
+      const response = await patchPreferencesAPI(payload);
+      console.log("성향조사 제출 결과: ", response);
+      setSurveySection("complete");
+    } catch (error) {
+      console.error("성향조사 제출 중 오류 발생:", error);
+    }
+  };
 
   return (
     <SectionWrapper>
@@ -38,11 +64,13 @@ function SurveyInfoSection() {
         <StyledTextarea
           placeholder="선호, 기피하는 문제 유형 등 자유로운 취향 정보를 적어주세요"
           maxLength={500}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
         />
       </ContentWrapper>
 
       <ButtonWrapper>
-        <StyledButton onClick={() => setSurveySection("complete")}>
+        <StyledButton onClick={handleSubmitSurvey}>
           <ButtonText>제출하기</ButtonText>
         </StyledButton>
         <MainButton onClick={() => navigate('/')}>

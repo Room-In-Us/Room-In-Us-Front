@@ -1,56 +1,68 @@
 export const preferredElementList = [
   {
     "id": 1,
-    "element": "스토리",
+    "value": "스토리",
+    "enum": "STORY",
   },
   {
     "id": 2,
-    "element": "인테리어",
+    "value": "인테리어",
+    "enum": "INTERIOR",
   },
   {
     "id": 3,
-    "element": "연출",
+    "value": "연출",
+    "enum": "DIRECTION",
   },
   {
     "id": 4,
-    "element": "볼륨",
+    "value": "볼륨",
+    "enum": "VOLUME",
   },
   {
     "id": 5,
-    "element": "문제",
+    "value": "문제",
+    "enum": "PROBLEM",
   },
   {
     "id": 6,
-    "element": "가격",
+    "value": "가격",
+    "enum": "PRICE",
   },
 ];
 
 export const preferredDeviceList = [
   {
     "id": 1,
-    "device": "장치",
+    "value": "장치",
+    "enum": "DEVICE",
   },
   {
     "id": 2,
-    "device": "자물쇠",
+    "value": "자물쇠",
+    "enum": "LOCK",
   },
   {
     "id": 3,
-    "device": "상관없어요",
+    "value": "상관없어요",
+    "enum": "NO_MATTER",
   },
 ];
 
 export const preferredActivityList = [
   {
     "id": 1,
-    "activity": "활동성 높음",
+    "value": "활동성 높음",
+    "enum": "HIGH",
   },
   {
     "id": 2,
-    "activity": "활동성 낮음",
+    "value": "활동성 낮음",
+    "enum": "LOW",
   },
   {
     "id": 3,
-    "activity": "상관없어요",
+    "value": "상관없어요",
+    "enum": "NO_MATTER",
   },
 ];
