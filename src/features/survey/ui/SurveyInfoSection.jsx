@@ -11,11 +11,21 @@ import { patchPreferencesAPI } from "../api/surveyAPI";
 function SurveyInfoSection() {
   // state 관리
   const [, setSurveySection] = useRecoilState(surveySectionState);
-  const [survey] = useRecoilState(surveyState);
-  const [text, setText] = useState("");
+  const [survey, setSurvey] = useRecoilState(surveyState);
+  const [text, setText] = useState(survey.preference || "");
 
   // navigate
   const navigate = useNavigate();
+
+  // 입력 핸들러
+  const handleTextChange = (e) => {
+    const newText = e.target.value;
+    setText(newText);
+    setSurvey(prev => ({
+      ...prev,
+      preference: newText.trim(),
+    }));
+  };
 
   // 성향조사 제출 핸들러
   const handleSubmitSurvey = async () => {
@@ -66,7 +76,7 @@ function SurveyInfoSection() {
           placeholder="선호, 기피하는 문제 유형 등 자유로운 취향 정보를 적어주세요"
           maxLength={500}
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={handleTextChange}
         />
       </ContentWrapper>
 

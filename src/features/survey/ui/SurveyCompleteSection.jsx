@@ -1,12 +1,13 @@
 import styled from "styled-components";
-import { useRecoilState } from 'recoil';
-import { surveySectionState } from "../model/surveyAtom";
+import { useRecoilState, useResetRecoilState } from 'recoil';
+import { surveySectionState, surveyState } from "../model/surveyAtom";
 import { useNavigate } from "react-router-dom";
 import SurveyImage from "../../../shared/assets/images/survey/surveyImage.png";
 
 function SurveyCompleteSection() {
   // state 관리
     const [, setSurveySection] = useRecoilState(surveySectionState);
+    const resetSurvey = useResetRecoilState(surveyState);
 
   // navigate
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ function SurveyCompleteSection() {
   // 홈 이동 핸들러
   const handleNavigateMain = () => {
     setSurveySection("proficiency");
+    resetSurvey();
     navigate('/');
   };
 

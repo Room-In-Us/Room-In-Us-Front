@@ -341,7 +341,7 @@ const MobileHeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 1900;
+  z-index: 3000;
   background: ${({ hasScrolled }) => (hasScrolled ? 'rgba(255, 255, 255, 0.3)' : 'transparent')};
   backdrop-filter: ${({ hasScrolled }) => (hasScrolled ? 'blur(15px)' : 'none')};
   transition: all 0.3s ease-in-out;

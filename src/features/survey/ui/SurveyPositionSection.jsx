@@ -1,7 +1,6 @@
 import styled from "styled-components";
-import { useRecoilState } from 'recoil';
-import { surveySectionState, surveyState } from "../model/surveyAtom";
-import { useNavigate } from "react-router-dom";
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { surveySectionState, surveyState, modalState } from "../model/surveyAtom";
 import RightArrow from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrow from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
 import SurveyImage from "../../../shared/assets/images/survey/surveyImage.png";
@@ -10,9 +9,7 @@ function SurveyPositionSection() {
   // state 관리
   const [survey, setSurvey] = useRecoilState(surveyState);
   const [, setSurveySection] = useRecoilState(surveySectionState);
-
-  // navigate
-  const navigate = useNavigate();
+  const setModal = useSetRecoilState(modalState);
 
   // 포지션 선택 상태
   const selected = survey.horrorPos;
@@ -71,7 +68,7 @@ function SurveyPositionSection() {
         <StyledButton onClick={() => setSurveySection("info")} isPass={!selected}>
           <ButtonText isPass={!selected}>{selected ? '다음으로' : '질문 넘기기'}</ButtonText>
         </StyledButton>
-        <MainButton onClick={() => navigate('/')}>
+        <MainButton onClick={() => setModal(true)}>
           루미너스 메인으로 이동하기
         </MainButton>
       </ButtonWrapper>
