@@ -8,14 +8,15 @@ export const Wrapper = styled.div`
 
 // 필터 컨테이너 스타일
 export const FilterContainer = styled.div`
-position: relative;
-display: flex;
-padding: 0.625rem 1.25rem;
-align-items: flex-start;
-gap: 0.625rem;
-border-radius: 1.25rem;
-border: 1px solid var(--RIU_Primary-40, #B9C3FF);
-background: var(--RIU_Monochrome-10, #F9F9FB);
+  position: relative;
+  display: flex;
+  padding: 0.625rem 1.25rem;
+  align-items: flex-start;
+  gap: 0.625rem;
+  border-radius: 1.25rem;
+  border: 1px solid var(--RIU_Primary-40, #B9C3FF);
+  background: var(--RIU_Monochrome-10, #F9F9FB);
+  cursor: pointer;
 
 @media (max-width: 1024px) {
   padding: 0.46875rem 0.9375rem;
@@ -71,7 +72,6 @@ export const DropDownIcon = styled.img`
   height: 0.9375rem;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
 
   svg{
     background: ${({ $isSelected }) => ($isSelected ? "var(--RIU_Primary-300, #5B6ACC)" : "var(--RIU_Monochrome-200, #717486)")};

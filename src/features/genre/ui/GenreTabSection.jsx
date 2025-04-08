@@ -259,9 +259,10 @@ const StyledGenreIcon = styled.div`
 
 const GenreButton = styled.div`
   display: flex;
-  width: 10rem;
+  width: 8.125rem;
   height: 6.25rem;
-  padding: 0rem 1.875rem;
+  padding: 0rem 0.9375rem;
+  margin: 0rem 0.9375rem;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
@@ -295,6 +296,7 @@ const GenreButton = styled.div`
     width: 2.5rem;
     height: 3.125rem;
     padding: 0rem 0.125rem;
+    margin: 0rem;
   }
 `;
 

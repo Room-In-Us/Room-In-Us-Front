@@ -13,53 +13,99 @@ const tabs = [
 ];
 
 export default function BottomSheet({
-    isOpen, 
-    onClose, 
-    onApply, 
-    onReset,
-    selectedPeople,
-    selectedRegion,
-    selectedSort
+  isOpen,
+  onClose,
+  onApply,
+  onReset,
+  selectedRegion,
+  selectedZone,
+  selectedPeople,
+  selectedSort,
+  regions,
+  zones,   
+  zoneList,
+  activeRegionId,
+  selectedZones,
+  onTabClick,
+  onRegionSelect,
+  onRegionAllClick,
+  onTabAllClick,
+  onZoneSelect,
+  isAllZoneSelected,
+  setSelectedRegion
   }) {
   const { isMobile } = useDevice();
   const [activeTab, setActiveTab] = useState("people");
-  const [localSelectedRegions, setLocalSelectedRegions] = useState(selectedRegion || []);
 
   const peopleRef = useRef();
   const sortRef = useRef();
   const regionRef = useRef();
 
   useEffect(() => {
-    if (isOpen && isMobile) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "auto";
-
-    return () => (document.body.style.overflow = "auto");
+    if (isOpen && isMobile) {
+      document.body.style.overflowY = "hidden";  
+      document.body.style.overflowX = "hidden"; 
+      document.body.style.overflowY = "auto";
+      document.body.style.overflowX = "hidden";  
+    }
+  
+    return () => {
+      document.body.style.overflowY = "auto";
+      document.body.style.overflowX = "hidden";
+    };
   }, [isOpen, isMobile]);
 
   if (!isOpen) return null;
   
-  const resetFilters = () => {
-    peopleRef.currentValue = 2;
-    regionRef.currentValue = null;
-    sortRef.currentValue = "만족도 높은 순";
-  
-    peopleRef.current?.reset?.();
-    regionRef.current?.reset?.();
-    sortRef.current?.reset?.();
-  
-    onReset?.(); 
-  };
-  
-  const applyFilters = () => {
+  const handleReset = () => {
 
-    onApply({
-      people: peopleRef.currentValue ?? selectedPeople,
-      region: regionRef.currentValue ?? selectedRegion,
-      sort: sortRef.currentValue ?? selectedSort,
-    });
+    setSelectedRegion("지역 전체");
   
-    onClose(); 
-  };  
+    onReset({
+      people: 2,
+      region: "지역 전체",
+      zones: [],
+      sort: "만족도 높은 순" 
+    });
+  };
+
+// 필터 적용 함수
+const applyFilters = () => {
+  let regionValue = "지역 전체";
+  let zoneValues = [];
+
+  // 서울 전체 또는 경기/인천 전체를 선택한 경우
+  if (activeRegionId === 1 && selectedRegion === "서울 전체") {
+    regionValue = "서울 전체";
+    zoneValues = zoneList
+      .filter((zone) => zone?.zoneName) 
+      .map((zone) => zone.zoneName); 
+  } else if (activeRegionId === 2 && selectedRegion === "경기/인천 전체") {
+    regionValue = "경기/인천 전체";
+    zoneValues = zoneList
+      .filter((zone) => zone?.zoneName) 
+      .map((zone) => zone.zoneName); 
+  } 
+  // 특정 구역이 선택된 경우
+  else if (selectedZones.length > 0) {
+    regionValue = "지역 선택됨";
+    zoneValues = selectedZones;
+  } 
+  // 지역 전체를 선택한 경우
+  else {
+    regionValue = "지역 전체";
+    zoneValues = [];
+  }
+
+  onApply({
+    people: peopleRef.currentValue ?? selectedPeople,
+    region: regionValue,
+    zones: zoneValues,
+    sort: sortRef.currentValue ?? selectedSort,
+  });
+
+  onClose();
+};
 
   return (
     <Overlay onClick={onClose}>
@@ -80,17 +126,39 @@ export default function BottomSheet({
                   </TabButton>
                 ))}
               </FilterWrapper>
-              <ResetButton src={ResetIcon} onClick={resetFilters} />
+              <ResetButton src={ResetIcon} onClick={handleReset} />
             </TabContainer>
           </TopWrapper>
 
           <Content>
             {activeTab === "people" && ( <PeopleFilter   key={selectedPeople}  ref={peopleRef} onSelect={(val) => (peopleRef.currentValue = val)} isMobile={isMobile} selected={selectedPeople} />)}
             {activeTab === "sort" && <SortFilter key={selectedSort} ref={sortRef} onSelect={(val) => (sortRef.currentValue = val)} isMobile={isMobile} selected={selectedSort} />}
-            {activeTab === "region" && <RegionFilter key={JSON.stringify(selectedRegion)} ref={regionRef} onSelect={(val) => {
-    regionRef.currentValue = val;
-    setLocalSelectedRegions(val); // 내부 상태 관리
-  }} isMobile={isMobile} selected={selectedRegion} />}
+            {activeTab === "region" && 
+              <RegionFilter 
+              key={selectedRegion}
+              ref={regionRef}
+              isOpen={isOpen}
+              onClose={onClose}
+              onApply={onApply}
+              onReset={onReset}
+              selectedRegion={selectedRegion}
+              selectedZone={selectedZone}
+              selectedPeople={selectedPeople}
+              selectedSort={selectedSort}
+              regions={regions}  
+              zones={zones}     
+              zoneList={zoneList}
+              activeRegionId={activeRegionId}
+              selectedZones={selectedZones}
+              onTabClick={onTabClick}
+              onRegionSelect={onRegionSelect}
+              onRegionAllClick={onRegionAllClick}
+              onTabAllClick={onTabAllClick}
+              onZoneSelect={onZoneSelect}
+              isAllZoneSelected={isAllZoneSelected}
+              setSelectedRegion={setSelectedRegion}
+            />
+            }
           </Content>
 
         </Container>
@@ -111,7 +179,7 @@ const Overlay = styled.div`
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: flex-end;
-  z-index: 1000;
+  z-index: 2000;
 `;
 
 const Sheet = styled.div`
