@@ -291,6 +291,7 @@ const GenreButton = styled.div`
     width: 5.625rem;
     height: 4.6875rem;
     padding: 0rem 1.40625rem;
+    margin: 0;
   }
   @media (max-width: 768px) {
     width: 2.5rem;
