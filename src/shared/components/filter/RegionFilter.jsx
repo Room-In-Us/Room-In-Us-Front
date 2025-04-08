@@ -1,4 +1,3 @@
-import { useState, useRef, useEffect } from "react";
 import { forwardRef, useImperativeHandle } from "react";
 import styled from "styled-components";
 import { 
@@ -10,24 +9,24 @@ import {
   MenuWrapper } from "./FilterStyles.js";
 import Location from '../../../shared/assets/icons/genre/location.svg?react';
 import DropDownImg from '../../../shared/assets/icons/common/dropdown.svg';
-import { getRegionAPI } from "../../../features/location/api/getRegionAPI";
-import { getZoneAPI } from "../../../features/location/api/getZoneAPI";
 import useDevice from "../../hooks/useDevice.js";
 import useDropdown from "../../hooks/useDropDown.js";
 
-const RegionFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) => {
+const RegionFilter = forwardRef(({ 
+  regions,
+  zones,
+  selectedRegion,
+  selectedZone,
+  selectedZones,
+  activeRegionId,
+  onTabClick,
+  onRegionSelect,
+  onRegionAllClick,
+  onTabAllClick, 
+  onZoneSelect,
+  isAllZoneSelected,
+ }, ref) => {
   const { isMobile, isTablet, isDeskTop } = useDevice();
-  const [regions, setRegions] = useState([]); 
-  const [selectedTab, setSelectedTab] = useState("서울");
-  const [selectedRegion, setSelectedRegion] = useState("지역 전체");
-  const [selectedRegions, setSelectedRegions] = useState([]);
-
-  const [selectedRegionId, setSelectedRegionId] = useState(null);
-  const [isRegionAllSelected, setIsRegionAllSelected] = useState(true); // 지역 전체 버튼 상태
-  const [zones, setZones] = useState([]); 
-
-  const [isLoading, setIsLoading] = useState(true); 
-  const [error, setError] = useState(null); 
 
   const {
     isOpen,
@@ -39,178 +38,26 @@ const RegionFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) 
     dropdownRef,
     reset
   } = useDropdown({ 
-    defaultValue: externalSelected,
+    defaultValue: selectedRegion,
     initialWidth: 460,
     responsive: true,
-    onSelect,
+    onSelect: onRegionSelect,
    });
 
    useImperativeHandle(ref, () => ({
     reset,
-  }));  
-
-  // 지역 목록 조회 API 호출
-  useEffect(() => {
-    const fetchRegions = async () => {
-      try {
-        const response = await getRegionAPI();
-        const regionData = response.contents;
-
-        if (Array.isArray(regionData) && regionData.length > 0) {
-          setRegions(regionData);
-          setSelectedRegionId(regionData[0].regionId); 
-        } else {
-          console.error("지역 API 응답이 비어 있습니다.");
-          setRegions([]);
-        }
-      } catch (err) {
-        console.error("API 요청 실패:", err);
-        setError(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchRegions();
-  }, []);
-
-  // 구역 목록 조회 API 호출
-  useEffect(() => {
-    if (!selectedRegionId) return;
-
-    const fetchZones = async () => {
-      try {
-        const response = await getZoneAPI(selectedRegionId);
-        setZones(response.data); 
-      } catch (err) {
-        console.error("구역 API 요청 실패:", err);
-        setError(err);
-      }
-    };
-
-    fetchZones();
-  }, [selectedRegionId]); 
-
-
-
-    
-  // 지역 전체 버튼 클릭 함수
-  const handleRegionAllClick = () => {
-    setSelectedTab("서울");
-    setSelectedRegion("지역 전체");
-    setIsRegionAllSelected(true);
-    setSelectedRegions([]);
-    setSelectedRegionId(1);
-    
-    if (ref) ref.currentValue = "지역 전체";
-    onSelect(null);
-  };
-      
-  // 서울, 경기/인천 탭 클릭 함수
-  const handleTabClick = (region) => {
-    if (selectedTab !== region.regionName) {
-      setSelectedRegions([]);
-      setSelectedRegion("지역 필터");
-      onSelect(null);
-    }
-
-    setSelectedTab(region.regionName);
-    setSelectedRegionId(region.regionId);
-    setIsRegionAllSelected(false);
-  };
-    
-  // 서울 전체, 경기/인천 전체 버튼 활성화 함수
-  const handleAllClick = async () => {
-    let newSelectedTab = selectedTab;
-
-    if (isRegionAllSelected || selectedTab === "지역 전체") {
-      setIsRegionAllSelected(false);
-      setSelectedRegion("서울 전체"); 
-      setSelectedTab("서울"); 
-      setSelectedRegions([]);
-      try {
-        const response = await getZoneAPI(1); 
-        const zones = response.data.map(zone => zone.zoneName);
-        onSelect(zones); 
-      } catch (error) {
-        console.error("서울 전체 구역 데이터를 불러오는 중 오류 발생:", error);
-      }
-      return;
-    }
-    
-    if (selectedTab === "서울") {
-      setSelectedRegion("서울 전체");
-      newSelectedTab = "서울";
-      onSelect(null); 
-    } else if (selectedTab === "경기/인천") {
-      setSelectedRegion("경기/인천 전체");
-      newSelectedTab = "경기/인천";
-      onSelect(null); 
-    }
-    
-
-    setSelectedRegions([]);
-    setSelectedTab(newSelectedTab);
-      
-    try {
-      const regionId = selectedTab === "서울" ? 1 : selectedTab === "경기/인천" ? 2 : null;
-      if (regionId) {
-        const response = await getZoneAPI(regionId);
-        const zones = response.data.map(zone => zone.zoneName);
-        onSelect(zones);
-      }
-    } catch (error) {
-      console.error(`${selectedRegion} 전체 구역 데이터를 불러오는 중 오류 발생:`, error);
-    }
-  };
-
-  // 상세 구역 버튼 다중 선택 함수
-  const handleZoneSelect = (zoneName, regionId) => {
-
-    setSelectedRegions((prevSelected) => {
-      const updatedRegions = prevSelected.includes(zoneName)
-        ? prevSelected.filter(name => name !== zoneName) 
-        : [...prevSelected, zoneName];
-
-        if (selectedRegion === "서울 전체" || selectedRegion === "경기/인천 전체") {
-          setSelectedRegion("");
-        }
-      
-      onSelect(updatedRegions); 
-      return updatedRegions;
-    });
-      
-    const region = regions.find(region => region.regionId === regionId);
-    if (region) {
-      setSelectedTab(region.regionName);
-      setSelectedRegionId(region.regionId);
-    }
-      
-    setIsRegionAllSelected(false);
-  };
-
-
-  console.log("📦 BottomSheet selectedRegion:", selectedRegion);
-
+  })); 
 
   return (
     <Wrapper>
       {/* 필터 영역 */}
       { !isMobile && (
-        <FilterContainer ref={filterRef}>
+        <FilterContainer ref={filterRef} onClick={toggleDropdown} >
           <FilterTextWrapper>
             <FilterIcon disabled={false} />
-            <FilterText disabled={false}>
-              {
-              selectedRegions.length > 1
-                ? `${selectedRegions[0]} 외 ${selectedRegions.length - 1}`
-                : selectedRegions.length === 1
-                  ? selectedRegions[0]
-                  : selectedRegion
-              }
-            </FilterText>
+            <FilterText disabled={false}>{selectedRegion || "지역 선택"}</FilterText>
           </FilterTextWrapper>
-          <DropDownIcon src={DropDownImg} onClick={toggleDropdown} />
+          <DropDownIcon src={DropDownImg}/>
         </FilterContainer>
       )}
 
@@ -221,7 +68,8 @@ const RegionFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) 
 
             {/* 지역 전체 버튼 */}
             <RegionAllButton
-              selected={isRegionAllSelected} onClick={handleRegionAllClick}
+              onClick={onRegionAllClick}
+              selected={selectedRegion === "지역 전체"}
             >
               지역 전체
             </RegionAllButton>
@@ -230,15 +78,15 @@ const RegionFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) 
 
               {/* 서울, 경기/인천 선택 영역 */}
               <Tabs>
-                {regions.map((region) => (
+              {regions.map((region) => (
                 <TabButton
-                key={region.regionId}
-                onClick={() => handleTabClick(region)}
-                selected={!isRegionAllSelected && selectedTab === region.regionName}
+                  key={region.regionId} 
+                  onClick={() => onTabClick(region.regionId)}
+                  selected={activeRegionId === region.regionId}
                 >
                   {region.regionName}
                 </TabButton>
-                ))}
+              ))}
               </Tabs>
 
               {/* 상세 구역 선택 영역 */}
@@ -246,32 +94,28 @@ const RegionFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) 
 
                 {/* 구역 전체 선택 영역 */}
                 <TabAllButton
-                  selected={!isRegionAllSelected && (selectedRegion === "서울 전체" || selectedRegion === "경기/인천 전체")}
-                  onClick={() => {
-                    // if (isRegionAllSelected) {
-                    //   setIsRegionAllSelected(false); 
-                    //   setSelectedTab("서울");
-                    //   setSelectedRegion("서울 전체"); 
-                    //   handleAllClick();
-                    // } else {
-                      handleAllClick();
-                    // }
-                  }}
+                  onClick={() => onTabAllClick(activeRegionId, activeRegionId === 1 ? "서울 전체" : "경기/인천 전체")}
+                  selected={selectedRegion === (activeRegionId === 1 ? "서울 전체" : "경기/인천 전체")}
                 >
-                  {isRegionAllSelected ? "서울 전체" : selectedTab === "서울" ? "서울 전체" : "경기/인천 전체"}
+                  {activeRegionId === 1 ? "서울 전체" : activeRegionId === 2 ? "경기/인천 전체" : "서울 전체"}
                 </TabAllButton>
 
                 <Divider /> {/* 구분선 */}
 
+              
                 {zones.map((zone) => (
                 <RegionButton
-                  key={zone.zoneId} 
-                  onClick={() => handleZoneSelect(zone.zoneName, selectedRegionId)} 
-                  selected={selectedRegions.includes(zone.zoneName)}
+                  key={zone.zoneId}
+                  onClick={() => {
+                    onZoneSelect(zone.zoneName);
+                    ref.currentValue = zone.zoneName; 
+                  }}
+                  selected={selectedZones.includes(zone.zoneName)}
                 >
-                  {zone.zoneName} 
+                  {zone.zoneName}
                 </RegionButton>
                 ))}
+     
               </Grid>
             </TabLayout>
 
@@ -286,7 +130,8 @@ const RegionFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) 
 
             {/* 지역 전체 버튼 */}
             <RegionAllButton
-              selected={isRegionAllSelected} onClick={handleRegionAllClick}
+              onClick={onRegionAllClick}
+              selected={selectedRegion === "지역 전체"}
             >
               지역 전체
             </RegionAllButton>
@@ -295,15 +140,17 @@ const RegionFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) 
 
               {/* 서울, 경기/인천 선택 영역 */}
               <Tabs>
-                {regions.map((region) => (
+                
+              {regions.map((region) => (
                 <TabButton
-                key={region.regionId}
-                onClick={() => handleTabClick(region)}
-                selected={!isRegionAllSelected && selectedTab === region.regionName}
+                  key={region.regionId} 
+                  onClick={() => onTabClick(region.regionId)}
+                  selected={activeRegionId === region.regionId}
                 >
                   {region.regionName}
                 </TabButton>
-                ))}
+              ))}
+
               </Tabs>
 
               {/* 상세 구역 선택 영역 */}
@@ -311,30 +158,21 @@ const RegionFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) 
 
                 {/* 구역 전체 선택 영역 */}
                 <TabAllButton
-                  selected={!isRegionAllSelected && (selectedRegion === "서울 전체" || selectedRegion === "경기/인천 전체")}
-                  onClick={() => {
-                    // if (isRegionAllSelected) {
-                    //   setIsRegionAllSelected(false); 
-                    //   setSelectedTab("서울");
-                    //   setSelectedRegion("서울 전체"); 
-                    //   handleAllClick();
-                    // } else {
-                      handleAllClick();
-                    // }
-                  }}
+                  onClick={() => onTabAllClick(activeRegionId, activeRegionId === 1 ? "서울 전체" : "경기/인천 전체")}
+                  selected={isAllZoneSelected && selectedRegion === (activeRegionId === 1 ? "서울 전체" : "경기/인천 전체")}
                 >
-                  {isRegionAllSelected ? "서울 전체" : selectedTab === "서울" ? "서울 전체" : "경기/인천 전체"}
+                  {activeRegionId === 1 ? "서울 전체" : activeRegionId === 2 ? "경기/인천 전체" : "서울 전체"}
                 </TabAllButton>
 
                 <Divider /> {/* 구분선 */}
 
                 {zones.map((zone) => (
                 <RegionButton
-                  key={zone.zoneId} 
-                  onClick={() => handleZoneSelect(zone.zoneName, selectedRegionId)} 
-                  selected={selectedRegions.includes(zone.zoneName)}
+                  key={zone.zoneId}
+                  onClick={() => onZoneSelect(zone.zoneName)}
+                  selected={selectedZones.includes(zone.zoneName)}
                 >
-                  {zone.zoneName} 
+                  {zone.zoneName}
                 </RegionButton>
                 ))}
               </Grid>

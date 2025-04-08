@@ -53,12 +53,12 @@ const PeopleFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) 
   return (
     <Wrapper>
       { !isMobile && (
-      <FilterContainer ref={filterRef} >
+      <FilterContainer ref={filterRef} onClick={toggleDropdown}>
         <FilterTextWrapper>
           <FilterIcon src={Icon1} />
           <FilterText>{options.find((o) => o.value === selected)?.label} 기준 가격</FilterText>
         </FilterTextWrapper>
-        <DropDownIcon src={DropDownImg} onClick={toggleDropdown} />
+        <DropDownIcon src={DropDownImg} />
       </FilterContainer>
       )}
 
