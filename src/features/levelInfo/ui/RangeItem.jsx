@@ -42,7 +42,7 @@ export default function RangeItem() {
   return (
     <SliderContainer ref={sliderRef}>
 
-      <Thumb position={value} onMouseDown={handleMouseDown} />
+      <Thumb src={Handle} position={value} onMouseDown={handleMouseDown} />
 
       <LineWrapper>
          <LineDiv />
@@ -64,7 +64,7 @@ export default function RangeItem() {
 }
 
 const SliderContainer = styled.div`
-  width: 100%;
+  width: 61.0625rem;
   height: 100%;
   margin: 3.125em 0em;
   text-align: center;
@@ -83,7 +83,7 @@ const LineWrapper = styled.div`
 `;
 
 const LineDiv = styled.div`
-  border-left: 1px solid #ffffff;
+  border-left: 1px solid #000000;
   height: 0.75em;
 `;
 
@@ -93,7 +93,7 @@ const Track = styled.div`
   background: #d3d3d3;
 `;
 
-const Thumb = styled.div`
+const Thumb = styled.img`
   position: absolute;
   bottom: 3.2em;
   left: ${(props) => `${props.position}%`};
@@ -102,8 +102,7 @@ const Thumb = styled.div`
   height: 1.25em;
   transition: left 0.06s ease-out; /* Smooth animation */
   cursor: pointer;
-  background: url(${Handle}) no-repeat center center;
-  background-size: contain;
+  object-fit: contain;
 
   &:active {
     cursor: pointer;
@@ -115,6 +114,6 @@ const Labels = styled.div`
   display: flex;
   justify-content: space-between;
   font-size: 14px;
-  color: #ffffff;
+  color: #000000;
   margin-top: 0.5em;
 `;

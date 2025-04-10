@@ -1,29 +1,29 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components'
-import useDevice from "../../../shared/hooks/useDevice";
-import ContentCard from "../../../shared/components/ContentCard";
+import useDevice from "../../../shared/hooks/useDevice.js";
+import ContentCard from "../../../shared/components/ContentCard.jsx";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from 'swiper/modules';
-import { getGenreListAPI } from "../../genre/api/genreAPI";
+import { levels } from '../model/levelData.js';
+import { getLevelListAPI } from "../api/levelAPI.js";
 import { getRegionAPI } from "../../../features/location/api/getRegionAPI";
 import { getZoneAPI } from "../../../features/location/api/getZoneAPI";
 import FilterImg from '../../../shared/assets/icons/genre/filter.svg';
 import PeopleFilter from '../../../shared/components/filter/PeopleFilter';
 import SortFilter from '../../../shared/components/filter/SortFilter';
 import RegionFilter from '../../../shared/components/filter/RegionFilter';
-import { genres } from '../model/genreData';
 import CustomPagination from '../../../shared/components/CustomPagination';
 import BottomSheet from '../../../shared/components/BottomSheet';
-import { sortOptions } from '../../../shared/components/filter/OptionList';
+import { sortOptions } from '../../../shared/components/filter/OptionList.js';
 
-export default function GenreContentSection({ activeGenre }) {
+export default function LevelContentSection( {activeLevel} ) {
 
   // 반응형 함수
   const { isDesktop, isTablet, isMobile } = useDevice();
 
   // 필터링 상태
   const [themeList, setThemeList] = useState([]);
-
+  
   // 지역 필터 관련 상태
   const [regions, setRegions] = useState([]);
   const [zones, setZones] = useState([]);
@@ -50,28 +50,28 @@ export default function GenreContentSection({ activeGenre }) {
   // 모바일 필터 상태
   const [isFilterActive, setIsFilterActive] = useState(true);
 
-  // 장르 목록 조회
+  // 숙련도 목록 조회
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getGenreListAPI(activeGenre, headCount, 1, 100, selectedSort);
+        const response = await getLevelListAPI(activeLevel, headCount, 1, 100, selectedSort);
+        console.log('숙련도 기반 방탈출 테마 목록: ', response.contents);
         setThemeList(response.contents);
       } catch (error) {
-        console.error('장르 기반 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
+        console.error('숙련도 기반 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
       }
     };
     fetchData();
-  }, [activeGenre, headCount, selectedSort]);
+  }, [activeLevel, headCount, selectedSort]);
 
   // 인원수 필터링
   const handlePeopleFilterChange = (count) => {
     setHeadCount(count); 
   };
+
+  // 선택된 숙련도 찾기
+  const selectedLevel = levels.find((l) => l.level === activeLevel);
   
-  // 선택된 장르 찾기
-  const selectedGenre = genres.find((g) => g.genre === activeGenre);
-
-
   // 지역 목록 가져오기
   useEffect(() => {
     const fetchRegions = async () => {
@@ -93,7 +93,7 @@ export default function GenreContentSection({ activeGenre }) {
     };
     fetchRegions();
   }, []);
-
+    
   // 선택된 지역의 전체 구역 목록 가져오기
   const fetchZoneList = async (regionId) => {
     try {
@@ -103,8 +103,7 @@ export default function GenreContentSection({ activeGenre }) {
       console.error("Zone List Fetch Error: ", error);
     }
   };
-  
-
+    
   // 선택된 지역의 구역 목록 가져오기
   const fetchZones = async (regionId) => {
     try {
@@ -120,7 +119,7 @@ export default function GenreContentSection({ activeGenre }) {
         console.error("구역 목록 불러오기 실패:", error);
     }
 };
-
+    
   // 전체 지역 버튼 클릭 핸들러
   const handleRegionAllClick = () => {
     setActiveRegionId(1);
@@ -136,7 +135,7 @@ export default function GenreContentSection({ activeGenre }) {
     setSelectedZone(null);  
     fetchZones(regionId);    
   };
-
+    
   const handleTabAllClick = async (regionId, buttonText) => {
     setActiveRegionId(regionId);
     setIsAllZoneSelected(true);
@@ -146,13 +145,13 @@ export default function GenreContentSection({ activeGenre }) {
 
     await fetchZoneList(regionId);
   };
-
+    
   // 지역 선택 핸들러
   const handleRegionSelect = (regionName) => {
     setSelectedRegion(regionName);
     setSelectedZone(null);
   };
-
+    
   // 구역 선택 핸들러
   const handleZoneSelect = async (zoneName) => {
     setIsAllZoneSelected(false);
@@ -186,7 +185,7 @@ export default function GenreContentSection({ activeGenre }) {
     setSelectedRegion(selectedRegion);
     setSelectedZone(selectedZone);
   };
-
+    
   // 지역 필터링
   const filteredThemeList = 
     // "지역 전체" 선택 시 모든 콘텐츠 표시
@@ -210,21 +209,23 @@ export default function GenreContentSection({ activeGenre }) {
     // 조건에 맞지 않는 경우 전체 목록 반환
     : themeList;
   
-
-  const adjustedTotalPages = Math.ceil(filteredThemeList.length / itemsPerPage);
-
   
+  const adjustedTotalPages = Math.ceil(filteredThemeList.length / itemsPerPage);
+  
+    
   const handlePageChange = (page) => {
     if (page < 1 || page > adjustedTotalPages) return;
     setCurrentPage(page);
   };
-
+  
   useEffect(() => {
     const adjustedTotalPages = Math.ceil(filteredThemeList.length / itemsPerPage);
     if (currentPage > adjustedTotalPages) {
       setCurrentPage(1);
     }
   }, [filteredThemeList, currentPage, itemsPerPage]);
+
+
   
   // 필터 적용 함수 수정
   const handleApplyFilters = ({ people, sort, region, zones }) => {
@@ -292,13 +293,12 @@ export default function GenreContentSection({ activeGenre }) {
   
     return `${peopleText}, ${sortText}, ${regionText}`;
   };
-  
-  
+
   return (
     <Wrapper>
       <TopBar>
         <TextWrapper>
-          <MainText>{selectedGenre ? selectedGenre.text : "기본"} 테마</MainText>
+          <MainText>{selectedLevel ? selectedLevel.text : "기본"} 테마</MainText>
           <SubText>	&#40;{filteredThemeList.length}&#41;</SubText>
         </TextWrapper>
 
@@ -378,7 +378,7 @@ export default function GenreContentSection({ activeGenre }) {
               <ContentCard key={items.id} data={{...items, price: items.price != null ? items.price * headCount : null}} headCount={headCount} />
             ))}
           </ListWrapper>
-
+      
           {/* 페이지네이션 */}
           <CustomPagination
             currentPage={currentPage}
@@ -387,7 +387,7 @@ export default function GenreContentSection({ activeGenre }) {
           />
         </>
       )}
-
+      
       {isMobile && filteredThemeList.length > 0 && (
         <StyledSwiper
           pagination={true} 
