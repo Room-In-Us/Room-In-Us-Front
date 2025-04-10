@@ -72,6 +72,8 @@ export const DropDownIcon = styled.img`
   height: 0.9375rem;
   justify-content: center;
   align-items: center;
+  transition: transform 0.3s ease;
+  transform: ${({ $isRotated }) => ($isRotated ? 'rotate(180deg)' : 'rotate(0deg)')};
 
   svg{
     background: ${({ $isSelected }) => ($isSelected ? "var(--RIU_Primary-300, #5B6ACC)" : "var(--RIU_Monochrome-200, #717486)")};
@@ -96,6 +98,10 @@ export const DropdownMenu = styled.div`
   align-items: center;
   background: var(--RIU_Monochrome-20, #F0F0F4);
   box-shadow: 0rem 0.25rem 0.625rem rgba(0, 0, 0, 0.1);
+
+  opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
+  transform: ${({ $isVisible }) => ($isVisible ? 'translateY(0)' : 'translateY(-0.5px)')};
+  transition: opacity 0.3s ease, transform 0.3s ease;
 
   width: 11.875rem;
   top: ${({ top }) => `${top}px`}; 

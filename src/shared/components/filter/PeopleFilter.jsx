@@ -52,7 +52,7 @@ const PeopleFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) 
           <FilterIcon src={Icon1} />
           <FilterText>{peopleOptions.find((o) => o.value === selected)?.label} 기준 가격</FilterText>
         </FilterTextWrapper>
-        <DropDownIcon src={DropDownImg} />
+        <DropDownIcon src={DropDownImg} $isRotated={isOpen}/>
       </FilterContainer>
       )}
 
@@ -67,19 +67,15 @@ const PeopleFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) 
             ))}
       </MenuWrapper>
     ) : (
-        <>
-    {isOpen && (
-        <DropdownMenu ref={dropdownRef} style={{top: position.top, left: position.left}} >
-          <DropdownHeader>가격 기준</DropdownHeader>
-          {peopleOptions.map((option) => (
-            <DropdownItem key={option.value} onClick={() => handleSelect(option.value)} $isSelected={selected === option.value}>
-              <RadioIcon src={selected === option.value ? SelectedIcon : UnselectedIcon} alt="radio-icon" />
-              <RadioLabel $isSelected={selected === option.value}>{option.label}</RadioLabel>
-            </DropdownItem>
-          ))}
-        </DropdownMenu>
-      )}
-      </>
+      <DropdownMenu ref={dropdownRef} style={{top: position.top, left: position.left}} $isVisible={isOpen}>
+        <DropdownHeader>가격 기준</DropdownHeader>
+        {peopleOptions.map((option) => (
+          <DropdownItem key={option.value} onClick={() => handleSelect(option.value)} $isSelected={selected === option.value}>
+            <RadioIcon src={selected === option.value ? SelectedIcon : UnselectedIcon} alt="radio-icon" />
+            <RadioLabel $isSelected={selected === option.value}>{option.label}</RadioLabel>
+          </DropdownItem>
+        ))}
+      </DropdownMenu>
     )}
     </Wrapper>
   );

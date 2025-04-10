@@ -57,7 +57,7 @@ const RegionFilter = forwardRef(({
             <FilterIcon disabled={false} />
             <FilterText disabled={false}>{selectedRegion || "지역 선택"}</FilterText>
           </FilterTextWrapper>
-          <DropDownIcon src={DropDownImg}/>
+          <DropDownIcon src={DropDownImg} $isRotated={isOpen}/>
         </FilterContainer>
       )}
 
@@ -122,9 +122,8 @@ const RegionFilter = forwardRef(({
           </Container>
         </MenuWrapper>
       ) : (
-      <>
-        {isOpen && (
-        <DropdownMenu ref={dropdownRef} style={{ top: position.top, left: position.left }}>
+
+        <DropdownMenu ref={dropdownRef} style={{ top: position.top, left: position.left }} $isVisible={isOpen}>
           <DropdownHeader>지역</DropdownHeader>
           <Container>
 
@@ -181,8 +180,7 @@ const RegionFilter = forwardRef(({
           </Container>
             
         </DropdownMenu>
-      )}
-      </>
+
     )}
     </Wrapper>
   );
@@ -227,6 +225,10 @@ const DropdownMenu = styled.div`
   align-items: flex-start;
   background: var(--RIU_Monochrome-20, #F0F0F4);
   box-shadow: 0rem 0.25rem 0.625rem rgba(0, 0, 0, 0.1);
+
+  opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
+  transform: ${({ $isVisible }) => ($isVisible ? 'translateY(0)' : 'translateY(-0.5px)')};
+  transition: opacity 0.3s ease, transform 0.3s ease;
 
   width: 28.75rem;
   top: ${({ top }) => `${top}px`}; 
