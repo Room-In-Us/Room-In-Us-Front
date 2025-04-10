@@ -51,7 +51,7 @@ const SortFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) =>
             <FilterIcon src={Satisfaction} />
             <FilterText>{sortOptions.find((o) => o.value === selected)?.label}</FilterText>
           </FilterTextWrapper>
-          <DropDownIcon src={DropDownImg}/>
+          <DropDownIcon src={DropDownImg} $isRotated={isOpen}/>
         </FilterContainer>
       )}
     
@@ -69,22 +69,18 @@ const SortFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) =>
             ))}
       </MenuWrapper>
     ) : (
-        <>
-      {isOpen && (
-        <DropdownMenu ref={dropdownRef} style={{top: position.top, left: position.left}} >
-          <DropdownHeader>정렬 기준</DropdownHeader>
-          {sortOptions.map(({value, label, icon: Icon}) => (
-            <DropdownItem key={value} onClick={() => handleSelect(value)} $isSelected={selected === value}>
-              <StyledIcon>
-                <Icon style={{ color: selected === value ? "#5B6ACC" : "#717486" }} />
-              </StyledIcon>
-              <RadioLabel $isSelected={selected === value}>{label}</RadioLabel>
-              {selected === value && <SelectIcon src={Check} />}
-            </DropdownItem>
-          ))}
-        </DropdownMenu>
-      )}
-      </>
+      <DropdownMenu ref={dropdownRef} style={{top: position.top, left: position.left}} $isVisible={isOpen} >
+        <DropdownHeader>정렬 기준</DropdownHeader>
+        {sortOptions.map(({value, label, icon: Icon}) => (
+          <DropdownItem key={value} onClick={() => handleSelect(value)} $isSelected={selected === value}>
+            <StyledIcon>
+              <Icon style={{ color: selected === value ? "#5B6ACC" : "#717486" }} />
+            </StyledIcon>
+            <RadioLabel $isSelected={selected === value}>{label}</RadioLabel>
+            {selected === value && <SelectIcon src={Check} />}
+          </DropdownItem>
+        ))}
+      </DropdownMenu>
     )}
     </Wrapper>
   );
