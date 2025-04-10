@@ -14,6 +14,7 @@ import RegionFilter from '../../../shared/components/filter/RegionFilter';
 import { genres } from '../model/genreData';
 import CustomPagination from '../../../shared/components/CustomPagination';
 import BottomSheet from '../../../shared/components/BottomSheet';
+import { sortOptions } from '../../../shared/components/filter/OptionList';
 
 export default function GenreContentSection({ activeGenre }) {
 
@@ -34,29 +35,33 @@ export default function GenreContentSection({ activeGenre }) {
   const [isAllZoneSelected, setIsAllZoneSelected] = useState(false);
 
   // 정렬 필터 상태
-  const [selectedSort, setSelectedSort] = useState("만족도 높은 순");
+  const [selectedSort, setSelectedSort] = useState("HIGH_SATISFACTION_LEVEL");
 
   // 인원수 필터 상태
   const [headCount, setHeadCount] = useState(2);
+
+  // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = isMobile ? 100 : 16;
 
   // 바텀 시트 상태
   const [isBottomSheetOpen, setBottomSheetOpen] = useState(false);
 
+  // 모바일 필터 상태
+  const [isFilterActive, setIsFilterActive] = useState(true);
 
   // 장르 목록 조회
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getGenreListAPI(activeGenre, headCount, 1, 100);
+        const response = await getGenreListAPI(activeGenre, headCount, 1, 100, selectedSort);
         setThemeList(response.contents);
       } catch (error) {
         console.error('장르 기반 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
       }
     };
     fetchData();
-  }, [activeGenre, headCount]);
+  }, [activeGenre, headCount, selectedSort]);
 
   // 인원수 필터링
   const handlePeopleFilterChange = (count) => {
@@ -151,17 +156,29 @@ export default function GenreContentSection({ activeGenre }) {
   // 구역 선택 핸들러
   const handleZoneSelect = async (zoneName) => {
     setIsAllZoneSelected(false);
-    setSelectedRegion(null);
-
+  
     setSelectedZones((prev) => {
-        if (prev.includes(zoneName)) {
-            return prev.filter((zone) => zone !== zoneName); // 이미 선택된 구역이면 제거
-        } else {
-            return [...prev, zoneName]; // 새로운 구역 추가
-        }
+      let newZones;
+      if (prev.includes(zoneName)) {
+        newZones = prev.filter((zone) => zone !== zoneName);
+      } else {
+        newZones = [...prev, zoneName];
+      }
+  
+      // 텍스트 처리: "처음 선택한 지역 외 n개"
+      if (newZones.length === 0) {
+        setSelectedRegion("지역 선택");
+      } else if (newZones.length === 1) {
+        setSelectedRegion(newZones[0]);
+      } else {
+        setSelectedRegion(`${newZones[0]} 외 ${newZones.length - 1}개`);
+      }
+  
+      return newZones;
     });
-    setSelectedRegion(null); // 개별 구역 선택 시 전체 선택 해제
-  };
+  
+    setSelectedZone(null);
+  };  
 
   // 바텀 시트 오픈 함수
   const handleOpenBottomSheet = () => {
@@ -210,11 +227,13 @@ export default function GenreContentSection({ activeGenre }) {
   }, [filteredThemeList, currentPage, itemsPerPage]);
   
   // 필터 적용 함수 수정
-  const handleApplyFilters = ({ people, region, zones, sort }) => {
-
+  const handleApplyFilters = ({ people, sort, region, zones }) => {
     setHeadCount(people);
 
     setSelectedSort(sort);
+
+    const isDefault = people === 2 && sort === "HIGH_SATISFACTION_LEVEL" && region === "지역 전체";
+    setIsFilterActive(!isDefault);
 
     if (region === "지역 전체") {
       setSelectedRegion("지역 전체");
@@ -247,15 +266,31 @@ export default function GenreContentSection({ activeGenre }) {
 
 
   // 리셋 처리 함수
-  const handleResetFilters = ({ people, region, zones, sort }) => {
-
+  const handleResetFilters = ({ people, sort, region }) => {
     setHeadCount(people);  
+    setSelectedSort(sort);
     setSelectedRegion(region); 
     setSelectedZones([]); 
     setZoneList([]);  
     setIsAllZoneSelected(false); 
-    setSelectedSort(sort);
   };
+
+  const getMobileFilterText = () => {
+    const peopleText = `${headCount}인`;
+    const sortText =  sortOptions.find(option => option.value === selectedSort)?.label || selectedSort;
+
+    let regionText = selectedRegion;
+  
+    if (selectedZones.length > 1) {
+      const currentRegion = regions.find(r => r.regionId === activeRegionId)?.regionName || '';
+      regionText = `${currentRegion} ${selectedZones.length}`;
+    } else if (selectedZones.length === 1) {
+      regionText = selectedZones[0];
+    }
+  
+    return `${peopleText}, ${sortText}, ${regionText}`;
+  };
+  
   
   return (
     <Wrapper>
@@ -287,6 +322,8 @@ export default function GenreContentSection({ activeGenre }) {
               onTabAllClick={handleTabAllClick}
               onZoneSelect={handleZoneSelect}
               isAllZoneSelected={setIsAllZoneSelected}
+              setHeadCount={setHeadCount}
+              setSelectedSort={setSelectedSort}
               setSelectedRegion={setSelectedRegion}
             />
           </FilterWrapper>
@@ -294,8 +331,8 @@ export default function GenreContentSection({ activeGenre }) {
 
         { isMobile && (
           <Filter onClick={handleOpenBottomSheet}>
-            <FilterIcon src={FilterImg} />
-            <LocationFilterText>필터</LocationFilterText>
+            <FilterIcon src={FilterImg} $isSelected={isFilterActive}/>
+            <LocationFilterText $isSelected={isFilterActive}>{getMobileFilterText()}</LocationFilterText>
           </Filter>
         )}
 
@@ -323,6 +360,8 @@ export default function GenreContentSection({ activeGenre }) {
         onTabAllClick={handleTabAllClick}
         onZoneSelect={handleZoneSelect}
         isAllZoneSelected={isAllZoneSelected}
+        setHeadCount={setHeadCount}
+        setSelectedSort={setSelectedSort}
         setSelectedRegion={setSelectedRegion}
       />
       )}
@@ -334,7 +373,7 @@ export default function GenreContentSection({ activeGenre }) {
           {filteredThemeList
             .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
             .map((items) => (
-              <ContentCard key={items.id} data={items} headCount={headCount} />
+              <ContentCard key={items.id} data={{...items, price: items.price != null ? items.price * headCount : null}} headCount={headCount} />
             ))}
           </ListWrapper>
 
@@ -471,12 +510,22 @@ const FilterIcon = styled.img`
   height: 0.9375rem;
   justify-content: center;
   align-items: center;
+
+  svg{
+    background: ${({ $isSelected }) => ($isSelected ? "var(--RIU_Primary-300, #5B6ACC)" : "var(--RIU_Monochrome-200, #717486)")};
+  }
+
+  filter: ${({ $isSelected }) =>
+    $isSelected
+      ? "invert(32%) sepia(79%) saturate(722%) hue-rotate(203deg) brightness(96%) contrast(97%)"
+      : "none"};
 `;
 
 const LocationFilterText = styled.div`
-  color: var(--RIU_Monochrome-500, #515467);
-  font-family: Pretendard-Medium;
+  // color: var(--RIU_Monochrome-500, #515467);
+  font-family: ${({ $isSelected }) => $isSelected ? 'Pretendard-Bold' : 'Pretendard-Medium'};
   font-size: 0.875rem;
+  color: ${({ $isSelected }) => $isSelected ? "var(--RIU_Primary-300, #5B6ACC)" : "var(--RIU_Monochrome-200, #717486)"};
 
   @media (max-width: 768px) {
     font-size: 0.75rem;

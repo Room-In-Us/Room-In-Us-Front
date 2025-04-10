@@ -32,7 +32,9 @@ export default function BottomSheet({
   onTabAllClick,
   onZoneSelect,
   isAllZoneSelected,
-  setSelectedRegion
+  setHeadCount,
+  setSelectedSort,
+  setSelectedRegion,
   }) {
   const { isMobile } = useDevice();
   const [activeTab, setActiveTab] = useState("people");
@@ -59,53 +61,65 @@ export default function BottomSheet({
   
   const handleReset = () => {
 
+    setHeadCount(2);
+    setSelectedSort("HIGH_SATISFACTION_LEVEL");
     setSelectedRegion("지역 전체");
+
+    if (peopleRef.current) {
+      peopleRef.current.reset();
+      peopleRef.current.currentValue = 2;
+    }
+  
+    if (sortRef.current) {
+      sortRef.current.reset();
+      sortRef.current.currentValue = "HIGH_SATISFACTION_LEVEL";
+    }
   
     onReset({
       people: 2,
+      sort: "HIGH_SATISFACTION_LEVEL",
       region: "지역 전체",
-      zones: [],
-      sort: "만족도 높은 순" 
+      zones: []
     });
   };
 
-// 필터 적용 함수
-const applyFilters = () => {
-  let regionValue = "지역 전체";
-  let zoneValues = [];
+  // 필터 적용 함수
+  const applyFilters = () => {
+    let regionValue = "지역 전체";
+    let zoneValues = [];
 
-  // 서울 전체 또는 경기/인천 전체를 선택한 경우
-  if (activeRegionId === 1 && selectedRegion === "서울 전체") {
-    regionValue = "서울 전체";
-    zoneValues = zoneList
-      .filter((zone) => zone?.zoneName) 
-      .map((zone) => zone.zoneName); 
-  } else if (activeRegionId === 2 && selectedRegion === "경기/인천 전체") {
-    regionValue = "경기/인천 전체";
-    zoneValues = zoneList
-      .filter((zone) => zone?.zoneName) 
-      .map((zone) => zone.zoneName); 
-  } 
-  // 특정 구역이 선택된 경우
-  else if (selectedZones.length > 0) {
-    regionValue = "지역 선택됨";
-    zoneValues = selectedZones;
-  } 
-  // 지역 전체를 선택한 경우
-  else {
-    regionValue = "지역 전체";
-    zoneValues = [];
-  }
+    // 서울 전체 또는 경기/인천 전체를 선택한 경우
+    if (activeRegionId === 1 && selectedRegion === "서울 전체") {
+      regionValue = "서울 전체";
+      zoneValues = zoneList
+        .filter((zone) => zone?.zoneName) 
+        .map((zone) => zone.zoneName); 
+    } else if (activeRegionId === 2 && selectedRegion === "경기/인천 전체") {
+      regionValue = "경기/인천 전체";
+      zoneValues = zoneList
+        .filter((zone) => zone?.zoneName) 
+        .map((zone) => zone.zoneName); 
+    } 
+    // 특정 구역이 선택된 경우
+    else if (selectedZones.length > 0) {
+      regionValue = "지역 선택됨";
+      zoneValues = selectedZones;
+    } 
+    // 지역 전체를 선택한 경우
+    else {
+      regionValue = "지역 전체";
+      zoneValues = [];
+    }
 
-  onApply({
-    people: peopleRef.currentValue ?? selectedPeople,
-    region: regionValue,
-    zones: zoneValues,
-    sort: sortRef.currentValue ?? selectedSort,
-  });
+    onApply({
+      people: peopleRef.current?.getValue?.() ?? selectedPeople,
+      sort: sortRef.current?.getValue?.() ?? selectedSort,
+      region: regionValue,
+      zones: zoneValues
+    });
 
-  onClose();
-};
+    onClose();
+  };
 
   return (
     <Overlay onClick={onClose}>
@@ -131,33 +145,49 @@ const applyFilters = () => {
           </TopWrapper>
 
           <Content>
-            {activeTab === "people" && ( <PeopleFilter   key={selectedPeople}  ref={peopleRef} onSelect={(val) => (peopleRef.currentValue = val)} isMobile={isMobile} selected={selectedPeople} />)}
-            {activeTab === "sort" && <SortFilter key={selectedSort} ref={sortRef} onSelect={(val) => (sortRef.currentValue = val)} isMobile={isMobile} selected={selectedSort} />}
+            {activeTab === "people" && 
+              <PeopleFilter   
+              key={selectedPeople}
+              ref={peopleRef} 
+              onSelect={(val) => (peopleRef.currentValue = val)} 
+              isMobile={isMobile} selected={selectedPeople} 
+              />
+            }
+
+            {activeTab === "sort" && 
+              <SortFilter key={selectedSort} 
+                ref={sortRef} 
+                onSelect={(val) => (sortRef.currentValue = val)} 
+                isMobile={isMobile} 
+                selected={selectedSort} 
+              />
+            }
+
             {activeTab === "region" && 
               <RegionFilter 
-              key={selectedRegion}
-              ref={regionRef}
-              isOpen={isOpen}
-              onClose={onClose}
-              onApply={onApply}
-              onReset={onReset}
-              selectedRegion={selectedRegion}
-              selectedZone={selectedZone}
-              selectedPeople={selectedPeople}
-              selectedSort={selectedSort}
-              regions={regions}  
-              zones={zones}     
-              zoneList={zoneList}
-              activeRegionId={activeRegionId}
-              selectedZones={selectedZones}
-              onTabClick={onTabClick}
-              onRegionSelect={onRegionSelect}
-              onRegionAllClick={onRegionAllClick}
-              onTabAllClick={onTabAllClick}
-              onZoneSelect={onZoneSelect}
-              isAllZoneSelected={isAllZoneSelected}
-              setSelectedRegion={setSelectedRegion}
-            />
+                key={selectedRegion}
+                ref={regionRef}
+                isOpen={isOpen}
+                onClose={onClose}
+                onApply={onApply}
+                onReset={onReset}
+                selectedRegion={selectedRegion}
+                selectedZone={selectedZone}
+                selectedPeople={selectedPeople}
+                selectedSort={selectedSort}
+                regions={regions}  
+                zones={zones}     
+                zoneList={zoneList}
+                activeRegionId={activeRegionId}
+                selectedZones={selectedZones}
+                onTabClick={onTabClick}
+                onRegionSelect={onRegionSelect}
+                onRegionAllClick={onRegionAllClick}
+                onTabAllClick={onTabAllClick}
+                onZoneSelect={onZoneSelect}
+                isAllZoneSelected={isAllZoneSelected}
+                setSelectedRegion={setSelectedRegion}
+              />
             }
           </Content>
 

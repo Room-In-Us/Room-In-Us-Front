@@ -17,14 +17,7 @@ import SelectedIcon from '../../../shared/assets/icons/common/filterIcon/selecte
 import Icon1 from '../../../shared/assets/icons/genre/camera.svg';
 import useDevice from "../../hooks/useDevice.js";
 import useDropdown from "../../hooks/useDropDown.js";
-
-const options = [
-  { value: 1, label: "1인" },
-  { value: 2, label: "2인" },
-  { value: 3, label: "3인" },
-  { value: 4, label: "4인" },
-  { value: 5, label: "5인" }
-];
+import { peopleOptions } from "./OptionList.js";
 
 const PeopleFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) => {
   
@@ -48,6 +41,7 @@ const PeopleFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) 
 
    useImperativeHandle(ref, () => ({
     reset,
+    getValue: () => selected,
   }));
 
   return (
@@ -56,7 +50,7 @@ const PeopleFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) 
       <FilterContainer ref={filterRef} onClick={toggleDropdown}>
         <FilterTextWrapper>
           <FilterIcon src={Icon1} />
-          <FilterText>{options.find((o) => o.value === selected)?.label} 기준 가격</FilterText>
+          <FilterText>{peopleOptions.find((o) => o.value === selected)?.label} 기준 가격</FilterText>
         </FilterTextWrapper>
         <DropDownIcon src={DropDownImg} />
       </FilterContainer>
@@ -65,7 +59,7 @@ const PeopleFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) 
    
    {isMobile ? (
       <MenuWrapper>
-            {options.map((option) => (
+            {peopleOptions.map((option) => (
               <DropdownItem key={option.value} onClick={() => handleSelect(option.value)} $isSelected={selected === option.value}>
                 <RadioIcon src={selected === option.value ? SelectedIcon : UnselectedIcon} alt="radio-icon" />
                 <RadioLabel $isSelected={selected === option.value}>{option.label}</RadioLabel>
@@ -77,7 +71,7 @@ const PeopleFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) 
     {isOpen && (
         <DropdownMenu ref={dropdownRef} style={{top: position.top, left: position.left}} >
           <DropdownHeader>가격 기준</DropdownHeader>
-          {options.map((option) => (
+          {peopleOptions.map((option) => (
             <DropdownItem key={option.value} onClick={() => handleSelect(option.value)} $isSelected={selected === option.value}>
               <RadioIcon src={selected === option.value ? SelectedIcon : UnselectedIcon} alt="radio-icon" />
               <RadioLabel $isSelected={selected === option.value}>{option.label}</RadioLabel>

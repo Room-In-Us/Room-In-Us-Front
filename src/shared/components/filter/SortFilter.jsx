@@ -11,26 +11,12 @@ import {
   DropdownHeader, 
   DropdownItem,
   MenuWrapper } from "./FilterStyles.js";
-import FilterIcon1 from '../../../shared/assets/icons/common/filterIcon/satisfactionstar.svg?react';
-import FilterIcon2 from '../../../shared/assets/icons/common/filterIcon/review.svg?react';
-import FilterIcon3 from '../../../shared/assets/icons/common/filterIcon/price.svg?react';
-import FilterIcon4 from '../../../shared/assets/icons/common/filterIcon/level.svg?react';
-import FilterIcon5 from '../../../shared/assets/icons/common/filterIcon/fearlevel.svg?react';
-import FilterIcon6 from '../../../shared/assets/icons/common/filterIcon/activelevel.svg?react';
 import Satisfaction from '../../../shared/assets/icons/genre/satisfaction.svg';
 import DropDownImg from "../../../shared/assets/icons/common/dropdown.svg";
 import Check from '../../../shared/assets/icons/common/filterIcon/check.svg';
 import useDevice from "../../hooks/useDevice.js";
 import useDropdown from "../../hooks/useDropDown.js"; 
-
-const options = [
-  {value: "만족도 높은 순", label: "만족도 높은 순", icon: FilterIcon1 },
-  {value: "후기 많은 순", label: "후기 많은 순", icon: FilterIcon2 },
-  {value: "가격 낮은 순", label: "가격 낮은 순", icon: FilterIcon3 },
-  {value: "난이도 높은 순", label: "난이도 높은 순", icon: FilterIcon4 },
-  {value: "공포도 높은 순", label: "공포도 높은 순", icon: FilterIcon5 },
-  {value: "활동성 높은 순", label: "활동성 높은 순", icon: FilterIcon6 },
-];
+import { sortOptions } from "./OptionList.js";
 
 const SortFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) => {
   const { isMobile, isTablet, isDeskTop } = useDevice();
@@ -52,6 +38,7 @@ const SortFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) =>
 
   useImperativeHandle(ref, () => ({
     reset,
+    getValue: () => selected,
   }));
 
 
@@ -62,7 +49,7 @@ const SortFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) =>
         <FilterContainer ref={filterRef} onClick={toggleDropdown} >
           <FilterTextWrapper>
             <FilterIcon src={Satisfaction} />
-            <FilterText>{options.find((o) => o.value === selected)?.label}</FilterText>
+            <FilterText>{sortOptions.find((o) => o.value === selected)?.label}</FilterText>
           </FilterTextWrapper>
           <DropDownIcon src={DropDownImg}/>
         </FilterContainer>
@@ -71,7 +58,7 @@ const SortFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) =>
 
    {isMobile ? (
       <MenuWrapper>
-            {options.map(({value, label, icon: Icon}) => (
+            {sortOptions.map(({value, label, icon: Icon}) => (
               <DropdownItem key={value} onClick={() => handleSelect(value)} $isSelected={selected === value}>
                 <StyledIcon>
                   <Icon style={{ color: selected === value ? "#5B6ACC" : "#717486" }} />
@@ -86,7 +73,7 @@ const SortFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) =>
       {isOpen && (
         <DropdownMenu ref={dropdownRef} style={{top: position.top, left: position.left}} >
           <DropdownHeader>정렬 기준</DropdownHeader>
-          {options.map(({value, label, icon: Icon}) => (
+          {sortOptions.map(({value, label, icon: Icon}) => (
             <DropdownItem key={value} onClick={() => handleSelect(value)} $isSelected={selected === value}>
               <StyledIcon>
                 <Icon style={{ color: selected === value ? "#5B6ACC" : "#717486" }} />
