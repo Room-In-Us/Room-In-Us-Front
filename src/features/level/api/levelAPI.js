@@ -1,16 +1,19 @@
 import { api } from '../../../app/API';
 
-// 장르 기반 방탈출 카페 테마 목록 조회
-export const getLevelListAPI = async (proficiency, headcount, page, size) => {
+// 숙련도 기반 방탈출 카페 테마 목록 조회
+export const getLevelListAPI = async (proficiency, headcount, page, size, sortOption) => {
   try {
-    const response = await api.get(`themes/proficiency`, {
-      params: {
-        proficiency, // 숙련도
-        headcount, // 가격 기준 인원
-        page, // 페이지 번호
-        size, // 페이지별 테마 개수
-      },
-    });
+    const params = {
+      proficiency, // 숙련도
+      headcount, // 가격 기준 인원
+      page, // 페이지 번호
+      size, // 페이지별 테마 개수
+    };
+
+    if (sortOption) {
+      params.sortOption = sortOption;
+    }
+    const response = await api.get(`themes/proficiency`, { params });
     console.log('숙련도 기반 방탈출 카페 테마 목록 조회 api 요청 결과:', response);
     return response.data;
   } catch (error) {
