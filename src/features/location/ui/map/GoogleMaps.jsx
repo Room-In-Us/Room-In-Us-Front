@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { GoogleMap, MarkerF, OverlayView } from '@react-google-maps/api';
 import MarkerIcon from '../../../../shared/assets/images/location/marker.png';
-import { goolgleMapStyles } from './googleMapStyles.js';
+import { googleMapStyles } from './googleMapStyles.js';
 import {
   stationVisible,
   themeVisible,
@@ -33,7 +33,7 @@ function GoogleMaps() {
   };
 
   const options = {
-    styles: goolgleMapStyles, // 커스텀 ui
+    styles: googleMapStyles, // 커스텀 ui
     zoomControl: true, // 확대 축소 버튼
     disableDefaultUI: true, // 기본 설정 초기화
   };
