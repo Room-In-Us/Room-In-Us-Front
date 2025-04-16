@@ -2,10 +2,19 @@ import { useState } from "react";
 import styled from "styled-components";
 import GoogleMapComponent from "../features/location/ui/map/GoogleMapComponent";
 import MarkerIcon from "../shared/assets/icons/location/markerIcon.svg?react";
+import ArrowIcon from "../shared/assets/icons/location/arrowIcon.svg?react";
 
 function LocationPage() {
   // 상태 관리
-  const [isSeoulCheck, setIsSeoulCheck] = useState(true)
+  const [isSeoulCheck, setIsSeoulCheck] = useState(true);
+  const [isStationCheck, setIsStationCheck] = useState(false);
+
+  // 임시 역 배열
+  const stationList = [
+    "강남", "홍대", "건대", "신촌", "대학로", "잠실",
+    "신림", "종각", "노원", "성수", "신사", "성신여대",
+    "서울대입구", "명동", "영등포", "수유", "그 외 지역",
+  ];
 
   // 지역 선택 핸들러
   const handleLocationCheck = () => {
@@ -18,7 +27,7 @@ function LocationPage() {
       <GoogleMapComponent />
 
       <OverlayWrapper>
-        {/* 지역 영역 버튼 */}
+        {/* 지역 선택 영역 */}
         <LocationButtonWrapper>
           <LocationButton
             isSeoulCheck={isSeoulCheck}
@@ -36,10 +45,23 @@ function LocationPage() {
           </LocationButton>
         </LocationButtonWrapper>
 
+        {/* 역 선택 영역 */}
+        <StationListWrapper>
+          {stationList.map((station, index) => (
+            <StationList key={index}>
+              {station}
+              <ListEnterWrapper>
+                99
+                <StyledArrowIcon />
+              </ListEnterWrapper>
+            </StationList>
+          ))}
+        </StationListWrapper>
+
       </OverlayWrapper>
     </PageWrapper>
-  )
-}
+  );
+};
 
 export default LocationPage;
 
@@ -98,6 +120,63 @@ const StyledMarkerIcon = styled(MarkerIcon)`
   height: 1.875rem;
   fill: ${(props) => (props.isSeoulCheck ? "var(--RIU_Monochrome-10, #F9F9FB)" : "var(--RIU_Primary-100, #718FF2)")};
   transition: all 0.2s ease-in-out;
+`;
+
+const StationListWrapper = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  background: var(--RIU_Monochrome-100, #818496);
+  overflow-x: hidden;
+  overflow-y: auto;
+  pointer-events: auto;
+
+  &::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+    background: none;
+  }
+  &:hover::-webkit-scrollbar-thumb {
+    border-radius: 3rem;
+    background-color: #8DA3FF;
+  }
+`;
+
+const StationList = styled.div`
+  border-bottom: 1px solid var(--RIU_Monochrome-50, #D6D6DF);
+  padding: 0rem 1.25rem 0rem 2.5rem;
+  box-sizing: border-box;
+  display: flex;
+  width: 15rem;
+  height: 3.125rem;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  background: var(--RIU_Monochrome-20, #F0F0F4);
+  color: var(--RIU_Monochrome-500, #515467);
+  font-family: Pretendard;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+`;
+
+const ListEnterWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--RIU_Primary-80, #8DA3FF);
+  font-family: Pretendard;
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 600;
+`;
+
+const StyledArrowIcon = styled(ArrowIcon)`
+  width: 0.9375rem;
+  height: 0.9375rem;
 `;
 
 // import { useState, useEffect } from 'react';
