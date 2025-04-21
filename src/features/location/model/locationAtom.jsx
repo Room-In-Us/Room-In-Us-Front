@@ -1,5 +1,13 @@
 import { atom } from 'recoil';
 
+// 역 상태
+export const stationCardVisible = atom({
+  key: 'stationCardVisible',
+  default: false,
+});
+
+/* ------------- [구버전] ------------- */
+
 // 지역 상태
 export const locationState = atom({
   key: 'locationState',

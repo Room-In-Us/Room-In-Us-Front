@@ -3,13 +3,18 @@ import styled from "styled-components";
 import GoogleMapComponent from "../features/location/ui/map/GoogleMapComponent";
 import MarkerIcon from "../shared/assets/icons/location/markerIcon.svg?react";
 import ArrowIcon from "../shared/assets/icons/location/arrowIcon.svg?react";
+import StationCard from "../features/location/ui/StationCard";
+import { useRecoilState } from "recoil";
+import { stationCardVisible } from "../features/location/model/locationAtom";
 
 function LocationPage() {
   // 상태 관리
   const [isSeoulCheck, setIsSeoulCheck] = useState(true);
-  const [isStationCheck, setIsStationCheck] = useState(false);
+  const [isStationListVisible, setIsStationListVisible] = useState(true);
+  const [isStationCardVisible, setIsStationCardVisible] = useRecoilState(stationCardVisible);
+  // const [isStationCheck, setIsStationCheck] = useState(false);
 
-  // 임시 역 배열
+  // 임시 역 리스트
   const stationList = [
     "강남", "홍대", "건대", "신촌", "대학로", "잠실",
     "신림", "종각", "노원", "성수", "신사", "성신여대",
@@ -19,6 +24,12 @@ function LocationPage() {
   // 지역 선택 핸들러
   const handleLocationCheck = () => {
     setIsSeoulCheck(!isSeoulCheck);
+    setIsStationListVisible(true);
+  };
+
+  // 역 선택 핸들러
+  const handleStationSelect = () => {
+    setIsStationCardVisible(true);
   };
 
   return (
@@ -34,29 +45,52 @@ function LocationPage() {
             onClick={handleLocationCheck}
           >
             <StyledMarkerIcon isSeoulCheck={isSeoulCheck}/>
-            서울
+            <LocationText>
+              서울
+            </LocationText>
           </LocationButton>
           <LocationButton
             isSeoulCheck={!isSeoulCheck}
             onClick={handleLocationCheck}
           >
             <StyledMarkerIcon isSeoulCheck={!isSeoulCheck}/>
-            경기/인천
+            <LocationText>
+              경기/인천
+            </LocationText>
           </LocationButton>
         </LocationButtonWrapper>
 
         {/* 역 선택 영역 */}
-        <StationListWrapper>
+        <StationListWrapper isVisible={isStationListVisible}>
           {stationList.map((station, index) => (
-            <StationList key={index}>
-              {station}
+            <StationList
+              key={index}
+              onClick={handleStationSelect}
+            >
+              <StationTitle>
+                {station}
+              </StationTitle>
               <ListEnterWrapper>
-                99
+                <StoreNumber>
+                  99
+                </StoreNumber>
                 <StyledArrowIcon />
               </ListEnterWrapper>
             </StationList>
           ))}
         </StationListWrapper>
+
+        {/* 옆 버튼 */}
+        <SideButtonWrapper>
+          <SideButton onClick={() => {setIsStationListVisible(!isStationListVisible)}}>
+            <SideButtonArrow openState={isStationListVisible}/>
+          </SideButton>
+        </SideButtonWrapper>
+
+        {/* 매장 영역 */}
+        {isStationCardVisible &&
+          <StationCard />
+        }
 
       </OverlayWrapper>
     </PageWrapper>
@@ -67,7 +101,8 @@ export default LocationPage;
 
 // CSS
 const PageWrapper = styled.div`
-  margin-top: 5.625rem;
+font-size: 0.6rem;
+  margin-top: 5.625rem; // 헤더높이
   width: 100vw;
   height: calc(100vh - 5.625rem - 2.375rem); // 100vh-헤더-풋터
   position: absolute;
@@ -82,101 +117,143 @@ const OverlayWrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
+  align-items: center;
   pointer-events: none;
 `;
 
 const LocationButtonWrapper = styled.div`
+font-size: 1.5em; // 임의로 지정
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   align-self: stretch;
   background: var(--RIU_Monochrome-10, #F9F9FB);
+  z-index: 300;
   pointer-events: auto;
 `;
 
 const LocationButton = styled.div`
   border-bottom: 1px solid var(--RIU_Monochrome-50, #D6D6DF);
-  width: 4.375rem;
-  height: 4.375rem;
+  width: 4.375em;
+  height: 4.375em;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 0.625rem;
+  gap: 0.625em;
   background: ${(props) => (props.isSeoulCheck ? "var(--RIU_Primary-100, #718FF2)" : "var(--RIU_Monochrome-10, #F9F9FB)")};
   color: ${(props) => (props.isSeoulCheck ? "var(--RIU_Monochrome-10, #F9F9FB)" : "var(--RIU_Monochrome-500, #515467)")};
-  font-family: Pretendard;
-  font-size: 0.75rem;
-  font-style: normal;
-  font-weight: 700;
   line-height: normal;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 `;
 
 const StyledMarkerIcon = styled(MarkerIcon)`
-  width: 1.875rem;
-  height: 1.875rem;
+  width: 1.875em;
+  height: 1.875em;
   fill: ${(props) => (props.isSeoulCheck ? "var(--RIU_Monochrome-10, #F9F9FB)" : "var(--RIU_Primary-100, #718FF2)")};
   transition: all 0.2s ease-in-out;
 `;
 
+const LocationText = styled.div`
+  font-family: 'Pretendard-Bold';
+  font-size: 0.75em;
+`;
+
+const SideButtonWrapper = styled.div`
+  margin-right: 1.875em;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  pointer-events: auto;
+`;
+
+const SideButton = styled.div`
+font-size: 1.5em; // 임의로 지정
+  border-radius: 0em 0.625em 0.625em 0em;
+  display: flex;
+  width: 1.25em;
+  height: 4.375em;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625em;
+  background: #FFF;
+`;
+
+const SideButtonArrow = styled(ArrowIcon)`
+  width: 0.9375em;
+  height: 0.9375em;
+  fill: var(--RIU_Primary-80, #8DA3FF);
+  transform: rotate(${(props) => (props.openState ? "-180deg" : "0deg")});
+  transition: all 0.3s ease;
+`;
+
 const StationListWrapper = styled.div`
+font-size: 1.155em; // 임의로 지정
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  align-self: stretch;
   background: var(--RIU_Monochrome-100, #818496);
   overflow-x: hidden;
   overflow-y: auto;
   pointer-events: auto;
 
+  transition: width 0.2s ease, transform 0.2s ease-out;
+
+  width: ${(props) => (props.isVisible ? "15em" : "0")};
+  transform: ${(props) => (props.isVisible ? "translateX(0)" : "translateX(-100%)")};
+  pointer-events: ${(props) => (props.isVisible ? "auto" : "none")};
+
   &::-webkit-scrollbar {
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 0.5em;
+    height: 0.5em;
     background: none;
   }
   &:hover::-webkit-scrollbar-thumb {
-    border-radius: 3rem;
+    border-radius: 3em;
     background-color: #8DA3FF;
   }
 `;
 
 const StationList = styled.div`
   border-bottom: 1px solid var(--RIU_Monochrome-50, #D6D6DF);
-  padding: 0rem 1.25rem 0rem 2.5rem;
+  padding: 0em 1.25em 0em 2.5em;
   box-sizing: border-box;
   display: flex;
-  width: 15rem;
-  height: 3.125rem;
+  width: 15em;
+  height: 3.125em;
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
   background: var(--RIU_Monochrome-20, #F0F0F4);
-  color: var(--RIU_Monochrome-500, #515467);
-  font-family: Pretendard;
-  font-size: 1rem;
-  font-style: normal;
-  font-weight: 500;
   line-height: normal;
+`;
+
+const StationTitle = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  font-family: 'Pretendard-Medium';
+  font-size: 1em;
 `;
 
 const ListEnterWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.25em;
+  cursor: pointer;
+`;
+
+const StoreNumber = styled.div`
   color: var(--RIU_Primary-80, #8DA3FF);
-  font-family: Pretendard;
-  font-size: 0.875rem;
-  font-style: normal;
-  font-weight: 600;
+  font-family: 'Pretendard-SemiBold';
+  font-size: 0.875em;
 `;
 
 const StyledArrowIcon = styled(ArrowIcon)`
-  width: 0.9375rem;
-  height: 0.9375rem;
+  width: 0.9375em;
+  height: 0.9375em;
 `;
 
 // import { useState, useEffect } from 'react';
