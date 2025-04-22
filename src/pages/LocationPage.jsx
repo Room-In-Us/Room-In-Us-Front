@@ -6,7 +6,7 @@ import ArrowIcon from "../shared/assets/icons/location/arrowIcon.svg?react";
 import StationCard from "../features/location/ui/StationCard";
 import StoreCard from "../features/location/ui/StoreCard";
 import { useRecoilState } from "recoil";
-import { stationCardVisible, storeCardVisible, zoneId, storePageNumber } from "../features/location/model/locationAtom";
+import { stationCardVisible, storeCardVisible, zoneId, storePageNumber, locationRegionId, zoneName, storeCount, themeCount } from "../features/location/model/locationAtom";
 import { getLocationZonesAPI } from "../features/location/api/locationAPI";
 
 function LocationPage() {
@@ -16,23 +16,29 @@ function LocationPage() {
   const [isStationCardVisible, setIsStationCardVisible] = useRecoilState(stationCardVisible);
   const [isStoreCardVisible, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
   const [stationList, setStationList] = useState([]); // 역 목록 상태
-  const [regionId, setRegionId] = useState(1); // 지역 아이디 상태
+  const [regionId, setRegionId] = useRecoilState(locationRegionId); // 지역 아이디 상태
+  const [, setZoneName] = useRecoilState(zoneName); // 구역 이름 상태
+  const [, setStoreCount] = useRecoilState(storeCount); // 구역별 매장 개수
+  const [, setThemeCount] = useRecoilState(themeCount); // 구역별 테마 개수
   const [, setIsZoneId] = useRecoilState(zoneId);
   const [, setCurrentPage] = useRecoilState(storePageNumber);
 
   // 지역 선택 핸들러
   const handleLocationCheck = (id) => {
-    setIsSeoulCheck(!isSeoulCheck);
+    setIsSeoulCheck(id === 1);
     setIsStationListVisible(true);
     setRegionId(id);
     setCurrentPage(1);
   };
 
   // 역 선택 핸들러
-  const handleStationSelect = (id) => {
+  const handleStationSelect = (data) => {
     setIsStationCardVisible(true);
     setIsStoreCardVisible(false);
-    setIsZoneId(id);
+    setIsZoneId(data.zoneId);
+    setZoneName(data.zoneName);
+    setStoreCount(data.storeCount);
+    setThemeCount(data.themeCount);
     setCurrentPage(1);
   };
 
@@ -84,7 +90,7 @@ function LocationPage() {
           {stationList.map((station, index) => (
             <StationList
               key={index}
-              onClick={() => handleStationSelect(station.zoneId)}
+              onClick={() => handleStationSelect(station)}
             >
               <StationTitle>
                 {station.zoneName}

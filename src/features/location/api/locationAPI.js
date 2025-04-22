@@ -47,9 +47,17 @@ export const getSeoulZonesInfoAPI = async (zoneId) => {
 };
 
 // 수도권(+서울기타) 구역 매장 목록 조회
-export const getZoneStoreListAPI = async (regionId, zoneId) => {
+export const getZoneStoreListAPI = async (regionId, zoneId, page, size, sortOption) => {
   try {
-    const response = await api.get(`stores/regions/${regionId}/zones/${zoneId}/stores`);
+    const params = {
+      page, // 페이지 번호
+      size, // 페이지별 테마 개수
+    };
+    if (sortOption) {
+      params.sortOption = sortOption; // 정렬 기준
+    }
+
+    const response = await api.get(`stores/regions/${regionId}/zones/${zoneId}/stores`, {params});
     console.log('수도권 구역 매장 목록 조회 api 요청 결과:', response);
     return response.data;
   } catch (error) {

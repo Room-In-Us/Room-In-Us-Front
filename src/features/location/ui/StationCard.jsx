@@ -6,20 +6,24 @@ import ArrowIcon from "../../../shared/assets/icons/location/arrowIcon.svg?react
 import RightArrowIcon from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrowIcon from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
 import { useRecoilState } from "recoil";
-import { stationCardVisible, storeCardVisible, zoneId, storePageNumber, locationStoreId } from "../../../features/location/model/locationAtom";
-import { getSeoulZonesInfoAPI, getSeoulZoneStoreListAPI } from "../api/locationAPI";
+import { stationCardVisible, storeCardVisible, zoneId, storePageNumber, locationStoreId, locationRegionId, zoneName, storeCount, themeCount } from "../../../features/location/model/locationAtom";
+import { getSeoulZonesInfoAPI, getSeoulZoneStoreListAPI, getZoneStoreListAPI } from "../api/locationAPI";
 
 function StationCard() {
   // 상태 관리
   const [, setIsStationCardVisible] = useRecoilState(stationCardVisible);
   const [, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
-  const [zoneInfo, setZoneInfo] = useState(""); // 구역별 상세정보
+  const [, setZoneInfo] = useState(""); // 구역별 상세정보
   const [stationList, setStationList] = useState([]); // 역 목록 상태
   const [storeList, setStoreList] = useState([]); // 매장 목록 상태
   const [isZoneId,] = useRecoilState(zoneId);
   const [currentPage, setCurrentPage] = useRecoilState(storePageNumber);
   const [totalPages, setTotalPages] = useState("");
   const [, setStoreId] = useRecoilState(locationStoreId);
+  const [regionId,] = useRecoilState(locationRegionId); // 지역 아이디 상태
+  const [CapitalZoneName,] = useRecoilState(zoneName); // 구역 이름 상태
+  const [CapitalStoreCount,] = useRecoilState(storeCount); // 구역별 매장 개수
+  const [CapitalThemeCount,] = useRecoilState(themeCount); // 구역별 테마 개수
 
   // 매장 선택 핸들러
   const handleStoreSelect = (id) => {
@@ -47,16 +51,23 @@ function StationCard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getSeoulZoneStoreListAPI(isZoneId, currentPage, 10, "RECOMMEND");
-        console.log('서울 구역 매장 목록: ', response);
-        setStoreList(response.storeData.contents);
-        setTotalPages(response.storeData.totalPages);
+        if (isZoneId > 0 && isZoneId < 17) {
+          const response = await getSeoulZoneStoreListAPI(isZoneId, currentPage, 10, "RECOMMEND");
+          console.log('서울 구역 매장 목록: ', response);
+          setStoreList(response.storeData.contents);
+          setTotalPages(response.storeData.totalPages);
+        } else {
+          const response = await getZoneStoreListAPI(regionId, isZoneId, currentPage, 10, "RECOMMEND");
+          console.log('수도권 구역 매장 목록: ', response);
+          setStoreList(response.storeData.contents);
+          setTotalPages(response.storeData.totalPages);
+        }
       } catch (error) {
-        console.error('서울 구역 매장 목록 데이터를 불러오는 중 오류 발생:', error);
+        console.error('구역 매장 목록 데이터를 불러오는 중 오류 발생:', error);
       }
     };
     fetchData();
-  }, [isZoneId, currentPage]);
+  }, [isZoneId, currentPage, regionId]);
 
   // 페이지 이동
   const handlePageClick = (page) => {
@@ -81,27 +92,23 @@ function StationCard() {
       <TitleWrapper>
         <StationTitleWrapper>
           <StationTitle>
-            {zoneInfo.zoneName}
+            {CapitalZoneName}
           </StationTitle>
           <StationDescription>
-            총 {zoneInfo.storeCount}개의 매장, {zoneInfo.themeCount}개의 테마가 있습니다
+            총 {CapitalStoreCount}개의 매장, {CapitalThemeCount}개의 테마가 있습니다
           </StationDescription>
         </StationTitleWrapper>
         <StationListWrapper>
-          {zoneId && stationList.map((station, index) => (
-            <StationList key={index}>
-              {/* 노선 번호 리스트 */}
-              {station.stationLineList.map((line, lineIndex) => (
-                <StationListName key={lineIndex}>
-                  {line}
-                </StationListName>
-              ))}
-              {/* 역 이름 */}
-              <StationListName>
-                {station.stationName}
-              </StationListName>
-            </StationList>
-          ))}
+          {isZoneId > 0 && isZoneId < 17 ? (
+            stationList.map((station, index) => (
+              <StationList key={index}>
+                {station.stationLineList.map((line, lineIndex) => (
+                  <StationListName key={lineIndex}>{line}</StationListName>
+                ))}
+                <StationListName>{station.stationName}</StationListName>
+              </StationList>
+            ))
+          ) : (null)}
         </StationListWrapper>
       </TitleWrapper>
 
@@ -109,7 +116,7 @@ function StationCard() {
       <ListWrapper>
         <ListTitleWrapper>
           <ListNumber>
-            매장 목록 &#40;{zoneInfo.storeCount}&#41;
+            매장 목록 &#40;{CapitalStoreCount}&#41;
           </ListNumber>
           <FilterWrapper>
             <FilterName>
@@ -119,6 +126,7 @@ function StationCard() {
           </FilterWrapper>
         </ListTitleWrapper>
       </ListWrapper>
+      {/* 매장 목록 */}
       <StoreList>
         {storeList.map((store, index) => (
         <ListItem
@@ -131,10 +139,26 @@ function StationCard() {
               {store.storeName}
             </ItemName>
             <ItemNumber>
-              &#40;매장 테마 개수&#41;
+              &#40;n&#41;
             </ItemNumber>
           </ItemTitleWrapper>
-          <StyledArrowIcon/>
+          <ArrowWrapper>
+            {(isZoneId === 0 || isZoneId > 16) &&
+              Array.isArray(store.stationLineList) &&
+              store.stationName && (
+                <ListStationWrapper>
+                  {store.stationLineList.map((line, lineIndex) => (
+                    <StationListName key={lineIndex}>
+                      {line}
+                    </StationListName>
+                  ))}
+                  <StationListName>
+                    {store.stationName}
+                  </StationListName>
+                </ListStationWrapper>
+            )}
+            <StyledArrowIcon/>
+          </ArrowWrapper>
         </ListItem>
         ))}
       </StoreList>
@@ -321,6 +345,19 @@ const ItemNumber = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 1em;
   line-height: normal;
+`;
+
+const ArrowWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.625em;
+`;
+
+const ListStationWrapper = styled.div`
+  display: flex;
+  height: 1.8125em;
+  align-items: center;
+  gap: 0.375em;
 `;
 
 const StyledArrowIcon = styled(ArrowIcon)`
