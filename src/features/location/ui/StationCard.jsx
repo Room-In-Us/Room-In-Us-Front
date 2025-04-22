@@ -6,7 +6,7 @@ import ArrowIcon from "../../../shared/assets/icons/location/arrowIcon.svg?react
 import RightArrowIcon from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrowIcon from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
 import { useRecoilState } from "recoil";
-import { stationCardVisible, storeCardVisible, zoneId, storePageNumber } from "../../../features/location/model/locationAtom";
+import { stationCardVisible, storeCardVisible, zoneId, storePageNumber, locationStoreId } from "../../../features/location/model/locationAtom";
 import { getSeoulZonesInfoAPI, getSeoulZoneStoreListAPI } from "../api/locationAPI";
 
 function StationCard() {
@@ -19,11 +19,13 @@ function StationCard() {
   const [isZoneId,] = useRecoilState(zoneId);
   const [currentPage, setCurrentPage] = useRecoilState(storePageNumber);
   const [totalPages, setTotalPages] = useState("");
+  const [, setStoreId] = useRecoilState(locationStoreId);
 
   // 매장 선택 핸들러
-  const handleStoreSelect = () => {
+  const handleStoreSelect = (id) => {
     setIsStoreCardVisible(true);
     setIsStationCardVisible(false);
+    setStoreId(id);
   };
 
   // 서울 구역 상세정보 조회
@@ -121,7 +123,7 @@ function StationCard() {
         {storeList.map((store, index) => (
         <ListItem
           key={index}
-          onClick={handleStoreSelect}
+          onClick={() => handleStoreSelect(store.storeId)}
         >
           <ItemTitleWrapper>
             {store.isAwarded && <StyledAwardsIcon/>}

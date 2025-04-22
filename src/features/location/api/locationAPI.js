@@ -77,3 +77,15 @@ export const getSeoulZoneStoreListAPI = async (zoneId, page, size, sortOption) =
     throw error;
   }
 };
+
+// 매장 상세 정보 조회
+export const getLocationStoreInfoAPI = async (storeId) => {
+  try {
+    const response = await api.get(`stores/${storeId}/store-info`);
+    console.log('매장 상세 정보 조회 api 요청 결과:', response);
+    return response.data;
+  } catch (error) {
+    console.error('API 요청 중 오류 발생:', error);
+    throw error;
+  }
+};

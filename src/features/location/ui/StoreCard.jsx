@@ -6,19 +6,21 @@ import LinkIcon from "../../../shared/assets/icons/location/storeLinkIcon.svg?re
 import TelIcon from "../../../shared/assets/icons/location/storeTelIcon.svg?react";
 import CopyIcon from "../../../shared/assets/icons/location/copyIcon.svg?react";
 import { useRecoilState } from "recoil";
-import { stationCardVisible, storeCardVisible } from "../../../features/location/model/locationAtom";
+import { stationCardVisible, storeCardVisible, locationStoreId } from "../../../features/location/model/locationAtom";
 import LocationPeopleFilter from "./filter/LocationPeopleFilter";
 import LocationSortFilter from "./filter/LocationSortFilter";
 import LocationContentCard from "./LocationContentCard";
-import { getLocationListAPI } from "../api/locationAPI";
+import { getLocationListAPI, getLocationStoreInfoAPI } from "../api/locationAPI";
 
 function StoreCard() {
   // 상태 관리
   const [headCount, setHeadCount] = useState(2); // 인원 필터 상태
-  const [selectedSort, setSelectedSort] = useState("HIGH_SATISFACTION_LEVEL"); // 정렬 필터 상태]
+  const [selectedSort, setSelectedSort] = useState("HIGH_SATISFACTION_LEVEL"); // 정렬 필터 상태
   const [themeList, setThemeList] = useState([]);
   const [, setIsStationCardVisible] = useRecoilState(stationCardVisible);
   const [, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
+  const [storeId,] = useRecoilState(locationStoreId);
+  const [storeInfo, setStoreInfo] = useState([]);
 
   // 돌아가기 핸들러
   const handleStationSelect = () => {
@@ -31,7 +33,20 @@ function StoreCard() {
     setHeadCount(count); 
   };
 
-  const storeId = 1;
+  // 매장 상세 조회
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getLocationStoreInfoAPI(storeId);
+        console.log('매장 상세 정보: ', response);
+        setStoreInfo(response);
+      } catch (error) {
+        console.error('매장 상세 정보 데이터를 불러오는 중 오류 발생:', error);
+      }
+    };
+    fetchData();
+  }, [storeId]);
+
   // 테마 목록 조회
   useEffect(() => {
     const fetchData = async () => {
@@ -46,6 +61,15 @@ function StoreCard() {
     fetchData();
   }, [storeId, headCount, selectedSort]);
 
+  // 상세 정보 복사 핸들러
+  const handleInfoCopy = async (data) => {
+    try {
+      await navigator.clipboard.writeText(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  
   return (
     <ComponentWrapper>
       {/* 돌아가기 버튼 영역 */}
@@ -57,23 +81,27 @@ function StoreCard() {
       {/* 타이틀 영역 */}
       <TitleWrapper>
         <Title>
-          비트포비아 강남 던전
+          {storeInfo.storeName}
         </Title>
         <DescriptionWrapper>
           <DescriptionList>
             <StyledLocationIcon/>
-            <DescriptionText>서울 강남구 강남대로96길 17 6층</DescriptionText>
-            <StyledCopyIcon/>
+            <DescriptionText>{storeInfo.storeAddress}</DescriptionText>
+            <StyledCopyIcon onClick={() => handleInfoCopy(storeInfo.storeAddress)}/>
           </DescriptionList>
           <DescriptionList>
             <StyledLinkIcon/>
-            <DescriptionText>https://www.keyescape.co.kr/</DescriptionText>
-            <StyledCopyIcon/>
+            <DescriptionText
+              href={storeInfo.storeWebsiteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >{storeInfo.storeWebsiteUrl}</DescriptionText>
+            <StyledCopyIcon onClick={() => handleInfoCopy(storeInfo.storeWebsiteUrl)}/>
           </DescriptionList>
           <DescriptionList>
             <StyledTelIcon/>
-            <DescriptionText>02)000-0000</DescriptionText>
-            <StyledCopyIcon/>            
+            <DescriptionText>{storeInfo.storeContact}</DescriptionText>
+            <StyledCopyIcon onClick={() => handleInfoCopy(storeInfo.storeContact)}/>          
           </DescriptionList>
         </DescriptionWrapper>
       </TitleWrapper>
@@ -81,7 +109,7 @@ function StoreCard() {
       {/* 필터 영역 */}
       <FilterTitleWrapper>
         <ThemeNumber>
-          테마 목록 &#40;3&#41;
+          테마 목록 &#40;n&#41;
         </ThemeNumber>
         <FilterWrapper>
           {/* 인원 필터 */}
@@ -181,16 +209,22 @@ const StyledTelIcon = styled(TelIcon)`
   height: 1.5625em;
 `;
 
-const DescriptionText = styled.div`
+const DescriptionText = styled.a`
+  max-width: 25em;
   color: var(--RIU_Monochrome-600, #414152);
   text-align: center;
   font-family: 'Pretendard-Regular';
   line-height: normal;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  word-break: break-all;
 `;
 
 const StyledCopyIcon = styled(CopyIcon)`
   width: 1.25em;
   height: 1.25em;
+  cursor: pointer;
 `;
 
 const FilterTitleWrapper = styled.div`

@@ -24,6 +24,12 @@ export const storePageNumber = atom({
   default: 1,
 });
 
+// 매장 아이디
+export const locationStoreId = atom({
+  key: 'locationStoreId',
+  default: 0,
+});
+
 /* ------------- [구버전] ------------- */
 
 // 지역 상태
