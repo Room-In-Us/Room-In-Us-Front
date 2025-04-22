@@ -12,6 +12,18 @@ export const storeCardVisible = atom({
   default: false,
 });
 
+// 역 아이디
+export const zoneId = atom({
+  key: 'zoneId',
+  default: 0,
+});
+
+// 매장 목록 페이지 넘버
+export const storePageNumber = atom({
+  key: 'storePageNumber',
+  default: 1,
+});
+
 /* ------------- [구버전] ------------- */
 
 // 지역 상태

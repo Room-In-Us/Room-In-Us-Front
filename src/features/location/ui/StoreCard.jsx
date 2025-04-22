@@ -9,7 +9,7 @@ import { useRecoilState } from "recoil";
 import { stationCardVisible, storeCardVisible } from "../../../features/location/model/locationAtom";
 import LocationPeopleFilter from "./filter/LocationPeopleFilter";
 import LocationSortFilter from "./filter/LocationSortFilter";
-import ContentCard from "../../../shared/components/ContentCard";
+import LocationContentCard from "./LocationContentCard";
 import { getLocationListAPI } from "../api/locationAPI";
 
 function StoreCard() {
@@ -32,15 +32,15 @@ function StoreCard() {
   };
 
   const storeId = 1;
-  // 숙련도 목록 조회
+  // 테마 목록 조회
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getLocationListAPI(storeId, headCount, 1, 10000, selectedSort);
-        console.log('숙련도 기반 방탈출 테마 목록: ', response.contents);
+        console.log('테마 목록: ', response.contents);
         setThemeList(response.contents);
       } catch (error) {
-        console.error('숙련도 기반 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
+        console.error('테마 목록 데이터를 불러오는 중 오류 발생:', error);
       }
     };
     fetchData();
@@ -94,7 +94,7 @@ function StoreCard() {
       {/* 콘텐츠 카드 영역 */}
       <ContentCardWrapper>
         {themeList.map((items) => (
-          <ContentCard key={items.id} data={items} headCount={headCount} type="location"/>
+          <LocationContentCard key={items.id} data={items} headCount={headCount} type="location"/>
         ))}
       </ContentCardWrapper>
     </ComponentWrapper>

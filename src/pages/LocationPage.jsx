@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import GoogleMapComponent from "../features/location/ui/map/GoogleMapComponent";
 import MarkerIcon from "../shared/assets/icons/location/markerIcon.svg?react";
@@ -6,7 +6,8 @@ import ArrowIcon from "../shared/assets/icons/location/arrowIcon.svg?react";
 import StationCard from "../features/location/ui/StationCard";
 import StoreCard from "../features/location/ui/StoreCard";
 import { useRecoilState } from "recoil";
-import { stationCardVisible, storeCardVisible } from "../features/location/model/locationAtom";
+import { stationCardVisible, storeCardVisible, zoneId, storePageNumber } from "../features/location/model/locationAtom";
+import { getLocationZonesAPI } from "../features/location/api/locationAPI";
 
 function LocationPage() {
   // 상태 관리
@@ -14,26 +15,41 @@ function LocationPage() {
   const [isStationListVisible, setIsStationListVisible] = useState(true);
   const [isStationCardVisible, setIsStationCardVisible] = useRecoilState(stationCardVisible);
   const [isStoreCardVisible, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
-  // const [isStationCheck, setIsStationCheck] = useState(false);
-
-  // 임시 역 리스트
-  const stationList = [
-    "강남", "홍대", "건대", "신촌", "대학로", "잠실",
-    "신림", "종각", "노원", "성수", "신사", "성신여대",
-    "서울대입구", "명동", "영등포", "수유", "그 외 지역",
-  ];
+  const [stationList, setStationList] = useState([]); // 역 목록 상태
+  const [regionId, setRegionId] = useState(1); // 지역 아이디 상태
+  const [, setIsZoneId] = useRecoilState(zoneId);
+  const [, setCurrentPage] = useRecoilState(storePageNumber);
 
   // 지역 선택 핸들러
-  const handleLocationCheck = () => {
+  const handleLocationCheck = (id) => {
     setIsSeoulCheck(!isSeoulCheck);
     setIsStationListVisible(true);
+    setRegionId(id);
+    setCurrentPage(1);
   };
 
   // 역 선택 핸들러
-  const handleStationSelect = () => {
+  const handleStationSelect = (id) => {
     setIsStationCardVisible(true);
     setIsStoreCardVisible(false);
+    setIsZoneId(id);
+    setCurrentPage(1);
   };
+
+  // 구역 목록 조회
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getLocationZonesAPI(regionId);
+        console.log('구역별 역 목록: ', response);
+        setStationList(response);
+        setIsZoneId(response.zoneId);
+      } catch (error) {
+        console.error('구역별 역 목록 데이터를 불러오는 중 오류 발생:', error);
+      }
+    };
+    fetchData();
+  }, [regionId, setIsZoneId]);
 
   return (
     <PageWrapper>
@@ -45,7 +61,7 @@ function LocationPage() {
         <LocationButtonWrapper>
           <LocationButton
             isSeoulCheck={isSeoulCheck}
-            onClick={handleLocationCheck}
+            onClick={() => handleLocationCheck(1)}
           >
             <StyledMarkerIcon isSeoulCheck={isSeoulCheck}/>
             <LocationText>
@@ -54,7 +70,7 @@ function LocationPage() {
           </LocationButton>
           <LocationButton
             isSeoulCheck={!isSeoulCheck}
-            onClick={handleLocationCheck}
+            onClick={() => handleLocationCheck(2)}
           >
             <StyledMarkerIcon isSeoulCheck={!isSeoulCheck}/>
             <LocationText>
@@ -68,14 +84,14 @@ function LocationPage() {
           {stationList.map((station, index) => (
             <StationList
               key={index}
-              onClick={handleStationSelect}
+              onClick={() => handleStationSelect(station.zoneId)}
             >
               <StationTitle>
-                {station}
+                {station.zoneName}
               </StationTitle>
               <ListEnterWrapper>
                 <StoreNumber>
-                  99
+                  {station.storeCount}
                 </StoreNumber>
                 <StyledArrowIcon />
               </ListEnterWrapper>
@@ -199,7 +215,7 @@ const SideButtonArrow = styled(ArrowIcon)`
 `;
 
 const StationListWrapper = styled.div`
-font-size: 1.155em; // 임의로 지정
+font-size: 1.3em; // 임의로 지정
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -238,6 +254,7 @@ const StationList = styled.div`
   flex-shrink: 0;
   background: var(--RIU_Monochrome-20, #F0F0F4);
   line-height: normal;
+  cursor: pointer;
 `;
 
 const StationTitle = styled.div`

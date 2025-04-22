@@ -2,19 +2,17 @@ import { useState, useEffect } from 'react';
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
-import ThumbnailImg from '../assets/images/common/thumbnailImg.png';
-import AwardsIcon from '../assets/icons/common/awards.svg?react';
-import CautionIcon from '../assets/icons/common/cautionIcon.svg?react';
-import HeartIcon from '../assets/icons/common/heart_default.svg?react';
-import HeartIcon2 from '../assets/icons/common/heart_hover.svg?react';
-import HeartIcon3 from '../assets/icons/common/heart_active.svg?react';
-import { formatNumberWithCommas } from '../utils/formatUtils';
-import { levelTextConversion, genreListConversion, satisfactionConversion } from '../utils/dataUtils';
-import useDevice from '../hooks/useDevice';
+import ThumbnailImg from '../../../shared/assets/images/common/thumbnailImg.png';
+import AwardsIcon from '../../../shared/assets/icons/common/awards.svg?react';
+import CautionIcon from '../../../shared/assets/icons/common/cautionIcon.svg?react';
+import HeartIcon from '../../../shared/assets/icons/common/heart_default.svg?react';
+import HeartIcon2 from '../../../shared/assets/icons/common/heart_hover.svg?react';
+import HeartIcon3 from '../../../shared/assets/icons/common/heart_active.svg?react';
+import { formatNumberWithCommas } from '../../../shared/utils/formatUtils';
+import { levelTextConversion, genreListConversion, satisfactionConversion } from '../../../shared/utils/dataUtils';
 
-function ContentCard({ data, headCount, type }) {
+function LocationContentCard({ data, headCount, type }) {
   const {
-    locationName,
     awardsYear,
     img,
     satisfactionLevel,
@@ -34,9 +32,6 @@ function ContentCard({ data, headCount, type }) {
   // navigate
   const navigate = useNavigate();
 
-  // 반응형 함수
-  const { isMobile } = useDevice();
-
   // 이미지 로드 실패 시, 기본 썸네일로 변경
   useEffect(() => {
     setImageUrl(img);
@@ -50,7 +45,6 @@ function ContentCard({ data, headCount, type }) {
     <ContentWrapper onClick={() => navigate('/level')}>
       {/* 이미지 영역 */}
       <ImageSection imgUrl={imageUrl}>
-        <LocationTag>{locationName}</LocationTag>
         {awardsYear && <AwardsTag><StyledAwards/>{awardsYear}</AwardsTag>}
         {/* 보이지 않는 img 태그 추가 (onError 감지용) */}
         <img src={imageUrl} alt="테마 이미지" onError={handleImageError} />
@@ -71,26 +65,6 @@ function ContentCard({ data, headCount, type }) {
               <CafeName>{storeName}</CafeName>
               <Title>{themeName}</Title>
             </TitleWrapper>
-            {!isMobile && (
-              <>
-                {/* 하트 아이콘 영역 */}
-                <HeartWrapper
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setIsHeartActive(!isHeartActive);
-                  }}
-                >
-                  {isHeartActive ? (
-                    <StyledHeartIcon3 />
-                  ) : (
-                    <>
-                      <StyledHeartIcon className="default" />
-                      <StyledHeartIcon2 className="hover" />
-                    </>
-                  )}
-                </HeartWrapper>
-              </>
-            )}
           </TitleSection>
 
           {/* 장르 영역 */}
@@ -132,26 +106,23 @@ function ContentCard({ data, headCount, type }) {
               <Price>₩ {formatNumberWithCommas(price ?? 0)} {type === 'home' && '~'}</Price>
             </PriceWrapper>
           )}
-          {isMobile && (
+
+          {/* 하트 아이콘 영역 */}
+          <HeartWrapper
+            onClick={(event) => {
+              event.stopPropagation();
+              setIsHeartActive(!isHeartActive);
+            }}
+          >
+            {isHeartActive ? (
+              <StyledHeartIcon3 />
+            ) : (
               <>
-                {/* 모바일 하트 아이콘 영역 */}
-                <HeartWrapper
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setIsHeartActive(!isHeartActive);
-                  }}
-                >
-                  {isHeartActive ? (
-                    <StyledHeartIcon3 />
-                  ) : (
-                    <>
-                      <StyledHeartIcon className="default" />
-                      <StyledHeartIcon2 className="hover" />
-                    </>
-                  )}
-                </HeartWrapper>
+                <StyledHeartIcon className="default" />
+                <StyledHeartIcon2 className="hover" />
               </>
             )}
+          </HeartWrapper>
         </PriceSection>
       </ItemWrapper>
     </ContentWrapper>
@@ -159,23 +130,23 @@ function ContentCard({ data, headCount, type }) {
 }
 
 // PropTypes 정의 (eslint 에러 방지)
-ContentCard.propTypes = {
+LocationContentCard.propTypes = {
   data: PropTypes.object.isRequired,
   type: PropTypes.string.isRequired,
   headCount: PropTypes.number.isRequired,
 };
 
-export default ContentCard;
+export default LocationContentCard;
 
 // CSS
 const ContentWrapper = styled.div`
   border-radius: 0.9375rem;
-  padding: 0.84375rem;
+  padding: 0.625rem;
   box-sizing: border-box;
-  width: 16.5625rem;
-  height: 28.125rem;
+  width: 100%;
+  height: 9rem;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: flex-start;
   background: var(--RIU_Monochrome-10, #F9F9FB);
   cursor: pointer;
@@ -184,26 +155,14 @@ const ContentWrapper = styled.div`
   &:hover {
     background: var(--RIU_Primary-0, #E8EAFF);
   }
-
-  @media (max-width: 1024px) {
-    padding: 0.703125rem;
-    width: 21.1875rem;
-    height: 21.09375rem;
-  }
-  @media (max-width: 768px) {
-    padding: 0.625rem;
-    width: 20.9375rem;
-    height: 10rem;
-    flex-direction: row;
-    justify-content: space-between;
-  }
 `;
 
 const ImageSection = styled.div`
+  border-radius: 0.375rem;
+  width: 7.875rem;
+  height: 7.875rem;
   display: flex;
-  border-radius: 0.5625rem;
-  width: 100%;
-  height: 15.65625rem;
+  flex-direction: column;
   align-self: stretch;
   background-image: url(${props => props.imgUrl});
   background-position: center;
@@ -214,54 +173,16 @@ const ImageSection = styled.div`
   img {
     display: none;
   }
-
-  @media (max-width: 1024px) {
-    height: 11.7421875rem;
-  }
-  @media (max-width: 768px) {
-    border-radius: 0.375rem;
-    width: 8.75rem;
-    height: 8.75rem;
-    display: flex;
-    flex-direction: column;
-  }
-`;
-
-const LocationTag = styled.div`
-  padding: 0 0.75rem;
-  box-sizing: border-box;
-  margin: 0.5rem 0 0 0.5rem;
-  width: fit-content;
-  height: 1.375rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 0.9375rem;
-  background: var(--RIU_Primary-400, #515DBA);
-  color: var(--RIU_Monochrome-10, #F9F9FB);
-  font-family: 'Pretendard-Bold';
-  font-size: 0.65625rem;
-
-  @media (max-width: 1024px) {
-    padding: 0 0.6328125rem;
-    margin: 0.375rem 0 0 0.375rem;
-    height: 1.078125rem;
-    font-size: 0.5625rem;
-  }
-  @media (max-width: 768px) {
-    height: 1.125rem;
-    font-size: 0.625rem;
-  }
 `;
 
 const AwardsTag = styled.div`
   border: 1px solid var(--RIU_Monochrome-80, #A1A4B5);
   border-radius: 0.9375rem;
-  padding: 0 0.75rem;
+  padding: 0 0.6328125rem;
   box-sizing: border-box;
-  margin: 0.5rem 0 0 0.5rem;
+  margin: 0.375rem 0 0 0.375rem;
   width: fit-content;
-  height: 1.375rem;
+  height: 1.125rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -269,18 +190,7 @@ const AwardsTag = styled.div`
   background: var(--RIU_Monochrome-10, #F9F9FB);
   color: var(--RIU_Primary-80, #8DA3FF);
   font-family: 'Pretendard-Bold';
-  font-size: 0.65625rem;
-
-  @media (max-width: 1024px) {
-    padding: 0 0.6328125rem;
-    margin: 0.375rem 0 0 0.375rem;
-    height: 1.078125rem;
-    font-size: 0.5625rem;
-  }
-  @media (max-width: 768px) {
-    height: 1.125rem;
-    font-size: 0.625rem;
-  }
+  font-size: 0.625rem;
 `;
 
 const StyledAwards = styled(AwardsIcon)`
@@ -288,19 +198,11 @@ const StyledAwards = styled(AwardsIcon)`
 `;
 
 const ItemWrapper = styled.div`
-  width: 100%;
-  height: 10.59375rem;
+  width: 8rem;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
-  @media (max-width: 1024px) {
-    height: 7.9453125rem;
-  }
-  @media (max-width: 768px) {
-    width: 10.4375rem;
-    height: 8.75rem;
-  }
 `;
 
 const TagAndTitleWrapper = styled.div`
@@ -310,129 +212,76 @@ const TagAndTitleWrapper = styled.div`
 `;
 
 const TagSection = styled.div`
-  margin-top: 0.46875rem;
+  margin-top: 0;
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.375rem;
-
-  @media (max-width: 768px) {
-    margin-top: 0.3515625rem;
-    gap: 0.28125rem;
-  }
-  @media (max-width: 768px) {
-    margin-top: 0;
-    gap: 0.25rem;
-  }
+  gap: 0.25rem;
 `;
 
 const ScoreTag = styled.div`
   border-radius: 0.1875rem;
-  padding: 0 0.46875rem;
-  height: 1.375rem;
+  padding: 0 0.3rem;
+  height: 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
   background: var(--RIU_Primary-100, #718FF2);
   color: var(--RIU_Monochrome-10, #F9F9FB);
   font-family: 'Pretendard-Bold';
-  font-size: 0.65625rem;
-
-  @media (max-width: 1024px) {
-    padding: 0 0.3515625rem;
-    height: 1.078125rem;
-    font-size: 0.5625rem;
-  }
-  @media (max-width: 768px) {
-    height: 1rem;
-    font-size: 0.5rem;
-    padding: 0 0.3rem;
-  }
+  font-size: 0.5rem;
 `;
 
 const Tag = styled.div`
   border-radius: 0.1875rem;
-  padding: 0 0.46875rem;
-  height: 1.375rem;
+  padding: 0 0.3515625rem;
+  height: 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
   background: var(--RIU_Monochrome-20, #F0F0F4);
   color: var(--RIU_Monochrome-80, #A1A4B5);
   font-family: 'Pretendard-Medium';
-  font-size: 0.65625rem;
+  font-size: 0.5rem;
   transition: background 0.2s ease-in-out;
 
   ${ContentWrapper}:hover & {
     background: var(--RIU_Primary-20, #D0D8FF);
     color: var(--RIU_Primary-200, #6680DF);
   }
-
-  @media (max-width: 1024px) {
-    padding: 0 0.3515625rem;
-    height: 1.078125rem;
-    font-size: 0.5625rem;
-  }
-  @media (max-width: 768px) {
-    height: 1rem;
-    font-size: 0.5rem;
-  }
 `;
 
 const TitleSection = styled.div`
-  margin-top: 0.9375rem;
+  margin-top: 0.5rem;
   width: 100%;
   display: flex;
   justify-content: space-between;
-
-  @media (max-width: 1024px) {
-    margin-top: 0.703125rem;
-  }
-  @media (max-width: 768px) {
-    margin-top: 0.5rem;
-  }
 `;
 
 const TitleWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.3125rem;
-
-  @media (max-width: 1024px) {
-    gap: 0.234375rem;
-  }
-  @media (max-width: 768px) {
-    gap: 0;
-  }
+  gap: 0;
 `;
 
 const CafeName = styled.div`
-  width: 11.5rem;
+  width: 8.5rem;
   color: var(--RIU_Primary-80, #8DA3FF);
   font-family: 'Pretendard-Bold';
-  font-size: 0.65625rem;
+  font-size: 0.625rem;
 
   // 말줄임 표시
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   word-break: break-all;
-
-  @media (max-width: 1024px) {
-    width: 15.75rem;
-    font-size: 0.5625rem;
-  }
-  @media (max-width: 768px) {
-    width: 8.5rem;
-    font-size: 0.625rem;
-  }
 `;
 
 const Title = styled.div`
-  width: 11.5rem;
+  width: 8.5rem;
   color: var(--RIU_Primary-600, #303281);
   font-family: 'Pretendard-ExtraBold';
-  font-size: 1.3125rem;
+  font-size: 1rem;
 
   // 말줄임 표시
   text-overflow: ellipsis;
@@ -442,21 +291,14 @@ const Title = styled.div`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow-wrap: break-word;
-
-  @media (max-width: 1024px) {
-    width: 15.75rem;
-    font-size: 1.125rem;
-  }
-  @media (max-width: 768px) {
-    width: 8.5rem;
-    font-size: 1rem;
-  }
 `;
 
 const HeartWrapper = styled.div`
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1rem;
+  height: 1rem;
   position: relative;
+  right: 0.5rem;
+  bottom: 0.4rem;
 
   svg {
     position: absolute;
@@ -477,43 +319,20 @@ const HeartWrapper = styled.div`
 
   &:hover .hover {
     opacity: 1;
-  }
-
-  @media (max-width: 1024px) {
-    width: 1.125rem;
-    height: 1.125rem;
-    right: 0.5rem;
-  }
-  @media (max-width: 768px) {
-    width: 1rem;
-    height: 1rem;
-    bottom: 0.4rem;
-  }
+  } 
 `;
 
 const StyledHeartIcon = styled(HeartIcon)`
-  width: 100%;
-  height: 100%;
-  @media (max-width: 768px) {
-    width: 120%;
-    height: 120%;
-  }
+  width: 120%;
+  height: 120%;
 `;
 const StyledHeartIcon2 = styled(HeartIcon2)`
-  width: 100%;
-  height: 100%;
-  @media (max-width: 768px) {
-    width: 120%;
-    height: 120%;
-  }
+  width: 120%;
+  height: 120%;
 `;
 const StyledHeartIcon3 = styled(HeartIcon3)`
-  width: 100%;
-  height: 100%;
-  @media (max-width: 768px) {
-    width: 120%;
-    height: 120%;
-  }
+  width: 120%;
+  height: 120%;
 `;
 
 const GenreSection = styled.div`
@@ -521,14 +340,7 @@ const GenreSection = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.1875rem;
-
-  @media (max-width: 1024px) {
-    gap: 0.375rem;
-  }
-  @media (max-width: 768px) {
-    gap: 0.5rem;
-  }
+  gap: 0.5rem;
 `;
 
 const PriceSection = styled.div`
@@ -541,45 +353,27 @@ const PriceSection = styled.div`
 const PriceWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.234375rem;
+  gap: 0.17578125rem;
   color: var(--RIU_Monochrome-80, #A1A4B5);
   font-family: 'Pretendard-SemiBold';
-  font-size: 0.84375rem;
+  font-size: 0.75rem;
   ${ItemWrapper}:hover & {
     color: var(--RIU_Primary-80, #8DA3FF);
-  }
-
-  @media (max-width: 1024px) {
-    gap: 0.17578125rem;
-    font-size: 0.6328125rem;
-  }
-  @media (max-width: 768px) {
-    font-size: 0.75rem;
   }
 `;
 
 const CautionWrapper = styled.div`
   border-radius: 1.875rem;
-  padding: ${(props) => (props.type === 'headCountCaution') ? '0.25rem 0.625rem' : '0'};
-  width: ${(props) => (props.type === 'headCountCaution') ? '100%' : 'auto'};
+  padding: ${(props) => (props.type === 'headCountCaution') ? '0.125rem 0.5rem' : '0'};
+  width: ${(props) => (props.type === 'headCountCaution') ? '70%' : 'auto'};
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.17578125rem;
   background-color: ${(props) => (props.type === 'headCountCaution') ? 'var(--RIU_Primary-500, #4648A7)' : 'transparent'};
   color: ${(props) => (props.type === 'headCountCaution') ? 'var(--RIU_Monochrome-10, #F9F9FB)' : 'var(--RIU_Monochrome-60, #C4C6D1)'};
   font-family: 'Pretendard-SemiBold';
-  font-size: 0.84375rem;
+  font-size: 0.75rem;
   line-height: normal;
-
-  @media (max-width: 1024px) {
-    gap: 0.17578125rem;
-    font-size: 0.6328125rem;
-  }
-  @media (max-width: 768px) {
-    padding: ${(props) => (props.type === 'headCountCaution') ? '0.125rem 0.5rem' : '0'};
-    width: ${(props) => (props.type === 'headCountCaution') ? '70%' : 'auto'};
-    font-size: 0.75rem;
-  }
 `;
 
 const StyledCautionIcon = styled(CautionIcon)`
@@ -590,12 +384,5 @@ const StyledCautionIcon = styled(CautionIcon)`
 const Price = styled.div`
   color: var(--RIU_Primary-80, #8DA3FF);
   font-family: 'Pretendard-ExtraBold';
-  font-size: 0.84375rem;
-
-  @media (max-width: 1024px) {
-    font-size: 0.6328125rem;
-  }
-  @media (max-width: 768px) {
-    font-size: 0.75rem;
-  }
+  font-size: 0.75rem;
 `;

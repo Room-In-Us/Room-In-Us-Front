@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import DownArrowIcon from "../../../shared/assets/icons/location/downArrowIcon.svg?react";
 import AwardsIcon from "../../../shared/assets/icons/common/awards.svg?react";
@@ -5,38 +6,71 @@ import ArrowIcon from "../../../shared/assets/icons/location/arrowIcon.svg?react
 import RightArrowIcon from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrowIcon from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
 import { useRecoilState } from "recoil";
-import { stationCardVisible, storeCardVisible } from "../../../features/location/model/locationAtom";
+import { stationCardVisible, storeCardVisible, zoneId, storePageNumber } from "../../../features/location/model/locationAtom";
+import { getSeoulZonesInfoAPI, getSeoulZoneStoreListAPI } from "../api/locationAPI";
 
 function StationCard() {
   // 상태 관리
   const [, setIsStationCardVisible] = useRecoilState(stationCardVisible);
   const [, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
-  
-  // 임시 역 리스트
-  const stationList = [
-    { stationName: "역삼역", stationLineList: [2] },
-    { stationName: "강남역", stationLineList: [2, 14] },
-    { stationName: "신논현역", stationLineList: [9, 14] },
-  ];
-
-  // 임시 매장 리스트
-  const storeList = [
-    { name: "키이스케이프 메모리컴퍼니점", themeCount: 3 },
-    { name: "단편선 강남", themeCount: 2 },
-    { name: "제로월드 강남", themeCount: 9 },
-    { name: "키이스케이프 우주라이크점", themeCount: 2 },
-    { name: "비트포비아 강남던전", themeCount: 4 },
-    { name: "키이스케이프 강남 더오름점", themeCount: 2 },
-    { name: "제로월드 블랙 강남점", themeCount: 1 },
-    { name: "키이스케이프 LOG_IN 1", themeCount: 2 },
-    { name: "도어이스케이프 블루 신논현점", themeCount: 2 },
-    { name: "비밀의 화원 리버타운 강남점", themeCount: 6 },
-  ];
+  const [zoneInfo, setZoneInfo] = useState(""); // 구역별 상세정보
+  const [stationList, setStationList] = useState([]); // 역 목록 상태
+  const [storeList, setStoreList] = useState([]); // 매장 목록 상태
+  const [isZoneId,] = useRecoilState(zoneId);
+  const [currentPage, setCurrentPage] = useRecoilState(storePageNumber);
+  const [totalPages, setTotalPages] = useState("");
 
   // 매장 선택 핸들러
   const handleStoreSelect = () => {
     setIsStoreCardVisible(true);
     setIsStationCardVisible(false);
+  };
+
+  // 서울 구역 상세정보 조회
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getSeoulZonesInfoAPI(isZoneId);
+        console.log('서울 구역 상세정보: ', response);
+        setZoneInfo(response);
+        setStationList(response.stationList);
+      } catch (error) {
+        console.error('서울 구역 상세정보 데이터를 불러오는 중 오류 발생:', error);
+      }
+    };
+    fetchData();
+  }, [isZoneId]);
+
+  // 서울 구역 매장 목록 조회
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getSeoulZoneStoreListAPI(isZoneId, currentPage, 10, "RECOMMEND");
+        console.log('서울 구역 매장 목록: ', response);
+        setStoreList(response.storeData.contents);
+        setTotalPages(response.storeData.totalPages);
+      } catch (error) {
+        console.error('서울 구역 매장 목록 데이터를 불러오는 중 오류 발생:', error);
+      }
+    };
+    fetchData();
+  }, [isZoneId, currentPage]);
+
+  // 페이지 이동
+  const handlePageClick = (page) => {
+    setCurrentPage(page);
+  };
+  // 이전 페이지 이동
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  // 다음 페이지 이동
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
   };
 
   return (
@@ -45,14 +79,14 @@ function StationCard() {
       <TitleWrapper>
         <StationTitleWrapper>
           <StationTitle>
-            강남
+            {zoneInfo.zoneName}
           </StationTitle>
           <StationDescription>
-            총 48개의 매장, 176개의 테마가 있습니다
+            총 {zoneInfo.storeCount}개의 매장, {zoneInfo.themeCount}개의 테마가 있습니다
           </StationDescription>
         </StationTitleWrapper>
         <StationListWrapper>
-          {stationList.map((station, index) => (
+          {zoneId && stationList.map((station, index) => (
             <StationList key={index}>
               {/* 노선 번호 리스트 */}
               {station.stationLineList.map((line, lineIndex) => (
@@ -73,7 +107,7 @@ function StationCard() {
       <ListWrapper>
         <ListTitleWrapper>
           <ListNumber>
-            매장 목록 &#40;48&#41;
+            매장 목록 &#40;{zoneInfo.storeCount}&#41;
           </ListNumber>
           <FilterWrapper>
             <FilterName>
@@ -90,12 +124,12 @@ function StationCard() {
           onClick={handleStoreSelect}
         >
           <ItemTitleWrapper>
-            <StyledAwardsIcon/>
+            {store.isAwarded && <StyledAwardsIcon/>}
             <ItemName>
-              {store.name}
+              {store.storeName}
             </ItemName>
             <ItemNumber>
-              &#40;{store.themeCount}&#41;
+              &#40;매장 테마 개수&#41;
             </ItemNumber>
           </ItemTitleWrapper>
           <StyledArrowIcon/>
@@ -105,15 +139,25 @@ function StationCard() {
 
       {/* 페이징 영역 */}
       <PagingWrapper>
-        <StyledLeftArrowIcon hasNextPage={false}/>
+        <StyledLeftArrowIcon
+          hasNextPage={currentPage > 1}
+          onClick={handlePrevPage}
+        />
         <PageNumberWrapper>
-          <PageNumber pageState={true}>1</PageNumber>
-          <PageNumber pageState={false}>2</PageNumber>
-          <PageNumber pageState={false}>3</PageNumber>
-          <PageNumber pageState={false}>4</PageNumber>
-          <PageNumber pageState={false}>5</PageNumber>
+          {[...Array(totalPages)].map((_, idx) => (
+            <PageNumber
+              key={idx}
+              pageState={currentPage === idx + 1}
+              onClick={() => handlePageClick(idx + 1)}
+            >
+              {idx + 1}
+            </PageNumber>
+          ))}
         </PageNumberWrapper>
-        <StyledRightArrowIcon hasNextPage={true}/>
+        <StyledRightArrowIcon
+          hasNextPage={currentPage < totalPages}
+          onClick={handleNextPage}
+        />
       </PagingWrapper>
     </ComponentWrapper>
   )
@@ -170,6 +214,7 @@ const StationDescription = styled.div`
 const StationListWrapper = styled.div`
   display: flex;
   width: 29em;
+  height: 1.8125em;
   align-items: center;
   gap: 1.875em;
 `;
@@ -284,8 +329,9 @@ const StyledArrowIcon = styled(ArrowIcon)`
 const PagingWrapper = styled.div`
   display: flex;
   width: 29em;
+  height: 100%;
   justify-content: space-between;
-  align-items: center;
+  align-items: end;
 `;
 
 const StyledLeftArrowIcon = styled(LeftArrowIcon)`
