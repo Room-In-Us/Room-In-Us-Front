@@ -4,8 +4,14 @@ import AwardsIcon from "../../../shared/assets/icons/common/awards.svg?react";
 import ArrowIcon from "../../../shared/assets/icons/location/arrowIcon.svg?react";
 import RightArrowIcon from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrowIcon from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
+import { useRecoilState } from "recoil";
+import { stationCardVisible, storeCardVisible } from "../../../features/location/model/locationAtom";
 
 function StationCard() {
+  // 상태 관리
+  const [, setIsStationCardVisible] = useRecoilState(stationCardVisible);
+  const [, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
+  
   // 임시 역 리스트
   const stationList = [
     { stationName: "역삼역", stationLineList: [2] },
@@ -26,6 +32,12 @@ function StationCard() {
     { name: "도어이스케이프 블루 신논현점", themeCount: 2 },
     { name: "비밀의 화원 리버타운 강남점", themeCount: 6 },
   ];
+
+  // 매장 선택 핸들러
+  const handleStoreSelect = () => {
+    setIsStoreCardVisible(true);
+    setIsStationCardVisible(false);
+  };
 
   return (
     <ComponentWrapper>
@@ -73,7 +85,10 @@ function StationCard() {
       </ListWrapper>
       <StoreList>
         {storeList.map((store, index) => (
-        <ListItem key={index}>
+        <ListItem
+          key={index}
+          onClick={handleStoreSelect}
+        >
           <ItemTitleWrapper>
             <StyledAwardsIcon/>
             <ItemName>
@@ -233,6 +248,7 @@ const ListItem = styled.div`
   align-items: center;
   align-self: stretch;
   background: var(--RIU_Monochrome-40, #DFDFE6);
+  cursor: pointer;
 `;
 
 const ItemTitleWrapper = styled.div`

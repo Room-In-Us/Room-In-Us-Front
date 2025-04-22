@@ -6,6 +6,12 @@ export const stationCardVisible = atom({
   default: false,
 });
 
+// 매장 상태
+export const storeCardVisible = atom({
+  key: 'storeCardVisible',
+  default: false,
+});
+
 /* ------------- [구버전] ------------- */
 
 // 지역 상태

@@ -4,14 +4,16 @@ import GoogleMapComponent from "../features/location/ui/map/GoogleMapComponent";
 import MarkerIcon from "../shared/assets/icons/location/markerIcon.svg?react";
 import ArrowIcon from "../shared/assets/icons/location/arrowIcon.svg?react";
 import StationCard from "../features/location/ui/StationCard";
+import StoreCard from "../features/location/ui/StoreCard";
 import { useRecoilState } from "recoil";
-import { stationCardVisible } from "../features/location/model/locationAtom";
+import { stationCardVisible, storeCardVisible } from "../features/location/model/locationAtom";
 
 function LocationPage() {
   // 상태 관리
   const [isSeoulCheck, setIsSeoulCheck] = useState(true);
   const [isStationListVisible, setIsStationListVisible] = useState(true);
   const [isStationCardVisible, setIsStationCardVisible] = useRecoilState(stationCardVisible);
+  const [isStoreCardVisible, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
   // const [isStationCheck, setIsStationCheck] = useState(false);
 
   // 임시 역 리스트
@@ -30,6 +32,7 @@ function LocationPage() {
   // 역 선택 핸들러
   const handleStationSelect = () => {
     setIsStationCardVisible(true);
+    setIsStoreCardVisible(false);
   };
 
   return (
@@ -87,9 +90,14 @@ function LocationPage() {
           </SideButton>
         </SideButtonWrapper>
 
-        {/* 매장 영역 */}
+        {/* 역 카드 영역 */}
         {isStationCardVisible &&
           <StationCard />
+        }
+
+        {/* 매장 카드 영역 */}
+        {isStoreCardVisible &&
+          <StoreCard />
         }
 
       </OverlayWrapper>
@@ -101,7 +109,7 @@ export default LocationPage;
 
 // CSS
 const PageWrapper = styled.div`
-font-size: 0.6rem;
+font-size: 0.6rem; // 임의로 지정
   margin-top: 5.625rem; // 헤더높이
   width: 100vw;
   height: calc(100vh - 5.625rem - 2.375rem); // 100vh-헤더-풋터

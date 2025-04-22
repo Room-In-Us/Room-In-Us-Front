@@ -47,7 +47,10 @@ function ContentCard({ data, headCount, type }) {
   };
 
   return (
-    <ContentWrapper onClick={() => navigate('/level')}>
+    <ContentWrapper
+      type={type}
+      onClick={() => navigate('/level')}
+    >
       {/* 이미지 영역 */}
       <ImageSection imgUrl={imageUrl}>
         <LocationTag>{locationName}</LocationTag>
@@ -81,11 +84,11 @@ function ContentCard({ data, headCount, type }) {
                   }}
                 >
                   {isHeartActive ? (
-                    <HeartIcon3 />
+                    <StyledHeartIcon3 />
                   ) : (
                     <>
-                      <HeartIcon className="default" />
-                      <HeartIcon2 className="hover" />
+                      <StyledHeartIcon className="default" />
+                      <StyledHeartIcon2 className="hover" />
                     </>
                   )}
                 </HeartWrapper>
@@ -142,11 +145,11 @@ function ContentCard({ data, headCount, type }) {
                   }}
                 >
                   {isHeartActive ? (
-                    <HeartIcon3 />
+                    <StyledHeartIcon3 />
                   ) : (
                     <>
-                      <HeartIcon className="default" />
-                      <HeartIcon2 className="hover" />
+                      <StyledHeartIcon className="default" />
+                      <StyledHeartIcon2 className="hover" />
                     </>
                   )}
                 </HeartWrapper>
@@ -169,11 +172,12 @@ export default ContentCard;
 
 // CSS
 const ContentWrapper = styled.div`
-  border-radius: 0.9375rem;
-  padding: 0.84375rem;
+  font-size: ${(props) => (props.type === 'location') ? '0.52rem' : '1rem'};
+  border-radius: 0.9375em;
+  padding: 0.84375em;
   box-sizing: border-box;
-  width: 16.5625rem;
-  height: 28.125rem;
+  width: 16.5625em;
+  height: 28.125em;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -186,14 +190,14 @@ const ContentWrapper = styled.div`
   }
 
   @media (max-width: 1024px) {
-    padding: 0.703125rem;
-    width: 21.1875rem;
-    height: 21.09375rem;
+    padding: 0.703125em;
+    width: 21.1875em;
+    height: 21.09375em;
   }
   @media (max-width: 768px) {
-    padding: 0.625rem;
-    width: 20.9375rem;
-    height: 10rem;
+    padding: 0.625em;
+    width: 20.9375em;
+    height: 10em;
     flex-direction: row;
     justify-content: space-between;
   }
@@ -201,9 +205,9 @@ const ContentWrapper = styled.div`
 
 const ImageSection = styled.div`
   display: flex;
-  border-radius: 0.5625rem;
+  border-radius: 0.5625em;
   width: 100%;
-  height: 15.65625rem;
+  height: 15.65625em;
   align-self: stretch;
   background-image: url(${props => props.imgUrl});
   background-position: center;
@@ -216,90 +220,97 @@ const ImageSection = styled.div`
   }
 
   @media (max-width: 1024px) {
-    height: 11.7421875rem;
+    height: 11.7421875em;
   }
   @media (max-width: 768px) {
-    border-radius: 0.375rem;
-    width: 8.75rem;
-    height: 8.75rem;
+    border-radius: 0.375em;
+    width: 8.75em;
+    height: 8.75em;
     display: flex;
     flex-direction: column;
   }
 `;
 
 const LocationTag = styled.div`
-  padding: 0 0.75rem;
+  padding: 0 1.14285714em;
   box-sizing: border-box;
-  margin: 0.5rem 0 0 0.5rem;
+  margin: 0.76190476em 0 0 0.76190476em;
   width: fit-content;
-  height: 1.375rem;
+  height: 2.0952381em;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 0.9375rem;
+  border-radius: 1.42857143em;
   background: var(--RIU_Primary-400, #515DBA);
   color: var(--RIU_Monochrome-10, #F9F9FB);
   font-family: 'Pretendard-Bold';
-  font-size: 0.65625rem;
+  font-size: 0.65625em;
 
   @media (max-width: 1024px) {
-    padding: 0 0.6328125rem;
-    margin: 0.375rem 0 0 0.375rem;
-    height: 1.078125rem;
-    font-size: 0.5625rem;
+    padding: 0 1.125em;
+    margin: 0.66666667em 0 0 0.66666667em;
+    height: 1.91666667em;
+    font-size: 0.5625em;
   }
   @media (max-width: 768px) {
-    height: 1.125rem;
-    font-size: 0.625rem;
+    height: 1.8em;
+    font-size: 0.625em;
   }
 `;
 
 const AwardsTag = styled.div`
   border: 1px solid var(--RIU_Monochrome-80, #A1A4B5);
-  border-radius: 0.9375rem;
-  padding: 0 0.75rem;
+  border-radius: 1.42857143em;
+  padding: 0 1.14285714em;
   box-sizing: border-box;
-  margin: 0.5rem 0 0 0.5rem;
+  margin: 0.76190476em 0 0 0.76190476em;
   width: fit-content;
-  height: 1.375rem;
+  height: 2.0952381em;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.38095238em;
   background: var(--RIU_Monochrome-10, #F9F9FB);
   color: var(--RIU_Primary-80, #8DA3FF);
   font-family: 'Pretendard-Bold';
-  font-size: 0.65625rem;
+  font-size: 0.65625em;
 
   @media (max-width: 1024px) {
-    padding: 0 0.6328125rem;
-    margin: 0.375rem 0 0 0.375rem;
-    height: 1.078125rem;
-    font-size: 0.5625rem;
+    padding: 0 1.125em;
+    margin: 0.66666667em 0 0 0.66666667em;
+    height: 1.91666667em;
+    font-size: 0.5625em;
   }
   @media (max-width: 768px) {
-    height: 1.125rem;
-    font-size: 0.625rem;
+    height: 1.8em;
+    font-size: 0.625em;
   }
 `;
 
 const StyledAwards = styled(AwardsIcon)`
-  width: 0.625rem;
+  width: 0.95238095em;
+
+  @media (max-width: 1024px) {
+    font-size: 1.69312169em;
+  }
+  @media (max-width: 768px) {
+    font-size: 1.52380952em;
+  }
 `;
 
 const ItemWrapper = styled.div`
   width: 100%;
-  height: 10.59375rem;
+  height: 10.59375em;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
   @media (max-width: 1024px) {
-    height: 7.9453125rem;
+    height: 7.9453125em;
   }
   @media (max-width: 768px) {
-    width: 10.4375rem;
-    height: 8.75rem;
+    width: 10.4375em;
+    height: 8.75em;
   }
 `;
 
@@ -310,57 +321,57 @@ const TagAndTitleWrapper = styled.div`
 `;
 
 const TagSection = styled.div`
-  margin-top: 0.46875rem;
+  margin-top: 0.46875em;
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 0.375em;
 
   @media (max-width: 768px) {
-    margin-top: 0.3515625rem;
-    gap: 0.28125rem;
+    margin-top: 0.3515625em;
+    gap: 0.28125em;
   }
   @media (max-width: 768px) {
     margin-top: 0;
-    gap: 0.25rem;
+    gap: 0.25em;
   }
 `;
 
 const ScoreTag = styled.div`
-  border-radius: 0.1875rem;
-  padding: 0 0.46875rem;
-  height: 1.375rem;
+  border-radius: 0.28571429em;
+  padding: 0 0.71428571em;
+  height: 2.0952381em;
   display: flex;
   justify-content: center;
   align-items: center;
   background: var(--RIU_Primary-100, #718FF2);
   color: var(--RIU_Monochrome-10, #F9F9FB);
   font-family: 'Pretendard-Bold';
-  font-size: 0.65625rem;
+  font-size: 0.65625em;
 
   @media (max-width: 1024px) {
-    padding: 0 0.3515625rem;
-    height: 1.078125rem;
-    font-size: 0.5625rem;
+    padding: 0 0.625em;
+    height: 1.91666667em;
+    font-size: 0.5625em;
   }
   @media (max-width: 768px) {
-    height: 1rem;
-    font-size: 0.5rem;
-    padding: 0 0.3rem;
+    padding: 0 0.6em;
+    height: 2em;
+    font-size: 0.5em;
   }
 `;
 
 const Tag = styled.div`
-  border-radius: 0.1875rem;
-  padding: 0 0.46875rem;
-  height: 1.375rem;
+  border-radius: 0.28571429em;
+  padding: 0 0.71428571em;
+  height: 2.0952381em;
   display: flex;
   justify-content: center;
   align-items: center;
   background: var(--RIU_Monochrome-20, #F0F0F4);
   color: var(--RIU_Monochrome-80, #A1A4B5);
   font-family: 'Pretendard-Medium';
-  font-size: 0.65625rem;
+  font-size: 0.65625em;
   transition: background 0.2s ease-in-out;
 
   ${ContentWrapper}:hover & {
@@ -369,37 +380,37 @@ const Tag = styled.div`
   }
 
   @media (max-width: 1024px) {
-    padding: 0 0.3515625rem;
-    height: 1.078125rem;
-    font-size: 0.5625rem;
+    padding: 0 0.625em;
+    height: 1.91666667em;
+    font-size: 0.5625em;
   }
   @media (max-width: 768px) {
-    height: 1rem;
-    font-size: 0.5rem;
+    height: 2em;
+    font-size: 0.5em;
   }
 `;
 
 const TitleSection = styled.div`
-  margin-top: 0.9375rem;
+  margin-top: 0.9375em;
   width: 100%;
   display: flex;
   justify-content: space-between;
 
   @media (max-width: 1024px) {
-    margin-top: 0.703125rem;
+    margin-top: 0.703125em;
   }
   @media (max-width: 768px) {
-    margin-top: 0.5rem;
+    margin-top: 0.5em;
   }
 `;
 
 const TitleWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.3125rem;
+  gap: 0.3125em;
 
   @media (max-width: 1024px) {
-    gap: 0.234375rem;
+    gap: 0.234375em;
   }
   @media (max-width: 768px) {
     gap: 0;
@@ -407,10 +418,10 @@ const TitleWrapper = styled.div`
 `;
 
 const CafeName = styled.div`
-  width: 11.5rem;
+  width: 17.52380952em;
   color: var(--RIU_Primary-80, #8DA3FF);
   font-family: 'Pretendard-Bold';
-  font-size: 0.65625rem;
+  font-size: 0.65625em;
 
   // 말줄임 표시
   overflow: hidden;
@@ -419,20 +430,20 @@ const CafeName = styled.div`
   word-break: break-all;
 
   @media (max-width: 1024px) {
-    width: 15.75rem;
-    font-size: 0.5625rem;
+    width: 28em;
+    font-size: 0.5625em;
   }
   @media (max-width: 768px) {
-    width: 8.5rem;
-    font-size: 0.625rem;
+    width: 13.6em;
+    font-size: 0.625em;
   }
 `;
 
 const Title = styled.div`
-  width: 11.5rem;
+  width: 8.76190476em;
   color: var(--RIU_Primary-600, #303281);
   font-family: 'Pretendard-ExtraBold';
-  font-size: 1.3125rem;
+  font-size: 1.3125em;
 
   // 말줄임 표시
   text-overflow: ellipsis;
@@ -444,18 +455,18 @@ const Title = styled.div`
   overflow-wrap: break-word;
 
   @media (max-width: 1024px) {
-    width: 15.75rem;
-    font-size: 1.125rem;
+    width: 14em;
+    font-size: 1.125em;
   }
   @media (max-width: 768px) {
-    width: 8.5rem;
-    font-size: 1rem;
+    width: 8.5em;
+    font-size: 1em;
   }
 `;
 
 const HeartWrapper = styled.div`
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.5em;
+  height: 1.5em;
   position: relative;
 
   svg {
@@ -480,29 +491,42 @@ const HeartWrapper = styled.div`
   }
 
   @media (max-width: 1024px) {
-    width: 1.125rem;
-    height: 1.125rem;
-    right: 0.5rem;
+    width: 1.125em;
+    height: 1.125em;
+    right: 0.5em;
   }
   @media (max-width: 768px) {
-    width: 1rem;
-    height: 1rem;
-    bottom: 0.4rem;
+    width: 1em;
+    height: 1em;
+    bottom: 0.4em;
   }
 `;
 
+const StyledHeartIcon = styled(HeartIcon)`
+  width: 100%;
+  height: 100%;
+`;
+const StyledHeartIcon2 = styled(HeartIcon2)`
+  width: 100%;
+  height: 100%;
+`;
+const StyledHeartIcon3 = styled(HeartIcon3)`
+  width: 100%;
+  height: 100%;
+`;
+
 const GenreSection = styled.div`
-  margin-top: 0.3125rem;
+  margin-top: 0.3125em;
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.1875rem;
+  gap: 0.1875em;
 
   @media (max-width: 1024px) {
-    gap: 0.375rem;
+    gap: 0.375em;
   }
   @media (max-width: 768px) {
-    gap: 0.5rem;
+    gap: 0.5em;
   }
 `;
 
@@ -516,61 +540,67 @@ const PriceSection = styled.div`
 const PriceWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.234375rem;
+  gap: 0.27777778em;
   color: var(--RIU_Monochrome-80, #A1A4B5);
   font-family: 'Pretendard-SemiBold';
-  font-size: 0.84375rem;
+  font-size: 0.84375em;
   ${ItemWrapper}:hover & {
     color: var(--RIU_Primary-80, #8DA3FF);
   }
 
   @media (max-width: 1024px) {
-    gap: 0.17578125rem;
-    font-size: 0.6328125rem;
+    gap: 0.27777778em;
+    font-size: 0.6328125em;
   }
   @media (max-width: 768px) {
-    font-size: 0.75rem;
+    font-size: 0.75em;
   }
 `;
 
 const CautionWrapper = styled.div`
-  border-radius: 1.875rem;
-  padding: ${(props) => (props.type === 'headCountCaution') ? '0.25rem 0.625rem' : '0'};
+  border-radius: 2.22222222em;
+  padding: ${(props) => (props.type === 'headCountCaution') ? '0.2962963em 0.74074074em' : '0'};
   width: ${(props) => (props.type === 'headCountCaution') ? '100%' : 'auto'};
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.59259259em;
   background-color: ${(props) => (props.type === 'headCountCaution') ? 'var(--RIU_Primary-500, #4648A7)' : 'transparent'};
   color: ${(props) => (props.type === 'headCountCaution') ? 'var(--RIU_Monochrome-10, #F9F9FB)' : 'var(--RIU_Monochrome-60, #C4C6D1)'};
   font-family: 'Pretendard-SemiBold';
-  font-size: 0.84375rem;
+  font-size: 0.84375em;
   line-height: normal;
 
   @media (max-width: 1024px) {
-    gap: 0.17578125rem;
-    font-size: 0.6328125rem;
+    gap: 0.27777778em;
+    font-size: 0.6328125em;
   }
   @media (max-width: 768px) {
-    padding: ${(props) => (props.type === 'headCountCaution') ? '0.125rem 0.5rem' : '0'};
+    padding: ${(props) => (props.type === 'headCountCaution') ? '0.16666667em 0.66666667em' : '0'};
     width: ${(props) => (props.type === 'headCountCaution') ? '70%' : 'auto'};
-    font-size: 0.75rem;
+    font-size: 0.75em;
   }
 `;
 
 const StyledCautionIcon = styled(CautionIcon)`
-  width: 0.75rem;
-  height: 0.75rem;
+  width: 0.88888889em;
+  height: 0.88888889em;
+
+  @media (max-width: 1024px) {
+    font-size: 1.40466392em;
+  }
+  @media (max-width: 768px) {
+    font-size: 1.18518519em;
+  }
 `;
 
 const Price = styled.div`
   color: var(--RIU_Primary-80, #8DA3FF);
   font-family: 'Pretendard-ExtraBold';
-  font-size: 0.84375rem;
 
   @media (max-width: 1024px) {
-    font-size: 0.6328125rem;
+    font-size: 0.75em;
   }
   @media (max-width: 768px) {
-    font-size: 0.75rem;
+    font-size: 0.88888889em;
   }
 `;
