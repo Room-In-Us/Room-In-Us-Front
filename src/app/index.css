@@ -8,7 +8,7 @@ body {
 
   &::-webkit-scrollbar {
     width: 8px;
-    height: 8x;
+    height: 8px;
     background: none;
   }
   &:hover::-webkit-scrollbar-thumb {

@@ -1,5 +1,61 @@
 import { atom } from 'recoil';
 
+// 역 상태
+export const stationCardVisible = atom({
+  key: 'stationCardVisible',
+  default: false,
+});
+
+// 매장 상태
+export const storeCardVisible = atom({
+  key: 'storeCardVisible',
+  default: false,
+});
+
+// 역 아이디
+export const zoneId = atom({
+  key: 'zoneId',
+  default: null,
+});
+
+// 매장 목록 페이지 넘버
+export const storePageNumber = atom({
+  key: 'storePageNumber',
+  default: 1,
+});
+
+// 매장 아이디
+export const locationStoreId = atom({
+  key: 'locationStoreId',
+  default: null,
+});
+
+// 지역 아이디
+export const locationRegionId = atom({
+  key: 'locationRegionId',
+  default: 1,
+});
+
+// 구역 이름
+export const zoneName = atom({
+  key: 'zoneName',
+  default: null,
+});
+
+// 구역별 매장 개수
+export const storeCount = atom({
+  key: 'storeCount',
+  default: null,
+});
+
+// 구역별 테마 개수
+export const themeCount = atom({
+  key: 'themeCount',
+  default: null,
+});
+
+/* ------------- [구버전] ------------- */
+
 // 지역 상태
 export const locationState = atom({
   key: 'locationState',

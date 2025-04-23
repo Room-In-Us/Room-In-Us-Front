@@ -1,4 +1,4 @@
-export const goolgleMapStyles = [
+export const googleMapStyles = [
   {
     featureType: 'all',
     elementType: 'labels',
