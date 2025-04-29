@@ -8,6 +8,7 @@ import LeftArrowIcon from "../../../shared/assets/icons/survey/leftArrowIcon.svg
 import { useRecoilState } from "recoil";
 import { stationCardVisible, storeCardVisible, zoneId, storePageNumber, locationStoreId, locationRegionId, zoneName, storeCount, themeCount } from "../../../features/location/model/locationAtom";
 import { getSeoulZonesInfoAPI, getSeoulZoneStoreListAPI, getZoneStoreListAPI } from "../api/locationAPI";
+import { stationLineConversion } from "../../../shared/utils/stationLineUtils";
 
 function StationCard() {
   // 상태 관리
@@ -102,13 +103,21 @@ function StationCard() {
           {isZoneId > 0 && isZoneId < 17 ? (
             stationList.map((station, index) => (
               <StationList key={index}>
-                {station.stationLineList.map((line, lineIndex) => (
-                  <StationListName key={lineIndex}>{line}</StationListName>
-                ))}
+                {/* 호선 아이콘 렌더링 */}
+                {station.stationLineList.map((line, lineIndex) => {
+                  const LineIcon = stationLineConversion(line);
+                  return LineIcon ? (
+                    <StationLineIconWrapper key={lineIndex}>
+                      <LineIcon />
+                    </StationLineIconWrapper>
+                  ) : null;
+                })}
+
+                {/* 역 이름 */}
                 <StationListName>{station.stationName}</StationListName>
               </StationList>
             ))
-          ) : (null)}
+          ) : null}
         </StationListWrapper>
       </TitleWrapper>
 
@@ -139,7 +148,7 @@ function StationCard() {
               {store.storeName}
             </ItemName>
             <ItemNumber>
-              &#40;n&#41;
+              &#40;{store.themeCount}&#41;
             </ItemNumber>
           </ItemTitleWrapper>
           <ArrowWrapper>
@@ -147,17 +156,20 @@ function StationCard() {
               Array.isArray(store.stationLineList) &&
               store.stationName && (
                 <ListStationWrapper>
-                  {store.stationLineList.map((line, lineIndex) => (
-                    <StationListName key={lineIndex}>
-                      {line}
-                    </StationListName>
-                  ))}
+                  {store.stationLineList.map((line, lineIndex) => {
+                    const LineIcon = stationLineConversion(line);
+                    return LineIcon ? (
+                      <StationLineIconWrapper key={lineIndex}>
+                        <LineIcon />
+                      </StationLineIconWrapper>
+                    ) : null;
+                  })}
                   <StationListName>
                     {store.stationName}
                   </StationListName>
                 </ListStationWrapper>
-            )}
-            <StyledArrowIcon/>
+              )}
+            <StyledArrowIcon />
           </ArrowWrapper>
         </ListItem>
         ))}
@@ -250,6 +262,15 @@ const StationList = styled.div`
   height: 1.8125em;
   align-items: center;
   gap: 0.375em;
+`;
+
+const StationLineIconWrapper = styled.div`
+  width: 1.25em;
+  height: 1.25em;
+  svg {
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 const StationListName = styled.div`

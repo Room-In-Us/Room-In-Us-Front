@@ -109,7 +109,7 @@ function StoreCard() {
       {/* 필터 영역 */}
       <FilterTitleWrapper>
         <ThemeNumber>
-          테마 목록 &#40;n&#41;
+          테마 목록 &#40;{themeList.length}&#41;
         </ThemeNumber>
         <FilterWrapper>
           {/* 인원 필터 */}
