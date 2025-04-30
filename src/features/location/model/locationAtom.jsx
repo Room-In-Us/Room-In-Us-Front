@@ -1,5 +1,11 @@
 import { atom } from 'recoil';
 
+// 구글 맵
+export const mapsLoadedState = atom({
+  key: 'mapsLoadedState',
+  default: false,
+});
+
 // 역 상태
 export const stationCardVisible = atom({
   key: 'stationCardVisible',
@@ -72,94 +78,5 @@ export const centerLatAndLng = atom({
 // 줌 레벨
 export const zoomLevel = atom({
   key: 'zoomLevel',
-  default: 16,
+  default: 12,
 });
-
-/* ------------- [구버전] ------------- */
-
-// 지역 상태
-export const locationState = atom({
-  key: 'locationState',
-  default: '',
-});
-export const locationVisible = atom({
-  key: 'locationVisible',
-  default: false,
-});
-
-// 배경
-export const backgroundVisible = atom({
-  key: 'backgroundVisible',
-  default: false,
-});
-
-// 역 상태
-export const stationState = atom({
-  key: 'stationState',
-  default: '',
-});
-export const stationVisible = atom({
-  key: 'stationVisible',
-  default: false,
-});
-export const stationNameState = atom({
-  key: 'stationNameState',
-  default: '',
-});
-
-// 카페 상태
-export const cafeState = atom({
-  key: 'cafeState',
-  default: '',
-});
-export const cafeVisible = atom({
-  key: 'cafeVisible',
-  default: false,
-});
-export const cafeNameState = atom({
-  key: 'cafeNameState',
-  default: '',
-});
-
-// 테마 상태
-export const themeState = atom({
-  key: 'themeState',
-  default: '',
-});
-export const themeVisible = atom({
-  key: 'themeVisible',
-  default: false,
-});
-
-// 구글 맵
-export const mapsLoadedState = atom({
-  key: 'mapsLoadedState',
-  default: false,
-});
-
-// // 위치별 위도, 경도 리스트 (역)
-// export const stationLatAndLngList = atom({
-//   key: 'stationLatAndLngList',
-//   default: [],
-// });
-// // 위치별 위도, 경도 리스트 (카페)
-// export const cafeLatAndLngList = atom({
-//   key: 'cafeLatAndLngList',
-//   default: [],
-// });
-// // 위치별 위도, 경도 리스트 저장 (테마로 이동 시 리셋 되는 경우 방지)
-// export const backupCafeLatAndLngList = atom({
-//   key: 'backupCafeLatAndLngList',
-//   default: [],
-// });
-
-// // 위치별 중앙 좌표
-// export const locationCenterState = atom({
-//   key: 'locationCenterState',
-//   default: {},
-// });
-// // 역 중앙 좌표
-// export const stationCenterState = atom({
-//   key: 'stationCenterState',
-//   default: {},
-// });
