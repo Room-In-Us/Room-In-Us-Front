@@ -6,7 +6,7 @@ import ArrowIcon from "../../../shared/assets/icons/location/arrowIcon.svg?react
 import RightArrowIcon from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrowIcon from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
 import { useRecoilState } from "recoil";
-import { stationCardVisible, storeCardVisible, zoneId, storePageNumber, locationStoreId, locationRegionId, zoneName, storeCount, themeCount } from "../../../features/location/model/locationAtom";
+import { stationCardVisible, storeCardVisible, zoneId, storePageNumber, locationStoreId, locationRegionId, zoneName, storeCount, themeCount, centerLatAndLng, storeLatAndLngList, zoomLevel } from "../../../features/location/model/locationAtom";
 import { getSeoulZonesInfoAPI, getSeoulZoneStoreListAPI, getZoneStoreListAPI } from "../api/locationAPI";
 import { stationLineConversion } from "../../../shared/utils/stationLineUtils";
 
@@ -16,7 +16,6 @@ function StationCard() {
   const [, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
   const [, setZoneInfo] = useState(""); // 구역별 상세정보
   const [stationList, setStationList] = useState([]); // 역 목록 상태
-  const [storeList, setStoreList] = useState([]); // 매장 목록 상태
   const [isZoneId,] = useRecoilState(zoneId);
   const [currentPage, setCurrentPage] = useRecoilState(storePageNumber);
   const [totalPages, setTotalPages] = useState("");
@@ -25,6 +24,9 @@ function StationCard() {
   const [CapitalZoneName,] = useRecoilState(zoneName); // 구역 이름 상태
   const [CapitalStoreCount,] = useRecoilState(storeCount); // 구역별 매장 개수
   const [CapitalThemeCount,] = useRecoilState(themeCount); // 구역별 테마 개수
+  const [, setCenterLatAndLng] = useRecoilState(centerLatAndLng); // 구역 중앙 좌표
+  const [storeList, setStoreList] = useRecoilState(storeLatAndLngList); // 매장 리스트
+  const [, setZoomLevel] = useRecoilState(zoomLevel); // 줌 레벨
 
   // 매장 선택 핸들러
   const handleStoreSelect = (id) => {
@@ -55,20 +57,30 @@ function StationCard() {
         if (isZoneId > 0 && isZoneId < 17) {
           const response = await getSeoulZoneStoreListAPI(isZoneId, currentPage, 10, "RECOMMEND");
           console.log('서울 구역 매장 목록: ', response);
-          setStoreList(response.storeData.contents);
           setTotalPages(response.storeData.totalPages);
+          setCenterLatAndLng({ // 구역 중앙 좌표
+            lat: response.latitudeAvg,
+            lng: response.longitudeAvg,
+          });
+          setStoreList(response.storeData.contents); // 매장 리스트
+          setZoomLevel(16); // 줌 레벨
         } else {
           const response = await getZoneStoreListAPI(regionId, isZoneId, currentPage, 10, "RECOMMEND");
           console.log('수도권 구역 매장 목록: ', response);
-          setStoreList(response.storeData.contents);
           setTotalPages(response.storeData.totalPages);
+          setCenterLatAndLng({ // 구역 중앙 좌표
+            lat: response.latitudeAvg,
+            lng: response.longitudeAvg,
+          });
+          setStoreList(response.storeData.contents); // 매장 리스트
+          setZoomLevel(14); // 줌 레벨
         }
       } catch (error) {
         console.error('구역 매장 목록 데이터를 불러오는 중 오류 발생:', error);
       }
     };
     fetchData();
-  }, [isZoneId, currentPage, regionId]);
+  }, [isZoneId, currentPage, regionId, setCenterLatAndLng, setStoreList, setZoomLevel]);
 
   // 페이지 이동
   const handlePageClick = (page) => {
@@ -140,7 +152,11 @@ function StationCard() {
         {storeList.map((store, index) => (
         <ListItem
           key={index}
-          onClick={() => handleStoreSelect(store.storeId)}
+          onClick={() => {
+            handleStoreSelect(store.storeId);
+            setCenterLatAndLng({ lat: store.latitude, lng: store.longitude });
+            setZoomLevel(18);
+          }}
         >
           <ItemTitleWrapper>
             {store.isAwarded && <StyledAwardsIcon/>}

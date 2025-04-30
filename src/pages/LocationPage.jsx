@@ -12,6 +12,10 @@ import { getLocationZonesAPI } from "../features/location/api/locationAPI";
 function LocationPage() {
   // 상태 관리
   const [isSeoulCheck, setIsSeoulCheck] = useState(true);
+  const [selectedStationIndices, setSelectedStationIndices] = useState({
+    1: null, // 서울
+    2: null, // 경기/인천
+  });
   const [isStationListVisible, setIsStationListVisible] = useState(true);
   const [isStationCardVisible, setIsStationCardVisible] = useRecoilState(stationCardVisible);
   const [isStoreCardVisible, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
@@ -90,7 +94,14 @@ function LocationPage() {
           {stationList.map((station, index) => (
             <StationList
               key={index}
-              onClick={() => handleStationSelect(station)}
+              isSelected={selectedStationIndices[regionId] === index}
+              onClick={() => {
+                handleStationSelect(station);
+                setSelectedStationIndices({
+                  [regionId]: index,
+                  [regionId === 1 ? 2 : 1]: null,
+                });
+              }}
             >
               <StationTitle>
                 {station.zoneName}
@@ -258,8 +269,10 @@ const StationList = styled.div`
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
-  background: var(--RIU_Monochrome-20, #F0F0F4);
+  background: ${(props) =>
+    props.isSelected ? "var(--RIU_Monochrome-10, #F9F9FB)" : "var(--RIU_Monochrome-20, #F0F0F4)"};
   line-height: normal;
+  transition: background 0.2s ease;
   cursor: pointer;
 `;
 

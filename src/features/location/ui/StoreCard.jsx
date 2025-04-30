@@ -250,6 +250,8 @@ const FilterWrapper = styled.div`
 `;
 
 const ContentCardWrapper = styled.div`
+  padding-bottom: 0.625em;
+  box-sizing: border-box;
   height: 36.8em;
   display: flex;
   justify-content: space-between;

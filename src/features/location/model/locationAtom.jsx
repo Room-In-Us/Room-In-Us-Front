@@ -54,6 +54,27 @@ export const themeCount = atom({
   default: null,
 });
 
+// 매장 위도, 경도 리스트
+export const storeLatAndLngList = atom({
+  key: 'storeLatAndLngList',
+  default: [],
+});
+
+// 역 중앙 좌표
+export const centerLatAndLng = atom({
+  key: 'centerLatAndLng',
+  default: {
+    lat: 37.5642135,
+    lng: 127.0016985,
+  },
+});
+
+// 줌 레벨
+export const zoomLevel = atom({
+  key: 'zoomLevel',
+  default: 16,
+});
+
 /* ------------- [구버전] ------------- */
 
 // 지역 상태
@@ -116,29 +137,29 @@ export const mapsLoadedState = atom({
   default: false,
 });
 
-// 위치별 위도, 경도 리스트 (역)
-export const stationLatAndLngList = atom({
-  key: 'stationLatAndLngList',
-  default: [],
-});
-// 위치별 위도, 경도 리스트 (카페)
-export const cafeLatAndLngList = atom({
-  key: 'cafeLatAndLngList',
-  default: [],
-});
-// 위치별 위도, 경도 리스트 저장 (테마로 이동 시 리셋 되는 경우 방지)
-export const backupCafeLatAndLngList = atom({
-  key: 'backupCafeLatAndLngList',
-  default: [],
-});
+// // 위치별 위도, 경도 리스트 (역)
+// export const stationLatAndLngList = atom({
+//   key: 'stationLatAndLngList',
+//   default: [],
+// });
+// // 위치별 위도, 경도 리스트 (카페)
+// export const cafeLatAndLngList = atom({
+//   key: 'cafeLatAndLngList',
+//   default: [],
+// });
+// // 위치별 위도, 경도 리스트 저장 (테마로 이동 시 리셋 되는 경우 방지)
+// export const backupCafeLatAndLngList = atom({
+//   key: 'backupCafeLatAndLngList',
+//   default: [],
+// });
 
-// 위치별 중앙 좌표
-export const locationCenterState = atom({
-  key: 'locationCenterState',
-  default: {},
-});
-// 역 중앙 좌표
-export const stationCenterState = atom({
-  key: 'stationCenterState',
-  default: {},
-});
+// // 위치별 중앙 좌표
+// export const locationCenterState = atom({
+//   key: 'locationCenterState',
+//   default: {},
+// });
+// // 역 중앙 좌표
+// export const stationCenterState = atom({
+//   key: 'stationCenterState',
+//   default: {},
+// });
