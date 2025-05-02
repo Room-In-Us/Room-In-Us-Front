@@ -102,6 +102,7 @@ export const DropdownMenu = styled.div`
   opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
   transform: ${({ $isVisible }) => ($isVisible ? 'translateY(0)' : 'translateY(-0.5px)')};
   transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: ${({ $isVisible }) => ($isVisible ? 'auto' : 'none')};
 
   width: 11.875rem;
   top: ${({ top }) => `${top}px`}; 
