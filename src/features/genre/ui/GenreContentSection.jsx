@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import useDevice from "../../../shared/hooks/useDevice";
 import ContentCard from "../../../shared/components/ContentCard";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from 'swiper/modules';
 import { getGenreListAPI } from "../../genre/api/genreAPI";
 import { getRegionAPI } from "../../../features/location/api/getRegionAPI";
 import { getZoneAPI } from "../../../features/location/api/getZoneAPI";
@@ -63,7 +62,7 @@ export default function GenreContentSection({ activeGenre }) {
           activeGenre, 
           headCount, 
           1, 
-          100, 
+          1000, 
           selectedSort, 
           keyword, 
           regionId, 
@@ -84,7 +83,6 @@ export default function GenreContentSection({ activeGenre }) {
   
   // 선택된 장르 찾기
   const selectedGenre = genres.find((g) => g.genre === activeGenre);
-
 
   // 지역 목록 가져오기
   useEffect(() => {

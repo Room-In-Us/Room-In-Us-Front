@@ -9,19 +9,47 @@ export default function CustomPagination({ currentPage, totalPages, onPageChange
   
   const { isDesktop, isTablet, isMobile } = useDevice();
 
-  const startPage = isMobile ? Math.floor((currentPage - 1) / 6) * 6 + 1 : 1;
-  const endPage = isMobile ? Math.min(startPage + 5, totalPages) : totalPages;
+  const pageJumpSize = isMobile
+  ? 5
+  : isTablet
+  ? 13
+  : 20;
 
-  const pageNumbers = Array.from({length: endPage - startPage + 1}, (_, i) => startPage + i);
+  const showDoubleIcons = isMobile
+  ? totalPages > 5
+  : isTablet
+  ? totalPages > 13
+  : totalPages > 20;
+
+  let startPage, endPage;
+
+  if (isMobile && totalPages <= 5) {
+    startPage = 1;
+    endPage = totalPages;
+  } else if (isMobile) {
+    startPage = Math.floor((currentPage - 1) / 5) * 5 + 1;
+    endPage = Math.min(startPage + 4, totalPages);
+  } else if (isTablet && totalPages > 15) {
+    startPage = Math.floor((currentPage - 1) / 13) * 13 + 1;
+    endPage = Math.min(startPage + 12, totalPages);
+  } else if (!isMobile && totalPages > 20) {
+    startPage = Math.floor((currentPage - 1) / 20) * 20 + 1;
+    endPage = Math.min(startPage + 19, totalPages);
+  } else {
+    startPage = 1;
+    endPage = totalPages;
+  }
+  
+  const pageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);  
 
   return (
     <PaginationWrapper>
 
       {/* 페이지 이동 */}
       <ButtonWrapper>
-        {isMobile && totalPages > 6 && (
+        {showDoubleIcons && (
           <NavDoubleLeftbtn
-            onClick={() => onPageChange(Math.max(1, currentPage - 6))}
+            onClick={() => onPageChange(Math.max(1, currentPage - pageJumpSize))}
             disabled={startPage === 1}
           />
         )}
@@ -32,17 +60,6 @@ export default function CustomPagination({ currentPage, totalPages, onPageChange
       </ButtonWrapper>
 
       {/* 페이지 숫자 */}
-      {!isMobile && (Array.from({ length: totalPages }, (_, index) => (
-        <PageButton
-          key={index}
-          onClick={() => onPageChange(index + 1)}
-          isActive={currentPage === index + 1}
-        >
-          {index + 1}
-        </PageButton>
-      )))}
-
-      {isMobile && (
         <PageButtonWrapper>
           {pageNumbers.map((page) => (
             <PageButton
@@ -54,14 +71,13 @@ export default function CustomPagination({ currentPage, totalPages, onPageChange
             </PageButton>
           ))}
         </PageButtonWrapper>
-      )}
       
       {/* 페이지 이동 */}
       <ButtonWrapper>
         <NavRightButton onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages} />
-        {isMobile && totalPages > 6 && (
+        {showDoubleIcons && (
           <NavDoubleRightbtn
-            onClick={() => onPageChange(Math.min(currentPage + 6, totalPages))}
+            onClick={() => onPageChange(Math.min(currentPage + pageJumpSize, totalPages))}
             disabled={endPage === totalPages}
           />
         )}
