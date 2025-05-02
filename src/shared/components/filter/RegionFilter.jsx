@@ -16,7 +16,6 @@ const RegionFilter = forwardRef(({
   regions,
   zones,
   selectedRegion,
-  selectedZone,
   selectedZones,
   activeRegionId,
   onTabClick,
@@ -123,7 +122,7 @@ const RegionFilter = forwardRef(({
         </MenuWrapper>
       ) : (
 
-        <DropdownMenu ref={dropdownRef} style={{ top: position.top, left: position.left }} $isVisible={isOpen}>
+        <DropdownMenu ref={dropdownRef} style={{ top: position.top, left: position.left, pointerEvents: isOpen ? 'auto' : 'none' }} $isVisible={isOpen}>
           <DropdownHeader>지역</DropdownHeader>
           <Container>
 
