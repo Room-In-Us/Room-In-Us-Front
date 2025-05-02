@@ -1,7 +1,7 @@
 import { api } from '../../../app/API';
 
 // 숙련도 기반 방탈출 카페 테마 목록 조회
-export const getLevelListAPI = async (proficiency, headcount, page, size, sortOption) => {
+export const getLevelListAPI = async (proficiency, headcount, page, size, sortOption, keyword, regionId, zoneIdList) => {
   try {
     const params = {
       proficiency, // 숙련도
@@ -10,9 +10,16 @@ export const getLevelListAPI = async (proficiency, headcount, page, size, sortOp
       size, // 페이지별 테마 개수
     };
 
-    if (sortOption) {
-      params.sortOption = sortOption;
+    if (sortOption) params.sortOption = sortOption;
+    if (keyword) params.keyword = keyword;
+    if (regionId) params.regionId = regionId;
+
+    if (Array.isArray(zoneIdList)) {
+      params.zoneIdList = zoneIdList.join(',');
+    } else if (typeof zoneIdList === 'number') {
+      params.zoneIdList = zoneIdList.toString();
     }
+    
     const response = await api.get(`themes/proficiency`, { params });
     console.log('숙련도 기반 방탈출 카페 테마 목록 조회 api 요청 결과:', response);
     return response.data;

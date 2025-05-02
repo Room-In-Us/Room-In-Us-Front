@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import useDevice from "../../../shared/hooks/useDevice.js";
 import ContentCard from "../../../shared/components/ContentCard.jsx";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from 'swiper/modules';
 import { levels } from '../model/levelData.js';
 import { getLevelListAPI } from "../api/levelAPI.js";
 import { getRegionAPI } from "../../../features/location/api/getRegionAPI";
@@ -33,6 +32,8 @@ export default function LevelContentSection( {activeLevel} ) {
   const [activeRegionId, setActiveRegionId] = useState(1);
   const [selectedZones, setSelectedZones] = useState([]);
   const [isAllZoneSelected, setIsAllZoneSelected] = useState(false);
+  const [regionId, setRegionId] = useState();
+  const [zoneIdList, setZoneIdList] = useState();
 
   // 정렬 필터 상태
   const [selectedSort, setSelectedSort] = useState("HIGH_SATISFACTION_LEVEL");
@@ -42,7 +43,7 @@ export default function LevelContentSection( {activeLevel} ) {
 
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = isMobile ? 100 : 16;
+  const itemsPerPage = isMobile ? 4 : 16;
 
   // 바텀 시트 상태
   const [isBottomSheetOpen, setBottomSheetOpen] = useState(false);
@@ -50,19 +51,30 @@ export default function LevelContentSection( {activeLevel} ) {
   // 모바일 필터 상태
   const [isFilterActive, setIsFilterActive] = useState(true);
 
+  // 검색어 상태
+  const [keyword, setKeyword] = useState('');
+
   // 숙련도 목록 조회
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getLevelListAPI(activeLevel, headCount, 1, 100, selectedSort);
-        console.log('숙련도 기반 방탈출 테마 목록: ', response.contents);
+        const response = await getLevelListAPI(
+          activeLevel, 
+          headCount, 
+          1, 
+          1000, 
+          selectedSort,
+          keyword, 
+          regionId, 
+          zoneIdList
+        );
         setThemeList(response.contents);
       } catch (error) {
         console.error('숙련도 기반 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
       }
     };
     fetchData();
-  }, [activeLevel, headCount, selectedSort]);
+  }, [activeLevel, headCount, selectedSort, keyword, regionId, zoneIdList]);
 
   // 인원수 필터링
   const handlePeopleFilterChange = (count) => {
@@ -94,16 +106,6 @@ export default function LevelContentSection( {activeLevel} ) {
     fetchRegions();
   }, []);
     
-  // 선택된 지역의 전체 구역 목록 가져오기
-  const fetchZoneList = async (regionId) => {
-    try {
-      const response = await getZoneAPI(regionId);
-      setZoneList(response.data);
-    } catch (error) {
-      console.error("Zone List Fetch Error: ", error);
-    }
-  };
-    
   // 선택된 지역의 구역 목록 가져오기
   const fetchZones = async (regionId) => {
     try {
@@ -126,6 +128,8 @@ export default function LevelContentSection( {activeLevel} ) {
     setSelectedRegion("지역 전체");
     setSelectedZones([]);
     fetchZones(1);
+    setRegionId(null); 
+    setZoneIdList(null);  
   };
 
   // 지역 버튼 클릭 핸들러 (구역 렌더링)
@@ -143,7 +147,9 @@ export default function LevelContentSection( {activeLevel} ) {
     setZoneList([]);
     setSelectedRegion(buttonText);
 
-    await fetchZoneList(regionId);
+    await getZoneAPI(regionId);
+    setZoneIdList(null); 
+    setRegionId(regionId);
   };
     
   // 지역 선택 핸들러
@@ -156,27 +162,36 @@ export default function LevelContentSection( {activeLevel} ) {
   const handleZoneSelect = async (zoneName) => {
     setIsAllZoneSelected(false);
   
-    setSelectedZones((prev) => {
-      let newZones;
-      if (prev.includes(zoneName)) {
-        newZones = prev.filter((zone) => zone !== zoneName);
+    setSelectedZones((prevZones) => {
+      let updatedZones;
+  
+      if (prevZones.includes(zoneName)) {
+        // 이미 선택된 경우 → 제거
+        updatedZones = prevZones.filter((name) => name !== zoneName);
       } else {
-        newZones = [...prev, zoneName];
+        // 새로 선택
+        updatedZones = [...prevZones, zoneName];
       }
   
-      // 텍스트 처리: "처음 선택한 지역 외 n개"
-      if (newZones.length === 0) {
+      // 선택 텍스트 표시용
+      if (updatedZones.length === 0) {
         setSelectedRegion("지역 선택");
-      } else if (newZones.length === 1) {
-        setSelectedRegion(newZones[0]);
+      } else if (updatedZones.length === 1) {
+        setSelectedRegion(updatedZones[0]);
       } else {
-        setSelectedRegion(`${newZones[0]} 외 ${newZones.length - 1}개`);
+        setSelectedRegion(`${updatedZones[0]} 외 ${updatedZones.length - 1}개`);
       }
   
-      return newZones;
-    });
+      // zoneIdList 생성
+      const selectedIds = zones
+        .filter((zone) => updatedZones.includes(zone.zoneName))
+        .map((zone) => zone.zoneId);
   
-    setSelectedZone(null);
+      setZoneIdList(selectedIds);  
+      setRegionId(activeRegionId);   
+  
+      return updatedZones;
+    });
   };  
 
   // 바텀 시트 오픈 함수
@@ -185,32 +200,10 @@ export default function LevelContentSection( {activeLevel} ) {
     setSelectedRegion(selectedRegion);
     setSelectedZone(selectedZone);
   };
-    
-  // 지역 필터링
-  const filteredThemeList = 
-    // "지역 전체" 선택 시 모든 콘텐츠 표시
-    (selectedRegion === "지역 전체") ? themeList 
+  
 
-    // "서울 전체" 또는 "경기/인천 전체" 선택 시 해당 지역의 모든 구역 포함
-    : (selectedRegion === "서울 전체" || selectedRegion === "경기/인천 전체")
-      ? themeList.filter((item) => 
-          zoneList.some((zone) => {
-            if (typeof zone === "string") return zone === item.locationName;
-            if (typeof zone === "object" && zone.zoneName) return zone.zoneName === item.locationName;
-            return false;
-          })
-        )
-    
-    // 특정 구역이 선택된 경우
-    : (selectedZones.length > 0) 
-      ? themeList.filter((item) => 
-          selectedZones.includes(item.locationName) || selectedZones.includes("전체"))
-          
-    // 조건에 맞지 않는 경우 전체 목록 반환
-    : themeList;
   
-  
-  const adjustedTotalPages = Math.ceil(filteredThemeList.length / itemsPerPage);
+  const adjustedTotalPages = Math.ceil(themeList.length / itemsPerPage);
   
     
   const handlePageChange = (page) => {
@@ -219,22 +212,20 @@ export default function LevelContentSection( {activeLevel} ) {
   };
   
   useEffect(() => {
-    const adjustedTotalPages = Math.ceil(filteredThemeList.length / itemsPerPage);
+    const adjustedTotalPages = Math.ceil(themeList.length / itemsPerPage);
     if (currentPage > adjustedTotalPages) {
       setCurrentPage(1);
     }
-  }, [filteredThemeList, currentPage, itemsPerPage]);
+  }, [themeList, currentPage, itemsPerPage]);
 
-
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeLevel]);
   
   // 필터 적용 함수 수정
   const handleApplyFilters = ({ people, sort, region, zones }) => {
     setHeadCount(people);
-
     setSelectedSort(sort);
-
-    // const isDefault = people === 2 && sort === "HIGH_SATISFACTION_LEVEL" && region === "지역 전체";
-    // setIsFilterActive(!isDefault);
     setIsFilterActive(true);
 
     if (region === "지역 전체") {
@@ -294,12 +285,13 @@ export default function LevelContentSection( {activeLevel} ) {
     return `${peopleText}, ${sortText}, ${regionText}`;
   };
 
+
   return (
     <Wrapper>
       <TopBar>
         <TextWrapper>
           <MainText>{selectedLevel ? selectedLevel.text : "기본"} 테마</MainText>
-          <SubText>	&#40;{filteredThemeList.length}&#41;</SubText>
+          <SubText>	&#40;{themeList.length}&#41;</SubText>
         </TextWrapper>
 
         { !isMobile && (
@@ -327,6 +319,8 @@ export default function LevelContentSection( {activeLevel} ) {
               setHeadCount={setHeadCount}
               setSelectedSort={setSelectedSort}
               setSelectedRegion={setSelectedRegion}
+              regionId={regionId}
+              zoneIdList={zoneIdList}
             />
           </FilterWrapper>
         )}
@@ -369,43 +363,27 @@ export default function LevelContentSection( {activeLevel} ) {
       )}
 
       {/* 콘텐츠 카드 영역 */}
-      { !isMobile && (
-        <>
-          <ListWrapper>
-          {filteredThemeList
+      <>
+        <ListWrapper>
+          {themeList
             .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
             .map((items) => (
-              <ContentCard key={items.id} data={{...items, price: items.price != null ? items.price * headCount : null}} headCount={headCount} />
+              <ContentCard
+                key={items.id}
+                data={{ ...items, price: items.price != null ? items.price * headCount : null }}
+                headCount={headCount}
+              />
             ))}
-          </ListWrapper>
-      
-          {/* 페이지네이션 */}
-          <CustomPagination
-            currentPage={currentPage}
-            totalPages={adjustedTotalPages}
-            onPageChange={handlePageChange}
-          />
-        </>
-      )}
-      
-      {isMobile && filteredThemeList.length > 0 && (
-        <StyledSwiper
-          pagination={true} 
-          modules={[Pagination]}
-          spaceBetween={30} 
-          slidesPerView={1}
-        >
-          {Array.from({ length: Math.ceil(filteredThemeList.length / 4) }, (_, index) => (
-          <StyledSwiperSlide key={index}>
-            <ListWrapper>
-            {filteredThemeList.slice(index * 4, (index + 1) * 4).map((items) => (
-              <ContentCard key={items.id} data={{...items, price: items.price != null ? items.price * headCount : null}} headCount={headCount} />
-            ))}
-            </ListWrapper>
-          </StyledSwiperSlide>
-        ))}
-        </StyledSwiper>
-      )}
+        </ListWrapper>
+
+        {/* 페이지네이션 */}
+        <CustomPagination
+          currentPage={currentPage}
+          totalPages={adjustedTotalPages}
+          onPageChange={handlePageChange}
+        />
+      </>
+
     </Wrapper>
   )
 }
@@ -424,6 +402,7 @@ const Wrapper = styled.div`
   @media (max-width: 768px) {
     width: 22.1875rem;
     gap: 0.625rem;
+    padding-bottom: 1.21875rem;
   }
 `;
 
