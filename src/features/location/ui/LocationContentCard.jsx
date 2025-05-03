@@ -13,6 +13,7 @@ import { levelTextConversion, genreListConversion, satisfactionConversion } from
 
 function LocationContentCard({ data, headCount, type }) {
   const {
+    themeId,
     awardsYear,
     img,
     satisfactionLevel,
@@ -42,7 +43,7 @@ function LocationContentCard({ data, headCount, type }) {
   };
 
   return (
-    <ContentWrapper onClick={() => navigate('/level')}>
+    <ContentWrapper onClick={() => navigate(`/theme/${themeId}`)}>
       {/* 이미지 영역 */}
       <ImageSection imgUrl={imageUrl}>
         {awardsYear && <AwardsTag><StyledAwards/>{awardsYear}</AwardsTag>}
