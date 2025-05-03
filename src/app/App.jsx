@@ -7,9 +7,9 @@ import LevelInfoPage from '../pages/LevelInfoPage';
 import GenrePage from '../pages/GenrePage';
 import GenreInfoPage from '../pages/GenreInfoPage';
 import LocationPage from '../pages/LocationPage';
-import BoardPage from '../pages/BoardPage';
-import BoardMorePage from '../pages/BoardMorePage';
-import BoardWritePage from '../pages/BoardWritePage';
+// import BoardPage from '../pages/BoardPage';
+// import BoardMorePage from '../pages/BoardMorePage';
+// import BoardWritePage from '../pages/BoardWritePage';
 import SignupPage from '../pages/SignupPage';
 import EditUserInfoPage from '../pages/EditUserInfoPage';
 import { LoadScript } from '@react-google-maps/api';
@@ -19,6 +19,7 @@ import LevelSearchPage from '../pages/LevelSearchPage';
 import AuthCallback from '../features/auth/ui/AuthCallback';
 import AuthError from '../features/auth/ui/AuthError';
 import SurveyPage from '../pages/SurveyPage';
+import ThemeDetailPage from '../pages/ThemeDetailPage';
 
 function App() {
   const setMapsLoaded = useSetRecoilState(mapsLoadedState);
@@ -61,10 +62,13 @@ function App() {
           <Route path="/genre" element={<GenrePage />} />
           <Route path="/genreInfo" element={<GenreInfoPage />} />
 
+          {/* 테마 상세 페이지 */}
+          <Route path="/theme/:id" element={<ThemeDetailPage />} />
+
           {/* 게시판 페이지 */}
-          <Route path="/board" element={<BoardPage />} />
+          {/* <Route path="/board" element={<BoardPage />} />
           <Route path="/boardmore" element={<BoardMorePage />} />
-          <Route path="/boardwrite" element={<BoardWritePage />} />
+          <Route path="/boardwrite" element={<BoardWritePage />} /> */}
 
           {/* 마이 페이지 */}
           <Route path="/mypage" element={<MainPage />} />

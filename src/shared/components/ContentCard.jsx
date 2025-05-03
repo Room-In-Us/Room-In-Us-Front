@@ -14,6 +14,7 @@ import useDevice from '../hooks/useDevice';
 
 function ContentCard({ data, headCount, type }) {
   const {
+    themeId,
     locationName,
     awardsYear,
     img,
@@ -47,7 +48,7 @@ function ContentCard({ data, headCount, type }) {
   };
 
   return (
-    <ContentWrapper onClick={() => navigate('/level')}>
+    <ContentWrapper onClick={() => navigate(`/theme/${themeId}`)}>
       {/* 이미지 영역 */}
       <ImageSection imgUrl={imageUrl}>
         <LocationTag>{locationName}</LocationTag>
