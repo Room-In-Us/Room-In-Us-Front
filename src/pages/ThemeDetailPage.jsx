@@ -3,8 +3,14 @@ import { useNavigate } from "react-router-dom";
 import LeftArrowIcon from "../shared/assets/icons/themeDetail/leftArrow.svg?react";
 import ThemeOverviewCard from "../features/themeDetail/ui/ThemeOverviewCard";
 import ThemeInfoSection from "../features/themeDetail/ui/ThemeInfoSection";
+import { useRecoilValue } from 'recoil';
+import ReviewWriteModal from "../features/themeDetail/ui/ReviewWriteModal";
+import { reviewModalState } from "../features/themeDetail/model/reviewAtom";
 
 function ThemeDetailPage() {
+  // 상태 관리
+  const isModalOpen = useRecoilValue(reviewModalState);
+  
   const navigate = useNavigate();
   
   return (
@@ -25,6 +31,13 @@ function ThemeDetailPage() {
         {/* 테마 상세 정보 */}
         <ThemeInfoSection />
       </ContentWrapper>
+
+      {/* 후기 작성 모달 */}
+      {isModalOpen && (
+        <ModalBackdrop>
+          <ReviewWriteModal />
+        </ModalBackdrop>
+      )}
     </PageWrapper>
   )
 }
@@ -68,4 +81,17 @@ const ContentWrapper = styled.div`
   width: 70rem;
   justify-content: space-between;
   align-items: flex-start;
+`;
+
+const ModalBackdrop = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3500;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

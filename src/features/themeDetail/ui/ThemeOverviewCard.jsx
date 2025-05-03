@@ -1,17 +1,20 @@
 import { useState } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import ThumbnailImg from '../../../shared/assets/images/common/thumbnailImg.png';
 import InfoIcon from '../../../shared/assets/icons/themeDetail/infoIcon.svg?react';
 import ShareIcon from '../../../shared/assets/icons/themeDetail/shareIcon.svg?react';
 import HeartIcon from '../../../shared/assets/icons/common/heart_default.svg?react';
 import HeartIcon2 from '../../../shared/assets/icons/common/heart_hover.svg?react';
 import HeartIcon3 from '../../../shared/assets/icons/common/heart_active.svg?react';
-import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from 'recoil';
+import { reviewModalState } from "../model/reviewAtom";
 
 function ThemeOverviewCard() {
   // state 관리
   const [isHeartActive, setIsHeartActive] = useState(false);
   // const [imageUrl, setImageUrl] = useState(img);
+  const setModal = useSetRecoilState(reviewModalState);
 
   const navigate = useNavigate();
 
@@ -46,7 +49,7 @@ function ThemeOverviewCard() {
             예약하기
           </ButtonText>
         </StyledButton>
-        <StyledButton type="reviewWrite">
+        <StyledButton type="reviewWrite" onClick={() => setModal(true)}>
           <ButtonText type="reviewWrite">
             후기 작성하기
           </ButtonText>
