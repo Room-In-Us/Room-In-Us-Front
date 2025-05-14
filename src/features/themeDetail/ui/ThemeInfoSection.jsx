@@ -8,11 +8,14 @@ import HorrorIcon from "../../../shared/assets/icons/themeDetail/horrorIcon.svg?
 
 function ThemeInfoSection() {
   // 임시 테마 정보 값
-  const playTime = "120분";
-  const member = "2~6명";
-  const genre = "판타지";
-  const level = "⭐ 4.4";
-  const horror = "👻 3.2";
+  const infoValues = {
+    playTime: "120분",
+    member: "2~6명",
+    genre: "판타지",
+    level: "⭐ 4.4",
+    horror: "👻 3.2",
+    story: "내 이름은 John. JACK IN THE SHOW에 들어 온지도 어느덧 3년째... 난 언제쯤 무대에 설 수 있을까?",
+  };
 
   return (
     <ComponentWrapper>
@@ -21,57 +24,32 @@ function ThemeInfoSection() {
         <SectionTitle>
           테마 정보 요약
         </SectionTitle>
-        <Divider></Divider>
+        <Divider/>
         <CardWrapper>
           <SummaryInfoCard
-            icon={<PlayTimeIcon
-              style={{
-                width: '1.875rem',
-                height: '1.875rem',
-              }}
-            />}
+            icon={<PlayTimeIcon style={{ width: '1.875rem', height: '1.875rem' }}/>}
             type="플레이 타임"
-            value={playTime}
+            value={infoValues.playTime}
           />
           <SummaryInfoCard
-            icon={<MemberIcon
-              style={{
-                width: '1.875rem',
-                height: '1.875rem',
-              }}
-            />}
+            icon={<MemberIcon style={{ width: '1.875rem', height: '1.875rem' }}/>}
             type="추천 인원"
-            value={member}
+            value={infoValues.member}
           />
           <SummaryInfoCard
-            icon={<GenreIcon
-              style={{
-                width: '1.875rem',
-                height: '1.875rem',
-              }}
-            />}
+            icon={<GenreIcon style={{ width: '1.875rem', height: '1.875rem' }}/>}
             type="장르"
-            value={genre}
+            value={infoValues.genre}
           />
           <SummaryInfoCard
-            icon={<LevelIcon
-              style={{
-                width: '1.875rem',
-                height: '1.875rem',
-              }}
-            />}
+            icon={<LevelIcon style={{ width: '1.875rem', height: '1.875rem' }}/>}
             type="난이도"
-            value={level}
+            value={infoValues.level}
           />
           <SummaryInfoCard
-            icon={<HorrorIcon
-              style={{
-                width: '1.875rem',
-                height: '1.875rem',
-              }}
-            />}
+            icon={<HorrorIcon style={{ width: '1.875rem', height: '1.875rem' }}/>}
             type="공포도"
-            value={horror}
+            value={infoValues.horror}
           />
         </CardWrapper>
       </SectionWrapper>
@@ -81,7 +59,10 @@ function ThemeInfoSection() {
         <SectionTitle>
           테마 스토리
         </SectionTitle>
-        <Divider></Divider>
+        <Divider/>
+        <StoryText>
+          {infoValues.story}
+        </StoryText>
       </SectionWrapper>
 
       {/* 테마 후기 */}
@@ -89,7 +70,7 @@ function ThemeInfoSection() {
         <SectionTitle>
           테마 후기
         </SectionTitle>
-        <Divider></Divider>
+        <Divider/>
       </SectionWrapper>
 
       {/* 인당 가격 안내 */}
@@ -97,7 +78,7 @@ function ThemeInfoSection() {
         <SectionTitle>
           인당 가격 안내
         </SectionTitle>
-        <Divider></Divider>
+        <Divider/>
       </SectionWrapper>
 
       {/* 매장 정보 */}
@@ -105,7 +86,7 @@ function ThemeInfoSection() {
         <SectionTitle>
           매장 정보
         </SectionTitle>
-        <Divider></Divider>
+        <Divider/>
       </SectionWrapper>
     </ComponentWrapper>
   )
@@ -155,4 +136,11 @@ const CardWrapper = styled.div`
   align-items: flex-start;
   gap: 1.5625rem;
   align-self: stretch;
+`;
+
+const StoryText = styled.div`
+  color: var(--RIU_Monochrome-400, #616277);
+  font-family: 'Pretendard-Medium';
+  font-size: 0.875rem;
+  line-height: 140%;
 `;
