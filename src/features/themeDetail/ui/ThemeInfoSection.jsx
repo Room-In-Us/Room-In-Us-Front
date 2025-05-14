@@ -5,6 +5,7 @@ import MemberIcon from "../../../shared/assets/icons/themeDetail/recommendMember
 import GenreIcon from "../../../shared/assets/icons/themeDetail/genreIcon.svg?react";
 import LevelIcon from "../../../shared/assets/icons/themeDetail/levelIcon.svg?react";
 import HorrorIcon from "../../../shared/assets/icons/themeDetail/horrorIcon.svg?react";
+import PriceTable from "./PriceTable";
 import LocationIcon from "../../../shared/assets/icons/location/storeLocationIcon.svg?react";
 import LinkIcon from "../../../shared/assets/icons/location/storeLinkIcon.svg?react";
 import TelIcon from "../../../shared/assets/icons/location/storeTelIcon.svg?react";
@@ -96,10 +97,16 @@ function ThemeInfoSection() {
 
       {/* 인당 가격 안내 */}
       <SectionWrapper>
-        <SectionTitle>
-          인당 가격 안내
-        </SectionTitle>
+        <PriceTitleWrapper>
+          <SectionTitle>
+            인당 가격 안내
+          </SectionTitle>
+          <PriceCautionText>
+            실제 가격이 상이할 수 있습니다.
+          </PriceCautionText>
+        </PriceTitleWrapper>
         <Divider/>
+        <PriceTable/>
       </SectionWrapper>
 
       {/* 매장 정보 */}
@@ -170,6 +177,14 @@ const SectionTitle = styled.div`
   line-height: normal;
 `;
 
+const PriceCautionText = styled.div`
+  color: var(--RIU_Monochrome-200, #717486);
+  text-align: center;
+  font-family: 'Pretendard-Medium';
+  font-size: 0.75rem;
+  line-height: normal;
+`;
+
 const Divider = styled.hr`
   border: none;
   margin: 0;
@@ -190,6 +205,13 @@ const StoryText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875rem;
   line-height: 140%;
+`;
+
+const PriceTitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
 `;
 
 const StoreInfoWrapper = styled.div`
