@@ -10,6 +10,7 @@ import LocationIcon from "../../../shared/assets/icons/location/storeLocationIco
 import LinkIcon from "../../../shared/assets/icons/location/storeLinkIcon.svg?react";
 import TelIcon from "../../../shared/assets/icons/location/storeTelIcon.svg?react";
 import CopyIcon from "../../../shared/assets/icons/location/copyIcon.svg?react";
+import ThemeReviewSection from "./ThemeReviewSection";
 
 function ThemeInfoSection() {
   // 임시 테마 정보 값
@@ -88,12 +89,7 @@ function ThemeInfoSection() {
       </SectionWrapper>
 
       {/* 테마 후기 */}
-      <SectionWrapper>
-        <SectionTitle>
-          테마 후기
-        </SectionTitle>
-        <Divider/>
-      </SectionWrapper>
+      <ThemeReviewSection />
 
       {/* 인당 가격 안내 */}
       <SectionWrapper>
