@@ -147,11 +147,23 @@ export default ThemeInfoSection;
 // CSS
 const ComponentWrapper = styled.div`
   width: 43.75rem;
+  height: 54rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 1.25rem;
   flex-shrink: 0;
+  overflow: auto;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background: none;
+  }
+  &:hover::-webkit-scrollbar-thumb {
+    border-radius: 30px;
+    background-color: #8DA3FF;
+  }
 `;
 
 const SectionWrapper = styled.div`
