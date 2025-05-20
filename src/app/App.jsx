@@ -20,6 +20,7 @@ import AuthCallback from '../features/auth/ui/AuthCallback';
 import AuthError from '../features/auth/ui/AuthError';
 import SurveyPage from '../pages/SurveyPage';
 import ThemeDetailPage from '../pages/ThemeDetailPage';
+import MyPage from '../pages/MyPage';
 
 function App() {
   const setMapsLoaded = useSetRecoilState(mapsLoadedState);
@@ -71,7 +72,11 @@ function App() {
           <Route path="/boardwrite" element={<BoardWritePage />} /> */}
 
           {/* 마이 페이지 */}
-          <Route path="/mypage" element={<MainPage />} />
+          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/mypage/preferences" element={<MyPage />} />
+          <Route path="/mypage/reservations" element={<MyPage />} />
+          <Route path="/mypage/favorites" element={<MyPage />} />
+          <Route path="/mypage/reviews" element={<MyPage />} />
 
           {/* 성향조사 페이지 */}
           <Route path="/survey" element={<SurveyPage />} />

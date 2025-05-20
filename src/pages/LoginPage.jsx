@@ -61,7 +61,7 @@ export default LoginPage;
 const PageWrapper = styled.div`
 font-size: 0.75rem;
   width: 100vw;
-  height: calc(100vh - 2.375rem);
+  height: calc(100vh - 2.375rem); // 100vh-풋터
   display: flex;
   justify-content: center;
   align-items: center;
