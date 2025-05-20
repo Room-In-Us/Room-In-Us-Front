@@ -414,13 +414,13 @@ const StyledLeftArrowIcon = styled(LeftArrowIcon)`
   width: 1.25em;
   height: 1.25em;
   fill: ${(props) => (props.hasNextPage) ? 'var(--RIU_Primary-300, #5B6ACC)' : 'var(--RIU_Monochrome-80, #A1A4B5)'};
-  cursor: default;
+  cursor: ${(props) => (props.hasNextPage) ? 'pointer' : 'default'};
 `;
 const StyledRightArrowIcon = styled(RightArrowIcon)`
   width: 1.25em;
   height: 1.25em;
   fill: ${(props) => (props.hasNextPage) ? 'var(--RIU_Primary-300, #5B6ACC)' : 'var(--RIU_Monochrome-80, #A1A4B5)'};
-  cursor: pointer;
+  cursor: ${(props) => (props.hasNextPage) ? 'pointer' : 'default'};
 `;
 
 const PageNumberWrapper = styled.div`
