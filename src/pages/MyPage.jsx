@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import LogoIcon from '../shared/assets/icons/common/logo.svg?react';
 import UpdateIcon from '../shared/assets/icons/myPage/updateIcon.svg?react';
-import ArrowIcon from '../shared/assets/icons/myPage/arrowIcon.svg?react';
+import ArrowIcon from '../shared/assets/icons/myPage/rightArrow.svg?react';
 
 function MyPage() {
   const navigate = useNavigate();
