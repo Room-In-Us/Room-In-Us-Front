@@ -12,7 +12,7 @@ import SurveyInfoSection from '../features/survey/ui/SurveyInfoSection';
 import SurveyCompleteSection from '../features/survey/ui/SurveyCompleteSection';
 import QuitModal from '../features/survey/ui/QuitModal';
 
-function SignupPage() {
+function SurveyPage() {
   // 상태 관리
   const [surveySection,] = useRecoilState(surveySectionState);
   const setModal = useSetRecoilState(modalState);
@@ -53,7 +53,7 @@ function SignupPage() {
   );
 }
 
-export default SignupPage;
+export default SurveyPage;
 
 const PageWrapper = styled.div`
 font-size: 0.75rem;
