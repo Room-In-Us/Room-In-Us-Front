@@ -1,9 +1,96 @@
 import styled from "styled-components";
+import { useEffect } from 'react';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { reviewModalState, reviewSectionState } from "../model/reviewAtom.jsx";
+import ReviewFirst from "../../review/ui/ReviewFirst.jsx";
+import ReviewSecond from "../../review/ui/ReviewSecond.jsx";
+import ReviewThird from "../../review/ui/ReviewThird.jsx";
+import CloseIcon from "../../../shared/assets/icons/reviewWrite/closeicon.svg";
+import LikeIcon from "../../../shared/assets/icons/reviewWrite/likeIcon.svg";
+import useDevice from "../../../shared/hooks/useDevice";
+import ReviewLast from "../../review/ui/ReviewLast.jsx";
 
 function ReviewWriteModal() {
 
+  const { isDesktop, isTablet, isMobile } = useDevice();
+
+  const setReviewModalOpen = useSetRecoilState(reviewModalState);
+  const [reviewSection, setReviewSection] = useRecoilState(reviewSectionState);
+  const isModalOpen = useRecoilValue(reviewModalState);
+
+  const handleClose = () => {
+    setReviewModalOpen(false);
+  };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      setReviewSection("first");
+    }
+  }, [isModalOpen, setReviewSection]);
+
+  const sectionComponents = [<ReviewFirst />, <ReviewSecond />, <ReviewThird />, <ReviewLast />];
+  const currentSectionIndex = ["first", "second", "third", "last"].indexOf(reviewSection);
+
+  const goNext = () => {
+    if (reviewSection === "first") setReviewSection("second");
+    else if (reviewSection === "second") setReviewSection("third");
+    else if (reviewSection === "third") setReviewSection("last");
+  };
+
+  const goPrev = () => {
+    if (reviewSection === "second") setReviewSection("first");
+    else if (reviewSection === "third") setReviewSection("second");
+  };  
+  
   return (
     <ModalWrapper>
+
+      <ModalHeader>
+        <Wrap>
+          <Btn src={LikeIcon} />
+          <ModalTitle>후기 작성하기</ModalTitle>
+        </Wrap>
+        <CloseBtn src={CloseIcon} onClick={handleClose} />
+      </ModalHeader>
+
+      <Wrapper>
+
+        {sectionComponents[currentSectionIndex]}
+
+        {/* 버튼 영역 */}
+        {reviewSection === "first" && (
+          <NextBtn onClick={goNext} isFirstLast>
+            <NextBtnText>다음</NextBtnText>
+          </NextBtn>
+        )}
+        {reviewSection === "second" && (
+          <BtnSection>
+            <PrevBtn onClick={goPrev}>
+              <PrevBtnText>이전</PrevBtnText>
+            </PrevBtn>
+            <NextBtn onClick={goNext} isCompact>
+              <NextBtnText>다음</NextBtnText>
+            </NextBtn>
+          </BtnSection>
+        )}
+
+        {reviewSection === "third" && (
+          <BtnSection>
+            <PrevBtn onClick={goPrev}>
+              <PrevBtnText>이전</PrevBtnText>
+            </PrevBtn>
+            <NextBtn onClick={goNext} isCompact>
+              <NextBtnText>후기 작성 완료</NextBtnText>
+            </NextBtn>
+          </BtnSection>
+        )}
+
+        {reviewSection === "last" && (
+          <NextBtn onClick={handleClose} isFirstLast>
+            <NextBtnText>닫기</NextBtnText>
+          </NextBtn>
+        )}
+      </Wrapper>
     </ModalWrapper>
   )
 }
@@ -14,7 +101,6 @@ export default ReviewWriteModal;
 const ModalWrapper = styled.div`
 font-size: 0.8rem; // 임의로 지정
   border-radius: 0.625em;
-  padding: 1.25em 1.875em;
   width: 40em;
   height: 43.75em;
   display: flex;
@@ -22,4 +108,140 @@ font-size: 0.8rem; // 임의로 지정
   justify-content: space-between;
   align-items: center;
   background: var(--RIU_Monochrome-10, #F9F9FB);
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    width: 90%;
+  }
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.625em;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--RIU_Monochrome-30, #E7E8ED);
+`;
+
+const Wrap = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 0.625em;
+`;
+
+const ModalTitle = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  color: var(--RIU_Monochrome-100, #818496);
+  font-family: Pretendard-Bold;
+  font-size: 0.875em;
+`;
+
+const Btn = styled.img`
+  width: 1.25em;
+  height: 1.25em;
+`;
+
+const CloseBtn = styled.img`
+  width: 1.25em;
+  height: 1.25em;
+  cursor: pointer;
+`;
+
+const Wrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  padding: 1.25em 1.875em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  flex: 1;
+  min-height: 0;  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    padding: 1.25em;
+  }
+`;
+
+const BtnSection = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 1.25em;
+  width: 100%;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    gap: 1em;
+  }
+`;
+
+const PrevBtn = styled.div`
+  display: flex;
+  width: calc(100% - 23.125em - 1.25em);
+  padding: 0.875em 0em;
+  justify-content: center;
+  align-items: center;
+  border-radius: 2.5em;
+  background: var(--RIU_Primary-0, #E8EAFF);
+  box-sizing: border-box;
+  cursor: pointer;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    width: 7.125em;
+    height: 2.5em;
+  }
+`;
+
+const PrevBtnText = styled.div`
+  color: var(--RIU_Primary-100, #718FF2);
+  font-family: Pretendard-Bold;
+  font-size: 1em;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    font-size: 0.875em;
+  }
+`;
+
+const NextBtn = styled.div`
+  display: flex;
+  width: ${({ isCompact }) => isCompact ? '23.125em' : '100%'};
+  height: 3.125em;
+  padding: 0.875em 0em;
+  justify-content: center;
+  align-items: center;
+  border-radius: 2.5em;
+  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
+  box-sizing: border-box;
+  cursor: pointer;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    width: ${({ isFirstLast }) => isFirstLast ? '100%' : 'calc(100% - 7.125em - 1em)'};
+    height: 2.5em;
+  }
+`;
+
+const NextBtnText = styled.div`
+  color: var(--RIU_Monochrome-10, #F9F9FB);
+  font-family: Pretendard-Bold;
+  font-size: 1em;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    font-size: 0.875em;
+  }
 `;

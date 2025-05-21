@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import useDevice from "../../../shared/hooks/useDevice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import MainIcon from '../../../shared/assets/icons/genre/movieIcon.svg';
-import CircleInfoIcon from '../../../shared/assets/icons/level/circleinfo.svg';
+import CircleInfoIcon from '../../../shared/assets/icons/common/circleinfo.svg';
 import { levels } from '../model/levelData';
 
 export default function LevelTabSection( { activeLevel, onLevelClick } ) {
