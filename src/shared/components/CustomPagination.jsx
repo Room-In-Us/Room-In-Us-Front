@@ -9,17 +9,9 @@ export default function CustomPagination({ currentPage, totalPages, onPageChange
   
   const { isDesktop, isTablet, isMobile } = useDevice();
 
-  const pageJumpSize = isMobile
-  ? 5
-  : isTablet
-  ? 13
-  : 20;
+  const pageJumpSize = isMobile ? 5 : 10;
 
-  const showDoubleIcons = isMobile
-  ? totalPages > 5
-  : isTablet
-  ? totalPages > 13
-  : totalPages > 20;
+  const showDoubleIcons = isMobile ? totalPages > 5 : totalPages > 10;
 
   let startPage, endPage;
 
@@ -29,12 +21,9 @@ export default function CustomPagination({ currentPage, totalPages, onPageChange
   } else if (isMobile) {
     startPage = Math.floor((currentPage - 1) / 5) * 5 + 1;
     endPage = Math.min(startPage + 4, totalPages);
-  } else if (isTablet && totalPages > 15) {
-    startPage = Math.floor((currentPage - 1) / 13) * 13 + 1;
-    endPage = Math.min(startPage + 12, totalPages);
-  } else if (!isMobile && totalPages > 20) {
-    startPage = Math.floor((currentPage - 1) / 20) * 20 + 1;
-    endPage = Math.min(startPage + 19, totalPages);
+  } else if (totalPages > 10) {
+    startPage = Math.floor((currentPage - 1) / 10) * 10 + 1;
+    endPage = Math.min(startPage + 9, totalPages);
   } else {
     startPage = 1;
     endPage = totalPages;

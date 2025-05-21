@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components';
-import RangeItem from './RangeItem';
+import RangeItem from '../../../shared/components/RangeItem';
 
 export default function RangeSection() {
   return (
