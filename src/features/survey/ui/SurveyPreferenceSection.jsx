@@ -292,6 +292,7 @@ const ElementList = styled.div`
   width: 100%;
   display: flex;
   flex-flow: wrap;
+  justify-content: space-between;
   align-items: center;
 
   @media (max-width: 768px) {

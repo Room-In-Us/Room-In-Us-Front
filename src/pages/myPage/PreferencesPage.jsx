@@ -1,6 +1,12 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import LeftArrow from "../../shared/assets/icons/myPage/leftArrow.svg?react";
+import ProficiencySection from "../../features/mypage/ui/preferences/ProficiencySection";
+import GenreSection from "../../features/mypage/ui/preferences/GenreSection";
+import HeadcountSection from "../../features/mypage/ui/preferences/HeadcountSection";
+import PreferenceSection from "../../features/mypage/ui/preferences/PreferenceSection";
+import PositionSection from "../../features/mypage/ui/preferences/PositionSection";
+import InfoSection from "../../features/mypage/ui/preferences/InfoSection";
 
 function PreferencesPage() {
   const navigate = useNavigate();
@@ -16,7 +22,33 @@ function PreferencesPage() {
           </BackButtonText>
         </BackButtonWrapper>
 
-        {/* 콘텐츠 영역 */}
+        {/* 타이틀 영역 */}
+        <TitleWrapper>
+          <Title>
+            내 성향조사 수정하기
+          </Title>
+          <Description>
+            방탈출 예약을 쉽고 편리하게 도와주는 루미너스입니다 :&#41;
+          </Description>
+        </TitleWrapper>
+
+        {/* 숙련도 섹션 */}
+        <ProficiencySection/>
+
+        {/* 장르 섹션 */}
+        <GenreSection/>
+
+        {/* 인원 섹션 */}
+        <HeadcountSection/>
+
+        {/* 취향 섹션 */}
+        <PreferenceSection/>
+
+        {/* 포지션 섹션 */}
+        <PositionSection/>
+
+        {/* 추가정보 섹션 */}
+        <InfoSection/>
 
       </ContentWrapper>
     </PageWrapper>
@@ -59,4 +91,24 @@ const BackButtonText = styled.div`
   text-align: center;
   font-family: 'Pretendard-Medium';
   line-height: normal;
+`;
+
+const TitleWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.625rem;
+`;
+
+const Title = styled.div`
+  color: var(--RIU_Primary-100, #718FF2);
+  font-family: 'Pretendard-Bold';
+  font-size: 1.5rem;
+  line-height: 130%; /* 1.95rem */
+`;
+
+const Description = styled.div`
+  color: var(--RIU_Monochrome-200, #717486);
+  font-family: 'Pretendard-Medium';
+  line-height: 130%; /* 1.3rem */
 `;
