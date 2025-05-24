@@ -35,26 +35,25 @@ function GenreSection() {
         선호 장르
       </Title>
 
-        {/* 선택 영역 */}
-        <CheckWrapper>
-          <ListWrapper>
-            {surveyGenreList.map((item) => (
-              <SurveyTag
-                key={item.id}
-                item={item.genre}
-                selected={selectedGenres.includes(item.enum)}
-                onClick={() => handleTagClick(item.enum)}
-                disabled={
-                  !selectedGenres.includes(item.enum) &&
-                  selectedGenres.length >= 4
-                }
-              />
-            ))}
-          </ListWrapper>
-          <CheckDescription>
-            최대 4개까지 선택 가능합니다
-          </CheckDescription>
-        </CheckWrapper>
+      {/* 선택 영역 */}
+      <ListWrapper>
+        {surveyGenreList.map((item) => (
+          <SurveyTag
+            key={item.id}
+            item={item.genre}
+            selected={selectedGenres.includes(item.enum)}
+            onClick={() => handleTagClick(item.enum)}
+            disabled={
+              !selectedGenres.includes(item.enum) &&
+              selectedGenres.length >= 4
+            }
+          />
+        ))}
+      </ListWrapper>
+
+      <CheckDescription>
+        최대 4개까지 선택 가능합니다
+      </CheckDescription>
     </SectionWrapper>
   )
 }
@@ -77,32 +76,19 @@ const Title = styled.div`
   line-height: normal;
 `;
 
-const CheckWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 0.875em;
-  align-self: stretch;
-`;
-
 const ListWrapper = styled.div`
   display: flex;
   flex-flow: wrap;
-  gap: 0.875em;
-
-  @media (max-width: 768px) {
-    gap: 0.875em 0.3em;
-  }
+  gap: 0.75rem;
 `;
 
 const CheckDescription = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
   color: var(--RIU_Monochrome-70, #B3B6C3);
+  text-align: center;
   font-family: 'Pretendard-Medium';
-  font-size: 0.75em;
+  font-size: 0.75rem;
   line-height: 130%;
-
-  @media (max-width: 768px) {
-    font-size: 0.625em;
-  }
 `;

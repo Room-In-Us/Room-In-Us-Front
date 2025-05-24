@@ -22,27 +22,22 @@ export default SurveyTag;
 // CSS
 const TagWrapper = styled.div`
   border: 1px solid var(--RIU_Primary-100, #718FF2);
-  border-radius: 1.7143em;
-  padding: 1em 1.14286em;
+  border-radius: 1.5rem;
+  padding: 0.875rem 1rem;
   box-sizing: border-box;
+  height: 2.0625rem;
   display: flex;
-  height: 2.3571em;
   justify-content: center;
   align-items: center;
-  gap: 0.625em;
-  font-family: 'Pretendard-Regular';
-  font-size: 0.875em;
-  font-weight: 400;
-  line-height: 1.42857em;
-  letter-spacing: -0.025em;
-  cursor: pointer;
+  gap: 0.625rem;
   background-color: ${({ selected }) => selected ? '#718FF2' : 'var(--RIU_Monochrome-10, #F9F9FB)'};
   color: ${({ selected }) => selected ? '#F9F9FB' : '#718FF2'};
+  font-family: 'Pretendard-Regular';
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.02188rem;
+  transition: all 0.1s ease-in-out;
   pointer-events: ${({ disabled }) => disabled ? 'none' : 'auto'};
   opacity: ${({ disabled }) => disabled ? 0.4 : 1};
-  transition: all 0.1s ease-in-out;
-
-  @media (max-width: 768px) {
-    font-size: 0.7143em;
-  }
+  cursor: pointer;
 `;
