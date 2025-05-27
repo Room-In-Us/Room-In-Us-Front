@@ -5,7 +5,6 @@ export const Wrap1 = styled.div`
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  min-height: 0;
   gap: 1.25em;
 
   flex: 1;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import DropDown from "../../../shared/assets/icons/common/dropdown.svg?react";
 import Overall from "../../../shared/assets/icons/reviewWrite/overallIcon.svg";
@@ -13,6 +13,7 @@ export default function ReviewDropdown({
   }) {
   
   const [isOpen, setIsOpen] = useState(false);
+  const wrapperRef = useRef(null);
 
   const toggleDropdown = () => setIsOpen((prev) => !prev);
 
@@ -23,8 +24,24 @@ export default function ReviewDropdown({
 
   const selectedLabel = options.find(opt => opt.value === selected)?.label || placeholder;
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
-    <DropdownWrapper $variant={variant}>
+    <DropdownWrapper ref={wrapperRef} $variant={variant}>
       <Box $disabled={disabled} $variant={variant} onClick={toggleDropdown}>
         {variant === 'overall' ? (
           <Wrap4>
@@ -104,6 +121,12 @@ const DropdownMenu = styled.div`
   border: 1px solid #ccc;
   border-radius: 0.25em;
   z-index: 10;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    top: 2.25em;
+  }
 `;
 
 const DropdownItem = styled.div`
@@ -112,6 +135,12 @@ const DropdownItem = styled.div`
   cursor: pointer;
   &:hover {
     background-color: var(--RIU_Primary-10, #F0F2FF);
+  }
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    font-size: 0.625em;
   }
 `;
 

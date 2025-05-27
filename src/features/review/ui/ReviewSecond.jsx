@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from "styled-components";
 import CircleInfo from "../../../shared/assets/icons/common/circleinfo.svg?react";
 import UnselectedIcon from '../../../shared/assets/icons/common/filterIcon/unselected.svg';
@@ -11,14 +11,13 @@ import { ToggleCheckbox } from './ToggleCheckBox.jsx';
 import PlayerBoxSection from './PlayerBoxSection.jsx';
 import FlexibleRangeSelector from './FlexibleRangeSelector.jsx';
 import HintCounter from "./HintCounter.jsx";
-import Calendar from "../../../shared/assets/icons/reviewWrite/date.svg";
-import DropDown from "../../../shared/assets/icons/common/dropdown.svg?react";
 import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3, Wrap5 } from '../../../shared/components/ReviewStyle.js';
 import useDevice from '../../../shared/hooks/useDevice.js';
-import ReviewDropdown from './ReviewDropdown.jsx';
+import InfoBox from '../../../shared/components/InfoBox.jsx';
 
 export default function ReviewSecond() {
 
+  // 반응형
   const { isDesktop, isTablet, isMobile } = useDevice();
 
   // 체크박스 상태
@@ -27,8 +26,11 @@ export default function ReviewSecond() {
   const [checkedPeople, setCheckedPeople] = useState(false);
   const [selectedIssues, setSelectedIssues] = useState([]);
 
+  // 인원수 초기화 상태
+  const [peopleResetCount, setPeopleResetCount] = useState(0);
+
   // 탈출 여부 상태
-  const [selectedEscape, setSelectedEscape] = useState('success');
+  const [selectedEscape, setSelectedEscape] = useState(true);
 
   // 방문 일자 상태
   const [visitDate, setVisitDate] = useState(null);
@@ -38,6 +40,26 @@ export default function ReviewSecond() {
     { id: 1, skill: '', note: '', isOwner: true },
     { id: 2, skill: '', note: '', isOwner: false },
   ]);
+
+  // info 팝업 상태
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const infoRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (infoRef.current && !infoRef.current.contains(e.target)) {
+        setIsInfoOpen(false);
+      }
+    }
+
+    if (isInfoOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isInfoOpen]);
 
   // 특이사항 선택 기능
   const toggleIssue = (label) => {
@@ -105,8 +127,10 @@ export default function ReviewSecond() {
                 <Asterisk2>*</Asterisk2>
               </Wrap>
 
+              <DatePickerWrapper>
                 <VisitDatePicker disabled={checkedDate} selectedDate={visitDate} onChange={setVisitDate} />
-              
+              </DatePickerWrapper>
+
               <ToggleCheckbox
                 label='기억 안 남'
                 checked={checkedDate}
@@ -119,8 +143,19 @@ export default function ReviewSecond() {
               <Wrap>
                 <ItemText>플레이 인원</ItemText>
                 <Asterisk2>*</Asterisk2>
-                <CircleInfoIcon />
+                <IconWrapper
+                  onMouseEnter={() => setIsInfoOpen(true)}
+                  onMouseLeave={() => setIsInfoOpen(false)}
+                >
+                  <CircleInfoIcon />
+                  {isInfoOpen && (
+                    <InfoPopup ref={infoRef}>
+                      <InfoBox />
+                    </InfoPopup>
+                  )}
+                </IconWrapper>
               </Wrap>
+
               {players.map(({ id, skill, note, isOwner }) => (
                 <PlayerBoxSection
                   key={id}
@@ -174,11 +209,15 @@ export default function ReviewSecond() {
                 <ItemText>추천 인원</ItemText>
                 <Asterisk2>*</Asterisk2>
               </Wrap>
-              <FlexibleRangeSelector disabled={checkedPeople}/>
+              <FlexibleRangeSelector disabled={checkedPeople} onClearTrigger={peopleResetCount} />
               <ToggleCheckbox
                 label='기재 안 함'
                 checked={checkedPeople}
-                onToggle={()=>setCheckedPeople(prev => !prev)}
+                onToggle={()=>setCheckedPeople((prev) => {
+                  const next = !prev;
+                  if (next) setPeopleResetCount((count) => count + 1); 
+                  return next;
+                })}
               />
             </ItemSection2>
 
@@ -225,7 +264,7 @@ export default function ReviewSecond() {
           </ImgSection>
 
           {/* 방문 일자 영역 */}
-        <ItemSection>
+          <ItemSection>
             <Wrap>
               <ItemText>방문 일자</ItemText>
               <Asterisk2>*</Asterisk2>
@@ -233,9 +272,7 @@ export default function ReviewSecond() {
             <DatePickerWrapper>
               <VisitDatePicker disabled={checkedDate} selectedDate={visitDate} onChange={setVisitDate} />
             </DatePickerWrapper>
-            {/* <ReviewDropdown
-              isCustomInput={true} 
-            /> */}
+
             <ToggleCheckbox
               label='기억 안 남'
               checked={checkedDate}
@@ -248,7 +285,14 @@ export default function ReviewSecond() {
             <Wrap>
               <ItemText>플레이 인원</ItemText>
               <Asterisk2>*</Asterisk2>
-              <CircleInfoIcon />
+              <IconWrapper>
+                <CircleInfoIcon onClick={() => setIsInfoOpen(prev => !prev)} />
+                {isInfoOpen && (
+                  <InfoPopup ref={infoRef}>
+                    <InfoBox />
+                  </InfoPopup>
+                )}
+              </IconWrapper>
             </Wrap>
             {players.map(({ id, skill, note, isOwner }) => (
               <PlayerBoxSection
@@ -303,11 +347,15 @@ export default function ReviewSecond() {
               <ItemText>추천 인원</ItemText>
               <Asterisk2>*</Asterisk2>
             </Wrap>
-            <FlexibleRangeSelector disabled={checkedPeople}/>
+            <FlexibleRangeSelector disabled={checkedPeople} onClearTrigger={peopleResetCount} />
             <ToggleCheckbox
               label='기재 안 함'
               checked={checkedPeople}
-              onToggle={()=>setCheckedPeople(prev => !prev)}
+              onToggle={()=>setCheckedPeople((prev) => {
+                const next = !prev;
+                if (next) setPeopleResetCount((count) => count + 1); 
+                return next;
+              })}
             />
           </ItemSection2>
 
@@ -397,6 +445,18 @@ const Asterisk2 = styled.div`
   @media (max-width: 768px) {
     font-size: 0.75em;
   }
+`;
+
+const IconWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+const InfoPopup = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 150%;
+  z-index: 999;
 `;
 
 const CircleInfoIcon = styled(CircleInfo)`
@@ -514,14 +574,8 @@ export const RadioLabel = styled.div`
 
 const ItemSection2 = styled.div`
   display: flex;
-  width: 11.4375em;
+  width: calc(50% - 0.625em);
   flex-direction: column;
   align-items: flex-start;
   gap: 0.625em;
-
-  @media (max-width: 1024px) {
-  }
-  @media (max-width: 768px) {
-    width: 9em;
-  }
 `;
