@@ -400,7 +400,7 @@ const Wrapper = styled.div`
     gap: 1.40625rem;
   }
   @media (max-width: 768px) {
-    width: 22.1875rem;
+    width: 20.9375rem;
     gap: 0.625rem;
     padding-bottom: 1.21875rem;
   }
