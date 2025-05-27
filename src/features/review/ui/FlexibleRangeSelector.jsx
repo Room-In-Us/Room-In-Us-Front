@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-export default function FlexibleRangeSelector({disabled}) {
+export default function FlexibleRangeSelector({disabled, onClearTrigger }) {
   const [range, setRange] = useState([]);
+
+  useEffect(() => {
+    setRange([]);
+  }, [onClearTrigger]);
 
   const handleClick = (num) => {
     if (range.length === 0) {

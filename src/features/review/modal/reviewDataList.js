@@ -5,29 +5,28 @@ import NowDay from "../../../shared/assets/icons/reviewWrite/nowday.svg";
 import GiveUp from "../../../shared/assets/icons/reviewWrite/giveup.svg";
 
 export const clothOptions = [
-    { value: 'pants', label: "바지 추천" },
-    { value: 'long', label: "긴 치마 가능" },
-    { value: 'short', label: "짧은 치마 가능" },
-    { value: 'none', label: "입력 안 함" },
+    { value: 'PANTS', label: "바지 추천" },
+    { value: 'LONG_SKIRT', label: "긴 치마 가능" },
+    { value: 'SHORT_SKIRT', label: "짧은 치마 가능" },
+    { value: null, label: "입력 안 함" },
   ];
 
 export const finishOption = [
-    { value: 'success', label: "성공" },
-    { value: 'fail', label: "실패" },
-    { value: 'none', label: "기재 안 함" },
+    { value: true, label: "성공" },
+    { value: false, label: "실패" },
+    { value: null, label: "기재 안 함" },
   ];
 
 export const specialIssues = [
-  { icon: Old, label: "노후화" },
-  { icon: Malfunction, label: "장치 오류" },
-  { icon: Delay, label: "입장 지연" },
-  { icon: NowDay, label: "당일 예약" },
-  { icon: GiveUp, label: "중도 포기" },
+  { icon: Old, value: 'AGING', label: "노후화" },
+  { icon: Malfunction, value: 'DEVICE_ERROR', label: "장치 오류" },
+  { icon: Delay, value: 'ENTRY_DELAY', label: "입장 지연" },
+  { icon: NowDay, value: 'SAME_DAY_BOOKING', label: "당일 예약" },
+  { icon: GiveUp, value: 'EARLY_EXIT', label: "중도 포기" },
 ];
 
-
 export const skillOptions = [
-  { value: 'NULL', label: "미선택" },
+  { value: null, label: "미선택" },
   { value: 'BEGINNER', label: "방세포" },
   { value: 'JUNIOR', label: "방초보" },
   { value: 'SENIOR', label: "방중수" },
@@ -35,19 +34,19 @@ export const skillOptions = [
 ];
 
 export const failOptions = [
-  { value: 'NULL', label: "미선택" },
-  { value: 'HINTOVER', label: "힌트 개수 초과" },
-  { value: 'TIMEATTACK', label: "시간 부족" },
-  { value: 'OTHER', label: "기타" },
+  { value: null, label: "미선택" },
+  { value: 'HINT', label: "힌트 개수 초과" },
+  { value: 'TIME', label: "시간 부족" },
+  { value: 'ETC', label: "기타" },
 ];
 
 export const overallOptions = [
-  {value: 'LIFE', label: '인생테마'},
-  {value: 'FLOWERGROUND', label: '꽃밭길'},
+  {value: 'FAVORITE', label: '인생테마'},
+  {value: 'FLOWER_GARDEN', label: '꽃밭길'},
   {value: 'FLOWER', label: '꽃길'},
-  {value: 'GRASSFLOWER', label: '풀꽃길'},
+  {value: 'GRASS_FLOWER', label: '풀꽃길'},
   {value: 'GRASS', label: '풀길'},
-  {value: 'SOILGRASS', label: '흙풀길'},
+  {value: 'SOIL_GRASS', label: '흙풀길'},
   {value: 'SOIL', label: '흙길'},
 ];
 

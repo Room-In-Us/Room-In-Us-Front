@@ -23,7 +23,7 @@ export default function ReviewFirst() {
     <Wrap1>
 
       {!isMobile && (
-        <>
+      <>
         <Wrap2>
           <ThemeTitle>테마명</ThemeTitle>
           <ThemeSubText>테마에 만족하셨나요?</ThemeSubText>
@@ -68,56 +68,63 @@ export default function ReviewFirst() {
           </Scroll>
 
         </Wrap3>
-        </>
-    )}
+      </>
+      )}
 
-    {isMobile && (
-      <Scroll>
-        <Wrap3>
+      {isMobile && (
+        <Scroll>
+          <Wrapper>
 
-          <ThemeImg />
+            <ThemeImg />
 
-          <Wrap5>
-            <Wrap2>
-              <ThemeTitle>테마명</ThemeTitle>
-              <ThemeSubText>테마에 만족하셨나요?</ThemeSubText>
-            </Wrap2>
+            <Wrap5>
+              <Wrap2>
+                <ThemeTitle>테마명</ThemeTitle>
+                <ThemeSubText>테마에 만족하셨나요?</ThemeSubText>
+              </Wrap2>
 
-            <StarRating />
-          </Wrap5>
+              <StarRating />
+            </Wrap5>
 
-        </Wrap3>
+          </Wrapper>
 
           <ReviewSection>
-              <OverallSection>
-                <Wrap4>
-                  <ItemText>총평</ItemText>
-                  <Asterisk>*</Asterisk>
-                </Wrap4>
-                <ReviewDropdown
-                  placeholder='총평 선택'
-                  options={overallOptions}
-                  selected={selectedOverall}
-                  onSelect={setSelectedOverall}
-                  variant='overall'
-                />
-              </OverallSection>
-              <ThoughtSection>
-                <ItemText>테마 체험 소감을 간단히 적어주세요!</ItemText>
-                <InputWrapper>
-                  <ThoughtInput value={text} onChange={handleChange} />
-                  <CharCount>
-                    <CountText>{text.length} / 500</CountText>
-                  </CharCount>
-                </InputWrapper>
-              </ThoughtSection>
-            </ReviewSection>
-      </Scroll>
-    )}
+            <OverallSection>
+              <Wrap4>
+                <ItemText>총평</ItemText>
+                <Asterisk>*</Asterisk>
+              </Wrap4>
+              <ReviewDropdown
+                placeholder='총평 선택'
+                options={overallOptions}
+                selected={selectedOverall}
+                onSelect={setSelectedOverall}
+                variant='overall'
+              />
+            </OverallSection>
+            <ThoughtSection>
+              <ItemText>테마 체험 소감을 간단히 적어주세요!</ItemText>
+              <InputWrapper>
+                <ThoughtInput value={text} onChange={handleChange} />
+                <CharCount>
+                  <CountText>{text.length} / 500</CountText>
+                </CharCount>
+              </InputWrapper>
+            </ThoughtSection>
+          </ReviewSection>
+        </Scroll>
+      )}
 
     </Wrap1>
   )
 }
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875em;
+`;
 
 const ReviewSection = styled.div`
   display: flex;

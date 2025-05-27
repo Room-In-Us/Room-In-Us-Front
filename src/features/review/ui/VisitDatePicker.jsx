@@ -5,28 +5,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import Calendar from "../../../shared/assets/icons/reviewWrite/date.svg";
 import DropDown from "../../../shared/assets/icons/common/dropdown.svg?react";
 
-export default function VisitDatePicker({ disabled, selectedDate, onChange }) {
-
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <DatePicker
-      open={isOpen}
-      onClickOutside={() => setIsOpen(false)}
-      disabled={disabled}
-      selected={selectedDate}
-      onChange={(date) => {
-          if (date instanceof Date && !isNaN(date.getTime())) {
-            onChange(date);
-            setIsOpen(false);
-          }
-        }}
-      dateFormat="yyyy.MM.dd"
-      customInput={<CustomDateInput onToggle={() => setIsOpen(prev => !prev)} style={{width: '100%'}} />}
-      wrapperClassName="date-picker-wrapper"
-    />
-  );
-}
 const CustomDateInput = React.forwardRef(({ disabled, value, onToggle }, ref) => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -48,8 +26,74 @@ const CustomDateInput = React.forwardRef(({ disabled, value, onToggle }, ref) =>
   );
 });
 
+export default function VisitDatePicker({ disabled, selectedDate, onChange }) {
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <StyledDatePickerWrapper>
+      <StyledDatePicker
+        open={isOpen}
+        onClickOutside={() => setIsOpen(false)}
+        shouldCloseOnSelect
+        disabled={disabled}
+        selected={selectedDate}
+        onChange={(date) => {
+            if (date instanceof Date && !isNaN(date.getTime())) {
+              onChange(date);
+              setIsOpen(false);
+            }
+          }}
+        dateFormat="yyyy.MM.dd"
+        customInput={<CustomDateInput onToggle={() => setIsOpen(prev => !prev)} style={{width: '100%'}} />}
+        wrapperClassName="date-picker-wrapper"
+      />
+    </StyledDatePickerWrapper>
+  );
+}
+
+const StyledDatePickerWrapper = styled.div`
+  .react-datepicker-wrapper,
+  .react-datepicker__input-container,
+  .react-datepicker__input-container input {
+    width: 100%;
+  }
+`;
+
+const StyledDatePicker = styled(DatePicker)`
+
+
+  color: var(--RIU_Monochrome-100, #818496);
+  font-family: Pretendard-Medium;
+
+  .react-datepicker__triangle {
+    display: none;
+  }
+
+  .react-datepicker__header {
+    background-color: #f0f2ff;
+    border-bottom: none;
+  }
+
+  .react-datepicker__day--selected {
+    background-color: #718FF2;
+    color: white;
+    border-radius: 50%;
+  }
+
+  .react-datepicker__day--keyboard-selected {
+    background-color: transparent;
+    color: #718FF2;
+  }
+
+  .react-datepicker__day:hover {
+    background-color: #e0e6ff;
+    border-radius: 50%;
+  }
+`;
+
 const DateBox = styled.div`
-  width: 24.125em;
+  width: 100%;
   height: 2.5em;
   display: flex;
   padding: 0.625em 0.875em;
@@ -64,8 +108,7 @@ const DateBox = styled.div`
   @media (max-width: 1024px) {
   }
   @media (max-width: 768px) {
-    width: 19.6875em;
-    max-width: 100%;
+    width: 100%;
     height: 1.875em;
   }
 `;

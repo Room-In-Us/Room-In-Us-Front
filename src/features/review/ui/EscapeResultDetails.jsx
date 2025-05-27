@@ -13,7 +13,7 @@ export default function EscapeResultDetails ({selected}) {
   const [checkedTime, setCheckedTime] = useState(false);
   const [checkedEnding, setCheckedEnding] = useState(false);
 
-    if (selected === 'success') {
+    if (selected === true) {
         return (
           <Wrapper>
            <BoxSection $disabled={checkedTime}>
@@ -27,7 +27,7 @@ export default function EscapeResultDetails ({selected}) {
           />
           </Wrapper>
         );
-      } else if (selected === 'fail') {
+      } else if (selected === false) {
         return (
           <Wrapper2>
             <ReviewDropdown

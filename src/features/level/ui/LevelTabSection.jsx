@@ -1,14 +1,36 @@
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import useDevice from "../../../shared/hooks/useDevice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import MainIcon from '../../../shared/assets/icons/genre/movieIcon.svg';
 import CircleInfoIcon from '../../../shared/assets/icons/common/circleinfo.svg';
 import { levels } from '../model/levelData';
+import InfoBox from '../../../shared/components/InfoBox.jsx';
 
 export default function LevelTabSection( { activeLevel, onLevelClick } ) {
     
   // 반응형 함수
   const { isDesktop, isMobile, isTablet } = useDevice();
+
+    // info 팝업 상태
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const infoRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (infoRef.current && !infoRef.current.contains(e.target)) {
+        setIsInfoOpen(false);
+      }
+    }
+
+    if (isInfoOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isInfoOpen]);
 
   return (
     <Wrapper>
@@ -17,7 +39,25 @@ export default function LevelTabSection( { activeLevel, onLevelClick } ) {
         <TextWrapper>
           <MainTextLayout>
             <MainText>숙련도 검색</MainText>
-            <InfoIcon src={CircleInfoIcon} />
+              {!isMobile && (<IconWrapper
+                onMouseEnter={() => setIsInfoOpen(true)}
+                onMouseLeave={() => setIsInfoOpen(false)}
+              >
+                <InfoIcon src={CircleInfoIcon} />
+                {isInfoOpen && (
+                  <InfoPopup ref={infoRef}>
+                    <InfoBox />
+                  </InfoPopup>
+                )}
+              </IconWrapper>)}
+              {isMobile && (<IconWrapper>
+                <InfoIcon src={CircleInfoIcon} onClick={() => setIsInfoOpen(prev => !prev)} />
+                {isInfoOpen && (
+                  <InfoPopup ref={infoRef}>
+                    <InfoBox />
+                  </InfoPopup>
+                )}
+              </IconWrapper>)}
           </MainTextLayout>
           <SubText>내 취향에 딱 맞는 방탈출, 숙련도별로 쉽게 찾아보세요</SubText>
         </TextWrapper>
@@ -152,12 +192,26 @@ const MainText = styled.div`
   }
 `;
 
+const IconWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+const InfoPopup = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 100%;
+  transform: translate(0.25em, 0.25em);
+  z-index: 999;
+`;
+
 const InfoIcon = styled.img`
   display: flex;
   width: 1.40625rem;
   height: 1.40625rem;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 
   @media (max-width: 1024px) {
     width: 1.0546875rem;

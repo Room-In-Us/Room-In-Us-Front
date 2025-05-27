@@ -57,12 +57,7 @@ export default function ReviewThird() {
                     />
                   </Wrap>
 
-                  <Wrap>
-                    <ItemText2>자물쇠</ItemText2>
-                    <ItemText2>장치</ItemText2>
-                  </Wrap>
-
-                  <RangeItem />
+                  <RangeItem disabled={checkedRange} />
 
                 </ItemSection>
 
@@ -152,12 +147,7 @@ export default function ReviewThird() {
                 />
               </Wrap>
 
-              <Wrap>
-                <ItemText2>자물쇠</ItemText2>
-                <ItemText2>장치</ItemText2>
-              </Wrap>
-
-              <RangeItem />
+              <RangeItem disabled={checkedRange} />
 
             </ItemSection>
 
@@ -230,7 +220,6 @@ const ItemSection = styled.div`
   display: flex;
   width: 100%;
   flex-direction: column;
-  align-items: flex-start;
   gap: 0.625em;
 `;
 
