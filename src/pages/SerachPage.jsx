@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import SearchInput from '../shared/components/SearchInput';
 import ContentCard from '../shared/components/ContentCard';
 import { useState } from 'react';
-import { getThemesAPI } from '../features/search/api/SearchApi';
+import { getThemesAPI } from '../features/search/api/getSearchAPI';
 import { useSearchParams } from 'react-router-dom';
 import SearchIcon from '../shared/assets/icons/common/searchIcon.svg?react';
 import CancelIcon from '../shared/assets/icons/common/cancelIcon.svg?react';
