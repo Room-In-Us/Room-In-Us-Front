@@ -25,6 +25,7 @@ import PreferencesPage from '../pages/myPage/PreferencesPage';
 import ReservationsPage from '../pages/myPage/ReservationsPage';
 import FavoritesPage from '../pages/myPage/FavoritesPage';
 import ReviewsPage from '../pages/myPage/ReviewsPage';
+import SerachPage from '../pages/SerachPage';
 
 function App() {
   const setMapsLoaded = useSetRecoilState(mapsLoadedState);
@@ -84,6 +85,9 @@ function App() {
 
           {/* 성향조사 페이지 */}
           <Route path="/survey" element={<SurveyPage />} />
+
+          {/* 전체 검색 페이지 */}
+          <Route path = '/search' element={<SerachPage />} />
         </Route>
       </Routes>
     </LoadScript>
