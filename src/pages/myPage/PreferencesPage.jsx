@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import LeftArrow from "../../shared/assets/icons/myPage/leftArrow.svg?react";
@@ -7,31 +8,58 @@ import HeadcountSection from "../../features/mypage/ui/preferences/HeadcountSect
 import PreferenceSection from "../../features/mypage/ui/preferences/PreferenceSection";
 import PositionSection from "../../features/mypage/ui/preferences/PositionSection";
 import InfoSection from "../../features/mypage/ui/preferences/InfoSection";
+import { getPreferencesAPI, patchPreferencesAPI } from "../../features/mypage/api/surveyAPI";
+import { surveyState } from "../../features/mypage/model/surveyAtom";
+import { useRecoilState } from 'recoil';
 
 function PreferencesPage() {
+  const [survey, setSurvey ] = useRecoilState(surveyState);
   const navigate = useNavigate();
+
+  // 성향조회 호출 (초기값 설정)
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      try {
+        const data = await getPreferencesAPI();
+        setSurvey({
+          proficiency: data.proficiency,
+          preferredGenreList: data.preferredGenreList,
+          preferredHeadcount: data.preferredHeadcount,
+          preferredElementList: data.preferredElementList,
+          preferredActivity: data.preferredActivity,
+          preferredDevice: data.preferredDevice,
+          horrorPos: data.horrorPos,
+          preference: data.preference,
+        });
+      } catch (error) {
+        console.error("성향조사 데이터 로딩 실패:", error);
+      }
+    };
+
+    fetchPreferences();
+  }, [setSurvey]);
 
   // 성향조사 저장 핸들러
   const handleSubmitSurvey = async () => {
-    // try {
-    //   const payload = {
-    //     proficiency: survey.proficiency,
-    //     preferredGenreList: survey.preferredGenreList,
-    //     preferredHeadcount: survey.preferredHeadcount,
-    //     preferredElementList: survey.preferredElementList,
-    //     preferredActivity: survey.preferredActivity,
-    //     preferredDevice: survey.preferredDevice,
-    //     horrorPos: survey.horrorPos,
-    //     preference: text.trim() || null,
-    //   };
+    try {
+      const payload = {
+        proficiency: survey.proficiency,
+        preferredGenreList: survey.preferredGenreList,
+        preferredHeadcount: survey.preferredHeadcount,
+        preferredElementList: survey.preferredElementList,
+        preferredActivity: survey.preferredActivity,
+        preferredDevice: survey.preferredDevice,
+        horrorPos: survey.horrorPos,
+        preference: survey.preference,
+      };
 
-    //   console.log("성향조사 제출 결과: ", payload);
-    //   const response = await patchPreferencesAPI(payload);
-    //   console.log("성향조사 제출 결과: ", response);
-    //   setSurveySection("complete");
-    // } catch (error) {
-    //   console.error("성향조사 제출 중 오류 발생:", error);
-    // }
+      console.log("성향조사 제출 결과: ", payload);
+      const response = await patchPreferencesAPI(payload);
+      console.log("성향조사 제출 결과: ", response);
+      alert("성향조사 결과가 저장되었습니다.")
+    } catch (error) {
+      console.error("성향조사 제출 중 오류 발생:", error);
+    }
   };
 
   return (
