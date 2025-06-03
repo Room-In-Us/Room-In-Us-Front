@@ -1,12 +1,10 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
-import { surveySectionState, surveyState } from "../../model/surveyAtom";
-import { patchPreferencesAPI } from "../../api/surveyAPI";
+import { surveyState } from "../../model/surveyAtom";
 
 function InfoSection() {
   // state 관리
-  const [, setSurveySection] = useRecoilState(surveySectionState);
   const [survey, setSurvey] = useRecoilState(surveyState);
   const [text, setText] = useState(survey.preference || "");
 
@@ -18,29 +16,6 @@ function InfoSection() {
       ...prev,
       preference: newText.trim(),
     }));
-  };
-
-  // 성향조사 제출 핸들러
-  const handleSubmitSurvey = async () => {
-    // try {
-    //   const payload = {
-    //     proficiency: survey.proficiency,
-    //     preferredGenreList: survey.preferredGenreList,
-    //     preferredHeadcount: survey.preferredHeadcount,
-    //     preferredElementList: survey.preferredElementList,
-    //     preferredActivity: survey.preferredActivity,
-    //     preferredDevice: survey.preferredDevice,
-    //     horrorPos: survey.horrorPos,
-    //     preference: text.trim() || null,
-    //   };
-
-    //   console.log("성향조사 제출 결과: ", payload);
-    //   const response = await patchPreferencesAPI(payload);
-    //   console.log("성향조사 제출 결과: ", response);
-    //   setSurveySection("complete");
-    // } catch (error) {
-    //   console.error("성향조사 제출 중 오류 발생:", error);
-    // }
   };
 
   return (
@@ -59,12 +34,6 @@ function InfoSection() {
           onChange={handleTextChange}
         />
       </ContentWrapper>
-
-      <ButtonWrapper>
-        <StyledButton onClick={handleSubmitSurvey}>
-          <ButtonText>성향조사 결과 저장하기</ButtonText>
-        </StyledButton>
-      </ButtonWrapper>
     </SectionWrapper>
   )
 }
@@ -125,66 +94,5 @@ const StyledTextarea = styled.textarea`
     padding: 1.5em;
     height: 17em;
     font-size: 0.7143em;
-  }
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.25em;
-  align-self: stretch;
-
-  @media (max-width: 768px) {
-    gap: 0.625em;
-  }
-`;
-
-const StyledButton = styled.button`
-  all: unset;
-  border: none;
-  display: flex;
-  height: 3.125em;
-  justify-content: center;
-  align-items: center;
-  gap: 0.625em;
-  align-self: stretch;
-  border-radius: 2.5em;
-  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.2s ease-in-out;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(19, 26, 115, 0.5);
-    opacity: 0;
-    transition: all 0.1s ease-in-out;
-  }
-
-  &:hover::before {
-    opacity: 0.5;
-  }
-
-  @media (max-width: 768px) {
-    height: 2.5em;
-  }
-`;
-
-const ButtonText = styled.div`
-  color: #F9F9FB;
-  font-family: 'Pretendard-Bold';
-  line-height: 130%;
-  z-index: 1;
-  transition: all 0.2s ease-in-out;
-
-  @media (max-width: 768px) {
-    font-size: 0.75em;
   }
 `;

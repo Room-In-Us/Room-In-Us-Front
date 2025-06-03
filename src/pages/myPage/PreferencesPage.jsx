@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import LeftArrow from "../../shared/assets/icons/myPage/leftArrow.svg?react";
@@ -7,9 +8,59 @@ import HeadcountSection from "../../features/mypage/ui/preferences/HeadcountSect
 import PreferenceSection from "../../features/mypage/ui/preferences/PreferenceSection";
 import PositionSection from "../../features/mypage/ui/preferences/PositionSection";
 import InfoSection from "../../features/mypage/ui/preferences/InfoSection";
+import { getPreferencesAPI, patchPreferencesAPI } from "../../features/mypage/api/surveyAPI";
+import { surveyState } from "../../features/mypage/model/surveyAtom";
+import { useRecoilState } from 'recoil';
 
 function PreferencesPage() {
+  const [survey, setSurvey ] = useRecoilState(surveyState);
   const navigate = useNavigate();
+
+  // 성향조회 호출 (초기값 설정)
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      try {
+        const data = await getPreferencesAPI();
+        setSurvey({
+          proficiency: data.proficiency,
+          preferredGenreList: data.preferredGenreList,
+          preferredHeadcount: data.preferredHeadcount,
+          preferredElementList: data.preferredElementList,
+          preferredActivity: data.preferredActivity,
+          preferredDevice: data.preferredDevice,
+          horrorPos: data.horrorPos,
+          preference: data.preference,
+        });
+      } catch (error) {
+        console.error("성향조사 데이터 로딩 실패:", error);
+      }
+    };
+
+    fetchPreferences();
+  }, [setSurvey]);
+
+  // 성향조사 저장 핸들러
+  const handleSubmitSurvey = async () => {
+    try {
+      const payload = {
+        proficiency: survey.proficiency,
+        preferredGenreList: survey.preferredGenreList,
+        preferredHeadcount: survey.preferredHeadcount,
+        preferredElementList: survey.preferredElementList,
+        preferredActivity: survey.preferredActivity,
+        preferredDevice: survey.preferredDevice,
+        horrorPos: survey.horrorPos,
+        preference: survey.preference,
+      };
+
+      console.log("성향조사 제출 결과: ", payload);
+      const response = await patchPreferencesAPI(payload);
+      console.log("성향조사 제출 결과: ", response);
+      alert("성향조사 결과가 저장되었습니다.")
+    } catch (error) {
+      console.error("성향조사 제출 중 오류 발생:", error);
+    }
+  };
 
   return (
     <PageWrapper>
@@ -50,6 +101,10 @@ function PreferencesPage() {
         {/* 추가정보 섹션 */}
         <InfoSection/>
 
+        {/* 저장 버튼 */}
+        <StyledButton onClick={handleSubmitSurvey}>
+          <ButtonText>성향조사 결과 저장하기</ButtonText>
+        </StyledButton>
       </ContentWrapper>
     </PageWrapper>
   )
@@ -111,4 +166,45 @@ const Description = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Medium';
   line-height: 130%; /* 1.3rem */
+`;
+
+const StyledButton = styled.button`
+  all: unset;
+  border: none;
+  display: flex;
+  height: 3.125rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  align-self: stretch;
+  border-radius: 2.5rem;
+  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease-in-out;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(19, 26, 115, 0.5);
+    opacity: 0;
+    transition: all 0.1s ease-in-out;
+  }
+
+  &:hover::before {
+    opacity: 0.5;
+  }
+`;
+
+const ButtonText = styled.div`
+  color: #F9F9FB;
+  font-family: 'Pretendard-Bold';
+  line-height: 130%;
+  z-index: 1;
+  transition: all 0.2s ease-in-out;
 `;

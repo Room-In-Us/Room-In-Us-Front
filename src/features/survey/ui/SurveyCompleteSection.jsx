@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useRecoilState, useResetRecoilState } from 'recoil';
 import { surveySectionState, surveyState } from "../model/surveyAtom";
 import { useNavigate } from "react-router-dom";
-import SurveyImage from "../../../shared/assets/images/survey/surveyImage.png";
+import SurveyImage from "../../../shared/assets/images/survey/surveyImage7.png";
 
 function SurveyCompleteSection() {
   // state 관리

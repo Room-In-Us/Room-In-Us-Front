@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import CuteHapyStar from "../../../shared/assets/images/auth/cuteHappyStar.png";
+import SignupIllust from "../../../shared/assets/images/auth/signupIllust.png";
 
 function CompleteSection() {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ function CompleteSection() {
           <Description>루미너스에 가입해주셔서 감사합니다!</Description>
         </TextWrapper>
         <ImageWrapper>
-          <StyledImg src={CuteHapyStar}/>
+          <StyledImg src={SignupIllust}/>
           <ImageText>
             간단한 조사를 통해 방탈출 성향을 등록해주시면 <br/>
             루미너스가 좋은 서비스로 보답할게요!
@@ -111,10 +111,10 @@ const ImageWrapper = styled.div`
 `;
 
 const StyledImg = styled.img`
-  width: 13.1875em;
+  width: 18.75em;
 
   @media (max-width: 768px) {
-    width: 8.6875em;
+    width: 12.5em;
   }
 `;
 

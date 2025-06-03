@@ -1,12 +1,55 @@
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import LogoIcon from '../shared/assets/icons/common/logo.svg?react';
 import UpdateIcon from '../shared/assets/icons/myPage/updateIcon.svg?react';
 import ArrowIcon from '../shared/assets/icons/myPage/rightArrow.svg?react';
+import { getMemberInfoAPI } from "../features/auth/api/memberAPI";
+import { patchNicknameAPI } from "../features/mypage/api/nicknameAPI";
+import CloseIcon from '../shared/assets/icons/myPage/closeIcon.svg?react';
+import CheckIcon from '../shared/assets/icons/myPage/checkIcon.svg?react';
 
 function MyPage() {
+  // 상태 관리
+  const [nickname, setNickname] = useState('');
+  const [email, setEmail] = useState('');
+  const [editState, setEditState] = useState(false);
+  const [prevNickname, setPrevNickname] = useState('');
+  const [errorState, setErrorState] = useState(false);
+
   const navigate = useNavigate();
 
+  // 닉네임 가져오기 (로그인 상태일 때만 실행)
+  useEffect(() => {
+    const fetchNickname = async () => {
+      try {
+        const response = await getMemberInfoAPI();
+        setNickname(response.nickname);
+        setEmail(response.email);
+      } catch (error) {
+        console.error("닉네임 불러오는 중 오류 발생:", error);
+      }
+    };
+    fetchNickname();
+  }, []);
+
+  // 닉네임 수정하기
+  const handleNicknameUpdate = async () => {
+    try {
+      const response = await patchNicknameAPI(nickname);
+      console.log("닉네임 수정 결과: ", response);
+      setEditState(false);
+    } catch (error) {
+      console.error("닉네임 수정 중 오류 발생:", error);
+      if (error.response?.status === 409) {
+        setErrorState(true);
+        setTimeout(() => {
+          setErrorState(false);
+        }, 2000);
+      }
+    }
+  };
+  
   return (
     <PageWrapper>
       <ContentWrapper>
@@ -14,13 +57,36 @@ function MyPage() {
         <InfoWrapper>
           <StyledLogoIcon/>
           <EmailWrapper>
-            <Nickname>
-              선방
-            </Nickname>
+            { editState ?
+              <NicknameInput
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+              />
+              :
+              <Nickname>
+                {nickname}
+              </Nickname>
+            }
             <Email>
-              roominus@test.com
+              {email}
             </Email>
-            <StyledUpdateIcon/>
+            { editState ?
+              <NicknameUpdateButton>
+                <StyledCloseIcon onClick={() => {
+                  setNickname(prevNickname);
+                  setEditState(false);
+                }} />
+                <StyledCheckIcon onClick={handleNicknameUpdate} />
+              </NicknameUpdateButton>
+              :
+              <StyledUpdateIcon
+                onClick={() => {
+                  setEditState(true);
+                  setPrevNickname(nickname);
+                }}
+              />
+            }
+            <ErrorText errorState={errorState}>이미 존재하는 닉네임입니다.</ErrorText>
           </EmailWrapper>
         </InfoWrapper>
 
@@ -101,12 +167,32 @@ const EmailWrapper = styled.div`
   gap: 0.375rem;
 `;
 
+const NicknameInput = styled.input`
+  border: 1px solid var(--RIU_Monochrome-60, #C4C6D1);
+  padding: 0rem 0.625rem;
+  box-sizing: border-box;
+  width: 18.0625rem;
+  height: 2.625rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  background: var(--RIU_Monochrome-10, #F9F9FB);
+  outline: none;
+  text-align: center;
+  color: var(--RIU_Primary-400, #515DBA);
+  font-family: 'Pretendard-ExtraBold';
+  font-size: 1.375rem;
+  line-height: normal;
+`;
+
 const Nickname = styled.div`
   height: 2.625rem;
   color: var(--RIU_Primary-400, #515DBA);
   font-family: 'Pretendard-ExtraBold';
   font-size: 1.375rem;
-  line-height: normal;
+  display: flex;
+  align-items: center;
 `;
 
 const Email = styled.div`
@@ -116,10 +202,39 @@ const Email = styled.div`
   line-height: normal;
 `;
 
+const NicknameUpdateButton = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+`;
+
+const StyledCloseIcon = styled(CloseIcon)`
+  margin: 0.28125rem;
+  height: 1.125rem;
+  cursor: pointer;
+`;
+const StyledCheckIcon = styled(CheckIcon)`
+  margin: 0.28125rem;
+  height: 1.125rem;
+  cursor: pointer;
+`;
+
 const StyledUpdateIcon = styled(UpdateIcon)`
   width: 1.6875rem;
   height: 1.6875rem;
   cursor: pointer;
+`;
+
+const ErrorText = styled.div`
+  color: #ED2222;
+  font-family: Pretendard;
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  visibility: ${(props) => (props.errorState ? 'visibility' : 'hidden')};
+  opacity: ${(props) => (props.errorState ? 1 : 0)};
+  transition: all 0.2s ease-in-out;
 `;
 
 const NavigatorWrapper = styled.div`

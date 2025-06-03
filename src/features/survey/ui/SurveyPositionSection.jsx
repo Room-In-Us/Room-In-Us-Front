@@ -3,7 +3,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { surveySectionState, surveyState, modalState } from "../model/surveyAtom";
 import RightArrow from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrow from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
-import SurveyImage from "../../../shared/assets/images/survey/surveyImage.png";
+import SurveyImage from "../../../shared/assets/images/survey/surveyImage5.png";
 
 function SurveyPositionSection() {
   // state 관리
