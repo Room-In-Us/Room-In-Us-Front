@@ -14,7 +14,7 @@ import ThemeReviewSection from "./ThemeReviewSection";
 import PropTypes from 'prop-types';
 import { genreListConversion, mapRecommendedHeadcount } from "../../../shared/utils/dataUtils";
 
-function ThemeInfoSection({ themeData, themePrice, themeReviewsList }) {
+function ThemeInfoSection({ themeData, themePrice }) {
   // 임시 테마 정보 값
   const themeInfo = {
     playTime: themeData?.playTime != null ? `${themeData?.playTime}분` : "-",
@@ -93,7 +93,7 @@ function ThemeInfoSection({ themeData, themePrice, themeReviewsList }) {
       </SectionWrapper>
 
       {/* 테마 후기 */}
-      <ThemeReviewSection themeReviewsList={themeReviewsList}/>
+      <ThemeReviewSection themeId={themeData?.themeId}/>
 
       {/* 인당 가격 안내 */}
       <SectionWrapper>
@@ -149,6 +149,7 @@ function ThemeInfoSection({ themeData, themePrice, themeReviewsList }) {
 // eslint 오류 방지
 ThemeInfoSection.propTypes = {
   themeData: PropTypes.shape({
+    themeId: PropTypes.number,
     themeName: PropTypes.string,
     img: PropTypes.string,
     playTime: PropTypes.number,
@@ -173,7 +174,6 @@ ThemeInfoSection.propTypes = {
       price: PropTypes.number,
     })
   ),
-  themeReviewsList: PropTypes.object,
 };
 
 export default ThemeInfoSection;

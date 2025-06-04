@@ -7,14 +7,13 @@ import ThemeInfoSection from "../features/themeDetail/ui/ThemeInfoSection";
 import { useRecoilValue } from 'recoil';
 import ReviewWriteModal from "../features/themeDetail/ui/ReviewWriteModal";
 import { reviewModalState } from "../features/themeDetail/model/reviewAtom";
-import { getThemeDetailAPI, getThemePriceAPI, getThemeReviewsListAPI } from "../features/themeDetail/api/themeDetailAPI";
+import { getThemeDetailAPI, getThemePriceAPI } from "../features/themeDetail/api/themeDetailAPI";
 
 function ThemeDetailPage() {
   // 상태 관리
   const isModalOpen = useRecoilValue(reviewModalState);
   const [themeDetail, setThemeDetail] = useState({});
   const [themePrice, setThemePrice] = useState([]);
-  const [themeReviewsList, setThemeReviewsList] = useState({});
 
   const navigate = useNavigate();
   const { themeId } = useParams();
@@ -23,14 +22,12 @@ function ThemeDetailPage() {
   useEffect(() => {
     async function fetchAll() {
       try {
-        const [detailRes, priceRes, reviewRes] = await Promise.all([
+        const [detailRes, priceRes] = await Promise.all([
           getThemeDetailAPI(themeId),
           getThemePriceAPI(themeId),
-          getThemeReviewsListAPI(themeId, 1, 3),
         ]);
         setThemeDetail(detailRes);
         setThemePrice(priceRes);
-        setThemeReviewsList(reviewRes);
       } catch (err) {
         console.error('테마 상세 api 호출 중 오류 발생: ', err);
       }
@@ -58,7 +55,6 @@ function ThemeDetailPage() {
         <ThemeInfoSection
           themeData={themeDetail}
           themePrice={themePrice}
-          themeReviewsList={themeReviewsList}
         />
       </ContentWrapper>
 
