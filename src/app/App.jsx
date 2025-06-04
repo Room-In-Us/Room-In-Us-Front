@@ -69,7 +69,7 @@ function App() {
           <Route path="/genreInfo" element={<GenreInfoPage />} />
 
           {/* 테마 상세 페이지 */}
-          <Route path="/theme/:id" element={<ThemeDetailPage />} />
+          <Route path="/theme/:themeId" element={<ThemeDetailPage />} />
 
           {/* 게시판 페이지 */}
           {/* <Route path="/board" element={<BoardPage />} />

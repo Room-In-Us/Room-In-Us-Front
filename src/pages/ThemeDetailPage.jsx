@@ -1,18 +1,44 @@
+import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import LeftArrowIcon from "../shared/assets/icons/themeDetail/leftArrow.svg?react";
 import ThemeOverviewCard from "../features/themeDetail/ui/ThemeOverviewCard";
 import ThemeInfoSection from "../features/themeDetail/ui/ThemeInfoSection";
 import { useRecoilValue } from 'recoil';
 import ReviewWriteModal from "../features/themeDetail/ui/ReviewWriteModal";
 import { reviewModalState } from "../features/themeDetail/model/reviewAtom";
+import { getThemeDetailAPI, getThemePriceAPI, getThemeReviewsListAPI } from "../features/themeDetail/api/themeDetailAPI";
 
 function ThemeDetailPage() {
   // 상태 관리
   const isModalOpen = useRecoilValue(reviewModalState);
-  
+  const [themeDetail, setThemeDetail] = useState({});
+  const [themePrice, setThemePrice] = useState([]);
+  const [themeReviewsList, setThemeReviewsList] = useState({});
+
   const navigate = useNavigate();
+  const { themeId } = useParams();
+
+  // api 호출
+  useEffect(() => {
+    async function fetchAll() {
+      try {
+        const [detailRes, priceRes, reviewRes] = await Promise.all([
+          getThemeDetailAPI(themeId),
+          getThemePriceAPI(themeId),
+          getThemeReviewsListAPI(themeId, 1, 3),
+        ]);
+        setThemeDetail(detailRes);
+        setThemePrice(priceRes);
+        setThemeReviewsList(reviewRes);
+      } catch (err) {
+        console.error('테마 상세 api 호출 중 오류 발생: ', err);
+      }
+    }
   
+    fetchAll();
+  }, [themeId]);
+
   return (
     <PageWrapper>
       {/* 돌아가기 버튼 */}
@@ -26,16 +52,20 @@ function ThemeDetailPage() {
       {/* 콘텐츠 영역 */}
       <ContentWrapper>
         {/* 테마 카드 */}
-        <ThemeOverviewCard />
+        <ThemeOverviewCard themeData={themeDetail} />
 
         {/* 테마 상세 정보 */}
-        <ThemeInfoSection />
+        <ThemeInfoSection
+          themeData={themeDetail}
+          themePrice={themePrice}
+          themeReviewsList={themeReviewsList}
+        />
       </ContentWrapper>
 
       {/* 후기 작성 모달 */}
       {isModalOpen && (
         <ModalBackdrop>
-          <ReviewWriteModal />
+          <ReviewWriteModal themeData={themeDetail}/>
         </ModalBackdrop>
       )}
     </PageWrapper>

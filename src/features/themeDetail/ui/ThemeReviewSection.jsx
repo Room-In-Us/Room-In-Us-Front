@@ -4,8 +4,9 @@ import RatingStar from "../../../shared/assets/icons/themeDetail/ratingStar.svg?
 import ThemeReview from "./ThemeReview";
 import RightArrowIcon from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrowIcon from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
+import PropTypes from 'prop-types';
 
-function ThemeReviewSection() {
+function ThemeReviewSection({ themeReviewsList }) {
   // 상태 관리
   const [currentPage, setCurrentPage] = useState(1); // 임시
   const [totalPages, ] = useState(10); // 임시
@@ -81,6 +82,31 @@ function ThemeReviewSection() {
     </SectionWrapper>
   )
 }
+
+// eslint 오류 방지
+ThemeReviewSection.propTypes = {
+  themeReviewsList: PropTypes.shape({
+    satisfactionAvg: PropTypes.number,
+    reviewCnt: PropTypes.number,
+    reviewList: PropTypes.arrayOf(
+      PropTypes.shape({
+        reviewId: PropTypes.number,
+        memberId: PropTypes.number,
+        memberNickname: PropTypes.string,
+        memberProficiency: PropTypes.string, // 'BEGINNER' | 'INTERMEDIATE' 등 문자열
+        memberHorrorPos: PropTypes.string,   // 'FEARLESS' 등
+        satisfactionLevel: PropTypes.number,
+        reviewEnum: PropTypes.string,        // 'FAVORITE' 등
+        headcount: PropTypes.number,
+        isEscaped: PropTypes.bool,
+        usedHint: PropTypes.number,
+        remainingTime: PropTypes.string,     // 시간 문자열 (ex. "00:10:30")
+        playedAt: PropTypes.string,          // 날짜 문자열
+        createdAt: PropTypes.string,         // 날짜 문자열
+      })
+    ),
+  }).isRequired,
+};
 
 export default ThemeReviewSection;
 

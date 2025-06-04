@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
 import ThumbnailImg from '../../../shared/assets/images/common/thumbnailImg.png';
 import InfoIcon from '../../../shared/assets/icons/themeDetail/infoIcon.svg?react';
 import ShareIcon from '../../../shared/assets/icons/themeDetail/shareIcon.svg?react';
@@ -9,30 +8,37 @@ import HeartIcon2 from '../../../shared/assets/icons/common/heart_hover.svg?reac
 import HeartIcon3 from '../../../shared/assets/icons/common/heart_active.svg?react';
 import { useSetRecoilState } from 'recoil';
 import { reviewModalState } from "../model/reviewAtom";
+import PropTypes from 'prop-types';
 
-function ThemeOverviewCard() {
+function ThemeOverviewCard({ themeData }) {
   // state 관리
   const [isHeartActive, setIsHeartActive] = useState(false);
-  // const [imageUrl, setImageUrl] = useState(img);
+  const [imageUrl, setImageUrl] = useState(themeData.img);
   const setModal = useSetRecoilState(reviewModalState);
 
-  const navigate = useNavigate();
+  // 이미지 로드 실패 시, 기본 썸네일로 변경
+  useEffect(() => {
+    setImageUrl(themeData.img);
+  }, [themeData.img]);
+  const handleImageError = () => {
+    setImageUrl(ThumbnailImg);
+  };
 
   return (
     <ComponentWrapper>
       {/* 이미지 영역 */}
-      <ImageSection imgUrl={ThumbnailImg}>
+      <ImageSection imgUrl={imageUrl}>
         {/* 보이지 않는 img 태그 추가 (onError 감지용) */}
-        <img src={ThumbnailImg} alt="테마 이미지" />
+        <img src={imageUrl} alt="테마 이미지" onError={handleImageError}/>
       </ImageSection>
 
       {/* 타이틀 영역 */}
       <TitleWrapper>
         <StoreName>
-          포인트나인 건대점
+          {themeData.storeInfo?.storeName}
         </StoreName>
         <ThemeName>
-          JACK IN THE SHOW (다크판타지)
+          {themeData?.themeName}
         </ThemeName>
         <InfoWrapper>
           <StyledInfoIcon/>
@@ -44,7 +50,7 @@ function ThemeOverviewCard() {
 
       {/* 버튼 영역 */}
       <ButtonWrapper>
-        <StyledButton type="reservation" onClick={() => navigate('')}>
+        <StyledButton type="reservation" onClick={() => window.open(themeData?.storeInfo?.storeReservationUrl, '_blank',)}>
           <ButtonText type="reservation">
             예약하기
           </ButtonText>
@@ -83,6 +89,29 @@ function ThemeOverviewCard() {
     </ComponentWrapper>
   )
 }
+
+// eslint 오류 방지
+ThemeOverviewCard.propTypes = {
+  themeData: PropTypes.shape({
+    themeName: PropTypes.string,
+    img: PropTypes.string,
+    playTime: PropTypes.number,
+    minRecommendedHeadcount: PropTypes.number,
+    maxRecommendedHeadcount: PropTypes.number,
+    genreList: PropTypes.arrayOf(PropTypes.string),
+    level: PropTypes.number,
+    horrorLevel: PropTypes.number,
+    synopsis: PropTypes.string,
+    storeInfo: PropTypes.shape({
+      storeId: PropTypes.number,
+      storeName: PropTypes.string,
+      storeWebsiteUrl: PropTypes.string,
+      storeReservationUrl: PropTypes.string,
+      storeAddress: PropTypes.string,
+      storeContact: PropTypes.string,
+    }),
+  }),
+};
 
 export default ThemeOverviewCard;
 

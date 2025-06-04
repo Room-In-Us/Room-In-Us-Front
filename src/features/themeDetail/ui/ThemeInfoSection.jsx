@@ -11,24 +11,28 @@ import LinkIcon from "../../../shared/assets/icons/location/storeLinkIcon.svg?re
 import TelIcon from "../../../shared/assets/icons/location/storeTelIcon.svg?react";
 import CopyIcon from "../../../shared/assets/icons/location/copyIcon.svg?react";
 import ThemeReviewSection from "./ThemeReviewSection";
+import PropTypes from 'prop-types';
+import { genreListConversion, mapRecommendedHeadcount } from "../../../shared/utils/dataUtils";
 
-function ThemeInfoSection() {
+function ThemeInfoSection({ themeData, themePrice, themeReviewsList }) {
   // 임시 테마 정보 값
   const themeInfo = {
-    playTime: "120분",
-    member: "2~6명",
-    genre: "판타지",
-    level: "⭐ 4.4",
-    horror: "👻 3.2",
-    story: "내 이름은 John. JACK IN THE SHOW에 들어 온지도 어느덧 3년째... 난 언제쯤 무대에 설 수 있을까?",
+    playTime: themeData?.playTime != null ? `${themeData?.playTime}분` : "-",
+    member: mapRecommendedHeadcount(themeData?.minRecommendedHeadcount,themeData?.maxRecommendedHeadcount),
+    genre: themeData?.genreList?.[0]
+      ? genreListConversion([themeData.genreList[0]])[0]
+      : "-",
+    level: themeData?.level != null ? `⭐ ${themeData?.level}` : "-",
+    horror: themeData?.horrorLevel != null ? `👻 ${themeData.horrorLevel}` : "-",
+    story: themeData?.synopsis ?? "-",
   };
 
   // 임시 매장 정보 값
   const storeInfo = {
-    storeName: "비트포비아 강남 던전",
-    storeAddress: "서울 강남구 강남대로96길 17 6층",
-    storeWebsiteUrl: "https://www.keyescape.co.kr/",
-    storeContact: "02)000-0000",
+    storeName: themeData?.storeInfo?.storeName ?? "-",
+    storeAddress: themeData?.storeInfo?.storeAddress ?? "-",
+    storeWebsiteUrl: themeData?.storeInfo?.storeWebsiteUrl ?? "-",
+    storeContact: themeData?.storeInfo?.storeContact ?? "-",
   };
   
   // 상세 정보 복사 핸들러
@@ -89,7 +93,7 @@ function ThemeInfoSection() {
       </SectionWrapper>
 
       {/* 테마 후기 */}
-      <ThemeReviewSection />
+      <ThemeReviewSection themeReviewsList={themeReviewsList}/>
 
       {/* 인당 가격 안내 */}
       <SectionWrapper>
@@ -102,7 +106,7 @@ function ThemeInfoSection() {
           </PriceCautionText>
         </PriceTitleWrapper>
         <Divider/>
-        <PriceTable/>
+        <PriceTable themePrice={themePrice}/>
       </SectionWrapper>
 
       {/* 매장 정보 */}
@@ -141,6 +145,36 @@ function ThemeInfoSection() {
     </ComponentWrapper>
   )
 }
+
+// eslint 오류 방지
+ThemeInfoSection.propTypes = {
+  themeData: PropTypes.shape({
+    themeName: PropTypes.string,
+    img: PropTypes.string,
+    playTime: PropTypes.number,
+    minRecommendedHeadcount: PropTypes.number,
+    maxRecommendedHeadcount: PropTypes.number,
+    genreList: PropTypes.arrayOf(PropTypes.string),
+    level: PropTypes.number,
+    horrorLevel: PropTypes.number,
+    synopsis: PropTypes.string,
+    storeInfo: PropTypes.shape({
+      storeId: PropTypes.number,
+      storeName: PropTypes.string,
+      storeWebsiteUrl: PropTypes.string,
+      storeReservationUrl: PropTypes.string,
+      storeAddress: PropTypes.string,
+      storeContact: PropTypes.string,
+    }),
+  }),
+  themePrice: PropTypes.arrayOf(
+    PropTypes.shape({
+      headcount: PropTypes.number,
+      price: PropTypes.number,
+    })
+  ),
+  themeReviewsList: PropTypes.object,
+};
 
 export default ThemeInfoSection;
 
