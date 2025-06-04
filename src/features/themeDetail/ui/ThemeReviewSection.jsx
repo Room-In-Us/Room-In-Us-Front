@@ -1,86 +1,97 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import RatingStar from "../../../shared/assets/icons/themeDetail/ratingStar.svg?react";
 import ThemeReview from "./ThemeReview";
 import RightArrowIcon from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrowIcon from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
+import { getThemeReviewsListAPI } from "../api/themeDetailAPI";
+import PropTypes from 'prop-types';
 
-function ThemeReviewSection() {
-  // 상태 관리
-  const [currentPage, setCurrentPage] = useState(1); // 임시
-  const [totalPages, ] = useState(10); // 임시
-  
-  // 임시 후기 데이터
-  const reviewData = Array(3).fill(null);
+function ThemeReviewSection({ themeId }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [satisfactionAvg, setSatisfactionAvg] = useState(0);
+  const [reviewCnt, setReviewCnt] = useState(0);
+  const [reviews, setReviews] = useState([]);
 
-  // 페이지 이동
+  const pageSize = 3;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await getThemeReviewsListAPI(themeId, currentPage, pageSize);
+      if (res) {
+        setSatisfactionAvg(res.satisfactionAvg || 0);
+        setReviewCnt(res.reviewCnt || 0);
+        setReviews(res.reviewList || []);
+        setTotalPages(Math.ceil((res.reviewCnt || 0) / pageSize));
+      }
+    };
+    fetchData();
+  }, [themeId, currentPage]);
+
   const handlePageClick = (page) => {
-    setCurrentPage(page);
+    if (page !== currentPage) setCurrentPage(page);
   };
-  // 이전 페이지 이동
+
   const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
-  // 다음 페이지 이동
+
   const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
   return (
     <SectionWrapper>
-      <SectionTitle>
-        테마 후기
-      </SectionTitle>
-      <Divider/>
+      <SectionTitle>테마 후기</SectionTitle>
+      <Divider />
 
-      {/* 별점 파트 */}
       <RatingContainer>
-        <RatingText>
-          이 테마의 평균 별점은
-        </RatingText>
+        <RatingText>이 테마의 평균 별점은</RatingText>
         <RatingWrapper>
-          <StyledRatingStar/>
-          <Rating>
-            4.5/5
-          </Rating>
-          <RatingMember>
-            &#40;456명&#41;
-          </RatingMember>
+          <StyledRatingStar />
+          <Rating>{satisfactionAvg.toFixed(1)}/5</Rating>
+          <RatingMember>({reviewCnt}명)</RatingMember>
         </RatingWrapper>
       </RatingContainer>
 
-      {/* 리뷰 파트 */}
-      {reviewData.map((index) => (
-        <ThemeReview key={index} />
-      ))}
+      {reviews.length === 0 ? (
+        <EmptyText>아직 등록된 후기가 없습니다.</EmptyText>
+      ) : (
+        reviews.map((review) => (
+          <ThemeReview key={review.reviewId} data={review} />
+        ))
+      )}
 
-      {/* 페이징 파트 */}
-      <PagingWrapper>
-        <StyledLeftArrowIcon
-          hasNextPage={currentPage > 1}
-          onClick={handlePrevPage}
-        />
-        {[...Array(totalPages)].map((_, idx) => (
-          <PageNumber
-            key={idx}
-            pageState={currentPage === idx + 1}
-            onClick={() => handlePageClick(idx + 1)}
-          >
-            {idx + 1}
-          </PageNumber>
-        ))}
-        <StyledRightArrowIcon
-          hasNextPage={currentPage < totalPages}
-          onClick={handleNextPage}
-        />
-      </PagingWrapper>
+      {totalPages > 1 && (
+        <PagingWrapper>
+          <StyledLeftArrowIcon
+            hasNextPage={currentPage > 1}
+            onClick={handlePrevPage}
+          />
+          {[...Array(totalPages)].map((_, idx) => (
+            <PageNumber
+              key={idx}
+              pageState={currentPage === idx + 1}
+              onClick={() => handlePageClick(idx + 1)}
+            >
+              {idx + 1}
+            </PageNumber>
+          ))}
+          <StyledRightArrowIcon
+            hasNextPage={currentPage < totalPages}
+            onClick={handleNextPage}
+          />
+        </PagingWrapper>
+      )}
     </SectionWrapper>
-  )
+  );
 }
+
+// eslint 에러 방지
+ThemeReviewSection.propTypes = {
+  themeId: PropTypes.number.isRequired,
+};
 
 export default ThemeReviewSection;
 
@@ -90,7 +101,6 @@ const SectionWrapper = styled.div`
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: 1rem;
   align-self: stretch;
   background: var(--RIU_Monochrome-10, #F9F9FB);
@@ -98,34 +108,28 @@ const SectionWrapper = styled.div`
 
 const SectionTitle = styled.div`
   color: var(--RIU_Primary-100, #718FF2);
-  text-align: center;
   font-family: 'Pretendard-Bold';
   font-size: 1rem;
-  line-height: normal;
 `;
 
 const Divider = styled.hr`
   border: none;
-  margin: 0;
-  width: 41.25rem;
-  height: 0.0625rem;
+  width: 100%;
+  height: 1px;
   background: #C4C6D1;
 `;
 
 const RatingContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   gap: 0.25rem;
-  align-self: stretch;
 `;
 
 const RatingText = styled.div`
   color: var(--RIU_Monochrome-100, #818496);
   font-family: 'Pretendard-Medium';
   font-size: 0.875rem;
-  line-height: 140%;
 `;
 
 const RatingWrapper = styled.div`
@@ -143,41 +147,46 @@ const Rating = styled.div`
   color: var(--RIU_Monochrome-400, #616277);
   font-family: 'Pretendard-SemiBold';
   font-size: 1.25rem;
-  line-height: 140%;
 `;
 
 const RatingMember = styled.div`
   color: var(--RIU_Monochrome-100, #818496);
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
-  line-height: 140%;
 `;
 
 const PagingWrapper = styled.div`
   display: flex;
   justify-content: center;
-  align-items: flex-start;
   gap: 1.875rem;
-  align-self: stretch;
+  margin-top: 1rem;
 `;
 
 const StyledLeftArrowIcon = styled(LeftArrowIcon)`
   width: 1.25rem;
   height: 1.25rem;
-  fill: ${(props) => (props.hasNextPage) ? 'var(--RIU_Primary-300, #5B6ACC)' : 'var(--RIU_Monochrome-80, #A1A4B5)'};
-  cursor: ${(props) => (props.hasNextPage) ? 'pointer' : 'default'};
+  fill: ${(props) => (props.hasNextPage ? '#5B6ACC' : '#A1A4B5')};
+  cursor: ${(props) => (props.hasNextPage ? 'pointer' : 'default')};
 `;
+
 const StyledRightArrowIcon = styled(RightArrowIcon)`
   width: 1.25rem;
   height: 1.25rem;
-  fill: ${(props) => (props.hasNextPage) ? 'var(--RIU_Primary-300, #5B6ACC)' : 'var(--RIU_Monochrome-80, #A1A4B5)'};
-  cursor: ${(props) => (props.hasNextPage) ? 'pointer' : 'default'};
+  fill: ${(props) => (props.hasNextPage ? '#5B6ACC' : '#A1A4B5')};
+  cursor: ${(props) => (props.hasNextPage ? 'pointer' : 'default')};
 `;
 
 const PageNumber = styled.div`
-  color: ${(props) => (props.pageState) ? 'var(--RIU_Primary-300, #5B6ACC)' : 'var(--RIU_Monochrome-80, #A1A4B5)'};
+  color: ${(props) => (props.pageState ? '#5B6ACC' : '#A1A4B5')};
   font-family: 'Pretendard-SemiBold';
   font-size: 0.875rem;
-  line-height: 1.25rem;
   cursor: pointer;
+`;
+
+const EmptyText = styled.div`
+  padding: 1rem 0;
+  width: 100%;
+  text-align: center;
+  color: #9FA2B4;
+  font-size: 0.875rem;
 `;

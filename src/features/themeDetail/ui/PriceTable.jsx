@@ -1,16 +1,8 @@
 import styled from "styled-components";
+import PropTypes from 'prop-types';
+import { formatNumberWithCommas } from "../../../shared/utils/formatUtils";
 
-function PriceTable() {
-  // 임시 데이터
-  const data = [
-    { count: "2인", price: "200,000", perPerson: "100,000" },
-    { count: "3인", price: "200,000", perPerson: "100,000" },
-    { count: "4인", price: "200,000", perPerson: "100,000" },
-    { count: "5인", price: "200,000", perPerson: "100,000" },
-    { count: "6인", price: "200,000", perPerson: "100,000" },
-    { count: "7인", price: "200,000", perPerson: "100,000" },
-  ];
-
+function PriceTable({ themePrice }) {
   return (
     <TableWrapper>
       <thead>
@@ -33,21 +25,21 @@ function PriceTable() {
         </tr>
       </thead>
       <tbody>
-        {data.map(({ count, price, perPerson }, index) => (
+        {themePrice.map(({ headcount, price }, index) => (
           <tr key={index}>
-            <CountTd index={index}>
+            <CountTd isLast={index === themePrice.length - 1}>
               <TdText type="count">
-                {count}
+                {headcount}인
               </TdText>
             </CountTd>
             <PriceTd>
               <TdText type="price">
-                {price}
+                {formatNumberWithCommas(headcount * price)}
               </TdText>
             </PriceTd>
-            <PerPersonTd index={index}>
+            <PerPersonTd isLast={index === themePrice.length - 1}>
               <TdText type="perPerson">
-                {perPerson}
+                {formatNumberWithCommas(price)}
               </TdText>
             </PerPersonTd>
           </tr>
@@ -58,6 +50,16 @@ function PriceTable() {
 }
 
 export default PriceTable;
+
+// eslint 오류 방지
+PriceTable.propTypes = {
+  themePrice: PropTypes.arrayOf(
+    PropTypes.shape({
+      headcount: PropTypes.number,
+      price: PropTypes.number,
+    })
+  ),
+};
 
 // CSS
 const TableWrapper = styled.table`
@@ -110,7 +112,7 @@ const SinglePriceTitle = styled.th`
 `;
 
 const CountTd = styled.td`
-  border-bottom-left-radius: ${(props) => (props.index === 5) ? '0.625rem' : '0'};
+  border-bottom-left-radius: ${(props) => (props.isLast) ? '0.625rem' : '0'};
   padding: 0.625rem 0rem;
   box-sizing: border-box;
   width: 5rem;
@@ -132,7 +134,7 @@ const PriceTd = styled.td`
 `;
 
 const PerPersonTd = styled.td`
-  border-bottom-right-radius: ${(props) => (props.index === 5) ? '0.625rem' : '0'};
+  border-bottom-right-radius: ${(props) => (props.isLast) ? '0.625rem' : '0'};
   height: 3.125rem;
   padding: 0.625rem 0rem;
   box-sizing: border-box;

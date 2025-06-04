@@ -44,3 +44,21 @@ export const satisfactionConversion = (satisfaction) => {
     return "-";
   }
 };
+
+// 추천 인원 수 변환 함수
+export const mapRecommendedHeadcount = (min, max) => {
+  // 둘 다 null이면
+  if (min == null && max == null) return "-";
+
+  // min만 있고 max는 null이면
+  if (min != null && max == null) return `${min}명 이상`;
+
+  // max만 있고 min은 null이면
+  if (min == null && max != null) return `${max}명 이하`;
+
+  // min과 max가 같으면
+  if (min === max) return `${min}명`;
+
+  // min과 max가 다르면
+  return `${min}~${max}명`;
+};

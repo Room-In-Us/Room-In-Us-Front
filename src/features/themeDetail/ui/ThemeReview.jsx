@@ -5,22 +5,23 @@ import MemberIcon from "../../../shared/assets/icons/themeDetail/reviewMemberIco
 import EscapeIcon from "../../../shared/assets/icons/themeDetail/reviewEscapeIcon.svg?react";
 import HintIcon from "../../../shared/assets/icons/themeDetail/reviewHintIcon.svg?react";
 import TimeIcon from "../../../shared/assets/icons/themeDetail/reviewTimeIcon.svg?react";
+import PropTypes from 'prop-types';
 
-function ThemeReview() {
+function ThemeReview({ data }) {
   return (
     <ComponentWrapper>
       {/* 타이틀 파트 */}
       <TitleWrapper>
         <TitleLeftWrapper>
-          <NickName>닉네임</NickName>
+          <NickName>{data.memberNickname}</NickName>
           <Divider>|</Divider>
-          <TitleText>방중수</TitleText>
+          <TitleText>{data.memberProficiency}</TitleText>
           <Divider>|</Divider>
-          <TitleText>쫄탱</TitleText>
+          <TitleText>{data.memberHorrorPos}</TitleText>
         </TitleLeftWrapper>
         <TitleRightWrapper>
           <StarIcon/>
-          <Rating>4.4</Rating>
+          <Rating>{data.satisfactionLevel}</Rating>
         </TitleRightWrapper>
       </TitleWrapper>
 
@@ -30,35 +31,35 @@ function ThemeReview() {
           <StyledEvautionIcon/>
           <SummaryTextWrapper>
             <SummaryTitle>총평</SummaryTitle>
-            <SummaryText>꽃길</SummaryText>
+            <SummaryText>{data.reviewEnum}</SummaryText>
           </SummaryTextWrapper>
         </SummaryCard>
         <SummaryCard>
           <StyledMemberIcon/>
           <SummaryTextWrapper>
             <SummaryTitle>플레이 인원</SummaryTitle>
-            <SummaryText>3인</SummaryText>
+            <SummaryText>{data.headcount}인</SummaryText>
           </SummaryTextWrapper>
         </SummaryCard>
         <SummaryCard>
           <StyledEscapeIcon/>
           <SummaryTextWrapper>
             <SummaryTitle>탈출 여부</SummaryTitle>
-            <SummaryText>탈출 성공</SummaryText>
+            <SummaryText>{data.isEscaped}</SummaryText>
           </SummaryTextWrapper>
         </SummaryCard>
         <SummaryCard>
           <StyledHintIcon/>
           <SummaryTextWrapper>
             <SummaryTitle>힌트 사용</SummaryTitle>
-            <SummaryText>1개 사용</SummaryText>
+            <SummaryText>{data.usedHint}개 사용</SummaryText>
           </SummaryTextWrapper>
         </SummaryCard>
         <SummaryCard>
           <StyledTimeIcon/>
           <SummaryTextWrapper>
             <SummaryTitle>남긴 시간</SummaryTitle>
-            <SummaryText>10분 남김</SummaryText>
+            <SummaryText>{data.remainingTime}분 남김</SummaryText>
           </SummaryTextWrapper>
         </SummaryCard>
       </SummaryWrapper>
@@ -72,10 +73,10 @@ function ThemeReview() {
       {/* 날짜 파트 */}
       <DateWrapper>
         <Date>
-          방문일자 : 2025.00.00
+          방문일자 : {data.playedAt}
         </Date>
         <Date>
-          작성일자 : 2025.00.00
+          작성일자 : {data.createdAt}
         </Date>
       </DateWrapper>
 
@@ -88,6 +89,25 @@ function ThemeReview() {
     </ComponentWrapper>
   )
 }
+
+// eslint 에러 방지
+ThemeReview.propTypes = {
+  data: PropTypes.shape({
+    reviewId: PropTypes.number.isRequired,
+    memberId: PropTypes.number.isRequired,
+    memberNickname: PropTypes.string.isRequired,
+    memberProficiency: PropTypes.string, // "BEGINNER" | "EXPERT" 등일 수 있음
+    memberHorrorPos: PropTypes.string,   // "FEARLESS" | "SCARED" 등일 수 있음
+    satisfactionLevel: PropTypes.number.isRequired,
+    reviewEnum: PropTypes.string.isRequired, // "FAVORITE" 등
+    headcount: PropTypes.number.isRequired,
+    isEscaped: PropTypes.bool,
+    usedHint: PropTypes.number,
+    remainingTime: PropTypes.string,
+    playedAt: PropTypes.string.isRequired,
+    createdAt: PropTypes.string.isRequired,
+  }).isRequired,
+};
 
 export default ThemeReview;
 
