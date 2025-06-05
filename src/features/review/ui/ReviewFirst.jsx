@@ -1,23 +1,26 @@
-import { useState } from "react";
 import styled from "styled-components";
 import StarRating from "./StarRating";
 import ReviewDropdown from "./ReviewDropdown";
 import { overallOptions } from "../modal/reviewDataList";
-import { GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3, Wrap5 } from "../../../shared/components/ReviewStyle";
+import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3, Wrap5 } from "../../../shared/components/ReviewStyle";
 import useDevice from '../../../shared/hooks/useDevice.js';
+import { useRecoilState } from "recoil";
+import { reviewState } from "../../themeDetail/model/reviewAtom.jsx";
 
-export default function ReviewFirst() {
+export default function ReviewFirst({themeData}) {
 
+  // 반응형
   const { isDesktop, isTablet, isMobile } = useDevice();
-  const [text, setText] = useState("");
 
+  // 상태 관리
+  const [review, setReview] = useRecoilState(reviewState);
+
+  // 글자 수 제한
   const handleChange = (e) => {
     if (e.target.value.length <= 500) {
-      setText(e.target.value);
+      setReview(prev => ({ ...prev, reviewComment: e.target.value }))
     }
   };
-
-  const [selectedOverall, setSelectedOverall] = useState('');
 
   return (
     <Wrap1>
@@ -25,42 +28,53 @@ export default function ReviewFirst() {
       {!isMobile && (
       <>
         <Wrap2>
-          <ThemeTitle>테마명</ThemeTitle>
+          <ThemeTitle>{themeData?.themeName || '테마명'}</ThemeTitle>
           <ThemeSubText>테마에 만족하셨나요?</ThemeSubText>
         </Wrap2>
 
         <Wrap3>
 
           <ImgSection>
-            <ThemeImg />
+            <ThemeImg src={themeData?.img || ''} />
             <MsgWrapper>
               <Asterisk>*</Asterisk>
-              <GuideMsg>는 필수 입력 사항입니다.</GuideMsg>
+              <GuideMsg>표는 필수 입력 사항입니다.</GuideMsg>
             </MsgWrapper>
           </ImgSection>
           
           <Scroll>
             <ReviewSection>
-              <StarRating />
+              <StarRating 
+                value={review.satisfactionLevel}
+                onChange={(val) =>
+                  setReview(prev => ({ ...prev, satisfactionLevel: val }))
+                }
+              />
               <OverallSection>
                 <Wrap4>
                   <ItemText>총평</ItemText>
-                  <Asterisk>*</Asterisk>
+                  <Asterisk2>*</Asterisk2>
                 </Wrap4>
                 <ReviewDropdown
                   placeholder='총평 선택'
                   options={overallOptions}
-                  selected={selectedOverall}
-                  onSelect={setSelectedOverall}
+                  selected={review.review}
+                  onSelect={(val) =>
+                    setReview(prev => ({ ...prev, review: val }))
+                  }
                   variant='overall'
                 />
               </OverallSection>
               <ThoughtSection>
                 <ItemText>테마 체험 소감을 간단히 적어주세요!</ItemText>
                 <InputWrapper>
-                  <ThoughtInput value={text} onChange={handleChange} />
+                  <ThoughtInput
+                    placeholder="테마에 대한 이용 후기를 자유롭게 남겨주세요." 
+                    value={review.reviewComment} 
+                    onChange={handleChange}
+                  />
                   <CharCount>
-                    <CountText>{text.length} / 500</CountText>
+                    <CountText>{review.reviewComment.length} / 500</CountText>
                   </CharCount>
                 </InputWrapper>
               </ThoughtSection>
@@ -75,15 +89,20 @@ export default function ReviewFirst() {
         <Scroll>
           <Wrapper>
 
-            <ThemeImg />
+            <ThemeImg src={themeData?.img || ''} />
 
             <Wrap5>
               <Wrap2>
-                <ThemeTitle>테마명</ThemeTitle>
+                <ThemeTitle>{themeData?.themeName || '테마명'}</ThemeTitle>
                 <ThemeSubText>테마에 만족하셨나요?</ThemeSubText>
               </Wrap2>
 
-              <StarRating />
+              <StarRating
+                value={review.satisfactionLevel}
+                onChange={(val) =>
+                  setReview(prev => ({ ...prev, satisfactionLevel: val }))
+                }
+              />
             </Wrap5>
 
           </Wrapper>
@@ -97,17 +116,23 @@ export default function ReviewFirst() {
               <ReviewDropdown
                 placeholder='총평 선택'
                 options={overallOptions}
-                selected={selectedOverall}
-                onSelect={setSelectedOverall}
+                selected={review.review}
+                onSelect={(val) =>
+                  setReview(prev => ({ ...prev, review: val }))
+                }
                 variant='overall'
               />
             </OverallSection>
             <ThoughtSection>
               <ItemText>테마 체험 소감을 간단히 적어주세요!</ItemText>
               <InputWrapper>
-                <ThoughtInput value={text} onChange={handleChange} />
+                <ThoughtInput
+                  placeholder="테마에 대한 이용 후기를 자유롭게 남겨주세요." 
+                  value={review.reviewComment} 
+                  onChange={handleChange}
+                />
                 <CharCount>
-                  <CountText>{text.length} / 500</CountText>
+                  <CountText>{review.reviewComment.length} / 500</CountText>
                 </CharCount>
               </InputWrapper>
             </ThoughtSection>
@@ -164,7 +189,7 @@ const ItemText = styled.div`
   }
 `;
 
-const Asterisk = styled.div`
+const Asterisk2 = styled.div`
   color: var(--RIU_Primary-100, #718FF2);
   text-align: center;
   font-family: Pretendard-Bold;

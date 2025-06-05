@@ -4,6 +4,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Calendar from "../../../shared/assets/icons/reviewWrite/date.svg";
 import DropDown from "../../../shared/assets/icons/common/dropdown.svg?react";
+import { useRecoilState } from "recoil";
+import { reviewState } from "../../themeDetail/model/reviewAtom";
 
 const CustomDateInput = React.forwardRef(({ disabled, value, onToggle }, ref) => {
   const formatDate = (dateString) => {
@@ -26,9 +28,20 @@ const CustomDateInput = React.forwardRef(({ disabled, value, onToggle }, ref) =>
   );
 });
 
-export default function VisitDatePicker({ disabled, selectedDate, onChange }) {
+export default function VisitDatePicker({ disabled }) {
 
   const [isOpen, setIsOpen] = useState(false);
+  const [review, setReview] = useRecoilState(reviewState);
+
+  const handleChange = (date) => {
+    if (!date) return;
+    const formatted = date.toISOString().split('T')[0];
+    setReview((prev) => ({
+      ...prev,
+      playedAt: formatted,
+    }));
+    setIsOpen(false);
+  };
 
   return (
     <StyledDatePickerWrapper>
@@ -37,13 +50,8 @@ export default function VisitDatePicker({ disabled, selectedDate, onChange }) {
         onClickOutside={() => setIsOpen(false)}
         shouldCloseOnSelect
         disabled={disabled}
-        selected={selectedDate}
-        onChange={(date) => {
-            if (date instanceof Date && !isNaN(date.getTime())) {
-              onChange(date);
-              setIsOpen(false);
-            }
-          }}
+        selected={review.playedAt ? new Date(review.playedAt) : null}
+        onChange={handleChange}
         dateFormat="yyyy.MM.dd"
         customInput={<CustomDateInput onToggle={() => setIsOpen(prev => !prev)} style={{width: '100%'}} />}
         wrapperClassName="date-picker-wrapper"

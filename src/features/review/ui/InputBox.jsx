@@ -4,11 +4,14 @@ import { clothOptions } from '../modal/reviewDataList.js';
 import UnselectedIcon from '../../../shared/assets/icons/common/filterIcon/unselected.svg';
 import SelectedIcon from '../../../shared/assets/icons/common/filterIcon/selected.svg';
 
-export default function InputBox({ label, placeholder, value, onChange, active, selected, handleSelect }) {
+export default function InputBox({ rateValue, rateOnChange, label, placeholder, value, onChange, active, selected, handleSelect }) {
   return (
     <ItemSection>
       <ItemText>{label}</ItemText>
-      <StarRating />
+      <StarRating
+        value={rateValue}
+        onChange={rateOnChange}
+      />
       <InputWrapper>
         <ThoughtInput placeholder={placeholder} value={value} onChange={onChange} />
         <CharCount>

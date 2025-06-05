@@ -1,21 +1,24 @@
-import { useState } from "react";
 import styled from "styled-components";
 import Plus from "../../../shared/assets/icons/reviewWrite/plus.svg";
 import Minus from "../../../shared/assets/icons/reviewWrite/minus.svg";
 import DisabledPlus from "../../../shared/assets/icons/reviewWrite/disabledplus.svg";
 import DisabledMinus from "../../../shared/assets/icons/reviewWrite/disabledminus.svg";
 
-export default function HintCounter({disabled}) {
-  const [count, setCount] = useState(0);
+export default function HintCounter({disabled, value = 0, onChange}) {
 
-  const increase = () => setCount((prev) => prev + 1);
-  const decrease = () => setCount((prev) => Math.max(0, prev - 1));
+  // 증감 핸들러
+  const increase = () => {
+    if (!disabled) onChange(value + 1);
+  }
+  const decrease = () => {
+    if (!disabled) onChange(Math.max(0, value - 1));
+  }
 
   return (
     <HintNumWrapper $disabled={disabled}>
       <PlusMinusIcon src={disabled ? (DisabledMinus) : (Minus)} alt="minus" onClick={decrease} $disabled={disabled} />
       <HintNumBox $disabled={disabled}>
-        <NumText $disabled={disabled}>{count}</NumText>
+        <NumText $disabled={disabled}>{value}</NumText>
       </HintNumBox>
       <PlusMinusIcon src={disabled ? (DisabledPlus) : (Plus)} alt="plus" onClick={increase} $disabled={disabled} />
     </HintNumWrapper>
