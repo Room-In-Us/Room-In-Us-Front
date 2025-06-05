@@ -1,27 +1,29 @@
-import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-export default function FlexibleRangeSelector({disabled, onClearTrigger }) {
-  const [range, setRange] = useState([]);
+export default function FlexibleRangeSelector({disabled, value = [], onChange }) {
 
-  useEffect(() => {
-    setRange([]);
-  }, [onClearTrigger]);
+  // 상태 관리
+  const range = value;
 
+  // 범위 선택 핸들러
   const handleClick = (num) => {
+    let newRange = [];
     if (range.length === 0) {
-      setRange([num]);
+      newRange = [num];
     } else if (range.length === 1) {
       if (range[0] === num) {
-        setRange([]);
+        newRange = [];
       } else {
-        setRange([Math.min(range[0], num), Math.max(range[0], num)]);
+        newRange = [Math.min(range[0], num), Math.max(range[0], num)];
       }
     } else {
-      setRange([num]); 
+      newRange = [num];
     }
+
+    onChange?.(newRange);
   };
 
+  // 범위 제한
   const isInRange = (num) => {
     if (range.length === 1) return num === range[0];
     if (range.length === 2) return num >= range[0] && num <= range[1];

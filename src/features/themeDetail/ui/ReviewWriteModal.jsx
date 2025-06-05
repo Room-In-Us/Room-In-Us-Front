@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { reviewModalState, reviewSectionState } from "../model/reviewAtom.jsx";
 import ReviewFirst from "../../review/ui/ReviewFirst.jsx";
@@ -9,38 +9,71 @@ import CloseIcon from "../../../shared/assets/icons/reviewWrite/closeicon.svg";
 import LikeIcon from "../../../shared/assets/icons/reviewWrite/likeIcon.svg";
 import useDevice from "../../../shared/hooks/useDevice";
 import ReviewLast from "../../review/ui/ReviewLast.jsx";
+import { postReviewAPI } from "../../review/api/postReviewAPI.js";
+import { reviewState } from "../model/reviewAtom.jsx";
 
-function ReviewWriteModal() {
+function ReviewWriteModal({themeData}) {
 
+  // 반응형
   const { isDesktop, isTablet, isMobile } = useDevice();
 
+  // 상태 관리
   const setReviewModalOpen = useSetRecoilState(reviewModalState);
   const [reviewSection, setReviewSection] = useRecoilState(reviewSectionState);
   const isModalOpen = useRecoilValue(reviewModalState);
+  const reviewData = useRecoilValue(reviewState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // 모달 닫기 핸들러
   const handleClose = () => {
     setReviewModalOpen(false);
   };
 
+  // 초기화 효과
   useEffect(() => {
     if (isModalOpen) {
       setReviewSection("first");
     }
   }, [isModalOpen, setReviewSection]);
 
-  const sectionComponents = [<ReviewFirst />, <ReviewSecond />, <ReviewThird />, <ReviewLast />];
+  const sectionComponents = [
+    <ReviewFirst themeData={themeData} />, 
+    <ReviewSecond themeData={themeData} />, 
+    <ReviewThird themeData={themeData} />, 
+    <ReviewLast themeData={themeData} />
+  ];
+
   const currentSectionIndex = ["first", "second", "third", "last"].indexOf(reviewSection);
 
+  // 다음 화면 이동
   const goNext = () => {
     if (reviewSection === "first") setReviewSection("second");
     else if (reviewSection === "second") setReviewSection("third");
     else if (reviewSection === "third") setReviewSection("last");
   };
 
+  // 이전 화면 이동
   const goPrev = () => {
     if (reviewSection === "second") setReviewSection("first");
     else if (reviewSection === "third") setReviewSection("second");
   };  
+
+  // 후기 작성 제출 핸들러
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      console.log("themeId:", themeData.themeId);
+      console.log("reviewData:", reviewData);
+
+      await postReviewAPI(themeData.themeId, reviewData);
+      setReviewSection("last");
+    } catch (err) {
+      console.error("후기 전송 실패:", err);
+      alert("후기 전송 실패: 다시 시도해주세요.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   
   return (
     <ModalWrapper>
@@ -79,7 +112,7 @@ function ReviewWriteModal() {
             <PrevBtn onClick={goPrev}>
               <PrevBtnText>이전</PrevBtnText>
             </PrevBtn>
-            <NextBtn onClick={goNext} isCompact>
+            <NextBtn onClick={handleSubmit} isCompact>
               <NextBtnText>후기 작성 완료</NextBtnText>
             </NextBtn>
           </BtnSection>

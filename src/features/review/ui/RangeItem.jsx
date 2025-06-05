@@ -1,14 +1,16 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import Thumb from '../../../shared/assets/icons/reviewWrite/thumb.svg?react';
 import Line from '../../../shared/assets/icons/reviewWrite/line.svg';
 import BoldLine from '../../../shared/assets/icons/reviewWrite/boldline.svg';
 
-export default function RangeItem({ disabled }) {
-  const [value, setValue] = useState(0);
+export default function RangeItem({ disabled, onChange, value }) {
+
+  // 상태 관리
   const sliderRef = useRef(null);
   const isDragging = useRef(false);
 
+  // 마우스 이벤트
   const handleMouseDown = (e) => {
     if (disabled) return;
     isDragging.current = true;
@@ -36,7 +38,8 @@ export default function RangeItem({ disabled }) {
     let percent = (relativeX / rect.width) * 100;
 
     const stepped = Math.round(percent / 10) * 10;
-    setValue(stepped);
+    // setValue(stepped);
+    onChange?.(stepped);
   };
 
   useEffect(() => {

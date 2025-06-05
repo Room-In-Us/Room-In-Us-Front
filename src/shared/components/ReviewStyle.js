@@ -126,6 +126,7 @@ export const ThemeImg = styled.img`
   height: 16.25em;
   border-radius: 0.625em;
   background: url(<path-to-image>) lightgray -7.025px 0px / 108.075% 100.375% no-repeat;
+  object-fit: cover;
 
   @media (max-width: 1024px) {
   }

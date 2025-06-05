@@ -14,37 +14,33 @@ import HintCounter from "./HintCounter.jsx";
 import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3, Wrap5 } from '../../../shared/components/ReviewStyle.js';
 import useDevice from '../../../shared/hooks/useDevice.js';
 import InfoBox from '../../../shared/components/InfoBox.jsx';
+import { useRecoilState } from 'recoil';
+import { reviewState } from '../../themeDetail/model/reviewAtom.jsx';
 
-export default function ReviewSecond() {
+export default function ReviewSecond({themeData}) {
 
   // 반응형
   const { isDesktop, isTablet, isMobile } = useDevice();
+
+  // 후기 데이터 상태
+  const [review, setReview] = useRecoilState(reviewState);
 
   // 체크박스 상태
   const [checkedDate, setCheckedDate] = useState(false);
   const [checkedHint, setCheckedHint] = useState(false);
   const [checkedPeople, setCheckedPeople] = useState(false);
-  const [selectedIssues, setSelectedIssues] = useState([]);
-
-  // 인원수 초기화 상태
-  const [peopleResetCount, setPeopleResetCount] = useState(0);
-
-  // 탈출 여부 상태
-  const [selectedEscape, setSelectedEscape] = useState(true);
-
-  // 방문 일자 상태
-  const [visitDate, setVisitDate] = useState(null);
 
   // 플레이 인원 상태
-  const [players, setPlayers] = useState([
-    { id: 1, skill: '', note: '', isOwner: true },
-    { id: 2, skill: '', note: '', isOwner: false },
-  ]);
+  const players = review.participantList.map((p, i) => ({
+    ...p,
+    isOwner: i === 0,
+  }));
 
   // info 팝업 상태
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const infoRef = useRef(null);
 
+  // info 팝업 효과
   useEffect(() => {
     function handleClickOutside(e) {
       if (infoRef.current && !infoRef.current.contains(e.target)) {
@@ -62,38 +58,83 @@ export default function ReviewSecond() {
   }, [isInfoOpen]);
 
   // 특이사항 선택 기능
-  const toggleIssue = (label) => {
-    setSelectedIssues((prev) =>
-      prev.includes(label)
-        ? prev.filter((item) => item !== label)
-        : [...prev, label]
-    );
+  const toggleIssue = (value) => {
+    setReview(prev => {
+      const current = prev.reviewTagList ?? [];
+      const newList = current.includes(value)
+        ? current.filter((v) => v !== value)
+        : [...current, value];
+      return {
+        ...prev,
+        reviewTagList: newList.length > 0 ? newList : null,
+      };
+    });
   };
 
   // 탈출 여부 선택 기능
   const handleEscapeSelect = (value) => {
-    setSelectedEscape(value);
+    setReview(prev => ({
+      ...prev,
+      isEscaped: value,
+    }))
   };
 
   // 플레이 인원 추가 기능
   const handleAddPlayer = () => {
-    const newId = players.length > 0 ? Math.max(...players.map(p => p.id)) + 1 : 1;
-    setPlayers([...players, { id: newId, skill: '', note: '', isOwner: false }]);
+    setReview(prev => ({
+      ...prev,
+      participantList: [...prev.participantList, {proficiency: '', remark: ''}],
+    }));
   };
 
   // 플레이 인원 삭제 기능
-  const handleRemovePlayer = (id) => {
-    setPlayers(players.filter(p => p.id !== id));
+  const handleRemovePlayer = (index) => {
+    if (index === 0) return;
+    const newList = review.participantList.filter((_, i) => i !== index);
+    setReview(prev => ({...prev, participantList: newList }));
   };
 
   // 플레이 인원 숙련도 선택 기능
-  const handleSkillChange = (id, value) => {
-    setPlayers(players.map(p => p.id === id ? { ...p, skill: value } : p));
+  const handleSkillChange = (index, value) => {
+    const newList = review.participantList.map((participant, i) =>
+      i === index
+        ? { ...participant, proficiency: value }
+        : participant
+    );
+
+    setReview(prev => ({
+      ...prev,
+      participantList: newList,
+    }));
   };
 
   // 플레이 인원 특이 사항 입력 기능
-  const handleNoteChange = (id, value) => {
-    setPlayers(players.map(p => p.id === id ? { ...p, note: value } : p));
+  const handleNoteChange = (index, value) => {
+    const newList = review.participantList.map((participant, i) =>
+      i === index
+        ? { ...participant, remark: value }
+        : participant
+    );
+
+    setReview(prev => ({
+      ...prev,
+      participantList: newList,
+    }));
+  };
+
+  // 추천 인원 기재 선택 핸들러
+  const handleTogglePeople = () => {
+    setCheckedPeople(prev => {
+      const next = !prev;
+      if (next) {
+        setReview(prev => ({
+          ...prev,
+          minRecommendedHeadcount: null,
+          maxRecommendedHeadcount: null,
+        }));
+      }
+      return next;
+    });
   };
 
 
@@ -103,17 +144,17 @@ export default function ReviewSecond() {
     {!isMobile &&(      
     <>
       <Wrap2>
-        <ThemeTitle>테마명</ThemeTitle>
+        <ThemeTitle>{themeData?.themeName || '테마명'}</ThemeTitle>
         <ThemeSubText>객관식 후기 작성하기</ThemeSubText>
       </Wrap2>
     
       <Wrap3>
     
         <ImgSection>
-          <ThemeImg />
+          <ThemeImg src={themeData?.img || ''} />
           <MsgWrapper>
             <Asterisk>*</Asterisk>
-            <GuideMsg>는 필수 입력 사항입니다.</GuideMsg>
+            <GuideMsg>표는 필수 입력 사항입니다.</GuideMsg>
           </MsgWrapper>
         </ImgSection>
 
@@ -128,7 +169,12 @@ export default function ReviewSecond() {
               </Wrap>
 
               <DatePickerWrapper>
-                <VisitDatePicker disabled={checkedDate} selectedDate={visitDate} onChange={setVisitDate} />
+                <VisitDatePicker
+                  selectedDate={review.playedAt}
+                  onChange={(date) => {
+                    setReview(prev => ({...prev, playedAt: date.toISOString().split('T')[0]}));
+                  }}
+                />
               </DatePickerWrapper>
 
               <ToggleCheckbox
@@ -156,15 +202,15 @@ export default function ReviewSecond() {
                 </IconWrapper>
               </Wrap>
 
-              {players.map(({ id, skill, note, isOwner }) => (
+              {players.map(({ proficiency, remark, isOwner }, index) => (
                 <PlayerBoxSection
-                  key={id}
-                  skill={skill}
-                  note={note}
+                  key={index}
+                  skill={proficiency}
+                  note={remark}
                   isOwner={isOwner}
-                  onSkillChange={(value) => handleSkillChange(id, value)}
-                  onNoteChange={(value) => handleNoteChange(id, value)}
-                  onRemove={() => handleRemovePlayer(id)}
+                  onSkillChange={(value) => handleSkillChange(index, value)}
+                  onNoteChange={(value) => handleNoteChange(index, value)}
+                  onRemove={() => handleRemovePlayer(index)}
                 />
               ))}
               <AddPeopleBtn onClick={handleAddPlayer}>
@@ -180,13 +226,24 @@ export default function ReviewSecond() {
               </Wrap>
               <Container2>
               {finishOption.map((option) => (
-                <DropdownItem key={option.value} onClick={() => handleEscapeSelect(option.value)} $isSelected={selectedEscape === option.value}>
-                  <RadioIcon src={selectedEscape === option.value ? SelectedIcon : UnselectedIcon} alt="radio-icon" />
-                  <RadioLabel $isSelected={selectedEscape === option.value}>{option.label}</RadioLabel>
+                <DropdownItem key={option.value} onClick={() => handleEscapeSelect(option.value)} $isSelected={review.isEscaped === option.value}>
+                  <RadioIcon src={review.isEscaped === option.value ? SelectedIcon : UnselectedIcon} alt="radio-icon" />
+                  <RadioLabel $isSelected={review.isEscaped === option.value}>{option.label}</RadioLabel>
                 </DropdownItem>
               ))}
               </Container2>
-              <EscapeResultDetails disabled={selectedEscape} selected={selectedEscape} />
+              <EscapeResultDetails 
+                disabled={review.isEscaped} 
+                selected={review.isEscaped} 
+                onUpdate={({ remainingTime, failReason, hasViewedEnding }) => {
+                  setReview(prev => ({
+                    ...prev,
+                    remainingTime,
+                    failReason,
+                    hasViewedEnding,
+                  }));
+                }}
+              />
             </ItemSection>
 
             {/* 사용 힌트 수 영역 */}
@@ -195,7 +252,16 @@ export default function ReviewSecond() {
                 <ItemText>사용 힌트 수</ItemText>
                 <Asterisk2>*</Asterisk2>
               </Wrap>
-              <HintCounter disabled={checkedHint} />
+              <HintCounter 
+                disabled={checkedHint} 
+                value={review.usedHint ?? 0}
+                onChange={(value) =>
+                  setReview(prev => ({
+                    ...prev,
+                    usedHint: checkedHint ? null : value
+                  }))
+                }
+              />
               <ToggleCheckbox
                 label='기재 안 함'
                 checked={checkedHint}
@@ -209,15 +275,30 @@ export default function ReviewSecond() {
                 <ItemText>추천 인원</ItemText>
                 <Asterisk2>*</Asterisk2>
               </Wrap>
-              <FlexibleRangeSelector disabled={checkedPeople} onClearTrigger={peopleResetCount} />
+              <FlexibleRangeSelector 
+                disabled={checkedPeople}
+                value={
+                  review.minRecommendedHeadcount !== null
+                    ? review.maxRecommendedHeadcount !== null &&
+                      review.minRecommendedHeadcount !== review.maxRecommendedHeadcount
+                      ? [review.minRecommendedHeadcount, review.maxRecommendedHeadcount]
+                      : [review.minRecommendedHeadcount]
+                    : []
+                }
+                onChange={(range) =>
+                  setReview(prev => ({
+                    ...prev,
+                    minRecommendedHeadcount: checkedPeople || !range.length ? null : range[0],
+                    maxRecommendedHeadcount: checkedPeople || !range.length
+                      ? null
+                      : range[1] ?? range[0],
+                  }))
+                }
+              />
               <ToggleCheckbox
                 label='기재 안 함'
                 checked={checkedPeople}
-                onToggle={()=>setCheckedPeople((prev) => {
-                  const next = !prev;
-                  if (next) setPeopleResetCount((count) => count + 1); 
-                  return next;
-                })}
+                onToggle={handleTogglePeople}
               />
             </ItemSection2>
 
@@ -225,12 +306,12 @@ export default function ReviewSecond() {
             <ItemSection>
               <ItemText>특이사항</ItemText>
               <BoxSection>
-              {specialIssues.map(({ icon, label }) => (
+              {specialIssues.map(({ icon, label, value }) => (
                 <ToggleCheckbox
-                  key={label}
+                  key={value}
                   label={label}
-                  checked={selectedIssues.includes(label)}
-                  onToggle={() => toggleIssue(label)}
+                  checked={(review.reviewTagList ?? []).includes(value)}
+                  onToggle={() => toggleIssue(value)}
                   icon={icon}
                   special
                 />
@@ -249,10 +330,10 @@ export default function ReviewSecond() {
 
           <ImgSection>
         
-            <ThemeImg />
+            <ThemeImg src={themeData?.img || ''} />
         
             <Wrap2>
-              <ThemeTitle>테마명</ThemeTitle>
+              <ThemeTitle>{themeData?.themeName || '테마명'}</ThemeTitle>
               <ThemeSubText>객관식 후기 작성하기</ThemeSubText>
             </Wrap2>
         
@@ -270,7 +351,13 @@ export default function ReviewSecond() {
               <Asterisk2>*</Asterisk2>
             </Wrap>
             <DatePickerWrapper>
-              <VisitDatePicker disabled={checkedDate} selectedDate={visitDate} onChange={setVisitDate} />
+              <VisitDatePicker
+                disabled={checkedDate}
+                selectedDate={review.playedAt}
+                onChange={(date) => {
+                  setReview(prev => ({...prev, playedAt: date.toISOString().split('T')[0]}));
+                }}
+             />
             </DatePickerWrapper>
 
             <ToggleCheckbox
@@ -294,15 +381,15 @@ export default function ReviewSecond() {
                 )}
               </IconWrapper>
             </Wrap>
-            {players.map(({ id, skill, note, isOwner }) => (
+            {players.map(({ proficiency, remark, isOwner }, index) => (
               <PlayerBoxSection
-                key={id}
-                skill={skill}
-                note={note}
+                key={index}
+                skill={proficiency}
+                note={remark}
                 isOwner={isOwner}
-                onSkillChange={(value) => handleSkillChange(id, value)}
-                onNoteChange={(value) => handleNoteChange(id, value)}
-                onRemove={() => handleRemovePlayer(id)}
+                onSkillChange={(value) => handleSkillChange(index, value)}
+                onNoteChange={(value) => handleNoteChange(index, value)}
+                onRemove={() => handleRemovePlayer(index)}
               />
             ))}
             <AddPeopleBtn onClick={handleAddPlayer}>
@@ -318,13 +405,24 @@ export default function ReviewSecond() {
             </Wrap>
             <Container2>
             {finishOption.map((option) => (
-              <DropdownItem key={option.value} onClick={() => handleEscapeSelect(option.value)} $isSelected={selectedEscape === option.value}>
-                <RadioIcon src={selectedEscape === option.value ? SelectedIcon : UnselectedIcon} alt="radio-icon" />
-                <RadioLabel $isSelected={selectedEscape === option.value}>{option.label}</RadioLabel>
+              <DropdownItem key={option.value} onClick={() => handleEscapeSelect(option.value)} $isSelected={review.isEscaped === option.value}>
+                <RadioIcon src={review.isEscaped === option.value ? SelectedIcon : UnselectedIcon} alt="radio-icon" />
+                <RadioLabel $isSelected={review.isEscaped === option.value}>{option.label}</RadioLabel>
               </DropdownItem>
             ))}
             </Container2>
-            <EscapeResultDetails disabled={selectedEscape} selected={selectedEscape} />
+            <EscapeResultDetails
+              disabled={review.isEscaped} 
+              selected={review.isEscaped} 
+              onUpdate={({ remainingTime, failReason, hasViewedEnding }) => {
+                setReview(prev => ({
+                  ...prev,
+                  remainingTime,
+                  failReason,
+                  hasViewedEnding,
+                }));
+              }}              
+            />
           </ItemSection>
 
           {/* 사용 힌트 수 영역 */}
@@ -333,7 +431,16 @@ export default function ReviewSecond() {
               <ItemText>사용 힌트 수</ItemText>
               <Asterisk2>*</Asterisk2>
             </Wrap>
-            <HintCounter disabled={checkedHint} />
+            <HintCounter
+              disabled={checkedHint} 
+              value={review.usedHint ?? 0}
+              onChange={(value) =>
+                setReview(prev => ({
+                  ...prev,
+                  usedHint: checkedHint ? null : value
+                }))
+              }
+            />
             <ToggleCheckbox
               label='기재 안 함'
               checked={checkedHint}
@@ -347,15 +454,30 @@ export default function ReviewSecond() {
               <ItemText>추천 인원</ItemText>
               <Asterisk2>*</Asterisk2>
             </Wrap>
-            <FlexibleRangeSelector disabled={checkedPeople} onClearTrigger={peopleResetCount} />
+            <FlexibleRangeSelector
+              disabled={checkedPeople}
+              value={
+                review.minRecommendedHeadcount !== null
+                  ? review.maxRecommendedHeadcount !== null &&
+                    review.minRecommendedHeadcount !== review.maxRecommendedHeadcount
+                    ? [review.minRecommendedHeadcount, review.maxRecommendedHeadcount]
+                    : [review.minRecommendedHeadcount]
+                  : []
+              }
+              onChange={(range) =>
+                setReview(prev => ({
+                  ...prev,
+                  minRecommendedHeadcount: checkedPeople || !range.length ? null : range[0],
+                  maxRecommendedHeadcount: checkedPeople || !range.length
+                    ? null
+                    : range[1] ?? range[0],
+                }))
+              }
+            />
             <ToggleCheckbox
               label='기재 안 함'
               checked={checkedPeople}
-              onToggle={()=>setCheckedPeople((prev) => {
-                const next = !prev;
-                if (next) setPeopleResetCount((count) => count + 1); 
-                return next;
-              })}
+              onToggle={handleTogglePeople}
             />
           </ItemSection2>
 
@@ -363,12 +485,12 @@ export default function ReviewSecond() {
           <ItemSection>
             <ItemText>특이사항</ItemText>
             <BoxSection>
-            {specialIssues.map(({ icon, label }) => (
+            {specialIssues.map(({ icon, label, value }) => (
               <ToggleCheckbox
-                key={label}
+                key={value}
                 label={label}
-                checked={selectedIssues.includes(label)}
-                onToggle={() => toggleIssue(label)}
+                checked={(review.reviewTagList ?? []).includes(value)}
+                onToggle={() => toggleIssue(value)}
                 icon={icon}
                 special
               />
