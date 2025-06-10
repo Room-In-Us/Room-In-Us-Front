@@ -6,8 +6,11 @@ import EscapeIcon from "../../../shared/assets/icons/themeDetail/reviewEscapeIco
 import HintIcon from "../../../shared/assets/icons/themeDetail/reviewHintIcon.svg?react";
 import TimeIcon from "../../../shared/assets/icons/themeDetail/reviewTimeIcon.svg?react";
 import PropTypes from 'prop-types';
+import { reviewEnumConversion, proficiencyConversion, horrorPositionConversion, formatDateToDot, convertTimeToMinutes } from "../../../shared/utils/dataUtils";
 
 function ThemeReview({ data }) {
+  const escapeState = data.isEscaped ? '탈출 성공' : '탈출 실패';
+
   return (
     <ComponentWrapper>
       {/* 타이틀 파트 */}
@@ -15,9 +18,9 @@ function ThemeReview({ data }) {
         <TitleLeftWrapper>
           <NickName>{data.memberNickname}</NickName>
           <Divider>|</Divider>
-          <TitleText>{data.memberProficiency}</TitleText>
+          <TitleText>{proficiencyConversion(data.memberProficiency)}</TitleText>
           <Divider>|</Divider>
-          <TitleText>{data.memberHorrorPos}</TitleText>
+          <TitleText>{horrorPositionConversion(data.memberHorrorPos)}</TitleText>
         </TitleLeftWrapper>
         <TitleRightWrapper>
           <StarIcon/>
@@ -31,7 +34,7 @@ function ThemeReview({ data }) {
           <StyledEvautionIcon/>
           <SummaryTextWrapper>
             <SummaryTitle>총평</SummaryTitle>
-            <SummaryText>{data.reviewEnum}</SummaryText>
+            <SummaryText>{reviewEnumConversion(data.reviewEnum)}</SummaryText>
           </SummaryTextWrapper>
         </SummaryCard>
         <SummaryCard>
@@ -45,7 +48,7 @@ function ThemeReview({ data }) {
           <StyledEscapeIcon/>
           <SummaryTextWrapper>
             <SummaryTitle>탈출 여부</SummaryTitle>
-            <SummaryText>{data.isEscaped}</SummaryText>
+            <SummaryText>{escapeState}</SummaryText>
           </SummaryTextWrapper>
         </SummaryCard>
         <SummaryCard>
@@ -59,24 +62,23 @@ function ThemeReview({ data }) {
           <StyledTimeIcon/>
           <SummaryTextWrapper>
             <SummaryTitle>남긴 시간</SummaryTitle>
-            <SummaryText>{data.remainingTime}분 남김</SummaryText>
+            <SummaryText>{convertTimeToMinutes(data.remainingTime)}</SummaryText>
           </SummaryTextWrapper>
         </SummaryCard>
       </SummaryWrapper>
 
       {/* 설명 파트 */}
       <Description>
-        재밌는데 스케일이 크진 않아요. 방린이 때 오시는 걸 추천합니다.<br/>
-        재밌는데 스케일이 크진 않아요. 방린이 때 오시는 걸 추천합니다.
+        {data.reviewComment}
       </Description>
 
       {/* 날짜 파트 */}
       <DateWrapper>
         <Date>
-          방문일자 : {data.playedAt}
+          방문일자 : {formatDateToDot(data.playedAt)}
         </Date>
         <Date>
-          작성일자 : {data.createdAt}
+          작성일자 : {formatDateToDot(data.createdAt)}
         </Date>
       </DateWrapper>
 
@@ -96,14 +98,15 @@ ThemeReview.propTypes = {
     reviewId: PropTypes.number.isRequired,
     memberId: PropTypes.number.isRequired,
     memberNickname: PropTypes.string.isRequired,
-    memberProficiency: PropTypes.string, // "BEGINNER" | "EXPERT" 등일 수 있음
-    memberHorrorPos: PropTypes.string,   // "FEARLESS" | "SCARED" 등일 수 있음
+    memberProficiency: PropTypes.string,
+    memberHorrorPos: PropTypes.string,
     satisfactionLevel: PropTypes.number.isRequired,
-    reviewEnum: PropTypes.string.isRequired, // "FAVORITE" 등
+    reviewEnum: PropTypes.string.isRequired,
     headcount: PropTypes.number.isRequired,
     isEscaped: PropTypes.bool,
     usedHint: PropTypes.number,
     remainingTime: PropTypes.string,
+    reviewComment: PropTypes.string,
     playedAt: PropTypes.string.isRequired,
     createdAt: PropTypes.string.isRequired,
   }).isRequired,
