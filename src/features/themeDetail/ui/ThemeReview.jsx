@@ -7,9 +7,12 @@ import HintIcon from "../../../shared/assets/icons/themeDetail/reviewHintIcon.sv
 import TimeIcon from "../../../shared/assets/icons/themeDetail/reviewTimeIcon.svg?react";
 import PropTypes from 'prop-types';
 import { reviewEnumConversion, proficiencyConversion, horrorPositionConversion, formatDateToDot, convertTimeToMinutes } from "../../../shared/utils/dataUtils";
+import { useNavigate, useParams } from "react-router-dom";
 
 function ThemeReview({ data }) {
   const escapeState = data.isEscaped ? '탈출 성공' : '탈출 실패';
+  const navigate = useNavigate();
+  const { themeId } = useParams();
 
   return (
     <ComponentWrapper>
@@ -83,7 +86,7 @@ function ThemeReview({ data }) {
       </DateWrapper>
 
       {/* 상세 버튼 */}
-      <DetailButton>
+      <DetailButton onClick={() => navigate(`/theme/${themeId}/review/${data.reviewId}`)}>
         <ButtonText>
           후기 상세보기
         </ButtonText>
