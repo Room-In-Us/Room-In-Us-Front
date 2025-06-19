@@ -34,7 +34,7 @@ export const reviewState = atom({
         isOwner: false,
       },
     ],
-    isEscaped: null,
+    isEscaped: true,
     remainingTime: '00:00:00',
     failReason: null,
     hasViewedEnding: null,

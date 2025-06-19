@@ -83,7 +83,6 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
   border-radius: 1.25rem;
   background: var(--RIU_Monochrome-10, #F9F9FB);
 
@@ -101,6 +100,7 @@ const TopBar = styled.div`
   height: 100%;
   padding: 1.25rem 1.875rem;
   align-items: center;
+  border-radius: 1.25rem 1.25rem 0rem 0rem;
   gap: 1.875rem;
   box-sizing: border-box;
   background: var(--RIU_Primary-Gradient-01, linear-gradient(101deg, #9FABF7 0.85%, #85BFB3 100%));

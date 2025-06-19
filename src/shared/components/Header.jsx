@@ -23,6 +23,7 @@ function Header() {
   const [isVisibleMenu, setIsVisibleMenu] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
   const [isScrolledBeyond, setIsScrolledBeyond] = useState(false);
+  const [headerKeyword, setHeaderKeyword] = useState('');
 
   // 로컬 스토리지에서 토큰 호출
   const isLoggedIn = !!localStorage.getItem("accessToken");
@@ -32,6 +33,14 @@ function Header() {
     navigate(path);
     setIsVisibleMenu(false);
   };
+
+  // 검색 함수
+  const handleHeaderSearch = (value) => {
+    console.log('[검색 실행]', value);
+    if (!value) return;
+    navigate('/search', { state: { keyword: value } });
+  };
+
 
   // 반응형 함수
   const { isDesktop, isTablet, isMobile } = useDevice();
@@ -137,7 +146,12 @@ function Header() {
           <SectionWrapper>
             {/* 검색 */}
             <SearchInputWrapper>
-              <SearchInput type="header"/>
+              <SearchInput
+                type="header"
+                keyword={headerKeyword}
+                setKeyword={setHeaderKeyword}
+                onSearch={handleHeaderSearch}
+              />
             </SearchInputWrapper>
             {/* 로그인, 프로필 */}
             {isLoggedIn ? (
@@ -173,7 +187,12 @@ function Header() {
           <MenuWrapper isVisible={isVisibleMenu} ref={menuRef}>
             <MenuTopWrapper>
               <MobileSearchInputWrapper>
-                <SearchInput type="header-mobile" />
+                <SearchInput
+                  type="header-mobile" 
+                  keyword={headerKeyword}
+                  setKeyword={setHeaderKeyword}
+                  onSearch={handleHeaderSearch}
+                />
               </MobileSearchInputWrapper>
               <MobileButtonWrapper>
                 <MobileButton

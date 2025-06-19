@@ -4,17 +4,37 @@ import { useState } from 'react';
 import SearchIcon from '../../shared/assets/icons/common/searchIcon.svg?react';
 import CancelIcon from '../../shared/assets/icons/common/cancelIcon.svg?react';
 
-function SearchInput({ type }) {
+function SearchInput({ type, keyword, setKeyword, onSearch }) {
+
   const [expanded, setExpanded] = useState(type !== 'header');
-  
+
+  const handleSearchClick = (e) => {
+    e.stopPropagation();
+    if (!expanded) {
+      setExpanded(true);
+    } else {
+      onSearch(keyword); 
+    }
+  };
+
   return (
     <InputWrapper
       expanded={expanded}
       isHeader={type === 'header'}
       onClick={() => setExpanded(true)}
     >
-      <StyledSearchIcon />
+      <StyledSearchIcon
+        onClick={handleSearchClick}
+      />
       <StyledInput
+        value={keyword}
+        onChange={(e) => setKeyword(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            onSearch(e.target.value);
+          }
+        }}
         expanded={expanded}
         type="text"
         placeholder='오늘 예약하고 싶은 테마는?'
@@ -35,6 +55,9 @@ function SearchInput({ type }) {
 // PropTypes 정의 추가
 SearchInput.propTypes = {
   type: PropTypes.string.isRequired,
+  keyword: PropTypes.string.isRequired,
+  setKeyword: PropTypes.func.isRequired,
+  onSearch: PropTypes.func.isRequired,
 };
 
 export default SearchInput;
@@ -71,6 +94,7 @@ const StyledSearchIcon = styled(SearchIcon)`
   flex-shrink: 0; /* 아이콘 크기 줄어드는 것 방지 */
   transition: opacity 0.2s ease-in-out;
   opacity: ${({ expanded }) => (expanded ? '0' : '1')}; /* input 나타날 때 아이콘 사라짐 */
+  cursor: pointer;
 `;
 
 const StyledInput = styled.input`

@@ -6,9 +6,17 @@ import LevelIcon from '../../../shared/assets/icons/main/levelIcon.svg?react';
 import GenreIcon from '../../../shared/assets/icons/main/genreIcon.svg?react';
 import { useNavigate } from "react-router-dom";
 import NoiseFilter from '../../../shared/assets/icons/main/noiseFilter.svg';
+import { useState } from "react";
 
 function HearoSection() {
   const navigate = useNavigate();
+
+  const [keyword, setKeyword] = useState('');
+
+  const goToSearchPage = () => {
+    if (!keyword) return;
+    navigate('/search', { state: { keyword } });
+  };
 
   return (
     <HearoWrapper>
@@ -18,7 +26,12 @@ function HearoSection() {
       <SearchWrapper>
         {/* 검색창 */}
         <InputWrapper>
-          <SearchInput type='main'/>
+          <SearchInput
+            type='main'
+            keyword={keyword}
+            setKeyword={setKeyword}
+            onSearch={goToSearchPage}
+          />
         </InputWrapper>
 
         <ButtonWrapper>
