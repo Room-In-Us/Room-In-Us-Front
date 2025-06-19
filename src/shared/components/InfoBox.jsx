@@ -3,8 +3,13 @@ import styled from 'styled-components'
 export default function InfoBox() {
   return (
     <Wrapper>
-      <InfoTitle>메인 텍스트</InfoTitle>
-      <InfoDetail>내용</InfoDetail>
+      <InfoTitle>루미너스 숙련도 방 수 기준</InfoTitle>
+      <InfoDetail>
+        <InfoTextWrapper><Dot>•</Dot> <InfoText>방세포: 0~5방</InfoText></InfoTextWrapper>
+        <InfoTextWrapper><Dot>•</Dot> <InfoText>방초보: 5~20방</InfoText></InfoTextWrapper>
+        <InfoTextWrapper><Dot>•</Dot> <InfoText>방중수: 20~50방</InfoText></InfoTextWrapper>
+        <InfoTextWrapper><Dot>•</Dot> <InfoText>방고수: 50+방</InfoText></InfoTextWrapper>
+      </InfoDetail>
     </Wrapper>
   )
 }
@@ -16,6 +21,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   gap: 0.625em;
   background: var(--RIU_Monochrome-20, #F0F0F4);
+  z-index: 1000;
 
   @media (max-width: 1024px) {
   }
@@ -38,6 +44,17 @@ const InfoTitle = styled.div`
 `;
 
 const InfoDetail = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const InfoTextWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+`;
+
+const InfoText = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: Pretendard-Medium;
   font-size: 0.75em;
@@ -47,4 +64,11 @@ const InfoDetail = styled.div`
   @media (max-width: 768px) {
     font-size: 0.625em;
   }
+`;
+
+const Dot = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8DA3FF;
 `;

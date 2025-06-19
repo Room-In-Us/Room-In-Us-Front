@@ -629,6 +629,10 @@ const AddPeopleBtn = styled.div`
   box-sizing: border-box;
   cursor: pointer;
 
+  &:hover {
+    background: var(--RIU_Primary-20, #D0D8FF);
+  }
+
   @media (max-width: 1024px) {
   }
   @media (max-width: 768px) {
