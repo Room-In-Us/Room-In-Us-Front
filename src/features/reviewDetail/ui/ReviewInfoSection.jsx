@@ -8,6 +8,7 @@ import TimeIcon from "../../../shared/assets/icons/themeDetail/reviewTimeIcon.sv
 import { reviewEnumConversion, convertTimeToMinutes } from "../../../shared/utils/dataUtils";
 import PlayMemberSection from "./PlayMemberSection";
 import SignificantSection from "./SignificantSection";
+import GridSection from "./GridSection";
 
 function ReviewInfoSection() {
   const data = {
@@ -120,6 +121,18 @@ function ReviewInfoSection() {
       {/* 특이사항 */}
       <SignificantSection/>
 
+      {/* 그리드 영역 */}
+      <GridSection/>
+
+      {/* 신고 영역 */}
+      <ReportWrapper>
+        <ReportText>
+          이 후기에 문제가 있나요?
+        </ReportText>
+        <ReportButton>
+          후기 신고하기
+        </ReportButton>
+      </ReportWrapper>
     </ComponentWrapper>
   )
 }
@@ -170,7 +183,7 @@ const SectionTitle = styled.div`
 const Divider = styled.hr`
   border: none;
   margin: 0;
-  width: 41.25rem;
+  width: 100%;
   height: 0.0625rem;
   background: #C4C6D1;
 `;
@@ -335,4 +348,32 @@ const EscapeTagText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: 150%;
+`;
+
+const ReportWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const ReportText = styled.div`
+  color: var(--RIU_Monochrome-400, #616277);
+  font-family: 'Pretendard-Medium';
+  font-size: 0.875rem;
+  line-height: 150%;
+`;
+
+const ReportButton = styled.div`
+  color: var(--RIU_Primary-100, #718FF2);
+  font-family: 'Pretendard-Bold';
+  font-size: 0.875rem;
+  line-height: 150%;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-skip-ink: auto;
+  text-decoration-thickness: auto;
+  text-underline-offset: auto;
+  text-underline-position: from-font;
+  cursor: pointer;
 `;
