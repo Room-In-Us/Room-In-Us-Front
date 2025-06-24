@@ -26,6 +26,7 @@ import ReservationsPage from '../pages/myPage/ReservationsPage';
 import FavoritesPage from '../pages/myPage/FavoritesPage';
 import ReviewsPage from '../pages/myPage/ReviewsPage';
 import SerachPage from '../pages/SerachPage';
+import ReviewDetailPage from '../pages/ReviewDetailPage';
 
 function App() {
   const setMapsLoaded = useSetRecoilState(mapsLoadedState);
@@ -70,6 +71,9 @@ function App() {
 
           {/* 테마 상세 페이지 */}
           <Route path="/theme/:themeId" element={<ThemeDetailPage />} />
+
+          {/* 후기 상세 페이지 */}
+          <Route path="/theme/:themeId/review/:reviewId" element={<ReviewDetailPage />} />
 
           {/* 게시판 페이지 */}
           {/* <Route path="/board" element={<BoardPage />} />

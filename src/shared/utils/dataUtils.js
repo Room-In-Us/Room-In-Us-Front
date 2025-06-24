@@ -115,3 +115,15 @@ export const convertTimeToMinutes = (timeString) => {
 
   return `${hours * 60 + minutes}분 남김`;
 };
+
+// 리뷰 태그 변환 함수 (영어 => 한글)
+export const reviewTagConversion = (tag) => {
+  const tagMap = {
+    AGING: "노후화",
+    DEVICE_ERROR: "장치 오류",
+    ENTRY_DELAY: "당일 예약",
+    SAME_DAY_BOOKING: "당일 예약",
+    EARLY_EXIT: "중도 포기",
+  };
+  return tagMap[tag] || "알 수 없음";
+};
