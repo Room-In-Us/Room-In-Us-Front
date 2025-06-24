@@ -1,23 +1,13 @@
-import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import GenreTabSection from '../features/genre/ui/GenreTabSection';
 import GenreContentSection from '../features/genre/ui/GenreContentSection';
 
 export default function GenrePage() {
-  const [activeGenre, setActiveGenre] = useState('SENTIMENTAL');
-
-      // 버튼 활성화 함수
-      const handleGenreClick = (genre) => {
-        setActiveGenre(genre);
-      };
-      
-      useEffect(() => {
-      }, [activeGenre]);
 
   return (
     <Wrapper>
-      <GenreTabSection activeGenre={activeGenre} onGenreClick={handleGenreClick} />
-      <GenreContentSection activeGenre={activeGenre} />
+      <GenreTabSection />
+      <GenreContentSection />
     </Wrapper>
   );
 }

@@ -26,6 +26,11 @@ export default function RangeItem({ disabled, onChange, value }) {
     isDragging.current = false;
   };
 
+  const handleTouchMove = (e) => {
+    if (!isDragging.current) return;
+    handleMove(e);
+  };
+
   const handleMove = (e) => {
     if (!sliderRef.current) return;
     const rect = sliderRef.current.getBoundingClientRect();
@@ -38,16 +43,20 @@ export default function RangeItem({ disabled, onChange, value }) {
     let percent = (relativeX / rect.width) * 100;
 
     const stepped = Math.round(percent / 10) * 10;
-    // setValue(stepped);
+
     onChange?.(stepped);
   };
 
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchend', handleMouseUp);
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleMouseUp);
     };
   }, []);
 
@@ -67,7 +76,7 @@ export default function RangeItem({ disabled, onChange, value }) {
           ))}
         </LineWrapper>
 
-        <Track ref={sliderRef} onMouseDown={handleMouseDown} $disabled={disabled}>
+        <Track ref={sliderRef} onMouseDown={handleMouseDown} onTouchStart={handleMouseDown} $disabled={disabled}>
 
           <ThumbIcon
             style={{

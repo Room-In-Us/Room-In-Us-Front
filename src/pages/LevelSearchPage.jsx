@@ -1,22 +1,13 @@
-import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import LevelTabSection from '../features/level/ui/LevelTabSection';
 import LevelContentSection from '../features/level/ui/LevelContentSection';
 
 export default function LevelSearchPage() {
-  const [activeLevel, setActiveLevel] = useState('BEGINNER');
-
-  // 버튼 활성화 함수
-  const handleLevelClick = (level) => {
-    setActiveLevel(level);
-  };
-      
-  useEffect(() => {  }, [activeLevel]);
 
   return (
     <Wrapper>
-      <LevelTabSection activeLevel={activeLevel} onLevelClick={handleLevelClick} />
-      <LevelContentSection activeLevel={activeLevel} />
+      <LevelTabSection />
+      <LevelContentSection />
     </Wrapper>
   );
 };

@@ -1,14 +1,19 @@
 import styled from 'styled-components';
+import { useRecoilState } from 'recoil';
+import { activeGenreState } from '../model/genreAtom';
 import useDevice from "../../../shared/hooks/useDevice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from 'swiper/modules';
 import MainIcon from '../../../shared/assets/icons/genre/movieIcon.svg';
 import {genres} from '../model/genreData'
 
-export default function GenreTabSection({ activeGenre, onGenreClick }) {
+export default function GenreTabSection() {
     
   // 반응형 함수
   const { isDesktop, isMobile, isTablet } = useDevice();
+
+  // state 관리
+  const [activeGenre, setActiveGenre] = useRecoilState(activeGenreState);
   
   // 장르를 7개씩 나누는 함수
   const chunkArray = (array, size) => {
@@ -34,7 +39,7 @@ export default function GenreTabSection({ activeGenre, onGenreClick }) {
         { !isMobile && genres.map(({ icon: Icon, text, genre }) => (
           <GenreButton 
             key={genre} 
-            onClick={() => onGenreClick(genre)}
+            onClick={() => setActiveGenre(genre)}
             isActive={activeGenre === genre}
           >
             <StyledGenreIcon isActive={activeGenre === genre}>
@@ -58,7 +63,7 @@ export default function GenreTabSection({ activeGenre, onGenreClick }) {
             {chunk.map(({ icon: Icon, text, genre }) => (
             <GenreButton
             key={genre}
-            onClick={() => onGenreClick(genre)}
+            onClick={() => setActiveGenre(genre)}
             isActive={activeGenre === genre}
             >
               <StyledGenreIcon isActive={activeGenre === genre}>
