@@ -1,23 +1,9 @@
 import styled from "styled-components"
 import InfoIcon from "../../../shared/assets/icons/reviewDetail/infoIcon.svg?react";
 import { proficiencyConversion } from "../../../shared/utils/dataUtils";
+import PropTypes from "prop-types";
 
-function PlayMemberSection() {
-  const participantList = [
-    {
-      proficiency: "BEGINNER",
-      remark: "이 사람은 특이합니다",
-    },
-    {
-      proficiency: "BEGINNER",
-      remark: "이 사람은 특이합니다",
-    },
-    {
-      proficiency: "BEGINNER",
-      remark: "이 사람은 특이합니다",
-    },
-  ]
-  
+function PlayMemberSection({ participantList }) {
   return (
     <SectionWrapper>
       <TitleInfoWrapper>
@@ -36,7 +22,9 @@ function PlayMemberSection() {
             <ProficiencyText>
               {proficiencyConversion(member.proficiency)}
             </ProficiencyText>
-            <Dot>・</Dot>
+            {member.remark &&
+              <Dot>・</Dot>
+            }
             <Remark>{member.remark}</Remark>
           </MemberInfoWrapper>
           {index === 0 && (
@@ -49,6 +37,16 @@ function PlayMemberSection() {
     </SectionWrapper>
   )
 }
+
+// PropTypes 정의 (eslint 에러 방지)
+PlayMemberSection.propTypes = {
+  participantList: PropTypes.arrayOf(
+    PropTypes.shape({
+      proficiency: PropTypes.string.isRequired,
+      remark: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+};
 
 export default PlayMemberSection;
 

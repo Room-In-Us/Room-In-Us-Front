@@ -5,12 +5,9 @@ import TagIcon3 from "../../../shared/assets/icons/reviewDetail/tagIcon3.svg?rea
 import TagIcon4 from "../../../shared/assets/icons/reviewDetail/tagIcon4.svg?react";
 import TagIcon5 from "../../../shared/assets/icons/reviewDetail/tagIcon5.svg?react";
 import { reviewTagConversion } from "../../../shared/utils/dataUtils";
+import PropTypes from "prop-types";
 
-function SignificantSection() {
-  const tagList = [
-    "AGING", "DEVICE_ERROR", "ENTRY_DELAY", "SAME_DAY_BOOKING", "EARLY_EXIT",
-  ];
-
+function SignificantSection({ tagList }) {
   return (
     <SectionWrapper>
       <SectionTitle>
@@ -39,6 +36,10 @@ function SignificantSection() {
     </SectionWrapper>
   )
 }
+
+SignificantSection.propTypes = {
+  tagList: PropTypes.arrayOf(PropTypes.string),
+};
 
 export default SignificantSection;
 

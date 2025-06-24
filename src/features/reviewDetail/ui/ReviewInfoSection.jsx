@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import RatingStar from "../../../shared/assets/icons/themeDetail/ratingStar.svg?react";
 import EvalutionIcon from "../../../shared/assets/icons/themeDetail/reviewEvalutionIcon.svg?react";
@@ -5,48 +6,68 @@ import MemberIcon from "../../../shared/assets/icons/themeDetail/reviewMemberIco
 import EscapeIcon from "../../../shared/assets/icons/themeDetail/reviewEscapeIcon.svg?react";
 import HintIcon from "../../../shared/assets/icons/themeDetail/reviewHintIcon.svg?react";
 import TimeIcon from "../../../shared/assets/icons/themeDetail/reviewTimeIcon.svg?react";
-import { reviewEnumConversion, convertTimeToMinutes } from "../../../shared/utils/dataUtils";
+import { reviewEnumConversion, convertTimeToMinutes, formatDateToDot } from "../../../shared/utils/dataUtils";
 import PlayMemberSection from "./PlayMemberSection";
 import SignificantSection from "./SignificantSection";
 import StarRatingSection from "./StarRatingSection";
 import RangeItem from "../../review/ui/RangeItem";
+import PropTypes from "prop-types";
+import { getReviewDetailAPI } from "../api/reviewDetailAPI";
 
-function ReviewInfoSection() {
-  const data = {
-    satisfactionAvg: 4.5,
-    reviewEnum: 'FLOWER',
-    headcount: 3,
-    isEscaped: true,
-    usedHint: 1,
-    remainingTime: '00:32:17',
-  }
-  const escapeState = data.isEscaped ? '탈출 성공' : '탈출 실패';
+function ReviewInfoSection({ themeId, reviewId }) {
+  const [reviewData, setReviewData] = useState({});
+  const escapeState = reviewData?.isEscaped === true
+  ? '탈출 성공'
+  : reviewData?.isEscaped === false
+    ? '탈출 실패'
+    : '-';
+
+  // 후기 상세 api 호출
+  useEffect(() => {
+    async function fetchReviewDetail() {
+      try {
+        const detailRes = await getReviewDetailAPI(themeId, reviewId);
+        setReviewData(detailRes);
+      } catch (err) {
+        console.error('테마 상세 api 호출 중 오류 발생: ', err);
+      }
+    }
+    fetchReviewDetail();
+  }, [themeId, reviewId]);
 
   return (
     <ComponentWrapper>
       {/* 리뷰 총평 */}
       <SectionWrapper>
-        <SectionTitle>
-          리뷰 총평
-        </SectionTitle>
+        <SectionTitle>리뷰 총평</SectionTitle>
         <Divider/>
         <RatingWrapper>
           <StyledRatingStar />
-          <Rating>{data.satisfactionAvg.toFixed(1)}/5</Rating>
+          <Rating>
+            {typeof reviewData.satisfactionLevel === 'number' && !isNaN(reviewData.satisfactionLevel)
+              ? `${Number.isInteger(reviewData.satisfactionLevel)
+                  ? reviewData.satisfactionLevel
+                  : reviewData.satisfactionLevel.toFixed(1)}/5`
+              : '-'}
+          </Rating>
         </RatingWrapper>
         <SummaryWrapper>
           <SummaryCard>
             <StyledEvautionIcon/>
             <SummaryTextWrapper>
               <SummaryTitle>총평</SummaryTitle>
-              <SummaryText>{reviewEnumConversion(data.reviewEnum)}</SummaryText>
+              <SummaryText>{reviewEnumConversion(reviewData.review)}</SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
           <SummaryCard>
             <StyledMemberIcon/>
             <SummaryTextWrapper>
               <SummaryTitle>플레이 인원</SummaryTitle>
-              <SummaryText>{data.headcount}인</SummaryText>
+              <SummaryText>
+                {Array.isArray(reviewData.participantList)
+                  ? `${reviewData.participantList.length}인`
+                  : '-'}
+              </SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
           <SummaryCard>
@@ -60,84 +81,75 @@ function ReviewInfoSection() {
             <StyledHintIcon/>
             <SummaryTextWrapper>
               <SummaryTitle>힌트 사용</SummaryTitle>
-              <SummaryText>{data.usedHint}개 사용</SummaryText>
+              <SummaryText>{reviewData.usedHint}개 사용</SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
           <SummaryCard>
             <StyledTimeIcon/>
             <SummaryTextWrapper>
               <SummaryTitle>남긴 시간</SummaryTitle>
-              <SummaryText>{convertTimeToMinutes(data.remainingTime)}</SummaryText>
+              <SummaryText>{reviewData.isEscaped ? convertTimeToMinutes(reviewData.remainingTime) : '-'}</SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
         </SummaryWrapper>
         <ReviewDescription>
-          재밌는데 스케일이 크진 않아요. 방린이 때 오시는 걸 추천합니다.<br/>
-          재밌는데 스케일이 크진 않아요. 방린이 때 오시는 걸 추천합니다.
+          {reviewData.reviewComment}
         </ReviewDescription>
-        <ReviewPostDate>
-          2025.05.26
-        </ReviewPostDate>
+        <ReviewPostDate>{formatDateToDot(reviewData.createdAt)}</ReviewPostDate>
       </SectionWrapper>
 
       {/* 방문 일자 */}
       <RowSectionWrapper>
-        <SectionTitle>
-          방문 일자
-        </SectionTitle>
-        <VisitDate>
-          2025.05.26
-        </VisitDate>
+        <SectionTitle>방문 일자</SectionTitle>
+        <VisitDate>{formatDateToDot(reviewData.playedAt)}</VisitDate>
       </RowSectionWrapper>
 
       {/* 플레이 인원 */}
-      <PlayMemberSection/>
+      {reviewData.participantList && (
+        <PlayMemberSection participantList={reviewData.participantList} />
+      )}
 
       {/* 탈출 여부 */}
       <RowSectionWrapper>
-        <SectionTitle>
-          탈출 여부
-        </SectionTitle>
+        <SectionTitle>탈출 여부</SectionTitle>
         <EscapeWrapper>
           <EscapeTextWrapper>
-            <EscapeResult>실패</EscapeResult>
-            <EscapeFailureReason>(원인:힌트 개수 초과)</EscapeFailureReason>
+            <EscapeResult>{reviewData.isEscaped ? '성공' : '실패'}</EscapeResult>
+            {(!reviewData.isEscaped && reviewData.failReason) &&
+              <EscapeFailureReason>(원인: {reviewData.failReason})</EscapeFailureReason>
+            }
           </EscapeTextWrapper>
-          <EscapeEndingTag>
-            <EscapeTagText>엔딩 열람</EscapeTagText>
-          </EscapeEndingTag>
+          {reviewData.hasViewedEnding &&
+            <EscapeEndingTag>
+              <EscapeTagText>엔딩 열람</EscapeTagText>
+            </EscapeEndingTag>
+          }
         </EscapeWrapper>
       </RowSectionWrapper>
 
       {/* 추천 인원 수 */}
       <RowSectionWrapper>
-        <SectionTitle>
-          추천 인원 수
-        </SectionTitle>
-        <VisitDate>
-          3인
-        </VisitDate>
+        <SectionTitle>추천 인원 수</SectionTitle>
+        <VisitDate>{reviewData.minRecommendedHeadcount}인</VisitDate>
       </RowSectionWrapper>
 
       {/* 특이사항 */}
-      <SignificantSection/>
+      {reviewData.reviewTagList && (
+        <SignificantSection tagList={reviewData.reviewTagList} />
+      )}
 
       {/* 장치/좌물쇠 비율 */}
       <SectionWrapper>
         <TitleWrapper>
-          <SectionTitle>
-            장치/좌물쇠 비율
-          </SectionTitle>
-          <RatioText>
-            6:4
-          </RatioText>
+          <SectionTitle>장치/좌물쇠 비율</SectionTitle>
+          <RatioText>{reviewData.lockRatio}:{10-reviewData.lockRatio}</RatioText>
         </TitleWrapper>
         <Divider/>
         <RangeWrapper>
           <RangeItem
             disabled={false}
             onChange={() => {}}
-            value={0}
+            value={reviewData.lockRatio*10}
           />
         </RangeWrapper>
       </SectionWrapper>
@@ -145,46 +157,53 @@ function ReviewInfoSection() {
       {/* 난이도 */}
       <StarRatingSection
         type="난이도"
-        rating={3}
+        rating={reviewData.level}
+        comment={reviewData.levelComment}
       />
 
       {/* 공포도 */}
       <StarRatingSection
         type="공포도"
-        rating={3.5}
+        rating={reviewData.horrorLevel}
+        comment={reviewData.horrorComment}
       />
 
       {/* 활동성 */}
       <StarRatingSection
         type="활동성"
-        rating={5}
-        recommendedCloth={'PANTS'}
+        rating={reviewData.activityLevel}
+        comment={reviewData.activityComment}
+        recommendedCloth={reviewData.recommendedCloth}
       />
 
       {/* 스토리 */}
       <StarRatingSection
         type="스토리"
-        rating={4}
+        rating={reviewData.storyLevel}
+        comment={reviewData.storyComment}
       />
 
       {/* 인테리어 */}
       <StarRatingSection
         type="인테리어"
-        rating={4.5}
+        rating={reviewData.interiorLevel}
+        comment={reviewData.interiorComment}
       />
 
       {/* 신고 영역 */}
       <ReportWrapper>
-        <ReportText>
-          이 후기에 문제가 있나요?
-        </ReportText>
-        <ReportButton>
-          후기 신고하기
-        </ReportButton>
+        <ReportText>이 후기에 문제가 있나요?</ReportText>
+        <ReportButton>후기 신고하기</ReportButton>
       </ReportWrapper>
     </ComponentWrapper>
   )
 }
+
+// PropTypes 정의 (eslint 에러 방지)
+ReviewInfoSection.propTypes = {
+  themeId: PropTypes.number.isRequired,
+  reviewId: PropTypes.number.isRequired,
+};
 
 export default ReviewInfoSection;
 
