@@ -8,7 +8,8 @@ import TimeIcon from "../../../shared/assets/icons/themeDetail/reviewTimeIcon.sv
 import { reviewEnumConversion, convertTimeToMinutes } from "../../../shared/utils/dataUtils";
 import PlayMemberSection from "./PlayMemberSection";
 import SignificantSection from "./SignificantSection";
-import GridSection from "./GridSection";
+import StarRatingSection from "./StarRatingSection";
+import RangeItem from "../../review/ui/RangeItem";
 
 function ReviewInfoSection() {
   const data = {
@@ -121,8 +122,56 @@ function ReviewInfoSection() {
       {/* 특이사항 */}
       <SignificantSection/>
 
-      {/* 그리드 영역 */}
-      <GridSection/>
+      {/* 장치/좌물쇠 비율 */}
+      <SectionWrapper>
+        <TitleWrapper>
+          <SectionTitle>
+            장치/좌물쇠 비율
+          </SectionTitle>
+          <RatioText>
+            6:4
+          </RatioText>
+        </TitleWrapper>
+        <Divider/>
+        <RangeWrapper>
+          <RangeItem
+            disabled={false}
+            onChange={() => {}}
+            value={0}
+          />
+        </RangeWrapper>
+      </SectionWrapper>
+      
+      {/* 난이도 */}
+      <StarRatingSection
+        type="난이도"
+        rating={3}
+      />
+
+      {/* 공포도 */}
+      <StarRatingSection
+        type="공포도"
+        rating={3.5}
+      />
+
+      {/* 활동성 */}
+      <StarRatingSection
+        type="활동성"
+        rating={5}
+        recommendedCloth={'PANTS'}
+      />
+
+      {/* 스토리 */}
+      <StarRatingSection
+        type="스토리"
+        rating={4}
+      />
+
+      {/* 인테리어 */}
+      <StarRatingSection
+        type="인테리어"
+        rating={4.5}
+      />
 
       {/* 신고 영역 */}
       <ReportWrapper>
@@ -376,4 +425,29 @@ const ReportButton = styled.div`
   text-underline-offset: auto;
   text-underline-position: from-font;
   cursor: pointer;
+`;
+
+const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  align-self: stretch;
+`;
+
+const RatioText = styled.div`
+  color: var(--RIU_Monochrome-400, #616277);
+  font-family: 'Pretendard-Bold';
+  font-size: 0.875rem;
+  line-height: 150%;
+`;
+
+const RangeWrapper = styled.div`
+  width: 100%;
+  height: 9.1875rem;
+  display: flex;
+  align-items: center;
+  cursor: default;
+  * {
+    cursor: default !important;
+  }
 `;
