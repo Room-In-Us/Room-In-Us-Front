@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components'
+import { useRecoilValue } from 'recoil';
+import { activeGenreState } from '../model/genreAtom';
 import useDevice from "../../../shared/hooks/useDevice";
 import ContentCard from "../../../shared/components/ContentCard";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -15,10 +17,13 @@ import CustomPagination from '../../../shared/components/CustomPagination';
 import BottomSheet from '../../../shared/components/BottomSheet';
 import { sortOptions } from '../../../shared/components/filter/OptionList';
 
-export default function GenreContentSection({ activeGenre }) {
+export default function GenreContentSection() {
 
   // 반응형 함수
   const { isDesktop, isTablet, isMobile } = useDevice();
+
+  // state 관리
+  const activeGenre = useRecoilValue(activeGenreState);
 
   // 필터링 상태
   const [themeList, setThemeList] = useState([]);

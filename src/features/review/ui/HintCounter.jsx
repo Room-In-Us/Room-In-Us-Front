@@ -54,8 +54,8 @@ const HintNumBox = styled.div`
 
 const PlusMinusIcon = styled.img`
   display: flex;
-  width: 2.25em;
-  height: 2.25em;
+  width: 1.875em;
+  height: 1.875em;
   justify-content: center;
   align-items: center;
   cursor: ${({ $disabled }) => $disabled ? 'not-allowed' : 'pointer'};
@@ -63,8 +63,8 @@ const PlusMinusIcon = styled.img`
   @media (max-width: 1024px) {
   }
   @media (max-width: 768px) {
-    width: 1.875em;
-    height: 1.875em;
+    width: 1.5625em;
+    height: 1.5625em;
   }
 `;
 

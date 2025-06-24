@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components'
+import { useRecoilValue } from 'recoil';
+import { activeLevelState } from '../model/levelAtom.jsx';
 import useDevice from "../../../shared/hooks/useDevice.js";
 import ContentCard from "../../../shared/components/ContentCard.jsx";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -15,10 +17,13 @@ import CustomPagination from '../../../shared/components/CustomPagination';
 import BottomSheet from '../../../shared/components/BottomSheet';
 import { sortOptions } from '../../../shared/components/filter/OptionList.js';
 
-export default function LevelContentSection( {activeLevel} ) {
+export default function LevelContentSection() {
 
   // 반응형 함수
   const { isDesktop, isTablet, isMobile } = useDevice();
+
+  // state 관리
+  const activeLevel = useRecoilValue(activeLevelState);
 
   // 필터링 상태
   const [themeList, setThemeList] = useState([]);

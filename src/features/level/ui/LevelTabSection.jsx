@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { useRecoilState } from 'recoil';
+import { activeLevelState } from '../model/levelAtom.jsx';
 import useDevice from "../../../shared/hooks/useDevice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import MainIcon from '../../../shared/assets/icons/genre/movieIcon.svg';
@@ -7,12 +9,15 @@ import CircleInfoIcon from '../../../shared/assets/icons/common/circleinfo.svg';
 import { levels } from '../model/levelData';
 import InfoBox from '../../../shared/components/InfoBox.jsx';
 
-export default function LevelTabSection( { activeLevel, onLevelClick } ) {
+export default function LevelTabSection() {
     
   // 반응형 함수
   const { isDesktop, isMobile, isTablet } = useDevice();
 
-    // info 팝업 상태
+  // state 관리
+  const [activeLevel, setActiveLevel] = useRecoilState(activeLevelState);
+
+  // info 팝업 상태
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const infoRef = useRef(null);
 
@@ -67,7 +72,7 @@ export default function LevelTabSection( { activeLevel, onLevelClick } ) {
         { !isMobile && levels.map(({ icon: Icon, text, level }) => (
           <LevelButton 
             key={level} 
-            onClick={() => onLevelClick(level)}
+            onClick={() => setActiveLevel(level)}
             isActive={activeLevel === level}
           >
             <StyledLevelIcon isActive={activeLevel === level}>
@@ -81,7 +86,7 @@ export default function LevelTabSection( { activeLevel, onLevelClick } ) {
         { isMobile && levels.map(({ icon: Icon, text, level }) => (
             <LevelButton
             key={level}
-            onClick={() => onLevelClick(level)}
+            onClick={() => setActiveLevel(level)}
             isActive={activeLevel === level}
             >
               <StyledLevelIcon isActive={activeLevel === level}>
