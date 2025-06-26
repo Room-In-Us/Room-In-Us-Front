@@ -11,8 +11,11 @@ import HeartIcon3 from '../assets/icons/common/heart_active.svg?react';
 import { formatNumberWithCommas } from '../utils/formatUtils';
 import { levelTextConversion, genreListConversion, satisfactionConversion } from '../utils/dataUtils';
 import useDevice from '../hooks/useDevice';
+import { deleteThemeLikeAPI, postThemeLikeAPI } from '../../features/like/api/themeLikeAPI';
+import { useRecoilState } from 'recoil';
+import { likedThemeState } from '../../features/like/modal/likeAtom';
 
-function ContentCard({ data, headCount, type }) {
+function ContentCard({ data, headCount, type, onUnlike }) {
   const {
     themeId,
     locationName,
@@ -29,7 +32,8 @@ function ContentCard({ data, headCount, type }) {
   } = data;
 
   // state 관리
-  const [isHeartActive, setIsHeartActive] = useState(false);
+  const [likedThemes, setLikedThemes] = useRecoilState(likedThemeState);
+  const isHeartActive = likedThemes[themeId] || false;
   const [imageUrl, setImageUrl] = useState(img);
   
   // navigate
@@ -45,6 +49,26 @@ function ContentCard({ data, headCount, type }) {
   
   const handleImageError = () => {
     setImageUrl(ThumbnailImg);
+  };
+
+  const handleHeartClick = async (event) => {
+    event.stopPropagation();
+
+    try {
+      if (isHeartActive) {
+        await deleteThemeLikeAPI(themeId);
+        if (onUnlike) onUnlike(themeId);
+      } else {
+        await postThemeLikeAPI(themeId);
+      }
+
+      setLikedThemes(prev => ({
+        ...prev,
+        [themeId]: !isHeartActive,
+      }));
+    } catch (error) {
+      console.error('좋아요 토글 실패:', error);
+    }
   };
 
   return (
@@ -76,10 +100,7 @@ function ContentCard({ data, headCount, type }) {
               <>
                 {/* 하트 아이콘 영역 */}
                 <HeartWrapper
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setIsHeartActive(!isHeartActive);
-                  }}
+                  onClick={handleHeartClick}
                 >
                   {isHeartActive ? (
                     <StyledHeartIcon3 />
@@ -137,10 +158,7 @@ function ContentCard({ data, headCount, type }) {
               <>
                 {/* 모바일 하트 아이콘 영역 */}
                 <HeartWrapper
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setIsHeartActive(!isHeartActive);
-                  }}
+                  onClick={handleHeartClick}
                 >
                   {isHeartActive ? (
                     <StyledHeartIcon3 />
