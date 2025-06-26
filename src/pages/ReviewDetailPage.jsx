@@ -7,7 +7,7 @@ import ReviewInfoSection from "../features/reviewDetail/ui/ReviewInfoSection";
 import { useRecoilValue } from 'recoil';
 import ReviewWriteModal from "../features/themeDetail/ui/ReviewWriteModal";
 import { reviewModalState } from "../features/themeDetail/model/reviewAtom";
-import { getThemeDetailAPI, getThemePriceAPI } from "../features/themeDetail/api/themeDetailAPI";
+import { getThemeDetailAPI } from "../features/themeDetail/api/themeDetailAPI";
 
 function ReviewDetailPage() {
   // 상태 관리
@@ -15,23 +15,19 @@ function ReviewDetailPage() {
   const [themeDetail, setThemeDetail] = useState({});
 
   const navigate = useNavigate();
-  const { themeId } = useParams();
+  const { themeId, reviewId } = useParams();
 
-  // api 호출
+  // 테마 상세 api 호출
   useEffect(() => {
-    async function fetchAll() {
+    async function fetchThemeDetail() {
       try {
-        const [detailRes] = await Promise.all([
-          getThemeDetailAPI(themeId),
-          getThemePriceAPI(themeId),
-        ]);
+        const detailRes = await getThemeDetailAPI(themeId);
         setThemeDetail(detailRes);
       } catch (err) {
         console.error('테마 상세 api 호출 중 오류 발생: ', err);
       }
     }
-  
-    fetchAll();
+    fetchThemeDetail();
   }, [themeId]);
 
   return (
@@ -50,7 +46,7 @@ function ReviewDetailPage() {
         <ThemeOverviewCard themeData={themeDetail} />
 
         {/* 후기 상세 영역 */}
-        <ReviewInfoSection/>
+        <ReviewInfoSection themeId={themeId} reviewId={reviewId}/>
       </ContentWrapper>
 
       {/* 후기 작성 모달 */}

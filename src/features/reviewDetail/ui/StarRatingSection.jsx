@@ -4,7 +4,7 @@ import StarIcon from "../../../shared/assets/icons/reviewWrite/star.svg?react";
 import EmptyStar from "../../../shared/assets/icons/reviewWrite/starEmpty.svg?react";
 import HalfStar from '../../../shared/assets/icons/reviewWrite/starhalf.svg?react';
 
-function StarRatingSection({ type, rating, recommendedCloth }) {
+function StarRatingSection({ type, rating, comment, recommendedCloth }) {
   // 별 배열 생성
   const renderStars = () => {
     return Array.from({ length: 5 }).map((_, i) => {
@@ -41,9 +41,7 @@ function StarRatingSection({ type, rating, recommendedCloth }) {
       <Divider/>
       {/* 설명 */}
       <Description>
-        문제들이 굉장히 깔끔한 편이었어요!<br/>
-        문제 각각의 난이도는 괜찮은데, 풀어야 하는 문제가 많아서 조금 어렵지 않을까 싶어요.<br/>
-        3~4분 정도 막히면 바로바로 힌트 쓰시는 것을 추천합니다!
+        {comment}
       </Description>
       {/* 복장 추천 */}
       {type === '활동성' &&
@@ -68,6 +66,7 @@ function StarRatingSection({ type, rating, recommendedCloth }) {
 StarRatingSection.propTypes = {
   type: PropTypes.string.isRequired,
   rating: PropTypes.number,
+  comment: PropTypes.string,
   recommendedCloth: PropTypes.string,
 };
 
