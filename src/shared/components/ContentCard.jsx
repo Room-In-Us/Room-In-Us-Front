@@ -100,13 +100,7 @@ function ContentCard({ data, headCount, type, onUnlike }) {
               <>
                 {/* 하트 아이콘 영역 */}
                 <HeartWrapper
-                  onClick={
-                    // (event) => {
-                    // event.stopPropagation();
-                    // setIsHeartActive(!isHeartActive);
-                  // }
-                  handleHeartClick
-                }
+                  onClick={handleHeartClick}
                 >
                   {isHeartActive ? (
                     <StyledHeartIcon3 />
@@ -164,13 +158,7 @@ function ContentCard({ data, headCount, type, onUnlike }) {
               <>
                 {/* 모바일 하트 아이콘 영역 */}
                 <HeartWrapper
-                  onClick={
-                  //   (event) => {
-                  //   event.stopPropagation();
-                  //   setIsHeartActive(!isHeartActive);
-                  // }
-                  handleHeartClick
-                }
+                  onClick={handleHeartClick}
                 >
                   {isHeartActive ? (
                     <StyledHeartIcon3 />
