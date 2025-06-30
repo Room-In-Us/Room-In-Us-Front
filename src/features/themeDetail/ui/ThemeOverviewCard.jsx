@@ -67,7 +67,17 @@ function ThemeOverviewCard({ themeData }) {
 
       {/* 상호작용 영역 */}
       <InteractionWrapper>
-        <InteractionButton>
+        <InteractionButton
+          onClick={() => {
+            navigator.clipboard.writeText(window.location.href)
+              .then(() => {
+                alert('링크가 복사되었습니다!');
+              })
+              .catch((err) => {
+                console.error('링크 복사 실패:', err);
+              });
+          }}
+        >
           <StyledShareIcon/>
         </InteractionButton>
         <InteractionButton
