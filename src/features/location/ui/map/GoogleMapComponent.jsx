@@ -4,6 +4,7 @@ import { storeLatAndLngList, centerLatAndLng, zoomLevel } from '../../model/loca
 import { GoogleMap, MarkerF, OverlayView } from '@react-google-maps/api';
 import { googleMapStyles } from './googleMapStyles.js';
 import MarkerIcon from "../../../../shared/assets/images/location/marker.png";
+import AwardMarkerIcon from "../../../../shared/assets/images/location/awardMarker.png";
 
 function GoogleMapComponent() {
   // 중앙 좌표
@@ -39,7 +40,7 @@ function GoogleMapComponent() {
                 <MarkerF
                   position={{ lat: store.latitude, lng: store.longitude }}
                   icon={{
-                    url: MarkerIcon,
+                    url: store.isAwarded ? AwardMarkerIcon : MarkerIcon,
                     scaledSize: new window.google.maps.Size(22.8, 32.4),
                     // scaledSize: new window.google.maps.Size(38, 54),
                   }}
