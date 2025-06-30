@@ -42,7 +42,7 @@ function GoogleMapComponent() {
                   icon={{
                     url: store.isAwarded ? AwardMarkerIcon : MarkerIcon,
                     scaledSize: new window.google.maps.Size(22.8, 32.4),
-                    // scaledSize: new window.google.maps.Size(38, 54),
+                    // scaledSize: new window.google.maps.Size(38, 54), // 원래 사이즈
                   }}
                 />
                 <OverlayView
@@ -75,7 +75,7 @@ const CafeNameBox = styled.div`
   width: 5.5em;
   background: rgba(81, 93, 186, 0.70);
   position: absolute;
-  transform: translate(-50%, 20%);
+  transform: translate(-50%, 10%);
   display: flex;
   justify-content: center;
   align-items: center;

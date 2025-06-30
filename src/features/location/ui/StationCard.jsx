@@ -27,6 +27,8 @@ function StationCard() {
   const [, setCenterLatAndLng] = useRecoilState(centerLatAndLng); // 구역 중앙 좌표
   const [storeList, setStoreList] = useRecoilState(storeLatAndLngList); // 매장 리스트
   const [, setZoomLevel] = useRecoilState(zoomLevel); // 줌 레벨
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const [sortStatus, setSortStatus] = useState("RECOMMEND");
 
   // 매장 선택 핸들러
   const handleStoreSelect = (id) => {
@@ -55,7 +57,7 @@ function StationCard() {
     const fetchData = async () => {
       try {
         if (isZoneId > 0 && isZoneId < 17) {
-          const response = await getSeoulZoneStoreListAPI(isZoneId, currentPage, 10, "RECOMMEND");
+          const response = await getSeoulZoneStoreListAPI(isZoneId, currentPage, 10, sortStatus);
           console.log('서울 구역 매장 목록: ', response);
           setTotalPages(response.storeData.totalPages);
           setCenterLatAndLng({ // 구역 중앙 좌표
@@ -65,7 +67,7 @@ function StationCard() {
           setStoreList(response.storeData.contents); // 매장 리스트
           setZoomLevel(16); // 줌 레벨
         } else {
-          const response = await getZoneStoreListAPI(regionId, isZoneId, currentPage, 10, "RECOMMEND");
+          const response = await getZoneStoreListAPI(regionId, isZoneId, currentPage, 10, sortStatus);
           console.log('수도권 구역 매장 목록: ', response);
           setTotalPages(response.storeData.totalPages);
           setCenterLatAndLng({ // 구역 중앙 좌표
@@ -80,7 +82,7 @@ function StationCard() {
       }
     };
     fetchData();
-  }, [isZoneId, currentPage, regionId, setCenterLatAndLng, setStoreList, setZoomLevel]);
+  }, [isZoneId, currentPage, regionId, setCenterLatAndLng, setStoreList, setZoomLevel, sortStatus]);
 
   // 페이지 이동
   const handlePageClick = (page) => {
@@ -139,11 +141,23 @@ function StationCard() {
           <ListNumber>
             매장 목록 &#40;{CapitalStoreCount}&#41;
           </ListNumber>
-          <FilterWrapper>
+          {/* 정렬 버튼 */}
+          <FilterWrapper onClick={() => setIsSortOpen((prev) => !prev)}>
             <FilterName>
-              추천 순
+              {sortStatus === "RECOMMEND"
+                ? "추천 순"
+                : sortStatus === "MANY_THEME"
+                ? "테마 많은 순"
+                : "가나다 순"}
             </FilterName>
-            <StyledDownArrowIcon/>
+            <StyledDownArrowIcon isSortOpen={isSortOpen} />
+            {isSortOpen && (
+              <SortModalWrapper>
+                <SortOption onClick={() => setSortStatus("RECOMMEND")}><SortText>추천 순</SortText></SortOption>
+                <SortOption onClick={() => setSortStatus("MANY_THEME")}><SortText>테마 많은 순</SortText></SortOption>
+                <SortOption onClick={() => setSortStatus("NAME")}><SortText>가나다 순</SortText></SortOption>
+              </SortModalWrapper>
+            )}
           </FilterWrapper>
         </ListTitleWrapper>
       </ListWrapper>
@@ -325,6 +339,7 @@ const FilterWrapper = styled.div`
   align-items: center;
   gap: 0.375em;
   cursor: pointer;
+  position: relative;
 `;
 
 const FilterName = styled.div`
@@ -337,6 +352,39 @@ const FilterName = styled.div`
 const StyledDownArrowIcon = styled(DownArrowIcon)`
   width: 1.25em;
   height: 1.25em;
+  transition: transform 0.2s ease-in-out;
+  transform: rotate(${props => (props.isSortOpen ? 180 : 0)}deg);
+`;
+
+const SortModalWrapper = styled.div`
+  position: absolute;
+  top: 150%;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+`;
+
+const SortOption = styled.div`
+  border-bottom: 1px solid var(--RIU_Monochrome-50, #D6D6DF);
+  padding: 0em 1.25em;
+  box-sizing: border-box;
+  width: 11.875em;
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  gap: 0.625em;
+  background: var(--RIU_Monochrome-30, #E7E8ED);
+  cursor: pointer;
+`;
+
+const SortText = styled.div`
+  color: var(--RIU_Monochrome-200, #717486);
+  font-family: 'Pretendard-Medium';
+  font-size: 0.875em;
+  line-height: normal;
 `;
 
 const StoreList = styled.div`
