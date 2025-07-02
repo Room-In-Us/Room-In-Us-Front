@@ -1,8 +1,7 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import LeftArrow from "../../shared/assets/icons/myPage/leftArrow.svg?react";
-import HeaderSection from "../../features/mypage/ui/favorites/HeaderSection";
-import SortDropDown from "../../features/mypage/ui/favorites/SortDropDown";
+import FavoriteDropDown from "../../features/mypage/ui/favorites/FavoriteDropDown";
 import ContentCardSection from "../../features/mypage/ui/favorites/ContentCardSection";
 import useDevice from "../../shared/hooks/useDevice";
 
@@ -24,10 +23,13 @@ function FavoritesPage() {
         </BackButtonWrapper>
         )}
 
-        {/* 콘텐츠 영역 */}
-        <HeaderSection />
+        {/* 타이틀 영역 */}
+        <TitleWrapper>
+          <Title>내가 찜한 방탈출</Title>
+          <SubText>방탈출 예약을 쉽고 편리하게 도와주는 루미너스입니다 {':)'}</SubText>
+        </TitleWrapper>
 
-        <SortDropDown />
+        <FavoriteDropDown />
 
         <ContentCardSection />
 
@@ -77,4 +79,31 @@ const BackButtonText = styled.div`
   text-align: center;
   font-family: 'Pretendard-Medium';
   line-height: normal;
+`;
+
+const TitleWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625em;
+`;
+
+const Title = styled.div`
+  color: var(--RIU_Primary-100, #718FF2);
+  font-family: Pretendard-Bold;
+  font-size: 1.5em;
+  
+  @media (max-width: 768px) {
+    font-size: 1.125em;
+  }
+`;
+
+const SubText = styled.div`
+  color: var(--RIU_Monochrome-200, #717486);
+  font-family: Pretendard-Medium;
+  font-size: 1em;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;

@@ -3,7 +3,7 @@ import { api } from '../../../app/API';
 // 방탈출 테마 좋아요 api
 export const postThemeLikeAPI = async (themeId) => {
   try {
-    const response = await api.post(`/themes/${themeId}/like`);
+    const response = await api.post(`themes/${themeId}/like`);
     console.log('방탈출 테마 좋아요 api 전체 응답: ', response);
 
     return response.data;
@@ -16,7 +16,7 @@ export const postThemeLikeAPI = async (themeId) => {
 // 방탈출 테마 좋아요 취소 api
 export const deleteThemeLikeAPI = async (themeId) => {
   try {
-    const response = await api.delete(`/themes/${themeId}/like`);
+    const response = await api.delete(`themes/${themeId}/like`);
     console.log('방탈출 테마 좋아요 취소 api 전체 응답: ', response);
 
     return response.data;
