@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import DropDownIcon from '../../../../shared/assets/icons/common/dropdown.svg?react';
 
-export default function SortDropDown() {
+export default function FavoriteDropDown() {
   return (
     <Wrapper>
       <DropDownWrapper>
