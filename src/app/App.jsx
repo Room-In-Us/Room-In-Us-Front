@@ -27,6 +27,7 @@ import FavoritesPage from '../pages/myPage/FavoritesPage';
 import ReviewsPage from '../pages/myPage/ReviewsPage';
 import SerachPage from '../pages/SerachPage';
 import ReviewDetailPage from '../pages/ReviewDetailPage';
+import NotFoundPage from '../pages/NotFoundPage';
 
 function App() {
   const setMapsLoaded = useSetRecoilState(mapsLoadedState);
@@ -92,6 +93,9 @@ function App() {
 
           {/* 전체 검색 페이지 */}
           <Route path = '/search' element={<SerachPage />} />
+
+          {/* 404 Not Found 페이지 */}
+          <Route path= "*" element={<NotFoundPage />} />
         </Route>
       </Routes>
     </LoadScript>

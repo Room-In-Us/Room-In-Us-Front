@@ -4,6 +4,7 @@ import RatingStar from "../../../shared/assets/icons/themeDetail/ratingStar.svg?
 import ThemeReview from "./ThemeReview";
 import RightArrowIcon from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrowIcon from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
+import NoDataIcon from "../../../shared/assets/images/common/noData/noDataIcon.png";
 import { getThemeReviewsListAPI } from "../api/themeDetailAPI";
 import PropTypes from 'prop-types';
 
@@ -46,21 +47,28 @@ function ThemeReviewSection({ themeId }) {
       <SectionTitle>테마 후기</SectionTitle>
       <Divider />
 
-      <RatingContainer>
-        <RatingText>이 테마의 평균 별점은</RatingText>
-        <RatingWrapper>
-          <StyledRatingStar />
-          <Rating>{satisfactionAvg.toFixed(1)}/5</Rating>
-          <RatingMember>({reviewCnt}명)</RatingMember>
-        </RatingWrapper>
-      </RatingContainer>
-
       {reviews.length === 0 ? (
-        <EmptyText>아직 등록된 후기가 없습니다.</EmptyText>
-      ) : (
-        reviews.map((review) => (
-          <ThemeReview key={review.reviewId} data={review} />
-        ))
+        <NoDataWrapper>
+          <StyledNoDataIcon src={NoDataIcon}/>
+          <NoDataText>
+            작성된 후기가 없습니다.
+          </NoDataText>
+        </NoDataWrapper>
+        ) : (
+        <>
+          <RatingContainer>
+            <RatingText>이 테마의 평균 별점은</RatingText>
+            <RatingWrapper>
+              <StyledRatingStar />
+              <Rating>{satisfactionAvg.toFixed(1)}/5</Rating>
+              <RatingMember>({reviewCnt}명)</RatingMember>
+            </RatingWrapper>
+          </RatingContainer>
+
+          {reviews.map((review) => (
+            <ThemeReview key={review.reviewId} data={review} />
+          ))}
+        </>
       )}
 
       {totalPages > 1 && (
@@ -183,10 +191,25 @@ const PageNumber = styled.div`
   cursor: pointer;
 `;
 
-const EmptyText = styled.div`
-  padding: 1rem 0;
-  width: 100%;
+const NoDataWrapper = styled.div`
+  height: 18.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  align-self: stretch;
+`;
+
+const StyledNoDataIcon = styled.img`
+  width: 11.25rem;
+  height: 11.25rem;
+`;
+
+const NoDataText = styled.div`
+  color: var(--RIU_Monochrome-90, #9192A5);
   text-align: center;
-  color: #9FA2B4;
-  font-size: 0.875rem;
+  font-family: 'Pretendard-Medium';
+  font-size: 0.75rem;
+  line-height: 150%;
 `;

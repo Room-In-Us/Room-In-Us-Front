@@ -4,6 +4,7 @@ import { storeLatAndLngList, centerLatAndLng, zoomLevel } from '../../model/loca
 import { GoogleMap, MarkerF, OverlayView } from '@react-google-maps/api';
 import { googleMapStyles } from './googleMapStyles.js';
 import MarkerIcon from "../../../../shared/assets/images/location/marker.png";
+import AwardMarkerIcon from "../../../../shared/assets/images/location/awardMarker.png";
 
 function GoogleMapComponent() {
   // 중앙 좌표
@@ -39,8 +40,9 @@ function GoogleMapComponent() {
                 <MarkerF
                   position={{ lat: store.latitude, lng: store.longitude }}
                   icon={{
-                    url: MarkerIcon,
-                    scaledSize: new window.google.maps.Size(50, 50),
+                    url: store.isAwarded ? AwardMarkerIcon : MarkerIcon,
+                    scaledSize: new window.google.maps.Size(22.8, 32.4),
+                    // scaledSize: new window.google.maps.Size(38, 54), // 원래 사이즈
                   }}
                 />
                 <OverlayView
@@ -69,27 +71,27 @@ const MapWrapper = styled.div`
 `;
 
 const CafeNameBox = styled.div`
-  border: 1px solid white;
-  border-radius: 5px;
-  padding: 0.2em 0.7em;
-  width: 8em;
-  height: 2.5em;
-  background-color: #333333;
+  padding: 0.25em 0.375em;
+  width: 5.5em;
+  background: rgba(81, 93, 186, 0.70);
   position: absolute;
-  transform: translate(-50%, 20%);
+  transform: translate(-50%, 10%);
   display: flex;
   justify-content: center;
   align-items: center;
+  align-self: stretch;
 `;
 
 const CafeNameText = styled.div`
-  color: white;
+  color: #FFF;
+  font-family: 'Pretendard-Bold';
+  font-size: 0.75em;
+  line-height: normal;
   text-align: center;
-  line-height: 1em;
   overflow: hidden;
   word-break: break-word;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  // -webkit-line-clamp: 2;
   text-overflow: ellipsis;
 `;

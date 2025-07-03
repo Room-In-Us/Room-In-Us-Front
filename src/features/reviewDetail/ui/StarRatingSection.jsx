@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import StarIcon from "../../../shared/assets/icons/reviewWrite/star.svg?react";
 import EmptyStar from "../../../shared/assets/icons/reviewWrite/starEmpty.svg?react";
 import HalfStar from '../../../shared/assets/icons/reviewWrite/starhalf.svg?react';
+import NoDataIcon from "../../../shared/assets/images/common/noData/noDataIcon.png";
 
 function StarRatingSection({ type, rating, comment, recommendedCloth }) {
   // 별 배열 생성
@@ -40,9 +41,19 @@ function StarRatingSection({ type, rating, comment, recommendedCloth }) {
         </TitleWrapper>
       <Divider/>
       {/* 설명 */}
-      <Description>
-        {comment}
-      </Description>
+      {comment !== '' ? (
+        <Description>
+          {comment}
+        </Description>
+      ) : (
+        <NoDataWrapper>
+          <StyledNoDataIcon src={NoDataIcon}/>
+          <NoDataText>
+            작성된 내용이 없습니다.
+          </NoDataText>
+        </NoDataWrapper>
+      ) }
+
       {/* 복장 추천 */}
       {type === '활동성' &&
         <RecommendedClothWrapper>
@@ -178,4 +189,27 @@ const ClothText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: normal;
+`;
+
+const NoDataWrapper = styled.div`
+  height: 18.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  align-self: stretch;
+`;
+
+const StyledNoDataIcon = styled.img`
+  width: 11.25rem;
+  height: 11.25rem;
+`;
+
+const NoDataText = styled.div`
+  color: var(--RIU_Monochrome-90, #9192A5);
+  text-align: center;
+  font-family: 'Pretendard-Medium';
+  font-size: 0.75rem;
+  line-height: 150%;
 `;
