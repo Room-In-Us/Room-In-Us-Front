@@ -10,6 +10,7 @@ import LocationIcon from "../../../shared/assets/icons/location/storeLocationIco
 import LinkIcon from "../../../shared/assets/icons/location/storeLinkIcon.svg?react";
 import TelIcon from "../../../shared/assets/icons/location/storeTelIcon.svg?react";
 import CopyIcon from "../../../shared/assets/icons/location/copyIcon.svg?react";
+import NoDataIcon from "../../../shared/assets/images/common/noData/noDataIcon.png";
 import ThemeReviewSection from "./ThemeReviewSection";
 import PropTypes from 'prop-types';
 import { genreListConversion, mapRecommendedHeadcount } from "../../../shared/utils/dataUtils";
@@ -87,9 +88,18 @@ function ThemeInfoSection({ themeData, themePrice }) {
           테마 스토리
         </SectionTitle>
         <Divider/>
-        <StoryText>
-          {themeInfo.story}
-        </StoryText>
+        {themeInfo.story !== '-' ? (
+          <StoryText>
+            {themeInfo.story}
+          </StoryText>
+        ) : (
+          <NoDataWrapper>
+            <StyledNoDataIcon src={NoDataIcon}/>
+            <NoDataText>
+              작성된 스토리가 없습니다.
+            </NoDataText>
+          </NoDataWrapper>
+        )}
       </SectionWrapper>
 
       {/* 테마 후기 */}
@@ -106,7 +116,16 @@ function ThemeInfoSection({ themeData, themePrice }) {
           </PriceCautionText>
         </PriceTitleWrapper>
         <Divider/>
-        <PriceTable themePrice={themePrice}/>
+        {themePrice.length > 0 ? (
+          <PriceTable themePrice={themePrice}/>
+        ) : (
+          <NoDataWrapper>
+            <StyledNoDataIcon src={NoDataIcon}/>
+            <NoDataText>
+              제공되는 가격 정보가 없습니다.
+            </NoDataText>
+          </NoDataWrapper>
+        )}
       </SectionWrapper>
 
       {/* 매장 정보 */}
@@ -314,4 +333,27 @@ const StyledCopyIcon = styled(CopyIcon)`
   width: 1.25rem;
   height: 1.25rem;
   cursor: pointer;
+`;
+
+const NoDataWrapper = styled.div`
+  height: 18.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  align-self: stretch;
+`;
+
+const StyledNoDataIcon = styled.img`
+  width: 11.25rem;
+  height: 11.25rem;
+`;
+
+const NoDataText = styled.div`
+  color: var(--RIU_Monochrome-90, #9192A5);
+  text-align: center;
+  font-family: 'Pretendard-Medium';
+  font-size: 0.75rem;
+  line-height: 150%;
 `;
