@@ -3,20 +3,25 @@ import { useNavigate } from "react-router-dom";
 import LeftArrow from "../../shared/assets/icons/myPage/leftArrow.svg?react";
 import ReviewDropDown from "../../features/mypage/ui/reviews/ReviewDropDown";
 import ReviewCardSection from "../../features/mypage/ui/reviews/ReviewCardSection";
+import useDevice from "../../shared/hooks/useDevice";
 
 function ReviewsPage() {
   const navigate = useNavigate();
+  
+  const { isDesktop, isTablet, isMobile } = useDevice();
 
   return (
     <PageWrapper>
       <ContentWrapper>
         {/* 뒤로가기 버튼 */}
+        {!isMobile && (
         <BackButtonWrapper onClick={() => navigate('/mypage')}>
           <StyledLeftArrow/>
           <BackButtonText>
             마이페이지로 돌아가기
           </BackButtonText>
         </BackButtonWrapper>
+        )}
 
         {/* 타이틀 영역 */}
         <TitleWrapper>
@@ -44,6 +49,7 @@ const PageWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-bottom: 1.875em;
 `;
 
 const ContentWrapper = styled.div`
@@ -52,6 +58,11 @@ const ContentWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 2.5rem;
+
+  @media (max-width: 768px) {
+    padding: 0em 0.875em;
+    gap: 1.25em;
+  }
 `;
 
 const BackButtonWrapper = styled.div`

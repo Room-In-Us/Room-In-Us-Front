@@ -1,14 +1,14 @@
 import { api } from '../../../app/API';
 
-export const getMyReviewAPI = async (page, size, sort) => {
+export const getMyReviewAPI = async (page, size, sortOption) => {
   try {
     const params = {
       page,
       size,
     };
 
-    if (sort) {
-      params.sort = Array.isArray(sort) ? sort : [sort];
+    if (sortOption) {
+      params.sortOption = sortOption;
     }
 
     const response = await api.get('members/reviews', { params });

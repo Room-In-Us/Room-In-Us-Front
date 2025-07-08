@@ -16,6 +16,7 @@ export default function ReviewDropDown() {
     setIsOpen(false);
   };
 
+
   const currentLabel = reviewSortOption.find(opt => opt.value === sortOption)?.label || '정렬';
 
   // 바깥 클릭 시 드롭다운 닫기
