@@ -7,14 +7,14 @@ import { getMyReviewAPI } from '../../api/myReviewAPI';
 
 export default function ReviewCardSection() {
 
-  const sort = useRecoilValue(reviewSortAtom);
+  const sortOption = useRecoilValue(reviewSortAtom);
   const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
-    getMyReviewAPI(1, 1000, sort).then((data) => {
+    getMyReviewAPI(1, 1000, sortOption).then((data) => {
       setReviews(data.contents);
     });
-  }, [sort]);
+  }, [sortOption]);
 
   return (
     <Wrapper>

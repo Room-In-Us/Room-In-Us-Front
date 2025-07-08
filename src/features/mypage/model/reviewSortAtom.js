@@ -2,5 +2,5 @@ import { atom } from 'recoil';
 
 export const reviewSortAtom = atom({
   key: 'reviewSortAtom',
-  default: 'themeReview.playedAt,desc', // 기본 정렬 조건
+  default: 'PLAYED_AT_DESC', // 기본 정렬 조건
 });
