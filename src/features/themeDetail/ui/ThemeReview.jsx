@@ -8,18 +8,32 @@ import TimeIcon from "../../../shared/assets/icons/themeDetail/reviewTimeIcon.sv
 import PropTypes from 'prop-types';
 import { reviewEnumConversion, proficiencyConversion, horrorPositionConversion, formatDateToDot, convertTimeToMinutes } from "../../../shared/utils/dataUtils";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSetRecoilState } from 'recoil';
+import { userInfoModalState, userInfoIdState, userInfoNameState } from "../../auth/model/authAtom";
 
 function ThemeReview({ data }) {
+  // 상태 관리
+  const setModal = useSetRecoilState(userInfoModalState);
+  const setUserId = useSetRecoilState(userInfoIdState);
+  const setUserName = useSetRecoilState(userInfoNameState);
+
   const escapeState = data.isEscaped ? '탈출 성공' : '탈출 실패';
   const navigate = useNavigate();
   const { themeId } = useParams();
 
+  // 유저 ID 저장
+  const handleClickUserName = () => {
+    setUserId(data.memberId);
+    setUserName(data.memberNickname);
+    setModal(true);
+  }
+  
   return (
     <ComponentWrapper>
       {/* 타이틀 파트 */}
       <TitleWrapper>
         <TitleLeftWrapper>
-          <NickName>{data.memberNickname}</NickName>
+          <NickName onClick={handleClickUserName}>{data.memberNickname}</NickName>
           <Divider>|</Divider>
           <TitleText>{proficiencyConversion(data.memberProficiency)}</TitleText>
           <Divider>|</Divider>
@@ -148,6 +162,7 @@ const NickName = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.875rem;
   line-height: 140%;
+  cursor: pointer;
 `;
 
 const Divider = styled.div`

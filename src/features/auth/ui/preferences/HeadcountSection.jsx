@@ -1,19 +1,19 @@
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
-import { surveyState } from "../../model/surveyAtom";
+import { surveyState } from "../../../mypage/model/surveyAtom";
 
-function ProficiencySection() {
+function HeadcountSection({userInfo}) {
   // state 관리
   const [survey, setSurvey] = useRecoilState(surveyState);
 
-  // 숙련도 선택 상태
-  const selected = survey.proficiency;
-
-  // 숙련도 저장 함수
+  // 인원수 선택 상태
+  const selected = userInfo;
+  
+  // 인원수 선택 함수
   const handleSelect = (value) => {
     setSurvey(prev => ({
       ...prev,
-      proficiency: prev.proficiency === value ? null : value,
+      preferredHeadcount: prev.preferredHeadcount === value ? null : value
     }));
   };
 
@@ -21,45 +21,26 @@ function ProficiencySection() {
     <SectionWrapper>
       {/* 타이틀 */}
       <Title>
-        숙련도
+        선호 인원
       </Title>
 
       {/* 선택 영역 */}
       <ListWrapper>
-        <List>
-          <RadioButton
-            selected={selected === 'BEGINNER'}
-            onClick={() => handleSelect('BEGINNER')}
-          />
-          방세포 : 0~5방 정도로 아직 방탈출에 대한 느낌을 잘 몰라요!
-        </List>
-        <List>
-          <RadioButton
-            selected={selected === 'JUNIOR'}
-            onClick={() => handleSelect('JUNIOR')}
-          />
-          방초보 : 5~20방 정도 경험이 있어 어떤 느낌인지는 알아요!
-        </List>
-        <List>
-          <RadioButton
-            selected={selected === 'SENIOR'}
-            onClick={() => handleSelect('SENIOR')}
-          />
-          방중수 : 20~50방 정도의 경험이 있어 무난하게 할 수 있어요!
-        </List>
-        <List>
-          <RadioButton
-            selected={selected === 'MASTER'}
-            onClick={() => handleSelect('MASTER')}
-          />
-          방고수 : 50+ 방 정도 경험이 있어 난이도가 상관이 없어요!
-        </List>
+        {[1, 2, 3, 4, 5, 6].map((num) => (
+          <List key={num}>
+            <RadioButton
+              selected={selected === num}
+              onClick={() => handleSelect(num)}
+            />
+            {num === 6 ? '6인 이상' : `${num}인`}
+          </List>
+        ))}
       </ListWrapper>
     </SectionWrapper>
   )
 }
 
-export default ProficiencySection;
+export default HeadcountSection;
 
 // CSS
 const SectionWrapper = styled.div`

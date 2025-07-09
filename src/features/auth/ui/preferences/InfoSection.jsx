@@ -1,0 +1,98 @@
+import { useState } from "react";
+import styled from "styled-components";
+import { useRecoilState } from 'recoil';
+import { surveyState } from "../../../mypage/model/surveyAtom";
+
+function InfoSection({userInfo}) {
+  // state 관리
+  const [survey, setSurvey] = useRecoilState(surveyState);
+  const [text, setText] = useState(userInfo || "");
+
+  // 입력 핸들러
+  const handleTextChange = (e) => {
+    const newText = e.target.value;
+    setText(newText);
+    setSurvey(prev => ({
+      ...prev,
+      preference: newText.trim(),
+    }));
+  };
+
+  return (
+    <SectionWrapper>
+      {/* 타이틀 */}
+      <Title>
+        그 외 설명하고 싶은 나의 취향
+      </Title>
+
+      <ContentWrapper>
+        {/* 선택 영역 */}
+        <StyledTextarea
+          placeholder="선호, 기피하는 문제 유형 등 자유로운 취향 정보를 적어주세요"
+          maxLength={500}
+          value={text}
+          onChange={handleTextChange}
+        />
+      </ContentWrapper>
+    </SectionWrapper>
+  )
+}
+
+export default InfoSection;
+
+// CSS
+const SectionWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+  align-self: stretch;
+`;
+
+const Title = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  font-family: 'Pretendard-Bold';
+  font-size: 1.125rem;
+  line-height: normal;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5625em;
+  align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 1.25em;
+  }
+`;
+
+const StyledTextarea = styled.textarea`
+  border: 1px solid var(--RIU_Monochrome-60, #C4C6D1);
+  padding: 1.25em;
+  box-sizing: border-box;
+  width: 100%;
+  height: 12.5em;
+  resize: none;
+  background: var(--RIU_Monochrome-10, #F9F9FB);
+  font-family: 'Pretendard-Regular';
+  font-size: 1em;
+  line-height: 1.25em;
+  color: var(--RIU_Monochrome-500, #515467);
+  vertical-align: top;
+  outline: none;
+
+  &::placeholder {
+    color: var(--RIU_Monochrome-80, #A1A4B5);
+    font-family: 'Pretendard-Medium';
+    font-size: 0.875em;
+    line-height: 130%;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.5em;
+    height: 17em;
+    font-size: 0.7143em;
+  }
+`;

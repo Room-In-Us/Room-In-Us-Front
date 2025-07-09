@@ -1,13 +1,13 @@
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
-import { surveyState } from "../../model/surveyAtom";
+import { surveyState } from "../../../mypage/model/surveyAtom";
 
-function ProficiencySection() {
+function ProficiencySection({userInfo}) {
   // state 관리
   const [survey, setSurvey] = useRecoilState(surveyState);
 
   // 숙련도 선택 상태
-  const selected = survey.proficiency;
+  const selected = userInfo;
 
   // 숙련도 저장 함수
   const handleSelect = (value) => {

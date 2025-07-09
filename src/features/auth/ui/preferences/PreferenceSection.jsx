@@ -1,17 +1,17 @@
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
-import { surveyState } from "../../model/surveyAtom";
-import { preferredElementList, preferredDeviceList, preferredActivityList } from "../../model/surveyPreferenceList";
+import { surveyState } from "../../../mypage/model/surveyAtom";
+import { preferredElementList, preferredDeviceList, preferredActivityList } from "../../../mypage/model/surveyPreferenceList";
 import SurveyTag from "./SurveyTag";
 
-function PreferenceSection() {
+function PreferenceSection({elementInfo, deviceInfo, activityInfo}) {
   // state 관리
   const [survey, setSurvey] = useRecoilState(surveyState);
 
   // 요소 선택 상태
-  const selectedElements = survey.preferredElementList;
-  const selectedDevice = survey.preferredDevice;
-  const selectedActivity = survey.preferredActivity;
+  const selectedElements = elementInfo;
+  const selectedDevice = deviceInfo;
+  const selectedActivity = activityInfo;
   
   // 요소 태그 선택 핸들러
   const handleElementClick = (enumValue) => {
