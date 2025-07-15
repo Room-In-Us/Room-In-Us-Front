@@ -16,7 +16,6 @@ export default function ReviewDropDown() {
     setIsOpen(false);
   };
 
-
   const currentLabel = reviewSortOption.find(opt => opt.value === sortOption)?.label || '정렬';
 
   // 바깥 클릭 시 드롭다운 닫기
@@ -117,10 +116,19 @@ const DropDownItem = styled.div`
   border-bottom: 1px solid var(--RIU_Monochrome-50, #D6D6DF);
   background: var(--RIU_Monochrome-20, #F0F0F4);
   box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    width: 9.375em;
+    height: 2.25em;
+  }
 `;
 
 const DropDownText = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: Pretendard-Medium;
   font-size: 0.875em;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
