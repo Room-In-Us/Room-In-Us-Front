@@ -4,7 +4,7 @@ import RatingStar from "../../../shared/assets/icons/themeDetail/ratingStar.svg?
 import ThemeReview from "./ThemeReview";
 import RightArrowIcon from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrowIcon from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
-import NoDataIcon from "../../../shared/assets/images/common/noData/noDataIcon.png";
+import NoDataIcon from "../../../shared/assets/images/common/noData/noDataImageSmall.png";
 import { getThemeReviewsListAPI } from "../api/themeDetailAPI";
 import PropTypes from 'prop-types';
 
@@ -202,8 +202,8 @@ const NoDataWrapper = styled.div`
 `;
 
 const StyledNoDataIcon = styled.img`
-  width: 11.25rem;
-  height: 11.25rem;
+  width: 3.75rem;
+  height: 3.75rem;
 `;
 
 const NoDataText = styled.div`

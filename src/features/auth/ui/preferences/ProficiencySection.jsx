@@ -1,21 +1,8 @@
 import styled from "styled-components";
-import { useRecoilState } from 'recoil';
-import { surveyState } from "../../../mypage/model/surveyAtom";
 
 function ProficiencySection({userInfo}) {
-  // state 관리
-  const [survey, setSurvey] = useRecoilState(surveyState);
-
   // 숙련도 선택 상태
-  const selected = userInfo;
-
-  // 숙련도 저장 함수
-  const handleSelect = (value) => {
-    setSurvey(prev => ({
-      ...prev,
-      proficiency: prev.proficiency === value ? null : value,
-    }));
-  };
+  const selected = userInfo ?? "";
 
   return (
     <SectionWrapper>
@@ -29,28 +16,24 @@ function ProficiencySection({userInfo}) {
         <List>
           <RadioButton
             selected={selected === 'BEGINNER'}
-            onClick={() => handleSelect('BEGINNER')}
           />
           방세포 : 0~5방 정도로 아직 방탈출에 대한 느낌을 잘 몰라요!
         </List>
         <List>
           <RadioButton
             selected={selected === 'JUNIOR'}
-            onClick={() => handleSelect('JUNIOR')}
           />
           방초보 : 5~20방 정도 경험이 있어 어떤 느낌인지는 알아요!
         </List>
         <List>
           <RadioButton
             selected={selected === 'SENIOR'}
-            onClick={() => handleSelect('SENIOR')}
           />
           방중수 : 20~50방 정도의 경험이 있어 무난하게 할 수 있어요!
         </List>
         <List>
           <RadioButton
             selected={selected === 'MASTER'}
-            onClick={() => handleSelect('MASTER')}
           />
           방고수 : 50+ 방 정도 경험이 있어 난이도가 상관이 없어요!
         </List>
@@ -104,7 +87,6 @@ const RadioButton = styled.button`
   width: 1rem;
   height: 1rem;
   position: relative;
-  cursor: pointer;
 
   &::before {
     content: '';

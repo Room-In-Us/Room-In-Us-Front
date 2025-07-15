@@ -1,22 +1,9 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { useRecoilState } from 'recoil';
-import { surveyState } from "../../../mypage/model/surveyAtom";
 
 function InfoSection({userInfo}) {
   // state 관리
-  const [survey, setSurvey] = useRecoilState(surveyState);
-  const [text, setText] = useState(userInfo || "");
-
-  // 입력 핸들러
-  const handleTextChange = (e) => {
-    const newText = e.target.value;
-    setText(newText);
-    setSurvey(prev => ({
-      ...prev,
-      preference: newText.trim(),
-    }));
-  };
+  const text = userInfo ?? "";
 
   return (
     <SectionWrapper>
@@ -28,10 +15,10 @@ function InfoSection({userInfo}) {
       <ContentWrapper>
         {/* 선택 영역 */}
         <StyledTextarea
+          readOnly
           placeholder="선호, 기피하는 문제 유형 등 자유로운 취향 정보를 적어주세요"
           maxLength={500}
           value={text}
-          onChange={handleTextChange}
         />
       </ContentWrapper>
     </SectionWrapper>

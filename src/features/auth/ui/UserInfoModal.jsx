@@ -14,7 +14,6 @@ import PositionSection from "./preferences/PositionSection";
 import InfoSection from "./preferences/InfoSection.jsx";
 
 function UserInfoModal() {
-
   // 반응형
   const { isDesktop, isTablet, isMobile } = useDevice();
 
@@ -22,7 +21,7 @@ function UserInfoModal() {
   const setModalOpen = useSetRecoilState(userInfoModalState);
   const userId = useRecoilValue(userInfoIdState);
   const userName = useRecoilValue(userInfoNameState);
-  const [userInfoList, setUserInfoList] = useState({});
+  const [userInfoList, setUserInfoList] = useState(null);
 
   // 모달 닫기 핸들러
   const handleClose = () => {
@@ -64,26 +63,32 @@ function UserInfoModal() {
       </ModalHeader>
 
       <ContentWrapper>
+        {/* 타이틀 */}
+        <TitleWrapper>
+          <TitleNickName>{userName}</TitleNickName>
+          <TitleDescription>님의 방탈출 취향</TitleDescription>
+        </TitleWrapper>
+
         {/* 숙련도 섹션 */}
-        <ProficiencySection userInfo={userInfoList.proficiency}/>
+        <ProficiencySection userInfo={userInfoList?.proficiency}/>
 
         {/* 장르 섹션 */}
-        <GenreSection userInfo={userInfoList.preferredGenreList}/>
+        <GenreSection userInfo={userInfoList?.preferredGenreList}/>
 
         {/* 인원 섹션 */}
-        <HeadcountSection userInfo={userInfoList.preferredHeadcount}/>
+        <HeadcountSection userInfo={userInfoList?.preferredHeadcount}/>
 
         {/* 취향 섹션 */}
-        <PreferenceSection elementInfo={userInfoList.preferredElementList} deviceInfo={userInfoList.preferredDevice} activityInfo={userInfoList.preferredActivity}/>
+        <PreferenceSection elementInfo={userInfoList?.preferredElementList} deviceInfo={userInfoList?.preferredDevice} activityInfo={userInfoList?.preferredActivity}/>
 
         {/* 포지션 섹션 */}
-        <PositionSection userInfo={userInfoList.horrorPos}/>
+        <PositionSection userInfo={userInfoList?.horrorPos}/>
 
         {/* 추가정보 섹션 */}
-        <InfoSection userInfo={userInfoList.preference}/>
+        <InfoSection userInfo={userInfoList?.preference}/>
 
         {/* 버튼 영역 */}
-        <CloseBtn>
+        <CloseBtn onClick={handleClose}>
           <CloseBtnText>닫기</CloseBtnText>
         </CloseBtn>
       </ContentWrapper>
@@ -188,4 +193,37 @@ const ContentWrapper = styled.div`
   flex-direction: column;
   gap: 1.25em;
   overflow: auto;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background: none;
+  }
+  &:hover::-webkit-scrollbar-thumb {
+    border-radius: 30px;
+    background-color: #8DA3FF;
+  }
+`;
+
+const TitleWrapper = styled.div`
+  border-bottom: 1px solid var(--RIU_Monochrome-60, #C4C6D1);
+  padding-bottom: 0.625em;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.625em;
+  align-self: stretch;
+`;
+
+const TitleNickName = styled.div`
+  color: var(--RIU_Primary-500, #4648A7);
+  font-family: 'Pretendard-ExtraBold';
+  font-size: 1.375em;
+  line-height: normal;
+`;
+
+const TitleDescription = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  font-family: 'Pretendard-SemiBold';
+  font-size: 0.875em;
+  line-height: 140%;
 `;

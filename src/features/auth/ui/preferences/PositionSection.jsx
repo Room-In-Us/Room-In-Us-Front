@@ -1,21 +1,8 @@
 import styled from "styled-components";
-import { useRecoilState } from 'recoil';
-import { surveyState } from "../../../mypage/model/surveyAtom";
 
 function PositionSection({userInfo}) {
-  // state 관리
-  const [survey, setSurvey] = useRecoilState(surveyState);
-
   // 포지션 선택 상태
-  const selected = userInfo;
-
-  // 포지션 선택 함수
-  const handleSelect = (value) => {
-    setSurvey(prev => ({
-      ...prev,
-      horrorPos: prev.horrorPos === value ? null : value
-    }));
-  };
+  const selected = userInfo ?? "";
 
   return (
     <SectionWrapper>
@@ -37,7 +24,6 @@ function PositionSection({userInfo}) {
           <List key={item.value}>
             <RadioButton
               selected={selected === item.value}
-              onClick={() => handleSelect(item.value)}
             />
             {item.label} : {item.description}
           </List>
@@ -88,7 +74,6 @@ const RadioButton = styled.button`
   width: 1rem;
   height: 1rem;
   position: relative;
-  cursor: pointer;
 
   &::before {
     content: '';

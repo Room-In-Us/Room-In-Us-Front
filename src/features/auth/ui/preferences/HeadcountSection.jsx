@@ -1,22 +1,9 @@
 import styled from "styled-components";
-import { useRecoilState } from 'recoil';
-import { surveyState } from "../../../mypage/model/surveyAtom";
 
 function HeadcountSection({userInfo}) {
-  // state 관리
-  const [survey, setSurvey] = useRecoilState(surveyState);
-
   // 인원수 선택 상태
-  const selected = userInfo;
+  const selected = userInfo ?? "";
   
-  // 인원수 선택 함수
-  const handleSelect = (value) => {
-    setSurvey(prev => ({
-      ...prev,
-      preferredHeadcount: prev.preferredHeadcount === value ? null : value
-    }));
-  };
-
   return (
     <SectionWrapper>
       {/* 타이틀 */}
@@ -30,7 +17,6 @@ function HeadcountSection({userInfo}) {
           <List key={num}>
             <RadioButton
               selected={selected === num}
-              onClick={() => handleSelect(num)}
             />
             {num === 6 ? '6인 이상' : `${num}인`}
           </List>
@@ -85,7 +71,6 @@ const RadioButton = styled.button`
   width: 1rem;
   height: 1rem;
   position: relative;
-  cursor: pointer;
 
   &::before {
     content: '';

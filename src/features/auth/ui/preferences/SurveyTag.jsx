@@ -39,5 +39,4 @@ const TagWrapper = styled.div`
   transition: all 0.1s ease-in-out;
   pointer-events: ${({ disabled }) => disabled ? 'none' : 'auto'};
   opacity: ${({ disabled }) => disabled ? 0.4 : 1};
-  cursor: pointer;
 `;

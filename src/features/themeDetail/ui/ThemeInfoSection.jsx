@@ -10,7 +10,7 @@ import LocationIcon from "../../../shared/assets/icons/location/storeLocationIco
 import LinkIcon from "../../../shared/assets/icons/location/storeLinkIcon.svg?react";
 import TelIcon from "../../../shared/assets/icons/location/storeTelIcon.svg?react";
 import CopyIcon from "../../../shared/assets/icons/location/copyIcon.svg?react";
-import NoDataIcon from "../../../shared/assets/images/common/noData/noDataIcon.png";
+import NoDataIcon from "../../../shared/assets/images/common/noData/noDataImageSmall.png";
 import ThemeReviewSection from "./ThemeReviewSection";
 import PropTypes from 'prop-types';
 import { genreListConversion, mapRecommendedHeadcount } from "../../../shared/utils/dataUtils";
@@ -346,8 +346,8 @@ const NoDataWrapper = styled.div`
 `;
 
 const StyledNoDataIcon = styled.img`
-  width: 11.25rem;
-  height: 11.25rem;
+  width: 3.75rem;
+  height: 3.75rem;
 `;
 
 const NoDataText = styled.div`
