@@ -28,6 +28,7 @@ export default function ReviewCardSection() {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 1.25em;
+  width: 100%;
 `;

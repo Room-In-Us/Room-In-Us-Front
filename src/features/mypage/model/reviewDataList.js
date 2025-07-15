@@ -14,6 +14,6 @@ export const createReviewInfoItems = ({ review, participantCnt, usedHint, remain
   { label: '총평', value: reviewEnumConversion(review) || review, icon:EvalutionIcon },
   { label: '플레이 인원', value: participantCnt != null ? `${participantCnt}인` : '-', icon:MemberIcon },
   { label: '탈출 여부', value: isEscaped ? '탈출 성공' : '탈출 실패', icon: EscapeIcon },
-  { label: '힌트 사용', value: usedHint != null ? `${usedHint}개 사용` : '-', icon: HintIcon },
+  { label: '힌트 사용', value: usedHint ? `${usedHint}개 사용` : '미사용', icon: HintIcon },
   { label: '남긴 시간', value: isEscaped != false ? convertTimeToMinutes(remainingTime) : '-', icon: TimeIcon },
 ];
