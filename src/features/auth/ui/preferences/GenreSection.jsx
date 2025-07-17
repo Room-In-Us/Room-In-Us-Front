@@ -38,19 +38,19 @@ const SectionWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1.25rem;
+  gap: 1.25em;
   align-self: stretch;
 `;
 
 const Title = styled.div`
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Bold';
-  font-size: 1.125rem;
+  font-size: 1.125em;
   line-height: normal;
 `;
 
 const ListWrapper = styled.div`
   display: flex;
   flex-flow: wrap;
-  gap: 0.75rem;
+  gap: 0.75em;
 `;

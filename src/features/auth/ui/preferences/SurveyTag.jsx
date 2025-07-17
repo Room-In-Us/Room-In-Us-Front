@@ -4,7 +4,9 @@ import PropTypes from 'prop-types';
 function SurveyTag({ item, selected, onClick, disabled }) {
   return (
     <TagWrapper onClick={!disabled ? onClick : undefined} selected={selected}>
-      {item}
+      <Label selected={selected}>
+        {item}
+      </Label>
     </TagWrapper>
   )
 }
@@ -22,21 +24,24 @@ export default SurveyTag;
 // CSS
 const TagWrapper = styled.div`
   border: 1px solid var(--RIU_Primary-100, #718FF2);
-  border-radius: 1.5rem;
-  padding: 0.875rem 1rem;
+  border-radius: 1.5em;
+  padding: 0.875em 1em;
   box-sizing: border-box;
-  height: 2.0625rem;
+  height: 2.0625em;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.625rem;
+  gap: 0.625em;
   background-color: ${({ selected }) => selected ? '#718FF2' : 'var(--RIU_Monochrome-10, #F9F9FB)'};
-  color: ${({ selected }) => selected ? '#F9F9FB' : '#718FF2'};
-  font-family: 'Pretendard-Regular';
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  letter-spacing: -0.02188rem;
   transition: all 0.1s ease-in-out;
   pointer-events: ${({ disabled }) => disabled ? 'none' : 'auto'};
   opacity: ${({ disabled }) => disabled ? 0.4 : 1};
+`;
+
+const Label = styled.div`
+  color: ${({ selected }) => selected ? '#F9F9FB' : '#718FF2'};
+  font-family: 'Pretendard-Regular';
+  font-size: 0.875em;
+  line-height: 1.25em;
+  letter-spacing: -0.02188em;
 `;

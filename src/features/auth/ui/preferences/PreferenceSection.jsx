@@ -74,14 +74,14 @@ const SectionWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1.25rem;
+  gap: 1.25em;
   align-self: stretch;
 `;
 
 const Title = styled.div`
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Bold';
-  font-size: 1.125rem;
+  font-size: 1.125em;
   line-height: normal;
 `;
 
@@ -89,7 +89,7 @@ const CheckWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 1em;
   align-self: stretch;
 `;
 
@@ -98,7 +98,7 @@ const ListWrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  gap: 0.625rem;
+  gap: 0.625em;
   align-self: stretch;
 `;
 
@@ -112,21 +112,21 @@ const ListTitleWrapper = styled.div`
 const ListTitle = styled.div`
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Bold';
-  font-size: 0.875rem;
+  font-size: 0.875em;
   line-height: 130%;
-  letter-spacing: -0.02188rem;
+  letter-spacing: -0.02188em;
 `;
 
 const ElementList = styled.div`
   display: flex;
-  width: 27.5rem;
+  width: 27.5em;
   justify-content: space-between;
   align-items: center;
 `;
 
 const List = styled.div`
-  width: 27.5rem;
+  width: 27.5em;
   display: flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: 0.625em;
 `;

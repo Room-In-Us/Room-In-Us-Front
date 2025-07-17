@@ -49,14 +49,14 @@ const SectionWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1.25rem;
+  gap: 1.25em;
   align-self: stretch;
 `;
 
 const Title = styled.div`
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Bold';
-  font-size: 1.125rem;
+  font-size: 1.125em;
   line-height: normal;
 `;
 
@@ -64,28 +64,28 @@ const ListWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1.25rem;
+  gap: 1.25em;
   align-self: stretch;
 `;
 
 const List = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: 0.625em;
   align-self: stretch;
   color: var(--RIU_Monochrome-300, #696C7E);
   font-family: 'Pretendard-Medium';
-  font-size: 0.875rem;
+  font-size: 0.875em;
   line-height: 130%;
 `;
 
 const RadioButton = styled.button`
   all: unset;
   border: 1.5px solid var(--RIU_Primary-100, #718FF2);
-  border-radius: 1.875rem;
-  margin: 0.125rem;
-  width: 1rem;
-  height: 1rem;
+  border-radius: 1.875em;
+  margin: 0.125em;
+  width: 1em;
+  height: 1em;
   position: relative;
 
   &::before {
@@ -93,10 +93,10 @@ const RadioButton = styled.button`
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 0.5em;
+    height: 0.5em;
     background-color: var(--RIU_Primary-100, #718FF2);
-    border-radius: 1.875rem;
+    border-radius: 1.875em;
     transform: translate(-50%, -50%);
     opacity: ${props => (props.selected ? 1 : 0)};
     transition: opacity 0.2s ease-in-out;
