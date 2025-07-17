@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import ThumbnailImg from '../../../shared/assets/images/common/thumbnailImg.png';
 import InfoIcon from '../../../shared/assets/icons/themeDetail/infoIcon.svg?react';
 import ShareIcon from '../../../shared/assets/icons/themeDetail/shareIcon.svg?react';
@@ -8,16 +9,15 @@ import HeartIcon2 from '../../../shared/assets/icons/common/heart_hover.svg?reac
 import HeartIcon3 from '../../../shared/assets/icons/common/heart_active.svg?react';
 import ReservationIcon from '../../../shared/assets/icons/themeDetail/reservationIcon.svg?react';
 import ScheduleIcon from '../../../shared/assets/icons/themeDetail/scheduleIcon.svg?react';
-import { useSetRecoilState } from 'recoil';
-import { reviewModalState } from "../model/reviewAtom";
 import PropTypes from 'prop-types';
 
 function ThemeOverviewCard({ themeData }) {
   // state 관리
   const [isHeartActive, setIsHeartActive] = useState(false);
   const [imageUrl, setImageUrl] = useState(themeData.img);
-  const setModal = useSetRecoilState(reviewModalState);
 
+  const navigate = useNavigate();
+  
   // 이미지 로드 실패 시, 기본 썸네일로 변경
   useEffect(() => {
     setImageUrl(themeData.img);
@@ -59,7 +59,7 @@ function ThemeOverviewCard({ themeData }) {
               예약하러 가기
             </ButtonText>
           </StyledButton>
-          <StyledButton type="schedule" onClick={() => setModal(true)}>
+          <StyledButton type="schedule" onClick={() => navigate('/mypage/reservations')}>
             <StyledScheduleIcon/>
             <ButtonText>
               일정에 추가하기
