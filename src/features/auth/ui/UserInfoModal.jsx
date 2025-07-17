@@ -12,6 +12,7 @@ import HeadcountSection from "./preferences/HeadcountSection";
 import PreferenceSection from "./preferences/PreferenceSection";
 import PositionSection from "./preferences/PositionSection";
 import InfoSection from "./preferences/InfoSection.jsx";
+import NoDataIcon from "../../../shared/assets/images/common/noData/noDataImageLarge.png";
 
 function UserInfoModal() {
   // 반응형
@@ -69,23 +70,41 @@ function UserInfoModal() {
           <TitleDescription>님의 방탈출 취향</TitleDescription>
         </TitleWrapper>
 
-        {/* 숙련도 섹션 */}
-        <ProficiencySection userInfo={userInfoList?.proficiency}/>
+        {userInfoList && Object.values(userInfoList).some((value) => {
+          if (Array.isArray(value)) return value.length > 0;
+          return !!value;
+        }) ? (
+          <>
+            {/* 숙련도 섹션 */}
+            <ProficiencySection userInfo={userInfoList?.proficiency} />
 
-        {/* 장르 섹션 */}
-        <GenreSection userInfo={userInfoList?.preferredGenreList}/>
+            {/* 장르 섹션 */}
+            <GenreSection userInfo={userInfoList?.preferredGenreList} />
 
-        {/* 인원 섹션 */}
-        <HeadcountSection userInfo={userInfoList?.preferredHeadcount}/>
+            {/* 인원 섹션 */}
+            <HeadcountSection userInfo={userInfoList?.preferredHeadcount} />
 
-        {/* 취향 섹션 */}
-        <PreferenceSection elementInfo={userInfoList?.preferredElementList} deviceInfo={userInfoList?.preferredDevice} activityInfo={userInfoList?.preferredActivity}/>
+            {/* 취향 섹션 */}
+            <PreferenceSection
+              elementInfo={userInfoList?.preferredElementList}
+              deviceInfo={userInfoList?.preferredDevice}
+              activityInfo={userInfoList?.preferredActivity}
+            />
 
-        {/* 포지션 섹션 */}
-        <PositionSection userInfo={userInfoList?.horrorPos}/>
+            {/* 포지션 섹션 */}
+            <PositionSection userInfo={userInfoList?.horrorPos} />
 
-        {/* 추가정보 섹션 */}
-        <InfoSection userInfo={userInfoList?.preference}/>
+            {/* 추가정보 섹션 */}
+            <InfoSection userInfo={userInfoList?.preference} />
+          </>
+        ): (
+          <NoDataWrapper>
+            <StyledNoDataIcon src={NoDataIcon}/>
+            <NoDataText>
+              작성한 방탈출 취향<br/>정보가 없습니다
+            </NoDataText>
+          </NoDataWrapper>
+        )}
 
         {/* 버튼 영역 */}
         <CloseBtn onClick={handleClose}>
@@ -189,7 +208,10 @@ const CloseBtnText = styled.div`
 
 const ContentWrapper = styled.div`
   padding: 1.25em 1.88em;
+  box-sizing: border-box;
+  width: 100%;
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 1.25em;
   overflow: auto;
@@ -226,4 +248,27 @@ const TitleDescription = styled.div`
   font-family: 'Pretendard-SemiBold';
   font-size: 0.875em;
   line-height: 140%;
+`;
+
+const NoDataWrapper = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625em;
+  align-self: stretch;
+`;
+
+const StyledNoDataIcon = styled.img`
+  width: 11.25em;
+  height: 11.25em;
+`;
+
+const NoDataText = styled.div`
+  color: var(--RIU_Monochrome-90, #9192A5);
+  text-align: center;
+  font-family: 'Pretendard-Medium';
+  font-size: 0.75em;
+  line-height: 150%;
 `;
