@@ -11,3 +11,21 @@ export const nicknameBackupState = atom({
   key: 'nicknameBackupState',
   default: '',
 });
+
+// 유저 정보 모달 상태
+export const userInfoModalState = atom({
+  key: 'userInfoModalState',
+  default: false,
+});
+
+// 정보 조회용 유저 ID
+export const userInfoIdState = atom({
+  key: 'userInfoIdState',
+  default: null,
+});
+
+// 정보 조회용 유저 이름
+export const userInfoNameState = atom({
+  key: 'userInfoNameState',
+  default: null,
+});

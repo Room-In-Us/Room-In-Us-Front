@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import StarIcon from "../../../shared/assets/icons/reviewWrite/star.svg?react";
 import EmptyStar from "../../../shared/assets/icons/reviewWrite/starEmpty.svg?react";
 import HalfStar from '../../../shared/assets/icons/reviewWrite/starhalf.svg?react';
-import NoDataIcon from "../../../shared/assets/images/common/noData/noDataIcon.png";
+import NoDataIcon from "../../../shared/assets/images/common/noData/noDataImageSmall.png";
 
 function StarRatingSection({ type, rating, comment, recommendedCloth }) {
   // 별 배열 생성
@@ -202,8 +202,8 @@ const NoDataWrapper = styled.div`
 `;
 
 const StyledNoDataIcon = styled.img`
-  width: 11.25rem;
-  height: 11.25rem;
+  width: 3.75rem;
+  height: 3.75rem;
 `;
 
 const NoDataText = styled.div`

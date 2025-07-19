@@ -8,10 +8,13 @@ import { useRecoilValue } from 'recoil';
 import ReviewWriteModal from "../features/themeDetail/ui/ReviewWriteModal";
 import { reviewModalState } from "../features/themeDetail/model/reviewAtom";
 import { getThemeDetailAPI, getThemePriceAPI } from "../features/themeDetail/api/themeDetailAPI";
+import { userInfoModalState } from "../features/auth/model/authAtom";
+import UserInfoModal from "../features/auth/ui/UserInfoModal";
 
 function ThemeDetailPage() {
   // 상태 관리
   const isModalOpen = useRecoilValue(reviewModalState);
+  const isUSerInfoModalOpen = useRecoilValue(userInfoModalState);
   const [themeDetail, setThemeDetail] = useState({});
   const [themePrice, setThemePrice] = useState([]);
 
@@ -62,6 +65,13 @@ function ThemeDetailPage() {
       {isModalOpen && (
         <ModalBackdrop>
           <ReviewWriteModal themeData={themeDetail}/>
+        </ModalBackdrop>
+      )}
+
+      {/* 유저 정보 모달 */}
+      {isUSerInfoModalOpen && (
+        <ModalBackdrop>
+          <UserInfoModal />
         </ModalBackdrop>
       )}
     </PageWrapper>

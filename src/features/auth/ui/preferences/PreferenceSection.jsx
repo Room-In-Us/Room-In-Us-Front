@@ -1,49 +1,12 @@
 import styled from "styled-components";
-import { useRecoilState } from 'recoil';
-import { surveyState } from "../../model/surveyAtom";
-import { preferredElementList, preferredDeviceList, preferredActivityList } from "../../model/surveyPreferenceList";
+import { preferredElementList, preferredDeviceList, preferredActivityList } from "../../../mypage/model/surveyPreferenceList";
 import SurveyTag from "./SurveyTag";
 
-function PreferenceSection() {
-  // state 관리
-  const [survey, setSurvey] = useRecoilState(surveyState);
-
+function PreferenceSection({elementInfo, deviceInfo, activityInfo}) {
   // 요소 선택 상태
-  const selectedElements = survey.preferredElementList;
-  const selectedDevice = survey.preferredDevice;
-  const selectedActivity = survey.preferredActivity;
-  
-  // 요소 태그 선택 핸들러
-  const handleElementClick = (enumValue) => {
-    const isSelected = selectedElements.includes(enumValue);
-    if (isSelected) {
-      setSurvey(prev => ({
-        ...prev,
-        preferredElementList: selectedElements.filter(e => e !== enumValue),
-      }));
-    } else if (selectedElements.length < 3) {
-      setSurvey(prev => ({
-        ...prev,
-        preferredElementList: [...selectedElements, enumValue],
-      }));
-    }
-  };
-
-  // 장치 태그 선택 핸들러
-  const handleDeviceClick = (enumValue) => {
-    setSurvey(prev => ({
-      ...prev,
-      preferredDevice: selectedDevice === enumValue ? null : enumValue,
-    }));
-  };
-
-  // 활동성 태그 선택 핸들러
-  const handleActivityClick = (enumValue) => {
-    setSurvey(prev => ({
-      ...prev,
-      preferredActivity: selectedActivity === enumValue ? null : enumValue,
-    }));
-  };
+  const selectedElements = elementInfo ?? [];
+  const selectedDevice = deviceInfo ?? "";
+  const selectedActivity = activityInfo ?? "";
 
   return (
     <SectionWrapper>
@@ -59,9 +22,6 @@ function PreferenceSection() {
             <ListTitle>
               중요하게 보는 요소
             </ListTitle>
-            <ListDescription>
-              최대 3개까지 선택 가능합니다
-            </ListDescription>
           </ListTitleWrapper>
           <ElementList>
             {preferredElementList.map((item) => (
@@ -69,7 +29,6 @@ function PreferenceSection() {
                 key={item.id}
                 item={item.value}
                 selected={selectedElements.includes(item.enum)}
-                onClick={() => handleElementClick(item.enum)}
                 disabled={!selectedElements.includes(item.enum) && selectedElements.length >= 3}
               />
             ))}
@@ -85,7 +44,6 @@ function PreferenceSection() {
                 key={item.id}
                 item={item.value}
                 selected={selectedDevice === item.enum}
-                onClick={() => handleDeviceClick(item.enum)}
               />
             ))}
           </List>
@@ -100,7 +58,6 @@ function PreferenceSection() {
                 key={item.id}
                 item={item.value}
                 selected={selectedActivity === item.enum}
-                onClick={() => handleActivityClick(item.enum)}
               />
             ))}
           </List>
@@ -117,22 +74,30 @@ const SectionWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1.25rem;
+  gap: 1.25em;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 1em;
+  }
 `;
 
 const Title = styled.div`
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Bold';
-  font-size: 1.125rem;
+  font-size: 1.125em;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.875em;
+  }
 `;
 
 const CheckWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 1em;
   align-self: stretch;
 `;
 
@@ -141,7 +106,7 @@ const ListWrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  gap: 0.625rem;
+  gap: 0.625em;
   align-self: stretch;
 `;
 
@@ -155,28 +120,37 @@ const ListTitleWrapper = styled.div`
 const ListTitle = styled.div`
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Bold';
-  font-size: 0.875rem;
+  font-size: 0.875em;
   line-height: 130%;
-  letter-spacing: -0.02188rem;
-`;
+  letter-spacing: -0.02188em;
 
-const ListDescription =styled.div`
-  color: var(--RIU_Monochrome-70, #B3B6C3);
-  font-family: 'Pretendard-Medium';
-  font-size: 0.75rem;
-  line-height: 130%;
+  @media (max-width: 768px) {
+    font-size: 0.625em;
+    letter-spacing: -0.01563em;
+  }
 `;
 
 const ElementList = styled.div`
   display: flex;
-  width: 27.5rem;
+  width: 27.5em;
   justify-content: space-between;
   align-items: center;
+
+  @media (max-width: 768px) {
+    width: 90%;
+    justify-content: start;
+    gap: 0.8125em 0.625em;
+    flex-wrap: wrap;
+  }
 `;
 
 const List = styled.div`
-  width: 27.5rem;
+  width: 27.5em;
   display: flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: 0.625em;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;

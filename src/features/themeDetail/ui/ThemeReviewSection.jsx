@@ -4,8 +4,11 @@ import RatingStar from "../../../shared/assets/icons/themeDetail/ratingStar.svg?
 import ThemeReview from "./ThemeReview";
 import RightArrowIcon from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import LeftArrowIcon from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
-import NoDataIcon from "../../../shared/assets/images/common/noData/noDataIcon.png";
+import NoDataIcon from "../../../shared/assets/images/common/noData/noDataImageSmall.png";
+import PencilIcon from "../../../shared/assets/icons/themeDetail/pencilIcon.svg?react";
 import { getThemeReviewsListAPI } from "../api/themeDetailAPI";
+import { useSetRecoilState } from 'recoil';
+import { reviewModalState } from "../model/reviewAtom";
 import PropTypes from 'prop-types';
 
 function ThemeReviewSection({ themeId }) {
@@ -14,6 +17,8 @@ function ThemeReviewSection({ themeId }) {
   const [satisfactionAvg, setSatisfactionAvg] = useState(0);
   const [reviewCnt, setReviewCnt] = useState(0);
   const [reviews, setReviews] = useState([]);
+
+  const setModal = useSetRecoilState(reviewModalState);
 
   const pageSize = 3;
 
@@ -48,14 +53,26 @@ function ThemeReviewSection({ themeId }) {
       <Divider />
 
       {reviews.length === 0 ? (
-        <NoDataWrapper>
-          <StyledNoDataIcon src={NoDataIcon}/>
-          <NoDataText>
-            작성된 후기가 없습니다.
-          </NoDataText>
-        </NoDataWrapper>
+        <>
+          {/* 정보 미상 섹션 */}
+          <NoDataWrapper>
+            <StyledNoDataIcon src={NoDataIcon}/>
+            <NoDataText>
+              작성된 후기가 없습니다.
+            </NoDataText>
+          </NoDataWrapper>
+
+          {/* 리뷰 작성 버튼 */}
+          <ReviewWriteButton onClick={() => setModal(true)}>
+            <StyledPencilIcon/>
+            <ReviewWriteButtonText>
+              후기 작성하기
+            </ReviewWriteButtonText>
+          </ReviewWriteButton>
+        </>
         ) : (
         <>
+          {/* 평균 별점 섹션 */}
           <RatingContainer>
             <RatingText>이 테마의 평균 별점은</RatingText>
             <RatingWrapper>
@@ -65,6 +82,15 @@ function ThemeReviewSection({ themeId }) {
             </RatingWrapper>
           </RatingContainer>
 
+          {/* 리뷰 작성 버튼 */}
+          <ReviewWriteButton onClick={() => setModal(true)}>
+            <StyledPencilIcon/>
+            <ReviewWriteButtonText>
+              후기 작성하기
+            </ReviewWriteButtonText>
+          </ReviewWriteButton>
+
+          {/* 후기 목록 */}
           {reviews.map((review) => (
             <ThemeReview key={review.reviewId} data={review} />
           ))}
@@ -163,6 +189,32 @@ const RatingMember = styled.div`
   font-size: 0.75rem;
 `;
 
+const ReviewWriteButton = styled.div`
+  border-radius: 2.5rem;
+  padding: 0.875rem 0rem;
+  box-sizing: border-box;
+  height: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  align-self: stretch;
+  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
+  cursor: pointer;
+`;
+
+const StyledPencilIcon = styled(PencilIcon)`
+  width: 1.25rem;
+  height: 1.25rem;
+`;
+
+const ReviewWriteButtonText = styled.div`
+  color: var(--RIU_Monochrome-10, #F9F9FB);
+  font-family: 'Pretendard-Bold';
+  font-size: 0.875rem;
+  line-height: 130%;
+`;
+
 const PagingWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -202,8 +254,8 @@ const NoDataWrapper = styled.div`
 `;
 
 const StyledNoDataIcon = styled.img`
-  width: 11.25rem;
-  height: 11.25rem;
+  width: 3.75rem;
+  height: 3.75rem;
 `;
 
 const NoDataText = styled.div`

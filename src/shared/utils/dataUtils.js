@@ -38,8 +38,8 @@ export const genreListConversion = (genreList) => {
 
 // 별점 변환 함수 (null일 때 -)
 export const satisfactionConversion = (satisfaction) => {
-  if (satisfaction) {
-    return satisfaction;
+  if (typeof satisfaction === 'number' && !isNaN(satisfaction)) {
+    return satisfaction.toFixed(2);
   } else {
     return "-";
   }

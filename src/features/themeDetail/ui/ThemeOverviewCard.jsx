@@ -1,21 +1,23 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import ThumbnailImg from '../../../shared/assets/images/common/thumbnailImg.png';
 import InfoIcon from '../../../shared/assets/icons/themeDetail/infoIcon.svg?react';
 import ShareIcon from '../../../shared/assets/icons/themeDetail/shareIcon.svg?react';
 import HeartIcon from '../../../shared/assets/icons/common/heart_default.svg?react';
 import HeartIcon2 from '../../../shared/assets/icons/common/heart_hover.svg?react';
 import HeartIcon3 from '../../../shared/assets/icons/common/heart_active.svg?react';
-import { useSetRecoilState } from 'recoil';
-import { reviewModalState } from "../model/reviewAtom";
+import ReservationIcon from '../../../shared/assets/icons/themeDetail/reservationIcon.svg?react';
+import ScheduleIcon from '../../../shared/assets/icons/themeDetail/scheduleIcon.svg?react';
 import PropTypes from 'prop-types';
 
 function ThemeOverviewCard({ themeData }) {
   // state 관리
   const [isHeartActive, setIsHeartActive] = useState(false);
   const [imageUrl, setImageUrl] = useState(themeData.img);
-  const setModal = useSetRecoilState(reviewModalState);
 
+  const navigate = useNavigate();
+  
   // 이미지 로드 실패 시, 기본 썸네일로 변경
   useEffect(() => {
     setImageUrl(themeData.img);
@@ -49,21 +51,25 @@ function ThemeOverviewCard({ themeData }) {
       </TitleWrapper>
 
       {/* 버튼 영역 */}
-      <ButtonWrapper>
-        <StyledButton type="reservation" onClick={() => window.open(themeData?.storeInfo?.storeReservationUrl, '_blank',)}>
-          <ButtonText type="reservation">
-            예약하기
-          </ButtonText>
-        </StyledButton>
-        <StyledButton type="reviewWrite" onClick={() => setModal(true)}>
-          <ButtonText type="reviewWrite">
-            후기 작성하기
-          </ButtonText>
-        </StyledButton>
+      <ButtonSection>
+        <ButtonWrapper>
+          <StyledButton type="reservation" onClick={() => window.open(themeData?.storeInfo?.storeReservationUrl, '_blank',)}>
+            <StyeldReservationIcon/>
+            <ButtonText>
+              예약하러 가기
+            </ButtonText>
+          </StyledButton>
+          <StyledButton type="schedule" onClick={() => navigate('/mypage/reservations')}>
+            <StyledScheduleIcon/>
+            <ButtonText>
+              일정에 추가하기
+            </ButtonText>
+          </StyledButton>
+        </ButtonWrapper>
         <WarningText>
           테마 스포일러 및 근거없는 비난성 후기는 예고없이 삭제될 수 있습니다.
         </WarningText>
-      </ButtonWrapper>
+      </ButtonSection>
 
       {/* 상호작용 영역 */}
       <InteractionWrapper>
@@ -190,7 +196,7 @@ const InfoText = styled.div`
   line-height: normal;
 `;
 
-const ButtonWrapper = styled.div`
+const ButtonSection = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -199,20 +205,29 @@ const ButtonWrapper = styled.div`
   align-self: stretch;
 `;
 
+const ButtonWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  align-self: stretch;
+`;
+
 const StyledButton = styled.div`
   border-radius: 2.5rem;
-  display: flex;
+  padding: 0.875rem 0rem;
+  box-sizing: border-box;
   height: 2.5rem;
+  display: flex;
   justify-content: center;
   align-items: center;
   gap: 0.625rem;
-  align-self: stretch;
-  background: ${(props) => (props.type === "reviewWrite" ? "var(--RIU_Primary-80, #8DA3FF)" : "var(--RIU_Primary-20, #D0D8FF)")};
+  flex: 1 0 0;
+  background: ${(props) => (props.type === "reservation" ? "var(--RIU_Monochrome-10, #F9F9FB);" : "var(--RIU_Primary-20, #D0D8FF);")};
   cursor: pointer;
 `;
 
 const ButtonText = styled.div`
-  color: ${(props) => (props.type === "reviewWrite" ? "var(--RIU_Monochrome-10, #F9F9FB)" : "var(--RIU_Primary-200, #6680DF)")};
+  color: var(--RIU_Primary-200, #6680DF);
   font-family: 'Pretendard-Bold';
   font-size: 0.875rem;
   line-height: 130%;
@@ -288,4 +303,13 @@ const StyledHeartIcon2 = styled(HeartIcon2)`
 const StyledHeartIcon3 = styled(HeartIcon3)`
   width: 1rem;
   height: 1rem;
+`;
+
+const StyeldReservationIcon = styled(ReservationIcon)`
+  width: 1.25rem;
+  height: 1.25rem;
+`;
+const StyledScheduleIcon = styled(ScheduleIcon)`
+  width: 1.25rem;
+  height: 1.25rem;
 `;

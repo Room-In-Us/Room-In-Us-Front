@@ -5,91 +5,108 @@ import MemberIcon from "../../../shared/assets/icons/themeDetail/reviewMemberIco
 import EscapeIcon from "../../../shared/assets/icons/themeDetail/reviewEscapeIcon.svg?react";
 import HintIcon from "../../../shared/assets/icons/themeDetail/reviewHintIcon.svg?react";
 import TimeIcon from "../../../shared/assets/icons/themeDetail/reviewTimeIcon.svg?react";
+import RightArrowIcon from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
 import PropTypes from 'prop-types';
 import { reviewEnumConversion, proficiencyConversion, horrorPositionConversion, formatDateToDot, convertTimeToMinutes } from "../../../shared/utils/dataUtils";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSetRecoilState } from 'recoil';
+import { userInfoModalState, userInfoIdState, userInfoNameState } from "../../auth/model/authAtom";
 
 function ThemeReview({ data }) {
+  // 상태 관리
+  const setModal = useSetRecoilState(userInfoModalState);
+  const setUserId = useSetRecoilState(userInfoIdState);
+  const setUserName = useSetRecoilState(userInfoNameState);
+
   const escapeState = data.isEscaped ? '탈출 성공' : '탈출 실패';
   const navigate = useNavigate();
   const { themeId } = useParams();
 
+  // 유저 ID 저장
+  const handleClickUserName = () => {
+    setUserId(data.memberId);
+    setUserName(data.memberNickname);
+    setModal(true);
+  }
+  
   return (
     <ComponentWrapper>
-      {/* 타이틀 파트 */}
-      <TitleWrapper>
-        <TitleLeftWrapper>
-          <NickName>{data.memberNickname}</NickName>
-          <Divider>|</Divider>
-          <TitleText>{proficiencyConversion(data.memberProficiency)}</TitleText>
-          <Divider>|</Divider>
-          <TitleText>{horrorPositionConversion(data.memberHorrorPos)}</TitleText>
-        </TitleLeftWrapper>
-        <TitleRightWrapper>
-          <StarIcon/>
-          <Rating>{data.satisfactionLevel}</Rating>
-        </TitleRightWrapper>
-      </TitleWrapper>
+      <ContentWrapper>
+        {/* 타이틀 파트 */}
+        <TitleWrapper>
+          <TitleLeftWrapper>
+            <NickName onClick={handleClickUserName}>{data.memberNickname}</NickName>
+            <Divider>|</Divider>
+            <TitleText>{proficiencyConversion(data.memberProficiency)}</TitleText>
+            <Divider>|</Divider>
+            <TitleText>{horrorPositionConversion(data.memberHorrorPos)}</TitleText>
+          </TitleLeftWrapper>
+          <TitleRightWrapper>
+            <StarIcon/>
+            <Rating>{data.satisfactionLevel}</Rating>
+          </TitleRightWrapper>
+        </TitleWrapper>
 
-      {/* 요약 파트 */}
-      <SummaryWrapper>
-        <SummaryCard>
-          <StyledEvautionIcon/>
-          <SummaryTextWrapper>
-            <SummaryTitle>총평</SummaryTitle>
-            <SummaryText>{reviewEnumConversion(data.reviewEnum)}</SummaryText>
-          </SummaryTextWrapper>
-        </SummaryCard>
-        <SummaryCard>
-          <StyledMemberIcon/>
-          <SummaryTextWrapper>
-            <SummaryTitle>플레이 인원</SummaryTitle>
-            <SummaryText>{data.headcount}인</SummaryText>
-          </SummaryTextWrapper>
-        </SummaryCard>
-        <SummaryCard>
-          <StyledEscapeIcon/>
-          <SummaryTextWrapper>
-            <SummaryTitle>탈출 여부</SummaryTitle>
-            <SummaryText>{escapeState}</SummaryText>
-          </SummaryTextWrapper>
-        </SummaryCard>
-        <SummaryCard>
-          <StyledHintIcon/>
-          <SummaryTextWrapper>
-            <SummaryTitle>힌트 사용</SummaryTitle>
-            <SummaryText>{data.usedHint}개 사용</SummaryText>
-          </SummaryTextWrapper>
-        </SummaryCard>
-        <SummaryCard>
-          <StyledTimeIcon/>
-          <SummaryTextWrapper>
-            <SummaryTitle>남긴 시간</SummaryTitle>
-            <SummaryText>{convertTimeToMinutes(data.remainingTime)}</SummaryText>
-          </SummaryTextWrapper>
-        </SummaryCard>
-      </SummaryWrapper>
+        {/* 요약 파트 */}
+        <SummaryWrapper>
+          <SummaryCard>
+            <StyledEvautionIcon/>
+            <SummaryTextWrapper>
+              <SummaryTitle>총평</SummaryTitle>
+              <SummaryText>{reviewEnumConversion(data.reviewEnum)}</SummaryText>
+            </SummaryTextWrapper>
+          </SummaryCard>
+          <SummaryCard>
+            <StyledMemberIcon/>
+            <SummaryTextWrapper>
+              <SummaryTitle>플레이 인원</SummaryTitle>
+              <SummaryText>{data.headcount}인</SummaryText>
+            </SummaryTextWrapper>
+          </SummaryCard>
+          <SummaryCard>
+            <StyledEscapeIcon/>
+            <SummaryTextWrapper>
+              <SummaryTitle>탈출 여부</SummaryTitle>
+              <SummaryText>{escapeState}</SummaryText>
+            </SummaryTextWrapper>
+          </SummaryCard>
+          <SummaryCard>
+            <StyledHintIcon/>
+            <SummaryTextWrapper>
+              <SummaryTitle>힌트 사용</SummaryTitle>
+              <SummaryText>{data.usedHint}개 사용</SummaryText>
+            </SummaryTextWrapper>
+          </SummaryCard>
+          <SummaryCard>
+            <StyledTimeIcon/>
+            <SummaryTextWrapper>
+              <SummaryTitle>남긴 시간</SummaryTitle>
+              <SummaryText>{convertTimeToMinutes(data.remainingTime)}</SummaryText>
+            </SummaryTextWrapper>
+          </SummaryCard>
+        </SummaryWrapper>
 
-      {/* 설명 파트 */}
-      <Description>
-        {data.reviewComment}
-      </Description>
+        {/* 설명 파트 */}
+        <Description>
+          {data.reviewComment}
+        </Description>
 
-      {/* 날짜 파트 */}
-      <DateWrapper>
-        <Date>
-          방문일자 : {formatDateToDot(data.playedAt)}
-        </Date>
-        <Date>
-          작성일자 : {formatDateToDot(data.createdAt)}
-        </Date>
-      </DateWrapper>
+        {/* 날짜 파트 */}
+        <DateWrapper>
+          <Date>
+            방문일자 : {formatDateToDot(data.playedAt)}
+          </Date>
+          <Date>
+            작성일자 : {formatDateToDot(data.createdAt)}
+          </Date>
+        </DateWrapper>
+
+      </ContentWrapper>
 
       {/* 상세 버튼 */}
       <DetailButton onClick={() => navigate(`/theme/${themeId}/review/${data.reviewId}`)}>
-        <ButtonText>
-          후기 상세보기
-        </ButtonText>
+        <div className="button-text">후기 상세보기</div>
+        <RightArrowIcon className="arrow-icon" />
       </DetailButton>
     </ComponentWrapper>
   )
@@ -120,7 +137,14 @@ export default ThemeReview;
 // CSS
 const ComponentWrapper = styled.div`
   border-radius: 0.625rem;
-  border: 1px solid var(--RIU_Monochrome-50, #D6D6DF);
+  border: 1px solid var(--RIU_Primary-20, #D0D8FF);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+`;
+
+const ContentWrapper = styled.div`
   padding: 1.25rem;
   box-sizing: border-box;
   display: flex;
@@ -148,6 +172,7 @@ const NickName = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.875rem;
   line-height: 140%;
+  cursor: pointer;
 `;
 
 const Divider = styled.div`
@@ -268,7 +293,7 @@ const Date = styled.div`
 `;
 
 const DetailButton = styled.div`
-  border-radius: 2.5rem;
+  border-radius: 0rem 0rem 0.625rem 0.625rem;
   padding: 0.875rem 0rem;
   box-sizing: border-box;
   height: 2.5rem;
@@ -279,11 +304,30 @@ const DetailButton = styled.div`
   align-self: stretch;
   background: var(--RIU_Primary-0, #E8EAFF);
   cursor: pointer;
-`;
+  transition: all 0.1s ease-in-out;
 
-const ButtonText = styled.div`
-  color: var(--RIU_Primary-100, #718FF2);
-  font-family: 'Pretendard-Bold';
-  font-size: 0.875rem;
-  line-height: 130%;
+  .button-text {
+    color: var(--RIU_Primary-100, #718FF2);
+    font-family: 'Pretendard-Bold';
+    font-size: 0.875rem;
+    line-height: 130%;
+  }
+
+  .arrow-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: var(--RIU_Primary-100, #718FF2);
+  }
+
+  &:hover {
+    background: var(--RIU_Primary-60, #A2ADFF);
+
+    .button-text {
+      color: var(--RIU_Monochrome-10, #F9F9FB);
+    }
+
+    .arrow-icon {
+      fill: var(--RIU_Monochrome-10, #F9F9FB);
+    }
+  }
 `;
