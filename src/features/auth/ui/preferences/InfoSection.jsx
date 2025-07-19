@@ -33,6 +33,10 @@ const SectionWrapper = styled.div`
   align-items: flex-start;
   gap: 1.25em;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 1em;
+  }
 `;
 
 const Title = styled.div`
@@ -40,6 +44,10 @@ const Title = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1.125em;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.875em;
+  }
 `;
 
 const ContentWrapper = styled.div`

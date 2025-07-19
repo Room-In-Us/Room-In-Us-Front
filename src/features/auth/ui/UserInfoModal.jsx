@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import CloseIcon from "../../../shared/assets/icons/reviewWrite/closeicon.svg";
 import UserIcon from "../../../shared/assets/icons/userInfo/userIcon.svg";
-import useDevice from "../../../shared/hooks/useDevice.js";
 import { userInfoModalState, userInfoIdState, userInfoNameState } from "../model/authAtom.jsx";
 import { getUserInfoAPI } from "../api/memberAPI.js";
 import ProficiencySection from "./preferences/ProficiencySection";
@@ -15,9 +14,6 @@ import InfoSection from "./preferences/InfoSection.jsx";
 import NoDataIcon from "../../../shared/assets/images/common/noData/noDataImageLarge.png";
 
 function UserInfoModal() {
-  // 반응형
-  const { isDesktop, isTablet, isMobile } = useDevice();
-
   // 상태 관리
   const setModalOpen = useSetRecoilState(userInfoModalState);
   const userId = useRecoilValue(userInfoIdState);
@@ -130,10 +126,9 @@ font-size: 0.8rem; // 임의로 지정
   align-items: center;
   background: var(--RIU_Monochrome-10, #F9F9FB);
 
-  @media (max-width: 1024px) {
-  }
   @media (max-width: 768px) {
-    width: 90%;
+    width: 22.1875em;
+    height: 22.5em;
   }
 `;
 
@@ -186,10 +181,7 @@ const CloseBtn = styled.div`
   box-sizing: border-box;
   cursor: pointer;
 
-  @media (max-width: 1024px) {
-  }
   @media (max-width: 768px) {
-    width: ${({ isFirstLast }) => isFirstLast ? '100%' : 'calc(100% - 7.125em - 1em)'};
     height: 2.5em;
   }
 `;
@@ -199,8 +191,6 @@ const CloseBtnText = styled.div`
   font-family: Pretendard-Bold;
   font-size: 1em;
 
-  @media (max-width: 1024px) {
-  }
   @media (max-width: 768px) {
     font-size: 0.875em;
   }
@@ -225,6 +215,10 @@ const ContentWrapper = styled.div`
     border-radius: 30px;
     background-color: #8DA3FF;
   }
+
+  @media (max-width: 768px) {
+    padding: 1.25em;
+  }
 `;
 
 const TitleWrapper = styled.div`
@@ -241,6 +235,10 @@ const TitleNickName = styled.div`
   font-family: 'Pretendard-ExtraBold';
   font-size: 1.375em;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 1em;
+  }
 `;
 
 const TitleDescription = styled.div`
@@ -248,6 +246,10 @@ const TitleDescription = styled.div`
   font-family: 'Pretendard-SemiBold';
   font-size: 0.875em;
   line-height: 140%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const NoDataWrapper = styled.div`
@@ -258,11 +260,20 @@ const NoDataWrapper = styled.div`
   align-items: center;
   gap: 0.625em;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 0;
+  }
 `;
 
 const StyledNoDataIcon = styled.img`
   width: 11.25em;
   height: 11.25em;
+
+  @media (max-width: 768px) {
+    width: 6.25em;
+    height: 6.25em;
+  }
 `;
 
 const NoDataText = styled.div`
@@ -271,4 +282,8 @@ const NoDataText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.75em;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.6875em;
+  }
 `;

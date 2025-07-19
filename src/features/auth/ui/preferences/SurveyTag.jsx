@@ -36,6 +36,11 @@ const TagWrapper = styled.div`
   transition: all 0.1s ease-in-out;
   pointer-events: ${({ disabled }) => disabled ? 'none' : 'auto'};
   opacity: ${({ disabled }) => disabled ? 0.4 : 1};
+
+  @media (max-width: 768px) {
+    padding: 0.875em 0.8125em;
+    height: 1.625em;
+  }
 `;
 
 const Label = styled.div`
@@ -44,4 +49,9 @@ const Label = styled.div`
   font-size: 0.875em;
   line-height: 1.25em;
   letter-spacing: -0.02188em;
+
+  @media (max-width: 768px) {
+    font-size: 0.625em;
+    letter-spacing: -0.01563em;
+  }
 `;

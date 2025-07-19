@@ -76,6 +76,10 @@ const SectionWrapper = styled.div`
   align-items: flex-start;
   gap: 1.25em;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 1em;
+  }
 `;
 
 const Title = styled.div`
@@ -83,6 +87,10 @@ const Title = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1.125em;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.875em;
+  }
 `;
 
 const CheckWrapper = styled.div`
@@ -115,6 +123,11 @@ const ListTitle = styled.div`
   font-size: 0.875em;
   line-height: 130%;
   letter-spacing: -0.02188em;
+
+  @media (max-width: 768px) {
+    font-size: 0.625em;
+    letter-spacing: -0.01563em;
+  }
 `;
 
 const ElementList = styled.div`
@@ -122,6 +135,13 @@ const ElementList = styled.div`
   width: 27.5em;
   justify-content: space-between;
   align-items: center;
+
+  @media (max-width: 768px) {
+    width: 90%;
+    justify-content: start;
+    gap: 0.8125em 0.625em;
+    flex-wrap: wrap;
+  }
 `;
 
 const List = styled.div`
@@ -129,4 +149,8 @@ const List = styled.div`
   display: flex;
   align-items: center;
   gap: 0.625em;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;

@@ -42,6 +42,10 @@ const SectionWrapper = styled.div`
   align-items: flex-start;
   gap: 1.25em;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 1em;
+  }
 `;
 
 const Title = styled.div`
@@ -49,6 +53,10 @@ const Title = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1.125em;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.875em;
+  }
 `;
 
 const ListWrapper = styled.div`
@@ -57,6 +65,10 @@ const ListWrapper = styled.div`
   align-items: flex-start;
   gap: 1.25em;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 1em;
+  }
 `;
 
 const List = styled.div`
@@ -64,6 +76,10 @@ const List = styled.div`
   align-items: center;
   gap: 0.625em;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    font-size: 0.625em;
+  }
 `;
 
 const RadioButton = styled.button`
@@ -87,4 +103,8 @@ const RadioButton = styled.button`
     transform: translate(-50%, -50%);
     opacity: ${props => (props.selected ? 1 : 0)};
     transition: opacity 0.2s ease-in-out;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
