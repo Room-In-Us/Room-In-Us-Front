@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 import { useRecoilValue } from 'recoil';
-import { storeLatAndLngList, centerLatAndLng, zoomLevel } from '../../model/locationAtom.jsx';
+import { storeLatAndLngList, centerLatAndLng, zoomLevel } from '../model/locationAtom.jsx';
 import { GoogleMap, MarkerF, OverlayView } from '@react-google-maps/api';
-import { googleMapStyles } from './googleMapStyles.js';
-import MarkerIcon from "../../../../shared/assets/images/location/marker.png";
-import AwardMarkerIcon from "../../../../shared/assets/images/location/awardMarker.png";
+import { googleMapStyles } from '../../../shared/styles/googleMapStyles.js';
+import MarkerIcon from '../../../shared/assets/images/location/marker.png';
+import AwardMarkerIcon from '../../../shared/assets/images/location/awardMarker.png';
 
 function GoogleMapComponent() {
   // 중앙 좌표

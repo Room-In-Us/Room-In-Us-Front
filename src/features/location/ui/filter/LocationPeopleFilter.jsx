@@ -10,14 +10,14 @@ import {
   DropdownMenu, 
   DropdownHeader, 
   DropdownItem,
-  MenuWrapper } from "./LocationFilterStyles.js";
+  MenuWrapper } from "../../../../shared/styles/LocationFilterStyles.js";
 import DropDownImg from "../../../../shared/assets/icons/common/dropdown.svg";
 import UnselectedIcon from '../../../../shared/assets/icons/common/filterIcon/unselected.svg';
 import SelectedIcon from '../../../../shared/assets/icons/common/filterIcon/selected.svg';
 import Icon1 from '../../../../shared/assets/icons/genre/camera.svg';
 import useDevice from "../../../../shared/hooks/useDevice.js";
 import useDropdown from "../../../../shared/hooks/useDropDown.js";
-import { peopleOptions } from "./LocationOptionList.js";
+import { peopleOptions } from "../../../../shared/components/filter/OptionList.js";
 import PropTypes from 'prop-types';
 
 const LocationPeopleFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) => {

@@ -1,6 +1,6 @@
 import { api } from '../../../app/API';
 
-// 장르 기반 방탈출 카페 테마 목록 조회
+// 지역 기반 방탈출 카페 테마 목록 조회
 export const getLocationListAPI = async (storeId, headcount, page, size, sortOption) => {
   try {
     const params = {
@@ -14,10 +14,10 @@ export const getLocationListAPI = async (storeId, headcount, page, size, sortOpt
     }
 
     const response = await api.get('themes/location', {params});
-    console.log('장르 기반 방탈출 카페 테마 목록 조회 api 요청 결과:', response);
+    console.log('지역 기반 방탈출 카페 테마 목록 조회 api 요청 성공:', response);
     return response.data;
   } catch (error) {
-    console.error('API 요청 중 오류 발생:', error);
+    console.error('지역 기반 방탈출 카페 테마 목록 조회 api 요청 실패:', error);
     throw error;
   }
 };
@@ -26,10 +26,10 @@ export const getLocationListAPI = async (storeId, headcount, page, size, sortOpt
 export const getLocationZonesAPI = async (regionId) => {
   try {
     const response = await api.get(`location/regions/${regionId}/zones`);
-    console.log('구역 목록 조회 api 요청 결과:', response);
+    console.log('구역 목록 조회 api 요청 성공:', response);
     return response.data;
   } catch (error) {
-    console.error('API 요청 중 오류 발생:', error);
+    console.error('구역 목록 조회 api 요청 실패:', error);
     throw error;
   }
 };
@@ -38,10 +38,10 @@ export const getLocationZonesAPI = async (regionId) => {
 export const getSeoulZonesInfoAPI = async (zoneId) => {
   try {
     const response = await api.get(`location/regions/1/zones/${zoneId}/zone-info`);
-    console.log('서울 구역 상세 정보 조회 api 요청 결과:', response);
+    console.log('서울 구역 상세 정보 조회 api 요청 성공:', response);
     return response.data;
   } catch (error) {
-    console.error('API 요청 중 오류 발생:', error);
+    console.error('서울 구역 상세 정보 조회 api 요청 실패:', error);
     throw error;
   }
 };
@@ -58,10 +58,10 @@ export const getZoneStoreListAPI = async (regionId, zoneId, page, size, sortOpti
     }
 
     const response = await api.get(`stores/regions/${regionId}/zones/${zoneId}/stores`, {params});
-    console.log('수도권 구역 매장 목록 조회 api 요청 결과:', response);
+    console.log('수도권 구역 매장 목록 조회 api 요청 성공:', response);
     return response.data;
   } catch (error) {
-    console.error('API 요청 중 오류 발생:', error);
+    console.error('수도권 구역 매장 목록 조회 api 요청 실패:', error);
     throw error;
   }
 };
@@ -78,10 +78,10 @@ export const getSeoulZoneStoreListAPI = async (zoneId, page, size, sortOption) =
     }
 
     const response = await api.get(`stores/regions/1/zones/${zoneId}`, {params});
-    console.log('서울 구역 매장 목록 조회 api 요청 결과:', response);
+    console.log('서울 구역 매장 목록 조회 api 요청 성공:', response);
     return response.data;
   } catch (error) {
-    console.error('API 요청 중 오류 발생:', error);
+    console.error('서울 구역 매장 목록 조회 api 요청 실패:', error);
     throw error;
   }
 };
@@ -90,10 +90,38 @@ export const getSeoulZoneStoreListAPI = async (zoneId, page, size, sortOption) =
 export const getLocationStoreInfoAPI = async (storeId) => {
   try {
     const response = await api.get(`stores/${storeId}/store-info`);
-    console.log('매장 상세 정보 조회 api 요청 결과:', response);
+    console.log('매장 상세 정보 조회 api 요청 성공:', response);
     return response.data;
   } catch (error) {
-    console.error('API 요청 중 오류 발생:', error);
+    console.error('매장 상세 정보 조회 api 요청 실패:', error);
+    throw error;
+  }
+};
+
+// 지역 목록 조회 api
+export const getRegionAPI = async () => {
+  try {
+      const response = await api.get(`location/regions`);
+      console.log('지역 목록 조회 api 요청 성공: ', response);
+      return {
+        contents: response.data,
+      };
+    } catch (error) {
+      console.error('지역 목록 조회 api 요청 실패: ', error);
+      throw error;
+    }
+}
+
+// 구역 목록 조회 api
+export const getZoneAPI = async (regionId) => {
+  try {
+    const response = await api.get(`location/regions/${regionId}/zones`);
+    console.log('구역 목록 조회 api 요청 성공: ', response);
+    return {
+      data: response.data,
+    };
+  } catch (error) {
+    console.error('구역 목록 조회 api 요청 실패: ', error);
     throw error;
   }
 };
