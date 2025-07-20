@@ -2,13 +2,13 @@ import styled from 'styled-components'
 import LeftArrow from '../../../../shared/assets/icons/myPage/leftArrow.svg?react'
 import RightArrow from '../../../../shared/assets/icons/myPage/rightArrow.svg?react'
 import Logo from '../../../../shared/assets/icons/common/logo.svg?react'
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameMonth, isSameDay, format } from 'date-fns';
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameMonth, format } from 'date-fns';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { calendarMonthState, reservationListState } from '../../model/reservationAtom';
 
 export default function CalendarSection() {
-
   const [currentMonth, setCurrentMonth] = useRecoilState(calendarMonthState);
+  const reservationMap = useRecoilValue(reservationListState);
 
   const renderHeader = () => (
     <HeaderWrapper>
@@ -41,8 +41,6 @@ export default function CalendarSection() {
     let days = [];
     let day = startDate;
 
-    const reservationMap = useRecoilValue(reservationListState);
-
     const dateCountMap = Object.values(reservationMap)
     .flat()
     .reduce((acc, r) => {
@@ -63,7 +61,6 @@ export default function CalendarSection() {
           <DateCell
             key={cloneDay}
             isCurrentMonth={isSameMonth(cloneDay, monthStart)}
-            onClick={() => setSelectedDate(cloneDay)}
           >
             <DateNumber hasEvent={count > 0}>{format(cloneDay, 'd')}</DateNumber>
             {count > 0 && (

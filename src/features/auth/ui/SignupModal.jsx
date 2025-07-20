@@ -27,7 +27,7 @@ function SignupModal({ isOpen }) {
 
 // PropTypes 정의 (eslint 에러 방지)
 SignupModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired, // isOpen은 boolean이며 필수 prop
+  isOpen: PropTypes.bool.isRequired,
 };
 
 export default SignupModal;

@@ -8,11 +8,11 @@ export const getMyReservationsAPI = async (year, month) => {
     };
 
     const response = await api.get('members/reservations', { params });
-    console.log('예약한 방탈출 목록 api 전체 응답: ', response);
+    console.log('예약한 방탈출 목록 api 요청 성공: ', response);
 
     return response.data;
   } catch (error) {
-    console.error('예약한 방탈출 목록 api 요청 중 오류 발생: ', error);
+    console.error('예약한 방탈출 목록 api 요청 실패: ', error);
     throw error;
   }
 }

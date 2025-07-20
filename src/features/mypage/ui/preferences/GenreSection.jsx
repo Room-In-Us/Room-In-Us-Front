@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
 import { surveyState } from "../../model/surveyAtom";
-import { surveyGenreList } from "../../model/surveyGenreList";
+import { surveyGenreList } from "../../../survey/model/surveyGenreList";
 import SurveyTag from "./SurveyTag";
 
 function GenreSection() {

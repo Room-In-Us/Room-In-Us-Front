@@ -4,7 +4,6 @@ import { useRecoilValue } from 'recoil';
 import { activeLevelState } from '../model/levelAtom.jsx';
 import useDevice from "../../../shared/hooks/useDevice.js";
 import ContentCard from "../../../shared/components/ContentCard.jsx";
-import { Swiper, SwiperSlide } from "swiper/react";
 import { levels } from '../model/levelData.js';
 import { getLevelListAPI } from "../api/levelAPI.js";
 import { getRegionAPI } from "../../../features/location/api/getRegionAPI";
@@ -20,7 +19,7 @@ import { sortOptions } from '../../../shared/components/filter/OptionList.js';
 export default function LevelContentSection() {
 
   // 반응형 함수
-  const { isDesktop, isTablet, isMobile } = useDevice();
+  const { isMobile } = useDevice();
 
   // state 관리
   const activeLevel = useRecoilValue(activeLevelState);
@@ -57,7 +56,7 @@ export default function LevelContentSection() {
   const [isFilterActive, setIsFilterActive] = useState(true);
 
   // 검색어 상태
-  const [keyword, setKeyword] = useState('');
+  const [keyword,] = useState('');
 
   // 숙련도 목록 조회
   useEffect(() => {
@@ -531,31 +530,4 @@ const ListWrapper = styled.div`
     gap: 0.625rem;
     justify-content: center;
   }
-`;
-
-const StyledSwiper = styled(Swiper)`
-  width: 100%;
-  height: auto;
-  padding-bottom: ${({ isMobile }) => (isMobile ? "2.3rem" : "4rem")};
-
-  .swiper-pagination {
-    gap: 0.375rem;
-  }
-
-  .swiper-pagination-bullet {
-    width: ${({ isMobile }) => (isMobile ? "0.375rem" : "0.5rem")};
-    height: ${({ isMobile }) => (isMobile ? "0.375rem" : "0.5rem")};
-    background-color: var(--RIU_Monochrome-70, #B3B6C3);
-    opacity: 1;
-  }
-
-  .swiper-pagination-bullet-active {
-    background-color: var(--RIU_Primary-80, #8DA3FF);
-  }
-`;
-const StyledSwiperSlide = styled(SwiperSlide)`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  align-items: center;
 `;
