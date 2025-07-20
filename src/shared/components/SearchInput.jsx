@@ -125,7 +125,7 @@ const StyledInput = styled.input`
 `;
 
 const StyledCancelIcon = styled(CancelIcon)`
-  width: 0.875rem;
+  width: 0.625rem;
   flex-shrink: 0;
   cursor: pointer;
   opacity: ${({ expanded }) => (expanded ? '1' : '0')};

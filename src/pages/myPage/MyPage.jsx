@@ -6,7 +6,7 @@ import UpdateIcon from '../../shared/assets/icons/myPage/updateIcon.svg?react';
 import ArrowIcon from '../../shared/assets/icons/myPage/rightArrow.svg?react';
 import { getMemberInfoAPI } from "../../features/auth/api/memberAPI";
 import { patchNicknameAPI } from "../../features/mypage/api/nicknameAPI";
-import CloseIcon from '../../shared/assets/icons/myPage/closeIcon.svg?react';
+import CancelIcon from '../../shared/assets/icons/common/cancelIcon.svg?react';
 import CheckIcon from '../../shared/assets/icons/myPage/checkIcon.svg?react';
 
 function MyPage() {
@@ -72,7 +72,7 @@ function MyPage() {
             </Email>
             { editState ?
               <NicknameUpdateButton>
-                <StyledCloseIcon onClick={() => {
+                <StyledCancelIcon onClick={() => {
                   setNickname(prevNickname);
                   setEditState(false);
                 }} />
@@ -204,14 +204,17 @@ const Email = styled.div`
 
 const NicknameUpdateButton = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.375rem;
 `;
 
-const StyledCloseIcon = styled(CloseIcon)`
-  margin: 0.28125rem;
-  height: 1.125rem;
+const StyledCancelIcon = styled(CancelIcon)`
+  padding: 0.28125rem;
+  width: 0.8rem;
   cursor: pointer;
+  path {
+    fill: var(--RIU_Primary-100, #718FF2);
+  }
 `;
 const StyledCheckIcon = styled(CheckIcon)`
   margin: 0.28125rem;
