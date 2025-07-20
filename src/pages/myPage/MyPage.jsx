@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import LogoIcon from '../shared/assets/icons/common/logo.svg?react';
-import UpdateIcon from '../shared/assets/icons/myPage/updateIcon.svg?react';
-import ArrowIcon from '../shared/assets/icons/myPage/rightArrow.svg?react';
-import { getMemberInfoAPI } from "../features/auth/api/memberAPI";
-import { patchNicknameAPI } from "../features/mypage/api/nicknameAPI";
-import CloseIcon from '../shared/assets/icons/myPage/closeIcon.svg?react';
-import CheckIcon from '../shared/assets/icons/myPage/checkIcon.svg?react';
+import LogoIcon from '../../shared/assets/icons/common/logo.svg?react';
+import UpdateIcon from '../../shared/assets/icons/myPage/updateIcon.svg?react';
+import ArrowIcon from '../../shared/assets/icons/myPage/rightArrow.svg?react';
+import { getMemberInfoAPI } from "../../features/auth/api/memberAPI";
+import { patchNicknameAPI } from "../../features/mypage/api/nicknameAPI";
+import CloseIcon from '../../shared/assets/icons/myPage/closeIcon.svg?react';
+import CheckIcon from '../../shared/assets/icons/myPage/checkIcon.svg?react';
 
 function MyPage() {
   // 상태 관리

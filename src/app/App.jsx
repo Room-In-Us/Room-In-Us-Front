@@ -3,24 +3,18 @@ import { Routes, Route } from 'react-router-dom';
 import MainLayOut from '../widgets/MainLayOut';
 import MainPage from '../pages/MainPage';
 import LoginPage from '../pages/LoginPage';
-import LevelInfoPage from '../pages/LevelInfoPage';
 import GenrePage from '../pages/GenrePage';
-import GenreInfoPage from '../pages/GenreInfoPage';
 import LocationPage from '../pages/LocationPage';
-// import BoardPage from '../pages/BoardPage';
-// import BoardMorePage from '../pages/BoardMorePage';
-// import BoardWritePage from '../pages/BoardWritePage';
 import SignupPage from '../pages/SignupPage';
-import EditUserInfoPage from '../pages/EditUserInfoPage';
 import { LoadScript } from '@react-google-maps/api';
 import { useSetRecoilState } from 'recoil';
 import { mapsLoadedState } from '../features/location/model/locationAtom';
-import LevelSearchPage from '../pages/LevelSearchPage';
+import LevelPage from '../pages/LevelPage';
 import AuthCallback from '../features/auth/ui/AuthCallback';
 import AuthError from '../features/auth/ui/AuthError';
 import SurveyPage from '../pages/SurveyPage';
 import ThemeDetailPage from '../pages/ThemeDetailPage';
-import MyPage from '../pages/MyPage';
+import MyPage from '../pages/myPage/MyPage';
 import PreferencesPage from '../pages/myPage/PreferencesPage';
 import ReservationsPage from '../pages/myPage/ReservationsPage';
 import FavoritesPage from '../pages/myPage/FavoritesPage';
@@ -56,30 +50,20 @@ function App() {
           {/* 소셜 로그인 에러 페이지 */}
           <Route path="/auth/error" element={<AuthError />} />
 
-          {/* 유저 정보 페이지 */}
-          <Route path="/userInfo" element={<EditUserInfoPage />} />
-
           {/* 위치 페이지 */}
           <Route path="/location" element={<LocationPage />} />
 
           {/* 숙련도 페이지 */}
-          <Route path="/level" element={<LevelSearchPage/>} />
-          <Route path="/levelInfo" element={<LevelInfoPage />} />
+          <Route path="/level" element={<LevelPage/>} />
 
           {/* 장르 페이지 */}
           <Route path="/genre" element={<GenrePage />} />
-          <Route path="/genreInfo" element={<GenreInfoPage />} />
 
           {/* 테마 상세 페이지 */}
           <Route path="/theme/:themeId" element={<ThemeDetailPage />} />
 
           {/* 후기 상세 페이지 */}
           <Route path="/theme/:themeId/review/:reviewId" element={<ReviewDetailPage />} />
-
-          {/* 게시판 페이지 */}
-          {/* <Route path="/board" element={<BoardPage />} />
-          <Route path="/boardmore" element={<BoardMorePage />} />
-          <Route path="/boardwrite" element={<BoardWritePage />} /> */}
 
           {/* 마이 페이지 */}
           <Route path="/mypage" element={<MyPage />} />
