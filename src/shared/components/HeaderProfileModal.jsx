@@ -43,11 +43,11 @@ function HeaderProfileModal({ visible }) {
       <StyledHr/>
       <ButtonWrapper>
         <StyledMypageIcon onClick={() => navigate('/mypage')}/>
-        <StyledP onClick={() => navigate('/mypage')}>마이페이지</StyledP>
+        <StyledButtonText onClick={() => navigate('/mypage')}>마이페이지</StyledButtonText>
       </ButtonWrapper>
       <ButtonWrapper>
         <StyledLogoutIcon onClick={handleLogout}/>
-        <StyledP onClick={handleLogout}>로그아웃</StyledP>
+        <StyledButtonText onClick={handleLogout}>로그아웃</StyledButtonText>
       </ButtonWrapper>
     </ModalWrapper>
   )
@@ -117,7 +117,7 @@ const StyledLogoutIcon = styled(LogoutIcon)`
   cursor: pointer;
 `;
 
-const StyledP = styled.p`
+const StyledButtonText = styled.p`
   color: #515467;
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;

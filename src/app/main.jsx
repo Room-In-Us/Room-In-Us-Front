@@ -4,7 +4,7 @@ import App from './App.jsx';
 import './index.css';
 import { BrowserRouter } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
-import ScrollToTop from '../shared/components/scrollToTopFunc.js';
+import ScrollToTop from '../shared/utils/scrollToTopFunc.js';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

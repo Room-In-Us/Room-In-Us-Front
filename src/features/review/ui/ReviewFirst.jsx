@@ -2,7 +2,7 @@ import styled from "styled-components";
 import StarRating from "./StarRating";
 import ReviewDropdown from "./ReviewDropdown";
 import { overallOptions } from "../modal/reviewDataList";
-import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3, Wrap5 } from "../../../shared/components/ReviewStyle";
+import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3, Wrap5 } from "../../../shared/styles/ReviewStyles.js";
 import useDevice from '../../../shared/hooks/useDevice.js';
 import { useRecoilState } from "recoil";
 import { reviewState } from "../../themeDetail/model/reviewAtom.jsx";
@@ -10,7 +10,7 @@ import { reviewState } from "../../themeDetail/model/reviewAtom.jsx";
 export default function ReviewFirst({themeData}) {
 
   // 반응형
-  const { isDesktop, isTablet, isMobile } = useDevice();
+  const { isMobile } = useDevice();
 
   // 상태 관리
   const [review, setReview] = useRecoilState(reviewState);

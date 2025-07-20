@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { useRecoilState } from 'recoil';
 import { activeLevelState } from '../model/levelAtom.jsx';
 import useDevice from "../../../shared/hooks/useDevice";
-import { Swiper, SwiperSlide } from "swiper/react";
 import MainIcon from '../../../shared/assets/icons/genre/movieIcon.svg';
 import CircleInfoIcon from '../../../shared/assets/icons/common/circleinfo.svg';
 import { levels } from '../model/levelData';
@@ -12,7 +11,7 @@ import InfoBox from '../../../shared/components/InfoBox.jsx';
 export default function LevelTabSection() {
     
   // 반응형 함수
-  const { isDesktop, isMobile, isTablet } = useDevice();
+  const { isMobile } = useDevice();
 
   // state 관리
   const [activeLevel, setActiveLevel] = useRecoilState(activeLevelState);
@@ -49,11 +48,9 @@ export default function LevelTabSection() {
                 onMouseLeave={() => setIsInfoOpen(false)}
               >
                 <InfoIcon src={CircleInfoIcon} />
-                {isInfoOpen && (
-                  <InfoPopup ref={infoRef}>
-                    <InfoBox />
-                  </InfoPopup>
-                )}
+                <InfoPopup ref={infoRef} isInfoOpen={isInfoOpen}>
+                  <InfoBox />
+                </InfoPopup>
               </IconWrapper>)}
               {isMobile && (<IconWrapper>
                 <InfoIcon src={CircleInfoIcon} onClick={() => setIsInfoOpen(prev => !prev)} />
@@ -203,6 +200,9 @@ const IconWrapper = styled.div`
 `;
 
 const InfoPopup = styled.div`
+  visibility: ${({ isInfoOpen }) => (isInfoOpen ? 'visible' : 'hidden')};
+  opacity: ${({ isInfoOpen }) => (isInfoOpen ? '1' : '0')};
+  transition: all 0.2s ease-in-out;
   position: absolute;
   top: 100%;
   left: 100%;
@@ -367,36 +367,4 @@ const LevelButton = styled.div`
     padding: 0rem 0.125rem;
     margin: 0rem;
   }
-`;
-
-const StyledSwiper = styled(Swiper)`
-  width: 100%;
-  height: auto;
-
-  .swiper-pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.1875rem 0.3125rem;
-    box-sizing: border-box;
-    margin-top: 0.5rem;
-    position: relative;
-    bottom: 0rem;
-  }
-
-  .swiper-pagination-bullet {
-    width: 0.1875rem;
-    height: 0.1875rem;
-    background-color: var(--RIU_Monochrome-70, #B3B6C3);
-    opacity: 1;
-  }
-
-  .swiper-pagination-bullet-active {
-    background-color: var(--RIU_Primary-80, #8DA3FF);
-  }
-`;
-const StyledSwiperSlide = styled(SwiperSlide)`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 `;

@@ -6,6 +6,7 @@ import SortFilter from "./filter/SortFilter";
 import useDevice from "../../shared/hooks/useDevice";
 import ResetIcon from '../assets/icons/common/filterIcon/reset.svg';
 
+// 탭 리스트
 const tabs = [
   { id: "people", label: "가격" },
   { id: "sort", label: "정렬" },
