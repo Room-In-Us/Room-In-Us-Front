@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { surveyGenreList } from "../../../mypage/model/surveyGenreList";
+import { surveyGenreList } from "../../../survey/model/surveyGenreList";
 import SurveyTag from "./SurveyTag";
 
 function GenreSection({userInfo}) {

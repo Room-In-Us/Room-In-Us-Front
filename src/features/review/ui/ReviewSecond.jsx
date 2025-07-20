@@ -11,7 +11,7 @@ import { ToggleCheckbox } from './ToggleCheckBox.jsx';
 import PlayerBoxSection from './PlayerBoxSection.jsx';
 import FlexibleRangeSelector from './FlexibleRangeSelector.jsx';
 import HintCounter from "./HintCounter.jsx";
-import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3, Wrap5 } from '../../../shared/components/ReviewStyle.js';
+import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3 } from '../../../shared/styles/ReviewStyles.js';
 import useDevice from '../../../shared/hooks/useDevice.js';
 import InfoBox from '../../../shared/components/InfoBox.jsx';
 import { useRecoilState } from 'recoil';
@@ -20,7 +20,7 @@ import { reviewState } from '../../themeDetail/model/reviewAtom.jsx';
 export default function ReviewSecond({themeData}) {
 
   // 반응형
-  const { isDesktop, isTablet, isMobile } = useDevice();
+  const { isMobile } = useDevice();
 
   // 후기 데이터 상태
   const [review, setReview] = useRecoilState(reviewState);
@@ -194,11 +194,9 @@ export default function ReviewSecond({themeData}) {
                   onMouseLeave={() => setIsInfoOpen(false)}
                 >
                   <CircleInfoIcon />
-                  {isInfoOpen && (
-                    <InfoPopup ref={infoRef}>
-                      <InfoBox />
-                    </InfoPopup>
-                  )}
+                  <InfoPopup ref={infoRef} isInfoOpen={isInfoOpen}>
+                    <InfoBox />
+                  </InfoPopup>
                 </IconWrapper>
               </Wrap>
 
@@ -575,6 +573,9 @@ const IconWrapper = styled.div`
 `;
 
 const InfoPopup = styled.div`
+  visibility: ${({ isInfoOpen }) => (isInfoOpen ? 'visible' : 'hidden')};
+  opacity: ${({ isInfoOpen }) => (isInfoOpen ? '1' : '0')};
+  transition: all 0.2s ease-in-out;
   position: absolute;
   bottom: 0;
   left: 150%;

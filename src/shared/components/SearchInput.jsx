@@ -1,13 +1,14 @@
 import PropTypes from "prop-types";
 import styled from 'styled-components';
 import { useState } from 'react';
-import SearchIcon from '../../shared/assets/icons/common/searchIcon.svg?react';
-import CancelIcon from '../../shared/assets/icons/common/cancelIcon.svg?react';
+import SearchIcon from '../assets/icons/common/searchIcon.svg?react';
+import CancelIcon from '../assets/icons/common/cancelIcon.svg?react';
 
 function SearchInput({ type, keyword, setKeyword, onSearch }) {
 
   const [expanded, setExpanded] = useState(type !== 'header');
 
+  // 검색 버튼 클릭
   const handleSearchClick = (e) => {
     e.stopPropagation();
     if (!expanded) {
@@ -124,7 +125,7 @@ const StyledInput = styled.input`
 `;
 
 const StyledCancelIcon = styled(CancelIcon)`
-  width: 0.875rem;
+  width: 0.625rem;
   flex-shrink: 0;
   cursor: pointer;
   opacity: ${({ expanded }) => (expanded ? '1' : '0')};

@@ -8,7 +8,7 @@ import { likedThemeState } from "../../../like/modal/likeAtom";
 export default function ContentCardSection() {
 
 	// 인원수 필터 상태
-	const [headCount, setHeadCount] = useState(2);
+	const [headCount,] = useState(2);
 
 	const [themeList, setThemeList] = useState([]);
 

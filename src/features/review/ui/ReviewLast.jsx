@@ -1,4 +1,4 @@
-import { FinalWrapper, ThemeImg, ThemeSubText, ThemeTitle, Wrap2 } from "../../../shared/components/ReviewStyle"
+import { FinalWrapper, ThemeImg, ThemeSubText, ThemeTitle, Wrap2 } from "../../../shared/styles/ReviewStyles"
 
 export default function ReviewLast({themeData}) {
   return (

@@ -1,9 +1,9 @@
-import FilterIcon1 from '../../../shared/assets/icons/common/filterIcon/satisfactionstar.svg?react';
-import FilterIcon2 from '../../../shared/assets/icons/common/filterIcon/review.svg?react';
-import FilterIcon3 from '../../../shared/assets/icons/common/filterIcon/price.svg?react';
-import FilterIcon4 from '../../../shared/assets/icons/common/filterIcon/level.svg?react';
-import FilterIcon5 from '../../../shared/assets/icons/common/filterIcon/fearlevel.svg?react';
-import FilterIcon6 from '../../../shared/assets/icons/common/filterIcon/activelevel.svg?react';
+import FilterIcon1 from '../../assets/icons/common/filterIcon/satisfactionstar.svg?react';
+import FilterIcon2 from '../../assets/icons/common/filterIcon/review.svg?react';
+import FilterIcon3 from '../../assets/icons/common/filterIcon/price.svg?react';
+import FilterIcon4 from '../../assets/icons/common/filterIcon/level.svg?react';
+import FilterIcon5 from '../../assets/icons/common/filterIcon/fearlevel.svg?react';
+import FilterIcon6 from '../../assets/icons/common/filterIcon/activelevel.svg?react';
 
 export const peopleOptions = [
   { value: 1, label: "1인" },

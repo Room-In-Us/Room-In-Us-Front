@@ -4,11 +4,11 @@ import { api } from '../../../app/API';
 export const getPreferencesAPI = async () => {
   try {
     const response = await api.get('members/preferences');
-    console.log('성향조회 api 전체 응답: ', response);
+    console.log('성향조회 api 요청 성공: ', response);
 
     return response.data;
   } catch (error) {
-    console.error('성향조회 api 요청 중 오류 발생: ', error);
+    console.error('성향조회 api 요청 실패: ', error);
     throw error;
   }
 };
@@ -18,11 +18,11 @@ export const patchPreferencesAPI = async (data) => {
   try {
     console.log("성향작성 요청 데이터: ", data);
     const response = await api.patch('members/preferences', data);
-    console.log('성향작성 api 전체 응답: ', response);
+    console.log('성향작성 api 요청 성공: ', response);
 
     return response.data;
   } catch (error) {
-    console.error('성향작성 api 요청 중 오류 발생: ', error);
+    console.error('성향작성 api 요청 실패: ', error);
     throw error;
   }
 };

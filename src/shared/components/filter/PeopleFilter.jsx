@@ -10,18 +10,18 @@ import {
   DropdownMenu, 
   DropdownHeader, 
   DropdownItem,
-  MenuWrapper } from "./FilterStyles.js";
-import DropDownImg from "../../../shared/assets/icons/common/dropdown.svg";
-import UnselectedIcon from '../../../shared/assets/icons/common/filterIcon/unselected.svg';
-import SelectedIcon from '../../../shared/assets/icons/common/filterIcon/selected.svg';
-import Icon1 from '../../../shared/assets/icons/genre/camera.svg';
+  MenuWrapper } from "../../styles/FilterStyles.js";
+import DropDownImg from "../../assets/icons/common/dropdown.svg";
+import UnselectedIcon from '../../assets/icons/common/filterIcon/unselected.svg';
+import SelectedIcon from '../../assets/icons/common/filterIcon/selected.svg';
+import Icon1 from '../../assets/icons/genre/camera.svg';
 import useDevice from "../../hooks/useDevice.js";
 import useDropdown from "../../hooks/useDropDown.js";
 import { peopleOptions } from "./OptionList.js";
 
 const PeopleFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) => {
   
-  const { isDesktop, isTablet, isMobile } = useDevice();
+  const { isMobile } = useDevice();
   
   const {
     isOpen,
@@ -81,6 +81,10 @@ const PeopleFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) 
   );
 });
 
+// eslint 에러 방지용 displayName 정의
+PeopleFilter.displayName = "PeopleFilter";
+
+// CSS
 export const RadioIcon = styled.img`
   display: flex;
   width: 0.9375rem;
@@ -110,6 +114,5 @@ export const RadioLabel = styled.div`
     font-size: 0.75rem;
   }
 `;
-
 
 export default PeopleFilter;

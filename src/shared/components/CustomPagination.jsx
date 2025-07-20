@@ -7,7 +7,7 @@ import NavDoubleLeft from '../assets/icons/common/chevrondoubleleft.svg?react';
 
 export default function CustomPagination({ currentPage, totalPages, onPageChange }) {
   
-  const { isDesktop, isTablet, isMobile } = useDevice();
+  const { isMobile } = useDevice();
 
   const pageJumpSize = isMobile ? 5 : 10;
 

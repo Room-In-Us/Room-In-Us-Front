@@ -8,7 +8,7 @@ import { reservationSortAtom } from '../../model/reservationAtom';
 export default function ReservationDropDown() {
 
   const [isOpen, setIsOpen] = useState(false);
-  const [sortOption, setSortOption] = useRecoilState(reservationSortAtom);
+  const [, setSortOption] = useRecoilState(reservationSortAtom);
   const dropdownRef = useRef(null);
 
   const handleSelect = (option) => {

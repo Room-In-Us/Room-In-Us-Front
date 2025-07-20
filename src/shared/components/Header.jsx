@@ -100,7 +100,7 @@ function Header() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [location.pathname]);
+  }, [location.pathname, isMobile]);
 
   // 로그아웃 함수
   const handleLogout = () => {

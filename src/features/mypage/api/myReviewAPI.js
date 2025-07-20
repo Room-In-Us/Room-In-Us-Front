@@ -12,11 +12,11 @@ export const getMyReviewAPI = async (page, size, sortOption) => {
     }
 
     const response = await api.get('members/reviews', { params });
-    console.log('작성한 후기 목록 api 전체 응답: ', response);
+    console.log('작성한 후기 목록 api 요청 성공: ', response);
 
     return response.data;
   } catch (error) {
-    console.error('작성한 후기 목록 api 요청 중 오류 발생: ', error);
+    console.error('작성한 후기 목록 api 요청 실패: ', error);
     throw error;
   }
 }

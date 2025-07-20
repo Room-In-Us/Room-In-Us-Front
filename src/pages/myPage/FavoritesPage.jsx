@@ -8,7 +8,7 @@ import useDevice from "../../shared/hooks/useDevice";
 function FavoritesPage() {
   const navigate = useNavigate();
 
-  const { isDesktop, isTablet, isMobile } = useDevice();
+  const { isMobile } = useDevice();
 
   return (
     <PageWrapper>

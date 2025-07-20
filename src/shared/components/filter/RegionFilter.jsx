@@ -6,9 +6,9 @@ import {
   FilterTextWrapper,
   DropdownHeader,
   DropDownIcon,
-  MenuWrapper } from "./FilterStyles.js";
-import Location from '../../../shared/assets/icons/genre/location.svg?react';
-import DropDownImg from '../../../shared/assets/icons/common/dropdown.svg';
+  MenuWrapper } from "../../styles/FilterStyles.js";
+import Location from '../../assets/icons/genre/location.svg?react';
+import DropDownImg from '../../assets/icons/common/dropdown.svg';
 import useDevice from "../../hooks/useDevice.js";
 import useDropdown from "../../hooks/useDropDown.js";
 
@@ -25,12 +25,10 @@ const RegionFilter = forwardRef(({
   onZoneSelect,
   isAllZoneSelected,
  }, ref) => {
-  const { isMobile, isTablet, isDeskTop } = useDevice();
+  const { isMobile } = useDevice();
 
   const {
     isOpen,
-    handleSelect,
-    selected,
     toggleDropdown,
     position,
     triggerRef: filterRef,
@@ -185,6 +183,10 @@ const RegionFilter = forwardRef(({
   );
 })
 
+// eslint 에러 방지용 displayName 정의
+RegionFilter.displayName = "RegionFilter";
+
+// CSS
 const FilterIcon = styled(Location)`
   display: flex;
   width: 0.9375rem;

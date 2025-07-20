@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import GoogleMapComponent from "../features/location/ui/map/GoogleMapComponent";
+import GoogleMapComponent from "../features/location/ui/GoogleMapComponent";
 import MarkerIcon from "../shared/assets/icons/location/markerIcon.svg?react";
 import ArrowIcon from "../shared/assets/icons/location/arrowIcon.svg?react";
 import StationCard from "../features/location/ui/StationCard";

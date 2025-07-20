@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
 import { surveyState } from "../../model/surveyAtom";
-import { preferredElementList, preferredDeviceList, preferredActivityList } from "../../model/surveyPreferenceList";
+import { preferredElementList, preferredDeviceList, preferredActivityList } from "../../../survey/model/surveyPreferenceList";
 import SurveyTag from "./SurveyTag";
 
 function PreferenceSection() {

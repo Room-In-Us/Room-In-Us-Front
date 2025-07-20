@@ -21,10 +21,10 @@ export const getLevelListAPI = async (proficiency, headcount, page, size, sortOp
     }
     
     const response = await api.get(`themes/proficiency`, { params });
-    console.log('숙련도 기반 방탈출 카페 테마 목록 조회 api 요청 결과:', response);
+    console.log('숙련도 기반 방탈출 카페 테마 목록 조회 api 요청 성공:', response);
     return response.data;
   } catch (error) {
-    console.error('API 요청 중 오류 발생:', error);
+    console.error('숙련도 기반 방탈출 카페 테마 목록 조회 api 요청 실패:', error);
     throw error;
   }
 };

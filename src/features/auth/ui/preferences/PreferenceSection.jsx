@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { preferredElementList, preferredDeviceList, preferredActivityList } from "../../../mypage/model/surveyPreferenceList";
+import { preferredElementList, preferredDeviceList, preferredActivityList } from "../../../survey/model/surveyPreferenceList";
 import SurveyTag from "./SurveyTag";
 
 function PreferenceSection({elementInfo, deviceInfo, activityInfo}) {

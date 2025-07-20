@@ -10,16 +10,16 @@ import {
   DropdownMenu, 
   DropdownHeader, 
   DropdownItem,
-  MenuWrapper } from "./FilterStyles.js";
-import Satisfaction from '../../../shared/assets/icons/genre/satisfaction.svg';
-import DropDownImg from "../../../shared/assets/icons/common/dropdown.svg";
-import Check from '../../../shared/assets/icons/common/filterIcon/check.svg';
+  MenuWrapper } from "../../styles/FilterStyles.js";
+import Satisfaction from '../../assets/icons/genre/satisfaction.svg';
+import DropDownImg from '../../assets/icons/common/dropdown.svg';
+import Check from '../../assets/icons/common/filterIcon/check.svg';
 import useDevice from "../../hooks/useDevice.js";
 import useDropdown from "../../hooks/useDropDown.js"; 
 import { sortOptions } from "./OptionList.js";
 
 const SortFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) => {
-  const { isMobile, isTablet, isDeskTop } = useDevice();
+  const { isMobile } = useDevice();
   const {
     isOpen,
     selected,
@@ -86,6 +86,10 @@ const SortFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) =>
   );
 })
 
+// eslint 에러 방지용 displayName 정의
+SortFilter.displayName = "SortFilter";
+
+// CSS
 const StyledIcon = styled.div`
   display: flex;
   width: 0.9375rem;

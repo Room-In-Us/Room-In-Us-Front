@@ -9,7 +9,7 @@ import { formatDateToDot } from "../../../../shared/utils/dataUtils";
 
 export default function ReviewCard({ data }) {
 
-  const { isDesktop, isTablet, isMobile } = useDevice();
+  const { isMobile } = useDevice();
 
   const {
     themeId,

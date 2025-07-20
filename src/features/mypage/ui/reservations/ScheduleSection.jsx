@@ -29,7 +29,7 @@ export default function ScheduleSection() {
         [yearMonth]: allReservations,
       }));
     });
-  }, [currentMonth]);
+  }, [currentMonth, setReservationList, yearMonth]);
 
   const grouped = reservations.reduce((acc, item) => {
     const date = format(new Date(item.reservedAt), 'yyyy년 M월 d일');

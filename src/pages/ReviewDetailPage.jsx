@@ -5,7 +5,7 @@ import LeftArrowIcon from "../shared/assets/icons/themeDetail/leftArrow.svg?reac
 import ThemeOverviewCard from "../features/themeDetail/ui/ThemeOverviewCard";
 import ReviewInfoSection from "../features/reviewDetail/ui/ReviewInfoSection";
 import { useRecoilValue } from 'recoil';
-import ReviewWriteModal from "../features/themeDetail/ui/ReviewWriteModal";
+import ReviewWriteModal from "../features/review/ui/ReviewWriteModal";
 import { reviewModalState } from "../features/themeDetail/model/reviewAtom";
 import { getThemeDetailAPI } from "../features/themeDetail/api/themeDetailAPI";
 

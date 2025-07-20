@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import SearchInput from '../../../shared/components/SearchInput';
 import ContentCard from '../../../shared/components/ContentCard';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getThemesAPI } from '../../../features/search/api/getSearchAPI';
 import CustomPagination from '../../../shared/components/CustomPagination';
 import useDevice from '../../../shared/hooks/useDevice';
@@ -9,7 +9,7 @@ import { useLocation } from 'react-router-dom';
 
 export default function SearchSection() {
 
-  const { isMobile, isTablet, isDesktop } = useDevice();
+  const { isMobile } = useDevice();
 
   const location = useLocation();
   const keywordFromState = location.state?.keyword || '';
@@ -31,16 +31,16 @@ export default function SearchSection() {
     setCurrentPage(page);
   };
 
-  const handleSearch = async () => {
+  const handleSearch = useCallback(async () => {
     try {
-      const data = await getThemesAPI({ keyword: keyword, page: 1, size: 10000 });
+      const data = await getThemesAPI({ keyword, page: 1, size: 10000 });
       setThemes(data.contents || []);
       setCurrentPage(1);
     } catch (error) {
       console.error('검색 실패:', error);
       setThemes([]);
     }
-  };
+  }, [keyword]); 
 
   useEffect(() => {
     setKeyword(keywordFromState);
@@ -48,9 +48,9 @@ export default function SearchSection() {
 
   useEffect(() => {
     if (keyword) {
-      handleSearch(keyword);
+      handleSearch();
     }
-  }, [keyword]);
+  }, [keyword, handleSearch]);
 
   return (
     <Wrap>

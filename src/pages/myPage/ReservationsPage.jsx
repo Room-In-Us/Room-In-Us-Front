@@ -8,7 +8,7 @@ import ScheduleSection from "../../features/mypage/ui/reservations/ScheduleSecti
 function ReservationsPage() {
   const navigate = useNavigate();
 
-  const { isDesktop, isTablet, isMobile } = useDevice();
+  const { isMobile } = useDevice();
 
   return (
     <PageWrapper>

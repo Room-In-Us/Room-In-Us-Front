@@ -22,10 +22,10 @@ export const getGenreListAPI = async (genre, headcount, page, size, sortOption, 
 
       
     const response = await api.get(`themes/genre`, { params });
-    console.log('장르 기반 방탈출 카페 테마 목록 조회 api 요청 결과:', response);
+    console.log('장르 기반 방탈출 카페 테마 목록 조회 api 요청 성공:', response);
     return response.data;
   } catch (error) {
-    console.error('API 요청 중 오류 발생:', error);
+    console.error('장르 기반 방탈출 카페 테마 목록 조회 api 요청 실패:', error);
     throw error;
   }
 };

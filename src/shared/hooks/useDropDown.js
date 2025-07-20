@@ -78,7 +78,6 @@ export default function useDropdown({
     setSelected(defaultValue);
   }, [defaultValue]);
   
-  
   return {
     isOpen,
     toggleDropdown,
