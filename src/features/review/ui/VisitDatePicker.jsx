@@ -28,6 +28,9 @@ const CustomDateInput = React.forwardRef(({ disabled, value, onToggle }, ref) =>
   );
 });
 
+// eslint 에러 방지
+CustomDateInput.displayName = "CustomDateInput";
+
 export default function VisitDatePicker({ disabled }) {
 
   const [isOpen, setIsOpen] = useState(false);

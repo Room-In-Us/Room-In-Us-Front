@@ -1,28 +1,24 @@
 import styled from "styled-components";
 import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { reviewModalState, reviewSectionState } from "../model/reviewAtom.jsx";
-import ReviewFirst from "../../review/ui/ReviewFirst.jsx";
-import ReviewSecond from "../../review/ui/ReviewSecond.jsx";
-import ReviewThird from "../../review/ui/ReviewThird.jsx";
+import { reviewModalState, reviewSectionState } from "../../themeDetail/model/reviewAtom.jsx";
+import ReviewFirst from "./ReviewFirst.jsx";
+import ReviewSecond from "./ReviewSecond.jsx";
+import ReviewThird from "./ReviewThird.jsx";
 import CloseIcon from "../../../shared/assets/icons/reviewWrite/closeicon.svg";
 import LikeIcon from "../../../shared/assets/icons/reviewWrite/likeIcon.svg";
-import useDevice from "../../../shared/hooks/useDevice";
-import ReviewLast from "../../review/ui/ReviewLast.jsx";
-import { postReviewAPI } from "../../review/api/postReviewAPI.js";
-import { reviewState } from "../model/reviewAtom.jsx";
+import ReviewLast from "./ReviewLast.jsx";
+import { postReviewAPI } from "../api/postReviewAPI.js";
+import { reviewState } from "../../themeDetail/model/reviewAtom.jsx";
 
 function ReviewWriteModal({themeData}) {
-
-  // 반응형
-  const { isDesktop, isTablet, isMobile } = useDevice();
 
   // 상태 관리
   const setReviewModalOpen = useSetRecoilState(reviewModalState);
   const [reviewSection, setReviewSection] = useRecoilState(reviewSectionState);
   const isModalOpen = useRecoilValue(reviewModalState);
   const reviewData = useRecoilValue(reviewState);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [, setIsSubmitting] = useState(false);
 
   // 모달 닫기 핸들러
   const handleClose = () => {
@@ -37,10 +33,10 @@ function ReviewWriteModal({themeData}) {
   }, [isModalOpen, setReviewSection]);
 
   const sectionComponents = [
-    <ReviewFirst themeData={themeData} />, 
-    <ReviewSecond themeData={themeData} />, 
-    <ReviewThird themeData={themeData} />, 
-    <ReviewLast themeData={themeData} />
+    <ReviewFirst themeData={themeData} key="first" />, 
+    <ReviewSecond themeData={themeData} key="second" />, 
+    <ReviewThird themeData={themeData} key="third" />, 
+    <ReviewLast themeData={themeData} key="last" />
   ];
 
   const currentSectionIndex = ["first", "second", "third", "last"].indexOf(reviewSection);

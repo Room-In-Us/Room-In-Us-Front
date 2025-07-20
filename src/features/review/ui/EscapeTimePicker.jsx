@@ -17,12 +17,12 @@ export default function EscapeTimePicker({ disabled, value = { min: 0, sec: 0 },
         <ClockIcon src={Clock} />
         <Select $disabled={disabled} value={value.min} onChange={handleMinuteChange}>
           {Array.from({ length: 60 }, (_, i) => (
-            <option key={`m-${i}`} value={i}>{i}'</option>
+            <option key={`m-${i}`} value={i}>{i}&apos;</option>
           ))}
         </Select>
         <Select $disabled={disabled} value={value.sec} onChange={handleSecondChange}>
           {Array.from({ length: 60 }, (_, i) => (
-            <option key={`s-${i}`} value={i}>{i}''</option>
+            <option key={`s-${i}`} value={i}>{i}&quot;</option>
           ))}
         </Select>
       </Containor>

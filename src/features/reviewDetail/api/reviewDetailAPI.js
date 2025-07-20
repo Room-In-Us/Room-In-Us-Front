@@ -4,10 +4,10 @@ import { api } from '../../../app/API';
 export const getReviewDetailAPI = async (themeId, reviewId) => {
   try {
     const response = await api.get(`themes/${themeId}/reviews/${reviewId}`);
-    console.log('후기 상세 조회 api 요청 결과:', response);
+    console.log('후기 상세 조회 api 요청 성공:', response);
     return response.data;
   } catch (error) {
-    console.error('후기 상세 조회 API 요청 중 오류 발생:', error);
+    console.error('후기 상세 조회 api 요청 실패:', error);
     throw error;
   }
 };

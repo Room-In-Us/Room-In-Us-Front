@@ -75,9 +75,7 @@ export default function EscapeResultDetails ({selected}) {
       </Wrapper2>
     );
   } else {
-    return (
-      <></>
-    );
+    return null;
   }
 }
 
