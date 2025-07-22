@@ -156,6 +156,11 @@ const InfoWrapper = styled.div`
 const StyledLogoIcon = styled(LogoIcon)`
   width: 5.625rem;
   height: 5.625rem;
+
+  @media (max-width: 768px) {
+    width: 4.375rem;
+    height: 4.375rem;
+  }
 `;
 
 const EmailWrapper = styled.div`
@@ -184,6 +189,11 @@ const NicknameInput = styled.input`
   font-family: 'Pretendard-ExtraBold';
   font-size: 1.375rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    width: 16.25rem;
+    font-size: 1rem;
+  }
 `;
 
 const Nickname = styled.div`
@@ -193,6 +203,10 @@ const Nickname = styled.div`
   font-size: 1.375rem;
   display: flex;
   align-items: center;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
 const Email = styled.div`
@@ -200,6 +214,10 @@ const Email = styled.div`
   text-align: center;
   font-family: 'Pretendard-Bold';
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const NicknameUpdateButton = styled.div`
@@ -248,6 +266,10 @@ const NavigatorWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 1.25rem;
+
+  @media (max-width: 768px) {
+    width: 90vw;
+  }
 `;
 
 const NavigatorBox = styled.div`
@@ -266,6 +288,10 @@ const NavigatorText = styled.div`
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Medium';
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const StyledArrowIcon = styled(ArrowIcon)`
