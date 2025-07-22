@@ -54,6 +54,10 @@ const Title = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1.125rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const ContentWrapper = styled.div`

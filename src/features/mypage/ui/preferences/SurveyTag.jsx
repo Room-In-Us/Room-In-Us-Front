@@ -40,4 +40,10 @@ const TagWrapper = styled.div`
   pointer-events: ${({ disabled }) => disabled ? 'none' : 'auto'};
   opacity: ${({ disabled }) => disabled ? 0.4 : 1};
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    height: 1.625rem;
+    font-size: 0.6875rem;
+    letter-spacing: -0.01719rem;
+  }
 `;

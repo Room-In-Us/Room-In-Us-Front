@@ -67,6 +67,10 @@ const SectionWrapper = styled.div`
   align-items: flex-start;
   gap: 1.25rem;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 0.875rem;
+  }
 `;
 
 const Title = styled.div`
@@ -74,12 +78,20 @@ const Title = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1.125rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const ListWrapper = styled.div`
   display: flex;
   flex-flow: wrap;
   gap: 0.75rem;
+
+  @media (max-width: 768px) {
+    gap: 0.875rem 0.375rem;
+  }
 `;
 
 const CheckDescription = styled.div`
@@ -91,4 +103,8 @@ const CheckDescription = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
