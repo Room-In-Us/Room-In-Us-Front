@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import DropDown from "../../../shared/assets/icons/common/dropdown.svg?react";
+import DropDown from "../../../shared/assets/icons/common/arrow/downArrow.svg?react";
 import Overall from "../../../shared/assets/icons/reviewWrite/overallIcon.svg";
 
 export default function ReviewDropdown({ 

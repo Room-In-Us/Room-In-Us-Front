@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
-import LeftArrowIcon from "../shared/assets/icons/themeDetail/leftArrow.svg?react";
+import LeftArrowIcon from "../shared/assets/icons/common/arrow/leftArrow.svg?react";
 import ThemeOverviewCard from "../features/themeDetail/ui/ThemeOverviewCard";
 import ThemeInfoSection from "../features/themeDetail/ui/ThemeInfoSection";
 import { useRecoilValue } from 'recoil';
@@ -100,6 +100,7 @@ const StyledLeftArrowIcon = styled(LeftArrowIcon)`
   width: 1.25rem;
   height: 1.25rem;
   cursor: pointer;
+  fill: var(--RIU_Monochrome-500, #515467);
 `;
 
 const BackButtonText = styled.div`

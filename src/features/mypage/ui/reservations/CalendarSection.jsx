@@ -1,6 +1,6 @@
 import styled from 'styled-components'
-import LeftArrow from '../../../../shared/assets/icons/myPage/leftArrow.svg?react'
-import RightArrow from '../../../../shared/assets/icons/myPage/rightArrow.svg?react'
+import LeftArrow from '../../../../shared/assets/icons/common/arrow/leftArrow.svg?react'
+import RightArrow from '../../../../shared/assets/icons/common/arrow/rightArrow.svg?react'
 import Logo from '../../../../shared/assets/icons/common/logo.svg?react'
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameMonth, format } from 'date-fns';
 import { useRecoilState, useRecoilValue } from 'recoil';

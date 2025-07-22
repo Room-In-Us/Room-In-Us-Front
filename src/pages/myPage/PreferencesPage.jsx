@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import LeftArrow from "../../shared/assets/icons/myPage/leftArrow.svg?react";
+import LeftArrow from "../../shared/assets/icons/common/arrow/leftArrow.svg?react";
 import ProficiencySection from "../../features/mypage/ui/preferences/ProficiencySection";
 import GenreSection from "../../features/mypage/ui/preferences/GenreSection";
 import HeadcountSection from "../../features/mypage/ui/preferences/HeadcountSection";
@@ -139,6 +139,10 @@ const BackButtonWrapper = styled.div`
 const StyledLeftArrow = styled(LeftArrow)`
   width: 1.25rem;
   height: 1.25rem;
+
+  path {
+    fill: var(--RIU_Monochrome-200, #717486);
+  }
 `;
 
 const BackButtonText = styled.div`

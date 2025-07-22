@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import DropDown from "../../../shared/assets/icons/common/dropdown.svg?react";
+import DropDown from "../../../shared/assets/icons/common/arrow/downArrow.svg?react";
 import Clock from "../../../shared/assets/icons/reviewWrite/clock.svg";
 
 export default function EscapeTimePicker({ disabled, value = { min: 0, sec: 0 }, onChange }) {

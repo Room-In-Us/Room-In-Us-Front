@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import LeftArrowIcon from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
+import LeftArrowIcon from "../../../shared/assets/icons/common/arrow/leftArrow.svg?react";
 import LocationIcon from "../../../shared/assets/icons/location/storeLocationIcon.svg?react";
 import LinkIcon from "../../../shared/assets/icons/location/storeLinkIcon.svg?react";
 import TelIcon from "../../../shared/assets/icons/location/storeTelIcon.svg?react";

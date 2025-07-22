@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import LogoIcon from '../../shared/assets/icons/common/logo.svg?react';
 import UpdateIcon from '../../shared/assets/icons/myPage/updateIcon.svg?react';
-import ArrowIcon from '../../shared/assets/icons/myPage/rightArrow.svg?react';
+import ArrowIcon from '../../shared/assets/icons/common/arrow/rightArrow.svg?react';
 import { getMemberInfoAPI } from "../../features/auth/api/memberAPI";
 import { patchNicknameAPI } from "../../features/mypage/api/nicknameAPI";
 import CancelIcon from '../../shared/assets/icons/common/cancelIcon.svg?react';
@@ -271,4 +271,8 @@ const NavigatorText = styled.div`
 const StyledArrowIcon = styled(ArrowIcon)`
   width: 0.9375rem;
   height: 0.9375rem;
+
+  path {
+    fill: var(--RIU_Monochrome-500, #515467);
+  }
 `;

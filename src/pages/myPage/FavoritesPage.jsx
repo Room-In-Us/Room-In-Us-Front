@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import LeftArrow from "../../shared/assets/icons/myPage/leftArrow.svg?react";
+import LeftArrow from "../../shared/assets/icons/common/arrow/leftArrow.svg?react";
 import FavoriteDropDown from "../../features/mypage/ui/favorites/FavoriteDropDown";
 import ContentCardSection from "../../features/mypage/ui/favorites/ContentCardSection";
 import useDevice from "../../shared/hooks/useDevice";
@@ -72,6 +72,10 @@ const BackButtonWrapper = styled.div`
 const StyledLeftArrow = styled(LeftArrow)`
   width: 1.25rem;
   height: 1.25rem;
+
+  path {
+    fill: var(--RIU_Monochrome-200, #717486);
+  }
 `;
 
 const BackButtonText = styled.div`

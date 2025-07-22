@@ -5,7 +5,7 @@ import MemberIcon from "../../../shared/assets/icons/themeDetail/reviewMemberIco
 import EscapeIcon from "../../../shared/assets/icons/themeDetail/reviewEscapeIcon.svg?react";
 import HintIcon from "../../../shared/assets/icons/themeDetail/reviewHintIcon.svg?react";
 import TimeIcon from "../../../shared/assets/icons/themeDetail/reviewTimeIcon.svg?react";
-import RightArrowIcon from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
+import RightArrowIcon from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
 import PropTypes from 'prop-types';
 import { reviewEnumConversion, proficiencyConversion, horrorPositionConversion, formatDateToDot, convertTimeToMinutes } from "../../../shared/utils/dataUtils";
 import { useNavigate, useParams } from "react-router-dom";

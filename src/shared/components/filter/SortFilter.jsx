@@ -12,7 +12,7 @@ import {
   DropdownItem,
   MenuWrapper } from "../../styles/FilterStyles.js";
 import Satisfaction from '../../assets/icons/genre/satisfaction.svg';
-import DropDownImg from '../../assets/icons/common/dropdown.svg';
+import DropDownImg from '../../assets/icons/common/arrow/downArrow.svg';
 import Check from '../../assets/icons/common/filterIcon/check.svg';
 import useDevice from "../../hooks/useDevice.js";
 import useDropdown from "../../hooks/useDropDown.js"; 

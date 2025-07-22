@@ -5,9 +5,9 @@ import PropTypes from 'prop-types';
 import ThumbnailImg from '../../../shared/assets/images/common/thumbnailImg.png';
 import AwardsIcon from '../../../shared/assets/icons/common/awards.svg?react';
 import CautionIcon from '../../../shared/assets/icons/common/cautionIcon.svg?react';
-import HeartIcon from '../../../shared/assets/icons/common/heart_default.svg?react';
-import HeartIcon2 from '../../../shared/assets/icons/common/heart_hover.svg?react';
-import HeartIcon3 from '../../../shared/assets/icons/common/heart_active.svg?react';
+import HeartIcon from '../../../shared/assets/icons/common/heart/heart_default.svg?react';
+import HeartIcon2 from '../../../shared/assets/icons/common/heart/heart_hover.svg?react';
+import HeartIcon3 from '../../../shared/assets/icons/common/heart/heart_active.svg?react';
 import { formatNumberWithCommas } from '../../../shared/utils/formatUtils';
 import { levelTextConversion, genreListConversion, satisfactionConversion } from '../../../shared/utils/dataUtils';
 
