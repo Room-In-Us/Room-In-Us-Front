@@ -126,6 +126,10 @@ const Title = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1.125rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const CheckWrapper = styled.div`
@@ -158,6 +162,10 @@ const ListTitle = styled.div`
   font-size: 0.875rem;
   line-height: 130%;
   letter-spacing: -0.02188rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
 
 const ListDescription =styled.div`
@@ -165,6 +173,10 @@ const ListDescription =styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
 
 const ElementList = styled.div`
@@ -172,6 +184,13 @@ const ElementList = styled.div`
   width: 27.5rem;
   justify-content: space-between;
   align-items: center;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: start;
+    flex-wrap: wrap;
+    gap: 0.8125rem 0.625rem;
+  }
 `;
 
 const List = styled.div`
@@ -179,4 +198,10 @@ const List = styled.div`
   display: flex;
   align-items: center;
   gap: 0.625rem;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 0.8125rem 0.625rem;
+  }
 `;

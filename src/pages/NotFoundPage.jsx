@@ -44,6 +44,10 @@ font-size: 70%;
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media (max-width: 768px) {
+    font-size: 100%;
+  }
 `;
 
 const ContentWrapper = styled.div`
@@ -52,12 +56,23 @@ const ContentWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 2.5em;
+
+  @media (max-width: 768px) {
+    width: 19.6875em;
+    gap: 1.875em;
+  }
 `;
 
 const StyledErrorImage = styled.img`
   height: 21.43669em;
   align-self: stretch;
   aspect-ratio: 436.00/342.99;
+
+  @media (max-width: 768px) {
+    width: 16.875em;
+    height: 13.25em;
+    aspect-ratio: 135/106;
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -70,6 +85,11 @@ const ButtonWrapper = styled.div`
   gap: 1.4375em;
   align-self: stretch;
   background: var(--RIU_Monochrome-10, #F9F9FB);
+
+  @media (max-width: 768px) {
+    padding: 1.875em;
+    gap: 1.4375em;
+  }
 `;
 
 const TextWrapper = styled.div`
@@ -78,6 +98,10 @@ const TextWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 1em;
+
+  @media (max-width: 768px) {
+    width: 200%;
+  }
 `;
 
 const Title = styled.div`
@@ -85,6 +109,10 @@ const Title = styled.div`
   font-family: 'Pretendard-Black';
   font-size: 3em;
   line-height: 100%;
+
+  @media (max-width: 768px) {
+    font-size: 2.25em;
+  }
 `;
 
 const Description = styled.div`
@@ -92,6 +120,10 @@ const Description = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 1em;
   line-height: 160%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const Button = styled.div`
@@ -139,4 +171,8 @@ const ButtonText = styled.div`
   font-size: 1em;
   line-height: 130%;
   z-index: 10;
+
+  @media (max-width: 768px) {
+    font-size: 0.875em;
+  }
 `;

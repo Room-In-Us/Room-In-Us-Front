@@ -75,6 +75,10 @@ const Title = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1.125rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const ListWrapper = styled.div`
@@ -83,6 +87,10 @@ const ListWrapper = styled.div`
   align-items: flex-start;
   gap: 1.25rem;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 1rem;
+  }
 `;
 
 const List = styled.div`
@@ -94,15 +102,20 @@ const List = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875rem;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
 
 const RadioButton = styled.button`
+font-size: 1rem;
   all: unset;
   border: 1.5px solid var(--RIU_Primary-100, #718FF2);
-  border-radius: 1.875rem;
-  margin: 0.125rem;
-  width: 1rem;
-  height: 1rem;
+  border-radius: 1.875em;
+  margin: 0.125em;
+  width: 1em;
+  height: 1em;
   position: relative;
   cursor: pointer;
 
@@ -111,12 +124,16 @@ const RadioButton = styled.button`
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 0.5em;
+    height: 0.5em;
     background-color: var(--RIU_Primary-100, #718FF2);
-    border-radius: 1.875rem;
+    border-radius: 1.875em;
     transform: translate(-50%, -50%);
     opacity: ${props => (props.selected ? 1 : 0)};
     transition: opacity 0.2s ease-in-out;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
   }
 `;

@@ -11,10 +11,12 @@ import InfoSection from "../../features/mypage/ui/preferences/InfoSection";
 import { getPreferencesAPI, patchPreferencesAPI } from "../../features/mypage/api/surveyAPI";
 import { surveyState } from "../../features/mypage/model/surveyAtom";
 import { useRecoilState } from 'recoil';
+import useDevice from "../../shared/hooks/useDevice";
 
 function PreferencesPage() {
   const [survey, setSurvey ] = useRecoilState(surveyState);
   const navigate = useNavigate();
+  const { isMobile } = useDevice();
 
   // 성향조회 호출 (초기값 설정)
   useEffect(() => {
@@ -66,12 +68,14 @@ function PreferencesPage() {
     <PageWrapper>
       <ContentWrapper>
         {/* 뒤로가기 버튼 */}
-        <BackButtonWrapper onClick={() => navigate('/mypage')}>
-          <StyledLeftArrow/>
-          <BackButtonText>
-            마이페이지로 돌아가기
-          </BackButtonText>
-        </BackButtonWrapper>
+        {!isMobile && (
+          <BackButtonWrapper onClick={() => navigate('/mypage')}>
+            <StyledLeftArrow/>
+            <BackButtonText>
+              마이페이지로 돌아가기
+            </BackButtonText>
+          </BackButtonWrapper>
+        )}
 
         {/* 타이틀 영역 */}
         <TitleWrapper>
@@ -127,6 +131,12 @@ const ContentWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 2.5rem;
+
+  @media (max-width: 768px) {
+    margin-bottom: 1.88rem;
+    width: 90vw;
+    gap: 1.875rem;
+  }
 `;
 
 const BackButtonWrapper = styled.div`
@@ -164,12 +174,20 @@ const Title = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1.5rem;
   line-height: 130%; /* 1.95rem */
+
+  @media (max-width: 768px) {
+    font-size: 1.125rem;
+  }
 `;
 
 const Description = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Medium';
   line-height: 130%; /* 1.3rem */
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const StyledButton = styled.button`
@@ -211,4 +229,8 @@ const ButtonText = styled.div`
   line-height: 130%;
   z-index: 1;
   transition: all 0.2s ease-in-out;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
