@@ -11,7 +11,7 @@ import {
   DropdownHeader, 
   DropdownItem,
   MenuWrapper } from "../../styles/FilterStyles.js";
-import DropDownImg from "../../assets/icons/common/dropdown.svg";
+import DropDownImg from "../../assets/icons/common/arrow/downArrow.svg";
 import UnselectedIcon from '../../assets/icons/common/filterIcon/unselected.svg';
 import SelectedIcon from '../../assets/icons/common/filterIcon/selected.svg';
 import Icon1 from '../../assets/icons/genre/camera.svg';

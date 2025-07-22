@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { surveySectionState, surveyState, modalState } from "../model/surveyAtom";
-import RightArrow from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
-import LeftArrow from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
+import RightArrow from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
+import LeftArrow from "../../../shared/assets/icons/common/arrow/leftArrow.svg?react";
 import SurveyImage from "../../../shared/assets/images/survey/surveyImage4.png";
 import { preferredElementList, preferredDeviceList, preferredActivityList } from "../model/surveyPreferenceList";
 import SurveyTag from "./SurveyTag";

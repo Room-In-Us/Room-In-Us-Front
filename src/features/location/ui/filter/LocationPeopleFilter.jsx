@@ -11,7 +11,7 @@ import {
   DropdownHeader, 
   DropdownItem,
   MenuWrapper } from "../../../../shared/styles/LocationFilterStyles.js";
-import DropDownImg from "../../../../shared/assets/icons/common/dropdown.svg";
+import DropDownImg from "../../../../shared/assets/icons/common/arrow/downArrow.svg";
 import UnselectedIcon from '../../../../shared/assets/icons/common/filterIcon/unselected.svg';
 import SelectedIcon from '../../../../shared/assets/icons/common/filterIcon/selected.svg';
 import Icon1 from '../../../../shared/assets/icons/genre/camera.svg';

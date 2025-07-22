@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import GoogleMapComponent from "../features/location/ui/GoogleMapComponent";
 import MarkerIcon from "../shared/assets/icons/location/markerIcon.svg?react";
-import ArrowIcon from "../shared/assets/icons/location/arrowIcon.svg?react";
+import ArrowIcon from "../shared/assets/icons/common/arrow/rightArrow.svg?react";
 import StationCard from "../features/location/ui/StationCard";
 import StoreCard from "../features/location/ui/StoreCard";
 import { useRecoilState } from "recoil";
@@ -298,4 +298,8 @@ const StoreNumber = styled.div`
 const StyledArrowIcon = styled(ArrowIcon)`
   width: 0.9375em;
   height: 0.9375em;
+
+  path {
+    fill: var(--RIU_Monochrome-200, #717486);
+  }
 `;

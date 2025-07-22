@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import RightArrow from "../../../shared/assets/icons/main/rightArrow.svg?react";
+import RightArrow from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
 
 function LocationSection() {
   const navigate = useNavigate();
@@ -102,15 +102,15 @@ const LocationSearchButton = styled.p`
 
 const StyledRightArrow = styled(RightArrow)`
   margin-left: 0.75rem;
-  width: 0.5rem;
+  width: 0.9375rem;
+  height: 0.9375rem;
+  fill: var(--RIU_Monochrome-500, #515467);
 
   @media (max-width: 1024px) {
     margin-left: 0.46875rem;
-    width: 0.9375rem;
   }
   @media (max-width: 768px) {
     margin-left: 0.125rem;
-    width: 0.9375rem;
   }
 `;
 

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Calendar from "../../../shared/assets/icons/reviewWrite/date.svg";
-import DropDown from "../../../shared/assets/icons/common/dropdown.svg?react";
+import DropDown from "../../../shared/assets/icons/common/arrow/downArrow.svg?react";
 import { useRecoilState } from "recoil";
 import { reviewState } from "../../themeDetail/model/reviewAtom";
 

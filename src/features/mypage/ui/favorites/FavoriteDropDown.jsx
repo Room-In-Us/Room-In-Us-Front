@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import DropDownIcon from '../../../../shared/assets/icons/common/dropdown.svg?react';
+import DropDownIcon from '../../../../shared/assets/icons/common/arrow/downArrow.svg?react';
 
 export default function FavoriteDropDown() {
   return (

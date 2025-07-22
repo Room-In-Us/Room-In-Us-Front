@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import useDevice from "../../shared/hooks/useDevice";
-import NavLeft from '../assets/icons/common/pagenavleft.svg?react';
-import NavRight from '../assets/icons/common/pagenavright.svg?react';
-import NavDoubleRight from '../assets/icons/common/chevrondoubleright.svg?react';
-import NavDoubleLeft from '../assets/icons/common/chevrondoubleleft.svg?react';
+import NavLeft from '../assets/icons/common/arrow/leftArrow.svg?react';
+import NavRight from '../assets/icons/common/arrow/rightArrow.svg?react';
+import NavDoubleRight from '../assets/icons/common/arrow/doubleRightArrow.svg?react';
+import NavDoubleLeft from '../assets/icons/common/arrow/doubleLeftArrow.svg?react';
 
 export default function CustomPagination({ currentPage, totalPages, onPageChange }) {
   

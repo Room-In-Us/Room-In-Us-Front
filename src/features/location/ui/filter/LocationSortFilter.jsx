@@ -12,7 +12,7 @@ import {
   DropdownItem,
   MenuWrapper } from "../../../../shared/styles/LocationFilterStyles.js";
 import Satisfaction from '../../../../shared/assets/icons/genre/satisfaction.svg';
-import DropDownImg from "../../../../shared/assets/icons/common/dropdown.svg";
+import DropDownImg from "../../../../shared/assets/icons/common/arrow/downArrow.svg";
 import Check from '../../../../shared/assets/icons/common/filterIcon/check.svg';
 import useDevice from "../../../../shared/hooks/useDevice.js";
 import useDropdown from "../../../../shared/hooks/useDropDown.js"; 

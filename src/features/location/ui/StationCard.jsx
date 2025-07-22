@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import DownArrowIcon from "../../../shared/assets/icons/location/downArrowIcon.svg?react";
+import DownArrowIcon from "../../../shared/assets/icons/common/arrow/downArrow.svg?react";
 import AwardsIcon from "../../../shared/assets/icons/common/awards.svg?react";
-import ArrowIcon from "../../../shared/assets/icons/location/arrowIcon.svg?react";
-import RightArrowIcon from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
-import LeftArrowIcon from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
+import ArrowIcon from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
+import RightArrowIcon from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
+import LeftArrowIcon from "../../../shared/assets/icons/common/arrow/leftArrow.svg?react";
 import { useRecoilState } from "recoil";
 import { stationCardVisible, storeCardVisible, zoneId, storePageNumber, locationStoreId, locationRegionId, zoneName, storeCount, themeCount, centerLatAndLng, storeLatAndLngList, zoomLevel } from "../../../features/location/model/locationAtom";
 import { getSeoulZonesInfoAPI, getSeoulZoneStoreListAPI, getZoneStoreListAPI } from "../api/locationAPI";
@@ -354,6 +354,10 @@ const StyledDownArrowIcon = styled(DownArrowIcon)`
   height: 1.25em;
   transition: transform 0.2s ease-in-out;
   transform: rotate(${props => (props.isSortOpen ? 180 : 0)}deg);
+
+  path {
+    fill: var(--RIU_Monochrome-200, #717486);
+  }
 `;
 
 const SortModalWrapper = styled.div`

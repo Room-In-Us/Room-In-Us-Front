@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import DropDownIcon from '../../../../shared/assets/icons/common/dropdown.svg?react';
+import DropDownIcon from '../../../../shared/assets/icons/common/arrow/downArrow.svg?react';
 import { useRecoilState } from 'recoil';
 import { reviewSortAtom } from '../../model/reviewSortAtom';
 import { reviewSortOption } from '../../model/reviewDataList';

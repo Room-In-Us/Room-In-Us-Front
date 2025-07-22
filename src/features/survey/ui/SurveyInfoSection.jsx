@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { useRecoilState } from 'recoil';
 import { surveySectionState, surveyState } from "../model/surveyAtom";
 import { useNavigate } from "react-router-dom";
-import RightArrow from "../../../shared/assets/icons/survey/rightArrowIcon.svg?react";
-import LeftArrow from "../../../shared/assets/icons/survey/leftArrowIcon.svg?react";
+import RightArrow from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
+import LeftArrow from "../../../shared/assets/icons/common/arrow/leftArrow.svg?react";
 import SurveyImage from "../../../shared/assets/images/survey/surveyImage6.png";
 import { patchPreferencesAPI } from "../api/surveyAPI";
 
