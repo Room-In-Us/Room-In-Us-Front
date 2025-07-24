@@ -235,6 +235,7 @@ const ReviewWriteButton = styled.div`
 const StyledPencilIcon = styled(PencilIcon)`
   width: 1.25rem;
   height: 1.25rem;
+  color: var(--RIU_Monochrome-10, #F9F9FB);
 
   @media (max-width: 768px) {
     width: 0.625rem;

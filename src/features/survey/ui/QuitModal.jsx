@@ -125,6 +125,7 @@ const StyeldCancelIcon = styled(CancelIcon)`
   width: 1.25rem;
   height: 1.25rem;
   cursor: pointer;
+  color: #718FF2;
 `;
 
 const ContentWrapper = styled.div`

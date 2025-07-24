@@ -64,6 +64,7 @@ const MoreIcon = styled(More)`
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
+  color: #717486;
 
   @media (max-width: 768px) {
     width: 1em;
