@@ -103,15 +103,17 @@ function ThemeReviewSection({ themeId }) {
             hasNextPage={currentPage > 1}
             onClick={handlePrevPage}
           />
-          {[...Array(totalPages)].map((_, idx) => (
-            <PageNumber
-              key={idx}
-              pageState={currentPage === idx + 1}
-              onClick={() => handlePageClick(idx + 1)}
-            >
-              {idx + 1}
-            </PageNumber>
-          ))}
+          <PageNumberWrapper>
+            {[...Array(totalPages)].map((_, idx) => (
+              <PageNumber
+                key={idx}
+                pageState={currentPage === idx + 1}
+                onClick={() => handlePageClick(idx + 1)}
+              >
+                {idx + 1}
+              </PageNumber>
+            ))}
+          </PageNumberWrapper>
           <StyledRightArrowIcon
             hasNextPage={currentPage < totalPages}
             onClick={handleNextPage}
@@ -138,12 +140,21 @@ const SectionWrapper = styled.div`
   gap: 1rem;
   align-self: stretch;
   background: var(--RIU_Monochrome-10, #F9F9FB);
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
 `;
 
 const SectionTitle = styled.div`
   color: var(--RIU_Primary-100, #718FF2);
   font-family: 'Pretendard-Bold';
   font-size: 1rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const Divider = styled.hr`
@@ -164,6 +175,10 @@ const RatingText = styled.div`
   color: var(--RIU_Monochrome-100, #818496);
   font-family: 'Pretendard-Medium';
   font-size: 0.875rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const RatingWrapper = styled.div`
@@ -175,12 +190,21 @@ const RatingWrapper = styled.div`
 const StyledRatingStar = styled(RatingStar)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 `;
 
 const Rating = styled.div`
   color: var(--RIU_Monochrome-400, #616277);
   font-family: 'Pretendard-SemiBold';
   font-size: 1.25rem;
+
+  @media (max-width: 768px) {
+    font-size: 1.125rem;
+  }
 `;
 
 const RatingMember = styled.div`
@@ -201,11 +225,22 @@ const ReviewWriteButton = styled.div`
   align-self: stretch;
   background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    height: 1.5625rem;
+    gap: 0.3125rem;
+  }
 `;
 
 const StyledPencilIcon = styled(PencilIcon)`
   width: 1.25rem;
   height: 1.25rem;
+  color: var(--RIU_Monochrome-10, #F9F9FB);
+
+  @media (max-width: 768px) {
+    width: 0.625rem;
+    height: 0.625rem;
+  }
 `;
 
 const ReviewWriteButtonText = styled.div`
@@ -213,6 +248,10 @@ const ReviewWriteButtonText = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.875rem;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
 
 const PagingWrapper = styled.div`
@@ -220,6 +259,17 @@ const PagingWrapper = styled.div`
   justify-content: center;
   gap: 1.875rem;
   margin-top: 1rem;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: space-between;
+  }
+`;
+
+const PageNumberWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1.875rem;
 `;
 
 const StyledLeftArrowIcon = styled(LeftArrowIcon)`
@@ -251,11 +301,21 @@ const NoDataWrapper = styled.div`
   align-items: center;
   gap: 1rem;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    height: 10.625rem;
+    gap: 0.3125rem;
+  }
 `;
 
 const StyledNoDataIcon = styled.img`
   width: 3.75rem;
   height: 3.75rem;
+
+  @media (max-width: 768px) {
+    width: 3.125rem;
+    height: 3.125rem;
+  }
 `;
 
 const NoDataText = styled.div`
@@ -264,4 +324,8 @@ const NoDataText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.6875rem;
+  }
 `;

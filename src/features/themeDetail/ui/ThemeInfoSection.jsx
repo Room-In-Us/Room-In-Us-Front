@@ -13,9 +13,12 @@ import CopyIcon from "../../../shared/assets/icons/location/copyIcon.svg?react";
 import NoDataIcon from "../../../shared/assets/images/common/noData/noDataImageSmall.png";
 import ThemeReviewSection from "./ThemeReviewSection";
 import PropTypes from 'prop-types';
+import useDevice from "../../../shared/hooks/useDevice";
 import { genreListConversion, mapRecommendedHeadcount } from "../../../shared/utils/dataUtils";
 
 function ThemeInfoSection({ themeData, themePrice }) {
+  const { isMobile } = useDevice();
+
   // 임시 테마 정보 값
   const themeInfo = {
     playTime: themeData?.playTime != null ? `${themeData?.playTime}분` : "-",
@@ -55,27 +58,27 @@ function ThemeInfoSection({ themeData, themePrice }) {
         <Divider/>
         <CardWrapper>
           <SummaryInfoCard
-            icon={<PlayTimeIcon style={{ width: '1.875rem', height: '1.875rem' }}/>}
+            icon={<PlayTimeIcon style={{ width: isMobile ? '0.9375rem' : '1.875rem', height: isMobile ? '0.9375rem' : '1.875rem' }}/>}
             type="플레이 타임"
             value={themeInfo.playTime}
           />
           <SummaryInfoCard
-            icon={<MemberIcon style={{ width: '1.875rem', height: '1.875rem' }}/>}
+            icon={<MemberIcon style={{ width: isMobile ? '0.9375rem' : '1.875rem', height: isMobile ? '0.9375rem' : '1.875rem' }}/>}
             type="추천 인원"
             value={themeInfo.member}
           />
           <SummaryInfoCard
-            icon={<GenreIcon style={{ width: '1.875rem', height: '1.875rem' }}/>}
+            icon={<GenreIcon style={{ width: isMobile ? '0.9375rem' : '1.875rem', height: isMobile ? '0.9375rem' : '1.875rem' }}/>}
             type="장르"
             value={themeInfo.genre}
           />
           <SummaryInfoCard
-            icon={<LevelIcon style={{ width: '1.875rem', height: '1.875rem' }}/>}
+            icon={<LevelIcon style={{ width: isMobile ? '0.9375rem' : '1.875rem', height: isMobile ? '0.9375rem' : '1.875rem' }}/>}
             type="난이도"
             value={themeInfo.level}
           />
           <SummaryInfoCard
-            icon={<HorrorIcon style={{ width: '1.875rem', height: '1.875rem' }}/>}
+            icon={<HorrorIcon style={{ width: isMobile ? '0.9375rem' : '1.875rem', height: isMobile ? '0.9375rem' : '1.875rem' }}/>}
             type="공포도"
             value={themeInfo.horror}
           />
@@ -217,6 +220,13 @@ const ComponentWrapper = styled.div`
     border-radius: 30px;
     background-color: #8DA3FF;
   }
+
+  @media (max-width: 768px) {
+    margin-bottom: 1.875rem;
+    width: 100%;
+    min-width: 20.9375rem;
+    height: auto;
+  }
 `;
 
 const SectionWrapper = styled.div`
@@ -228,6 +238,11 @@ const SectionWrapper = styled.div`
   gap: 1rem;
   align-self: stretch;
   background: var(--RIU_Monochrome-10, #F9F9FB);
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
 `;
 
 const SectionTitle = styled.div`
@@ -236,6 +251,10 @@ const SectionTitle = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const PriceCautionText = styled.div`
@@ -244,6 +263,10 @@ const PriceCautionText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
 
 const Divider = styled.hr`
@@ -252,6 +275,10 @@ const Divider = styled.hr`
   width: 41.25rem;
   height: 0.0625rem;
   background: #C4C6D1;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const CardWrapper = styled.div`
@@ -259,6 +286,11 @@ const CardWrapper = styled.div`
   align-items: flex-start;
   gap: 1.5625rem;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0.625rem;
+  }
 `;
 
 const StoryText = styled.div`
@@ -266,6 +298,10 @@ const StoryText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875rem;
   line-height: 140%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const PriceTitleWrapper = styled.div`
@@ -288,6 +324,10 @@ const StoreName = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1.25rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 1.125rem;
+  }
 `;
 
 const DescriptionWrapper = styled.div`
@@ -306,14 +346,29 @@ const DescriptionList = styled.div`
 const StyledLocationIcon = styled(LocationIcon)`
   width: 1.25rem;
   height: 1.25rem;
+
+  @media (max-width: 768px) {
+    width: 0.9375rem;
+    height: 0.9375rem;
+  }
 `;
 const StyledLinkIcon = styled(LinkIcon)`
   width: 1.25rem;
   height: 1.25rem;
+
+  @media (max-width: 768px) {
+    width: 0.9375rem;
+    height: 0.9375rem;
+  }
 `;
 const StyledTelIcon = styled(TelIcon)`
   width: 1.25rem;
   height: 1.25rem;
+
+  @media (max-width: 768px) {
+    width: 0.9375rem;
+    height: 0.9375rem;
+  }
 `;
 
 const DescriptionText = styled.a`
@@ -327,12 +382,21 @@ const DescriptionText = styled.a`
   white-space: nowrap;
   text-overflow: ellipsis;
   word-break: break-all;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const StyledCopyIcon = styled(CopyIcon)`
   width: 1.25rem;
   height: 1.25rem;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    width: 0.9375rem;
+    height: 0.9375rem;
+  }
 `;
 
 const NoDataWrapper = styled.div`
@@ -343,11 +407,21 @@ const NoDataWrapper = styled.div`
   align-items: center;
   gap: 1rem;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    height: 10.625rem;
+    gap: 0.3125rem;
+  }
 `;
 
 const StyledNoDataIcon = styled.img`
   width: 3.75rem;
   height: 3.75rem;
+
+  @media (max-width: 768px) {
+    width: 3.125rem;
+    height: 3.125rem;
+  }
 `;
 
 const NoDataText = styled.div`
@@ -356,4 +430,8 @@ const NoDataText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.6875rem;
+  }
 `;

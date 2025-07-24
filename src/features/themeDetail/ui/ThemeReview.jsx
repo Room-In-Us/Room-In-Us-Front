@@ -152,6 +152,10 @@ const ContentWrapper = styled.div`
   align-items: flex-start;
   gap: 0.625rem;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    padding: 0.625rem 0.875rem;
+  }
 `;
 
 const TitleWrapper = styled.div`
@@ -173,6 +177,10 @@ const NickName = styled.div`
   font-size: 0.875rem;
   line-height: 140%;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const Divider = styled.div`
@@ -184,17 +192,30 @@ const TitleText = styled.div`
   font-family: 'Pretendard-SemiBold';
   font-size: 0.875rem;
   line-height: 140%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const TitleRightWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 0.625rem;
+
+  @media (max-width: 768px) {
+    gap: 0.25rem;
+  }
 `;
 
 const StarIcon = styled(BlueStar)`
   width: 1.25rem;
   height: 1.25rem;
+
+  @media (max-width: 768px) {
+    width: 0.9375rem;
+    height: 0.9375rem;
+  }
 `;
 
 const Rating = styled.div`
@@ -202,6 +223,10 @@ const Rating = styled.div`
   font-family: 'Pretendard-SemiBold';
   font-size: 1.125rem;
   line-height: 140%;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
 const SummaryWrapper = styled.div`
@@ -225,27 +250,60 @@ const SummaryCard = styled.div`
   display: flex;
   align-items: center;
   gap: 0.625rem;
+
+  @media (max-width: 768px) {
+    padding: 0.25rem 0.75rem;
+    width: 19%;
+    height: 4.375rem;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
 `;
 
 const StyledEvautionIcon = styled(EvalutionIcon)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.5625rem;
+    height: 1.5625rem;
+  }
 `;
 const StyledMemberIcon = styled(MemberIcon)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.5625rem;
+    height: 1.5625rem;
+  }
 `;
 const StyledEscapeIcon = styled(EscapeIcon)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.5625rem;
+    height: 1.5625rem;
+  }
 `;
 const StyledHintIcon = styled(HintIcon)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.5625rem;
+    height: 1.5625rem;
+  }
 `;
 const StyledTimeIcon = styled(TimeIcon)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.5625rem;
+    height: 1.5625rem;
+  }
 `;
 
 const SummaryTextWrapper = styled.div`
@@ -254,6 +312,10 @@ const SummaryTextWrapper = styled.div`
   justify-content: center;
   align-items: flex-start;
   gap: 0.125rem;
+
+  @media (max-width: 768px) {
+    gap: 0.125rem;
+  }
 `;
 
 const SummaryTitle = styled.div`
@@ -261,6 +323,12 @@ const SummaryTitle = styled.div`
   font-family: 'Pretendard-SemiBold';
   font-size: 0.625rem;
   line-height: 140%;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    text-align: center;
+    font-size: 0.42rem;
+  }
 `;
 
 const SummaryText = styled.div`
@@ -268,6 +336,12 @@ const SummaryText = styled.div`
   font-family: 'Pretendard-SemiBold';
   font-size: 0.75rem;
   line-height: 140%;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    text-align: center;
+    font-size: 0.42rem;
+  }
 `;
 
 const Description = styled.div`
@@ -276,6 +350,10 @@ const Description = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875rem;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const DateWrapper = styled.div`
@@ -283,6 +361,10 @@ const DateWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 0.25rem;
+
+  @media (max-width: 768px) {
+    gap: 0.125rem;
+  }
 `;
 
 const Date = styled.div`
@@ -290,6 +372,10 @@ const Date = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: 140%;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
 
 const DetailButton = styled.div`
@@ -328,6 +414,20 @@ const DetailButton = styled.div`
 
     .arrow-icon {
       fill: var(--RIU_Monochrome-10, #F9F9FB);
+    }
+  }
+
+  @media (max-width: 768px) {
+    height: 2rem;
+    padding: 0;
+
+    .button-text {
+      font-size: 0.75rem;
+    }
+
+    .arrow-icon {
+      width: 0.9375rem;
+      height: 0.9375rem;
     }
   }
 `;

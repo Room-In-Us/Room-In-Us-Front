@@ -12,6 +12,7 @@ import TextLogo from '../assets/icons/common/textLogo.svg?react';
 import InstagramIcon from '../assets/icons/common/instagramIcon.svg?react';
 import EmailIcon from '../assets/icons/common/emailIcon.svg?react';
 import InquiryIcon from '../assets/icons/common/inquiryIcon.svg?react';
+import LeftArrowIcon from '../assets/icons/common/arrow/leftArrow.svg?react';
 
 function Header() {
   // navigate, location
@@ -48,6 +49,9 @@ function Header() {
   // 로고 색상 변경을 위한 페이지 정리
   const authPages = ['/login', '/signup', '/survey'];
   const isAuthPage = authPages.includes(location.pathname);
+
+  // 테마상세/후기상세 페이지 여부
+  const isDetailPage = location.pathname.startsWith('/theme/');
 
   // 메뉴 열고 닫기
   const handleMenu = () => {
@@ -174,7 +178,11 @@ function Header() {
       {isMobile && (
         <>
           <MobileHeaderWrapper  hasScrolled={hasScrolled}>
-            <StyledMenuIcon onClick={() => handleMenu()} />
+            {isDetailPage ? (
+              <StyledLeftArrowIcon onClick={() => navigate(-1)} />
+            ) : (
+              <StyledMenuIcon onClick={() => handleMenu()} />
+            )}
             <StyledLogoIcon
               isScrolledBeyond={isScrolledBeyond}
               onClick={() => handleNavigation('/')}
@@ -369,6 +377,10 @@ const MobileHeaderWrapper = styled.div`
 const StyledMenuIcon = styled(MenuIcon)`
   width: 1.25rem;
   cursor: pointer;
+`;
+
+const StyledLeftArrowIcon = styled(LeftArrowIcon)`
+  width: 1.5625rem;
 `;
 
 const MenuWrapper = styled.div`

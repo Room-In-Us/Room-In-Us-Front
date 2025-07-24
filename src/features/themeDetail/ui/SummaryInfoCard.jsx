@@ -33,6 +33,10 @@ const CardWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 768px) {
+    flex-direction: row;
+  }
 `;
 
 const TitleWrapper = styled.div`
@@ -45,6 +49,16 @@ const TitleWrapper = styled.div`
   gap: 0.625rem;
   align-self: stretch;
   background: var(--RIU_Monochrome-20, #F0F0F4);
+
+  @media (max-width: 768px) {
+    border-radius: 0.625rem 0 0 0.625rem;
+    padding: 0rem 1.25rem;
+    box-sizing: border-box;
+    width: 100%;
+    height: 2.25rem;
+    flex-direction: row;
+    justify-content: start;
+  }
 `;
 
 const TypeText = styled.div`
@@ -53,6 +67,10 @@ const TypeText = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.875rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const ValueWrapper =  styled.div`
@@ -65,6 +83,11 @@ const ValueWrapper =  styled.div`
   align-items: center;
   align-self: stretch;
   background: var(--RIU_Primary-200, #6680DF);
+
+  @media (max-width: 768px) {
+    border-radius: 0 0.625rem 0.625rem 0;
+    width: 6.4375rem;
+  }
 `;
 
 const ValueText = styled.div`
@@ -73,4 +96,8 @@ const ValueText = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.875rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;

@@ -4,22 +4,32 @@ import { useNavigate, useParams } from "react-router-dom";
 import LeftArrowIcon from "../shared/assets/icons/common/arrow/leftArrow.svg?react";
 import ThemeOverviewCard from "../features/themeDetail/ui/ThemeOverviewCard";
 import ThemeInfoSection from "../features/themeDetail/ui/ThemeInfoSection";
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import ReviewWriteModal from "../features/review/ui/ReviewWriteModal";
 import { reviewModalState } from "../features/themeDetail/model/reviewAtom";
 import { getThemeDetailAPI, getThemePriceAPI } from "../features/themeDetail/api/themeDetailAPI";
 import { userInfoModalState } from "../features/auth/model/authAtom";
 import UserInfoModal from "../features/auth/ui/UserInfoModal";
+import useDevice from "../shared/hooks/useDevice";
+import MoreIcon from "../shared/assets/icons/common/more.svg?react";
+import CloseIcon from "../shared/assets/icons/survey/modalCancelIcon.svg?react"
+import ReservationIcon from "../shared/assets/icons/themeDetail/reservationIcon.svg?react";
+import CalenderIcon from "../shared/assets/icons/themeDetail/scheduleIcon.svg?react";
+import PencilIcon from "../shared/assets/icons/themeDetail/pencilIcon.svg?react";
 
 function ThemeDetailPage() {
   // 상태 관리
   const isModalOpen = useRecoilValue(reviewModalState);
+  const setReviewWriteModal = useSetRecoilState(reviewModalState);
   const isUSerInfoModalOpen = useRecoilValue(userInfoModalState);
   const [themeDetail, setThemeDetail] = useState({});
   const [themePrice, setThemePrice] = useState([]);
+  const [isFloatingButtonOpen, setIsFloatingButtonOpen] = useState(false);
 
   const navigate = useNavigate();
   const { themeId } = useParams();
+
+  const { isMobile } = useDevice();
 
   // api 호출
   useEffect(() => {
@@ -42,15 +52,17 @@ function ThemeDetailPage() {
   return (
     <PageWrapper>
       {/* 돌아가기 버튼 */}
-      <BackButtonWrapper>
-        <StyledLeftArrowIcon onClick={() => navigate(-1)}/>
-        <BackButtonText onClick={() => navigate(-1)}>
-          테마 선택으로 돌아가기
-        </BackButtonText>
-      </BackButtonWrapper>
+      {!isMobile && (
+        <BackButtonWrapper>
+          <StyledLeftArrowIcon onClick={() => navigate(-1)}/>
+          <BackButtonText onClick={() => navigate(-1)}>
+            테마 선택으로 돌아가기
+          </BackButtonText>
+        </BackButtonWrapper>
+      )}
 
       {/* 콘텐츠 영역 */}
-      <ContentWrapper>
+      <ContentWrapper isMobile={isMobile}>
         {/* 테마 카드 */}
         <ThemeOverviewCard themeData={themeDetail} />
 
@@ -74,6 +86,41 @@ function ThemeDetailPage() {
           <UserInfoModal />
         </ModalBackdrop>
       )}
+
+      {/* 모바일 플러팅 액션 버튼 */}
+      {isMobile && (
+        isFloatingButtonOpen ? (
+          <ModalBackdrop>
+            <FloatingMenuWrapper>
+              <InteractionButton onClick={() => window.open(themeDetail?.storeInfo?.storeReservationUrl, '_blank',)}>
+                <StyledReservationIcon />
+                <ButtonText>
+                  예약하기
+                </ButtonText>
+              </InteractionButton>
+              <InteractionButton onClick={() => navigate('/mypage/reservations')}>
+                <StyledCalenderIcon />
+                <ButtonText>
+                  일정 추가하기
+                </ButtonText>
+              </InteractionButton>
+              <InteractionButton onClick={() => {setReviewWriteModal(true); setIsFloatingButtonOpen(false)}}>
+                <StyledPencilIcon />
+                <ButtonText>
+                  후기 작성하기
+                </ButtonText>
+              </InteractionButton>
+            </FloatingMenuWrapper>
+            <FloatingButton onClick={() => setIsFloatingButtonOpen(prev => !prev)}>
+              <StyledCloseIcon/>
+            </FloatingButton>
+          </ModalBackdrop>
+          ) : (
+          <FloatingButton onClick={() => setIsFloatingButtonOpen(prev => !prev)}>
+            <StyledMoreIcon/>
+          </FloatingButton>
+          )
+      )}
     </PageWrapper>
   )
 }
@@ -88,6 +135,10 @@ const PageWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 1.875rem;
+
+  @media (max-width: 768px) {
+    position: relative;
+  }
 `;
 
 const BackButtonWrapper = styled.div`
@@ -114,10 +165,16 @@ const BackButtonText = styled.div`
 `;
 
 const ContentWrapper = styled.div`
-  display: flex;
   width: 70rem;
+  display: flex;
   justify-content: space-between;
   align-items: flex-start;
+
+  @media (max-width: 768px) {
+    width: 90%;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
 `;
 
 const ModalBackdrop = styled.div`
@@ -131,4 +188,77 @@ const ModalBackdrop = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const FloatingButton = styled.div`
+  border-radius: 2.5rem;
+  width: 3.125rem;
+  height: 3.125rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  aspect-ratio: 1/1;
+  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+`;
+
+const StyledMoreIcon = styled(MoreIcon)`
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--RIU_Primary-0, #E8EAFF);
+`;
+
+const StyledCloseIcon = styled(CloseIcon)`
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--RIU_Primary-0, #E8EAFF);
+`;
+
+const FloatingMenuWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 0.625rem;
+  position: fixed;
+  bottom: 5rem;
+  right: 1.25rem;
+`;
+
+const InteractionButton = styled.div`
+  border-radius: 2.5rem;
+  padding: 0rem 1.25rem;
+  box-sizing: border-box;
+  width: 9.375rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  background: var(--RIU_Monochrome-10, #F9F9FB);
+`;
+
+const ButtonText = styled.div`
+  color: var(--RIU_Primary-200, #6680DF);
+  font-family: Pretendard;
+  font-size: 0.625rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 130%;
+`;
+
+const StyledReservationIcon = styled(ReservationIcon)`
+  width: 0.625rem;
+  height: 0.625rem;
+`;
+const StyledCalenderIcon = styled(CalenderIcon)`
+  width: 0.625rem;
+  height: 0.625rem;
+`;
+const StyledPencilIcon = styled(PencilIcon)`
+  width: 0.625rem;
+  height: 0.625rem;
+  color: var(--RIU_Primary-80, #8DA3FF);
 `;
