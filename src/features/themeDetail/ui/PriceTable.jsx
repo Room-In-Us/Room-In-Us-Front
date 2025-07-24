@@ -78,6 +78,11 @@ const NumberTitle = styled.th`
   align-items: center;
   gap: 0.625rem;
   background: var(--RIU_Monochrome-30, #E7E8ED);
+
+  @media (max-width: 768px) {
+    width: 4.0625rem;
+    height: 2.75rem;
+  }
 `;
 
 const TitleText = styled.div`
@@ -86,6 +91,10 @@ const TitleText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const PriceTitle = styled.th`
@@ -97,6 +106,10 @@ const PriceTitle = styled.th`
   align-items: center;
   gap: 0.625rem;
   background: #F0F0F4;
+
+  @media (max-width: 768px) {
+    height: 2.75rem;
+  }
 `;
 
 const SinglePriceTitle = styled.th`
@@ -109,6 +122,10 @@ const SinglePriceTitle = styled.th`
   align-items: center;
   gap: 0.625rem;
   background: #F0F0F4;
+
+  @media (max-width: 768px) {
+    height: 2.75rem;
+  }
 `;
 
 const CountTd = styled.td`
@@ -121,6 +138,10 @@ const CountTd = styled.td`
   align-items: center;
   gap: 0.625rem;
   background: var(--RIU_Monochrome-30, #E7E8ED);
+
+  @media (max-width: 768px) {
+    height: 2.75rem;
+  }
 `;
 
 const PriceTd = styled.td`
@@ -131,6 +152,10 @@ const PriceTd = styled.td`
   align-items: center;
   gap: 0.625rem;
   background: #F0F0F4;
+
+  @media (max-width: 768px) {
+    height: 2.75rem;
+  }
 `;
 
 const PerPersonTd = styled.td`
@@ -142,6 +167,10 @@ const PerPersonTd = styled.td`
   align-items: center;
   gap: 0.625rem;
   background: #F0F0F4;
+
+  @media (max-width: 768px) {
+    height: 2.75rem;
+  }
 `;
 
 const TdText = styled.div`
@@ -150,4 +179,8 @@ const TdText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;

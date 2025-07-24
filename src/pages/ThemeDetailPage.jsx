@@ -10,6 +10,7 @@ import { reviewModalState } from "../features/themeDetail/model/reviewAtom";
 import { getThemeDetailAPI, getThemePriceAPI } from "../features/themeDetail/api/themeDetailAPI";
 import { userInfoModalState } from "../features/auth/model/authAtom";
 import UserInfoModal from "../features/auth/ui/UserInfoModal";
+import useDevice from "../shared/hooks/useDevice";
 
 function ThemeDetailPage() {
   // 상태 관리
@@ -20,6 +21,8 @@ function ThemeDetailPage() {
 
   const navigate = useNavigate();
   const { themeId } = useParams();
+
+  const { isMobile } = useDevice();
 
   // api 호출
   useEffect(() => {
@@ -42,15 +45,17 @@ function ThemeDetailPage() {
   return (
     <PageWrapper>
       {/* 돌아가기 버튼 */}
-      <BackButtonWrapper>
-        <StyledLeftArrowIcon onClick={() => navigate(-1)}/>
-        <BackButtonText onClick={() => navigate(-1)}>
-          테마 선택으로 돌아가기
-        </BackButtonText>
-      </BackButtonWrapper>
+      {!isMobile && (
+        <BackButtonWrapper>
+          <StyledLeftArrowIcon onClick={() => navigate(-1)}/>
+          <BackButtonText onClick={() => navigate(-1)}>
+            테마 선택으로 돌아가기
+          </BackButtonText>
+        </BackButtonWrapper>
+      )}
 
       {/* 콘텐츠 영역 */}
-      <ContentWrapper>
+      <ContentWrapper isMobile={isMobile}>
         {/* 테마 카드 */}
         <ThemeOverviewCard themeData={themeDetail} />
 
@@ -114,10 +119,16 @@ const BackButtonText = styled.div`
 `;
 
 const ContentWrapper = styled.div`
-  display: flex;
   width: 70rem;
+  display: flex;
   justify-content: space-between;
   align-items: flex-start;
+
+  @media (max-width: 768px) {
+    width: 90%;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
 `;
 
 const ModalBackdrop = styled.div`
