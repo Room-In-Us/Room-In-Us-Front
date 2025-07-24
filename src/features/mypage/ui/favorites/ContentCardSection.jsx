@@ -2,13 +2,14 @@ import styled from "styled-components"
 import { getFavoriteThemesAPI } from "../../api/favoriteThemesAPI";
 import ContentCard from "../../../../shared/components/ContentCard";
 import { useEffect, useState } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { likedThemeState } from "../../../like/modal/likeAtom";
+import { headCountState } from "../../model/favoriteAtom";
 
 export default function ContentCardSection() {
 
 	// 인원수 필터 상태
-	const [headCount,] = useState(2);
+	const headCount = useRecoilValue(headCountState);
 
 	const [themeList, setThemeList] = useState([]);
 
@@ -55,7 +56,11 @@ const Wrapper = styled.div`
 	justify-content: space-between;
 	align-items: flex-start;
 	align-content: flex-start;
-	row-gap: 20px;
+	row-gap: 1.25em;
 	align-self: stretch;
 	flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
 `;
