@@ -93,6 +93,10 @@ const SectionWrapper = styled.div`
   gap: 1rem;
   align-self: stretch;
   background: var(--RIU_Monochrome-10, #F9F9FB);
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `;
 
 const TitleWrapper = styled.div`
@@ -108,6 +112,10 @@ const SectionTitle = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const Divider = styled.hr`
@@ -124,6 +132,10 @@ const Description = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875rem;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const StarRatingWrapper = styled.div`
@@ -135,14 +147,29 @@ const StarRatingWrapper = styled.div`
 const StyledStarIcon = styled(StarIcon)`
   width: 0.75rem;
   height: 0.75rem;
+
+  @media (max-width: 768px) {
+    width: 0.625rem;
+    height: 0.625rem;
+  }
 `;
 const StyledHalfStarIcon = styled(HalfStar)`
   width: 0.75rem;
   height: 0.75rem;
+
+  @media (max-width: 768px) {
+    width: 0.625rem;
+    height: 0.625rem;
+  }
 `;
 const StyledEmptyStarIcon = styled(EmptyStar)`
   width: 0.75rem;
   height: 0.75rem;
+
+  @media (max-width: 768px) {
+    width: 0.625rem;
+    height: 0.625rem;
+  }
 `;
 
 const RecommendedClothWrapper = styled.div`
@@ -161,12 +188,13 @@ const ClothOptionWrapper = styled.div`
 `;
 
 const RadioButton = styled.button`
+font-size: 1rem;
   all: unset;
   border: 1.4px solid ${(props) => (props.selected ? 'var(--RIU_Primary-100, #718FF2)' : 'var(--RIU_Primary-40, #B9C3FF)')};
-  border-radius: 1.875rem;
-  margin: 0.09375rem;
-  width: 0.75rem;
-  height: 0.75rem;
+  border-radius: 1.875em;
+  margin: 0.09375em;
+  width: 0.75em;
+  height: 0.75em;
   position: relative;
 
   &::before {
@@ -174,13 +202,17 @@ const RadioButton = styled.button`
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 0.35rem;
-    height: 0.35rem;
+    width: 0.35em;
+    height: 0.35em;
     background-color: var(--RIU_Primary-100, #718FF2);
-    border-radius: 1.875rem;
+    border-radius: 1.875em;
     transform: translate(-50%, -50%);
     opacity: ${props => (props.selected ? 1 : 0)};
     transition: opacity 0.2s ease-in-out;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
   }
 `;
 
@@ -189,6 +221,10 @@ const ClothText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
 
 const NoDataWrapper = styled.div`
@@ -199,11 +235,21 @@ const NoDataWrapper = styled.div`
   align-items: center;
   gap: 1rem;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    height: 10.625rem;
+    gap: 0.3125rem;
+  }
 `;
 
 const StyledNoDataIcon = styled.img`
   width: 3.75rem;
   height: 3.75rem;
+
+  @media (max-width: 768px) {
+    width: 3.125rem;
+    height: 3.125rem;
+  }
 `;
 
 const NoDataText = styled.div`
@@ -212,4 +258,8 @@ const NoDataText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.6875rem;
+  }
 `;

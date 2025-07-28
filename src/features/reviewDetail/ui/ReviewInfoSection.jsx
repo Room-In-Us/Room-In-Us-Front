@@ -227,6 +227,13 @@ const ComponentWrapper = styled.div`
     border-radius: 30px;
     background-color: #8DA3FF;
   }
+
+  @media (max-width: 768px) {
+    margin-bottom: 1.875rem;
+    width: 100%;
+    min-width: 20.9375rem;
+    height: auto;
+  }
 `;
 
 const SectionWrapper = styled.div`
@@ -238,6 +245,11 @@ const SectionWrapper = styled.div`
   gap: 1rem;
   align-self: stretch;
   background: var(--RIU_Monochrome-10, #F9F9FB);
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
 `;
 
 const SectionTitle = styled.div`
@@ -246,6 +258,10 @@ const SectionTitle = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const Divider = styled.hr`
@@ -262,11 +278,20 @@ const RatingWrapper = styled.div`
   align-items: center;
   gap: 0.625rem;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    gap: 0.25rem;
+  } 
 `;
 
 const StyledRatingStar = styled(RatingStar)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 `;
 
 const Rating = styled.div`
@@ -275,6 +300,10 @@ const Rating = styled.div`
   font-size: 1.25rem;
   font-weight: 600;
   line-height: 140%;
+
+  @media (max-width: 768px) {
+    font-size: 1.125rem;
+  }
 `;
 
 const SummaryWrapper = styled.div`
@@ -298,27 +327,60 @@ const SummaryCard = styled.div`
   display: flex;
   align-items: center;
   gap: 0.625rem;
+
+  @media (max-width: 768px) {
+    padding: 0.25rem 0.75rem;
+    width: 19%;
+    height: 4.375rem;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
 `;
 
 const StyledEvautionIcon = styled(EvalutionIcon)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.5625rem;
+    height: 1.5625rem;
+  }
 `;
 const StyledMemberIcon = styled(MemberIcon)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.5625rem;
+    height: 1.5625rem;
+  }
 `;
 const StyledEscapeIcon = styled(EscapeIcon)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.5625rem;
+    height: 1.5625rem;
+  }
 `;
 const StyledHintIcon = styled(HintIcon)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.5625rem;
+    height: 1.5625rem;
+  }
 `;
 const StyledTimeIcon = styled(TimeIcon)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.5625rem;
+    height: 1.5625rem;
+  }
 `;
 
 const SummaryTextWrapper = styled.div`
@@ -327,6 +389,10 @@ const SummaryTextWrapper = styled.div`
   justify-content: center;
   align-items: flex-start;
   gap: 0.125rem;
+
+  @media (max-width: 768px) {
+    gap: 0.125rem;
+  }
 `;
 
 const SummaryTitle = styled.div`
@@ -334,6 +400,12 @@ const SummaryTitle = styled.div`
   font-family: 'Pretendard-SemiBold';
   font-size: 0.625rem;
   line-height: 140%;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    text-align: center;
+    font-size: 0.42rem;
+  }
 `;
 
 const SummaryText = styled.div`
@@ -341,6 +413,12 @@ const SummaryText = styled.div`
   font-family: 'Pretendard-SemiBold';
   font-size: 0.75rem;
   line-height: 140%;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    text-align: center;
+    font-size: 0.42rem;
+  }
 `;
 
 const ReviewDescription = styled.div`
@@ -348,6 +426,10 @@ const ReviewDescription = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875rem;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const ReviewPostDate = styled.div`
@@ -355,6 +437,10 @@ const ReviewPostDate = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: 140%;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
 
 const RowSectionWrapper = styled.div`
@@ -373,6 +459,10 @@ const VisitDate = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875rem;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const EscapeWrapper = styled.div`
@@ -392,6 +482,10 @@ const EscapeResult = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.875rem;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const EscapeFailureReason = styled.div`
@@ -399,6 +493,10 @@ const EscapeFailureReason = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875rem;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const EscapeEndingTag = styled.div`
@@ -416,6 +514,10 @@ const EscapeTagText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
 
 const ReportWrapper = styled.div`
@@ -430,6 +532,10 @@ const ReportText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875rem;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const ReportButton = styled.div`
@@ -444,6 +550,10 @@ const ReportButton = styled.div`
   text-underline-offset: auto;
   text-underline-position: from-font;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const TitleWrapper = styled.div`
@@ -458,6 +568,10 @@ const RatioText = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.875rem;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const RangeWrapper = styled.div`
@@ -468,5 +582,9 @@ const RangeWrapper = styled.div`
   cursor: default;
   * {
     cursor: default !important;
+  }
+
+  @media (max-width: 768px) {
+    height: 3.875rem;
   }
 `;

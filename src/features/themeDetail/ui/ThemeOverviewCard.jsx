@@ -203,6 +203,7 @@ const ComponentWrapper = styled.div`
 
   @media (max-width: 768px) {
     width: 100%;
+    min-width: 20.9375rem;
     flex-direction: row;
     gap: 1rem;
   }

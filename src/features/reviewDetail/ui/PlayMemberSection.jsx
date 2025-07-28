@@ -68,6 +68,10 @@ const SectionTitle = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const Divider = styled.hr`
@@ -76,17 +80,30 @@ const Divider = styled.hr`
   width: 41.25rem;
   height: 0.0625rem;
   background: #C4C6D1;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const TitleInfoWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 0.625rem;
+
+  @media (max-width: 768px) {
+    gap: 0.375rem;
+  }
 `;
 
 const StyledInfoIcon = styled(InfoIcon)`
   width: 1.25rem;
   height: 1.25rem;
+
+  @media (max-width: 768px) {
+    width: 1rem;
+    height: 1rem;
+  }
 `;
 
 const ListWrapper = styled.div`
@@ -111,6 +128,10 @@ const TagText = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.875rem;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const MemberInfoWrapper = styled.div`
@@ -124,6 +145,10 @@ const ProficiencyText = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.875rem;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const Dot = styled.div`
@@ -131,6 +156,10 @@ const Dot = styled.div`
   font-family: 'Pretendard-SemiBold';
   font-size: 0.875rem;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const Remark = styled.div`
@@ -138,6 +167,10 @@ const Remark = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.875rem;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const WriterTag = styled.div`
@@ -155,4 +188,8 @@ const WriterText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;
