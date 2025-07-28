@@ -61,12 +61,20 @@ const SectionTitle = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1rem;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const ListWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 0.625rem;
+
+  @media (max-width: 768px) {
+    gap: 0.3125rem;
+  }
 `;
 
 const TagWrapper = styled.div`
@@ -76,27 +84,56 @@ const TagWrapper = styled.div`
   justify-content: center;
   align-items: center;
   gap: 0.3125rem;
+
+  @media (max-width: 768px) {
+    width: 2.5rem;
+  }
 `;
 
 const StyledTagIcon1 = styled(TagIcon1)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 `;
 const StyledTagIcon2 = styled(TagIcon2)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 `;
 const StyledTagIcon3 = styled(TagIcon3)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 `;
 const StyledTagIcon4 = styled(TagIcon4)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 `;
 const StyledTagIcon5 = styled(TagIcon5)`
   width: 1.875rem;
   height: 1.875rem;
+
+  @media (max-width: 768px) {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 `;
 
 const TagName = styled.div`
@@ -105,4 +142,8 @@ const TagName = styled.div`
   font-size: 0.75rem;
   line-height: 1.25rem;
   letter-spacing: -0.01875rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
 `;

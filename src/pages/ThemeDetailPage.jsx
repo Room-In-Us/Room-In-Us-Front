@@ -62,7 +62,7 @@ function ThemeDetailPage() {
       )}
 
       {/* 콘텐츠 영역 */}
-      <ContentWrapper isMobile={isMobile}>
+      <ContentWrapper>
         {/* 테마 카드 */}
         <ThemeOverviewCard themeData={themeDetail} />
 
