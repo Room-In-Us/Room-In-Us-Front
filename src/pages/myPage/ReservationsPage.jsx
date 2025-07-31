@@ -60,7 +60,7 @@ const ContentWrapper = styled.div`
   gap: 2.5rem;
 
   @media (max-width: 768px) {
-    width: 100%;
+    width: 21.6875em;
     padding: 0em 0.875em;
     gap: 1.875em;
   }
