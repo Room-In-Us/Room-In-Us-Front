@@ -32,12 +32,23 @@ export default function ReservationDropDown() {
 
   return (
     <Wrapper ref={dropdownRef}>
-      <MoreIcon onClick={() => setIsOpen(prev => !prev)} />
+      <MoreIcon
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen(prev => !prev);
+        }}
+      />
 
       {isOpen && (
         <DropDownMenu>
           {reservationSortOption.map(({value, label, icon: Icon}) => (
-          <DropDownItem key={value} onClick={() => handleSelect(value)}>
+          <DropDownItem
+            key={value}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSelect(value);
+            }}
+          >
             <MenuIcon>
               <Icon />
             </MenuIcon>

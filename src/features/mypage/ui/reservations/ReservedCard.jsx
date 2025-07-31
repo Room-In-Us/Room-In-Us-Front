@@ -8,7 +8,7 @@ import AwardsIcon from '../../../../shared/assets/icons/common/awards.svg?react'
 import Logo from '../../../../shared/assets/icons/common/logo.svg?react';
 import ReservationDropDown from "./ReservationDropDown";
 
-export default function ReservedCard({ data, headCount, type, onUnlike }) {
+export default function ReservedCard({ data }) {
     const {
     themeId,
     locationName,
@@ -20,8 +20,6 @@ export default function ReservedCard({ data, headCount, type, onUnlike }) {
     storeName,
     themeName,
     genreList,
-    price,
-    maxHeadcount,
     reservedAt,
   } = data;
 
@@ -44,7 +42,7 @@ export default function ReservedCard({ data, headCount, type, onUnlike }) {
   };
 
   return (
-    <Wrapper>
+    <Wrapper onClick={() => navigate(`/theme/${themeId}`)}>
 
       <ThemeItemBox>
         {/* 이미지 영역 */}
@@ -123,6 +121,11 @@ const ThemeItemBox = styled.div`
   gap: 0.9375em;
   flex: 1 0 0;
   background: var(--RIU_Monochrome-10, #F9F9FB);
+  transition: background 0.2s ease-in-out;
+
+  &:hover {
+    background: var(--RIU_Primary-0, #E8EAFF);
+  }
 
   @media (max-width: 768px) {
     gap: 0.5em;
@@ -146,9 +149,6 @@ const ImageSection = styled.div`
     display: none;
   }
 
-  // @media (max-width: 1024px) {
-  //   height: 11.7421875rem;
-  // }
   @media (max-width: 768px) {
     border-radius: 0.375rem;
     width: 8.75rem;
@@ -170,12 +170,6 @@ const LocationTag = styled.div`
   border-radius: 0.9375rem;
   background: var(--RIU_Primary-400, #515DBA);
 
-  // @media (max-width: 1024px) {
-  //   padding: 0 0.6328125rem;
-  //   margin: 0.375rem 0 0 0.375rem;
-  //   height: 1.078125rem;
-  //   font-size: 0.5625rem;
-  // }
   @media (max-width: 768px) {
     height: 1.125rem;
     font-size: 0.625rem;
@@ -205,12 +199,6 @@ const AwardsTag = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.65625rem;
 
-  // @media (max-width: 1024px) {
-  //   padding: 0 0.6328125rem;
-  //   margin: 0.375rem 0 0 0.375rem;
-  //   height: 1.078125rem;
-  //   font-size: 0.5625rem;
-  // }
   @media (max-width: 768px) {
     height: 1.125rem;
     font-size: 0.625rem;
@@ -241,10 +229,6 @@ const TagSection = styled.div`
   align-items: center;
   gap: 0.375rem;
 
-  // @media (max-width: 1024px) {
-  //   margin-top: 0.3515625rem;
-  //   gap: 0.28125rem;
-  // }
   @media (max-width: 768px) {
     gap: 0.25rem;
   }
@@ -262,11 +246,6 @@ const ScoreTag = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 0.65625rem;
 
-  // @media (max-width: 1024px) {
-  //   padding: 0 0.3515625rem;
-  //   height: 1.078125rem;
-  //   font-size: 0.5625rem;
-  // }
   @media (max-width: 768px) {
     height: 1rem;
     font-size: 0.5rem;
@@ -292,11 +271,6 @@ const Tag = styled.div`
     color: var(--RIU_Primary-200, #6680DF);
   }
 
-  // @media (max-width: 1024px) {
-  //   padding: 0 0.3515625rem;
-  //   height: 1.078125rem;
-  //   font-size: 0.5625rem;
-  // }
   @media (max-width: 768px) {
     height: 1rem;
     font-size: 0.5rem;
@@ -323,9 +297,6 @@ const TitleSection = styled.div`
   gap: 0.234375em;
   align-self: stretch;
 
-  // @media (max-width: 1024px) {
-  //   margin-top: 0.703125rem;
-  // }
   @media (max-width: 768px) {
     gap: 0.125em;
   }
@@ -343,10 +314,6 @@ const CafeName = styled.div`
   text-overflow: ellipsis;
   word-break: break-all;
 
-  // @media (max-width: 1024px) {
-  //   width: 15.75em;
-  //   font-size: 0.5625em;
-  // }
   @media (max-width: 768px) {
     width: 100%;
     font-size: 0.625rem;
@@ -368,10 +335,6 @@ const Title = styled.div`
   -webkit-box-orient: vertical;
   overflow-wrap: break-word;
 
-  // @media (max-width: 1024px) {
-  //   width: 15.75rem;
-  //   font-size: 1.125rem;
-  // }
   @media (max-width: 768px) {
     width: 100%;
     font-size: 1rem;
@@ -384,9 +347,6 @@ const GenreSection = styled.div`
   align-items: center;
   gap: 0.1875rem;
 
-  // @media (max-width: 1024px) {
-  //   gap: 0.375rem;
-  // }
   @media (max-width: 768px) {
     gap: 0.25rem;
   }
