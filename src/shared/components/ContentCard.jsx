@@ -11,11 +11,9 @@ import HeartIcon3 from '../assets/icons/common/heart/heart_active.svg?react';
 import { formatNumberWithCommas } from '../utils/formatUtils';
 import { levelTextConversion, genreListConversion, satisfactionConversion } from '../utils/dataUtils';
 import useDevice from '../hooks/useDevice';
-import { deleteThemeLikeAPI, postThemeLikeAPI } from '../../features/like/api/themeLikeAPI';
-import { useRecoilState } from 'recoil';
-import { likedThemeState } from '../../features/like/modal/likeAtom';
+import { postThemeLikeAPI, deleteThemeLikeAPI } from '../../features/like/api/themeLikeAPI';
 
-function ContentCard({ data, headCount, type, onUnlike }) {
+function ContentCard({ data, headCount, type }) {
   const {
     themeId,
     locationName,
@@ -29,13 +27,13 @@ function ContentCard({ data, headCount, type, onUnlike }) {
     genreList,
     price,
     maxHeadcount,
+    isLiked,
   } = data;
 
   // state 관리
-  const [likedThemes, setLikedThemes] = useRecoilState(likedThemeState);
-  const isHeartActive = likedThemes[themeId] || false;
   const [imageUrl, setImageUrl] = useState(img);
-  
+  const [isHeartActive, setIsHeartActive] = useState(isLiked);
+
   // navigate
   const navigate = useNavigate();
 
@@ -46,29 +44,15 @@ function ContentCard({ data, headCount, type, onUnlike }) {
   useEffect(() => {
     setImageUrl(img);
   }, [img]);
-  
+
+  // 좋아요 상태 관리
+  useEffect(() => {
+    setIsHeartActive(isLiked);
+    console.log('data: ', data);
+  }, [isLiked, data]);
+
   const handleImageError = () => {
     setImageUrl(ThumbnailImg);
-  };
-
-  const handleHeartClick = async (event) => {
-    event.stopPropagation();
-
-    try {
-      if (isHeartActive) {
-        await deleteThemeLikeAPI(themeId);
-        if (onUnlike) onUnlike(themeId);
-      } else {
-        await postThemeLikeAPI(themeId);
-      }
-
-      setLikedThemes(prev => ({
-        ...prev,
-        [themeId]: !isHeartActive,
-      }));
-    } catch (error) {
-      console.error('좋아요 토글 실패:', error);
-    }
   };
 
   return (
@@ -100,7 +84,15 @@ function ContentCard({ data, headCount, type, onUnlike }) {
               <>
                 {/* 하트 아이콘 영역 */}
                 <HeartWrapper
-                  onClick={handleHeartClick}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsHeartActive(!isHeartActive);
+                    if (isHeartActive) {
+                      deleteThemeLikeAPI(themeId);
+                    } else {
+                      postThemeLikeAPI(themeId);
+                    }
+                  }}
                 >
                   {isHeartActive ? (
                     <StyledHeartIcon3 />
@@ -158,7 +150,15 @@ function ContentCard({ data, headCount, type, onUnlike }) {
               <>
                 {/* 모바일 하트 아이콘 영역 */}
                 <HeartWrapper
-                  onClick={handleHeartClick}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsHeartActive(!isHeartActive);
+                    if (isHeartActive) {
+                      deleteThemeLikeAPI(themeId);
+                    } else {
+                      postThemeLikeAPI(themeId);
+                    }
+                  }}
                 >
                   {isHeartActive ? (
                     <StyledHeartIcon3 />
