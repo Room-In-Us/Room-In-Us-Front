@@ -4,12 +4,12 @@ import { failOptions } from "../modal/reviewDataList";
 import EscapeTimePicker from './EscapeTimePicker';
 import { ToggleCheckbox } from './ToggleCheckBox';
 import { useRecoilState } from 'recoil';
-import { reviewState } from '../../themeDetail/model/reviewAtom';
+import { reviewStateFamily } from '../../themeDetail/model/reviewAtom';
 
-export default function EscapeResultDetails ({selected}) {
+export default function EscapeResultDetails ({selected, themeId}) {
 
   // 상태 관리
-  const [review, setReview] = useRecoilState(reviewState);
+  const [review, setReview] = useRecoilState(reviewStateFamily(themeId));
   
   const time = review.remainingTime
     ? {

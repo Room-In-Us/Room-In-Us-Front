@@ -5,7 +5,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import Calendar from "../../../shared/assets/icons/reviewWrite/date.svg";
 import DropDown from "../../../shared/assets/icons/common/arrow/downArrow.svg?react";
 import { useRecoilState } from "recoil";
-import { reviewState } from "../../themeDetail/model/reviewAtom";
+import { reviewStateFamily } from "../../themeDetail/model/reviewAtom";
+import { ko } from 'date-fns/locale';
+import LeftArrow from '../../../shared/assets/icons/common/arrow/leftArrow.svg?react';
+import RightArrow from '../../../shared/assets/icons/common/arrow/rightArrow.svg?react';
+import { format, parse } from "date-fns";
 
 const CustomDateInput = React.forwardRef(({ disabled, value, onToggle }, ref) => {
   const formatDate = (dateString) => {
@@ -31,32 +35,64 @@ const CustomDateInput = React.forwardRef(({ disabled, value, onToggle }, ref) =>
 // eslint 에러 방지
 CustomDateInput.displayName = "CustomDateInput";
 
-export default function VisitDatePicker({ disabled }) {
+export default function VisitDatePicker({ disabled, themeId }) {
 
   const [isOpen, setIsOpen] = useState(false);
-  const [review, setReview] = useRecoilState(reviewState);
+  const [isClosing, setIsClosing] = useState(false);
+  const [review, setReview] = useRecoilState(reviewStateFamily(themeId));
 
   const handleChange = (date) => {
     if (!date) return;
-    const formatted = date.toISOString().split('T')[0];
+    const formatted = format(date, 'yyyy-MM-dd'); 
     setReview((prev) => ({
       ...prev,
       playedAt: formatted,
     }));
-    setIsOpen(false);
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsOpen(false);
+      setIsClosing(false);
+    }, 200);
+  };
+
+  const handleToggle = () => {
+    if (isOpen) {
+      setIsClosing(true);
+      setTimeout(() => {
+        setIsOpen(false);
+        setIsClosing(false);
+      }, 200); 
+    } else {
+      setIsOpen(true); 
+    }
   };
 
   return (
     <StyledDatePickerWrapper>
       <StyledDatePicker
         open={isOpen}
-        onClickOutside={() => setIsOpen(false)}
         shouldCloseOnSelect
+        onClickOutside={handleClose}
         disabled={disabled}
-        selected={review.playedAt ? new Date(review.playedAt) : null}
+        calendarClassName={isClosing ? "fade-out" : "fade-in"}
+        selected={review.playedAt ? parse(review.playedAt, 'yyyy-MM-dd', new Date()) : null}
         onChange={handleChange}
+        locale={ko}
         dateFormat="yyyy.MM.dd"
-        customInput={<CustomDateInput onToggle={() => setIsOpen(prev => !prev)} style={{width: '100%'}} />}
+        renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
+          <CalendarHeader>
+            <LeftArrowBtn onClick={decreaseMonth}>◀</LeftArrowBtn>
+            <MonthText>
+              {date.getFullYear()}년 {date.getMonth() + 1}월
+            </MonthText>
+            <RightArrowBtn onClick={increaseMonth}>▶</RightArrowBtn>
+          </CalendarHeader>
+        )}
+        customInput={<CustomDateInput onToggle={handleToggle} />}
         wrapperClassName="date-picker-wrapper"
       />
     </StyledDatePickerWrapper>
@@ -69,39 +105,27 @@ const StyledDatePickerWrapper = styled.div`
   .react-datepicker__input-container input {
     width: 100%;
   }
-`;
 
-const StyledDatePicker = styled(DatePicker)`
-
-
-  color: var(--RIU_Monochrome-100, #818496);
-  font-family: Pretendard-Medium;
-
-  .react-datepicker__triangle {
-    display: none;
+  .fade-in {
+    animation: fadeIn 0.2s ease-in-out forwards;
   }
 
-  .react-datepicker__header {
-    background-color: #f0f2ff;
-    border-bottom: none;
+  .fade-out {
+    animation: fadeOut 0.2s ease-in-out forwards;
   }
 
-  .react-datepicker__day--selected {
-    background-color: #718FF2;
-    color: white;
-    border-radius: 50%;
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  .react-datepicker__day--keyboard-selected {
-    background-color: transparent;
-    color: #718FF2;
-  }
-
-  .react-datepicker__day:hover {
-    background-color: #e0e6ff;
-    border-radius: 50%;
+  @keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); }
   }
 `;
+
+const StyledDatePicker = styled(DatePicker)``;
 
 const DateBox = styled.div`
   width: 100%;
@@ -153,7 +177,40 @@ const DateBoxText = styled.div`
 const DropDownIcon = styled(DropDown)`
   width: 0.9375em;
   height: 0.9375em;
+  
   path {
     fill: var(--RIU_Monochrome-60, #C4C6D1);
   }
+`;
+
+const CalendarHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.625em;
+  background: #d0d8ff;
+`;
+
+const LeftArrowBtn = styled(LeftArrow)`
+  display: flex;
+  width: 0.9375em;
+  height: 0.9375em;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+`;
+
+const RightArrowBtn = styled(RightArrow)`
+  display: flex;
+  width: 0.9375em;
+  height: 0.9375em;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+`;
+
+const MonthText = styled.span`
+  color: var(--RIU_Monochrome-500, #515467);
+  font-family: Pretendard-Bold;
+  font-size: 0.875em;
 `;

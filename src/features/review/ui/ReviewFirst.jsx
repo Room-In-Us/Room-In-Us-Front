@@ -5,7 +5,7 @@ import { overallOptions } from "../modal/reviewDataList";
 import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3, Wrap5 } from "../../../shared/styles/ReviewStyles.js";
 import useDevice from '../../../shared/hooks/useDevice.js';
 import { useRecoilState } from "recoil";
-import { reviewState } from "../../themeDetail/model/reviewAtom.jsx";
+import { reviewStateFamily } from "../../themeDetail/model/reviewAtom.jsx";
 
 export default function ReviewFirst({themeData}) {
 
@@ -13,7 +13,7 @@ export default function ReviewFirst({themeData}) {
   const { isMobile } = useDevice();
 
   // 상태 관리
-  const [review, setReview] = useRecoilState(reviewState);
+  const [review, setReview] = useRecoilState(reviewStateFamily(themeData.themeId));
 
   // 글자 수 제한
   const handleChange = (e) => {

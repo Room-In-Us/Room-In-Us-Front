@@ -22,6 +22,7 @@ import ReviewsPage from '../pages/myPage/ReviewsPage';
 import SerachPage from '../pages/SerachPage';
 import ReviewDetailPage from '../pages/ReviewDetailPage';
 import NotFoundPage from '../pages/NotFoundPage';
+import DatePickerGlobalStyle from '../shared/styles/DatePickerGlobalStyle';
 
 function App() {
   const setMapsLoaded = useSetRecoilState(mapsLoadedState);
@@ -82,6 +83,9 @@ function App() {
           <Route path= "*" element={<NotFoundPage />} />
         </Route>
       </Routes>
+
+      {/* 데이터 피커 전역 스타일 */}
+      <DatePickerGlobalStyle />
     </LoadScript>
   );
 }
