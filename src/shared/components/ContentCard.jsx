@@ -13,7 +13,7 @@ import { levelTextConversion, genreListConversion, satisfactionConversion } from
 import useDevice from '../hooks/useDevice';
 import { postThemeLikeAPI, deleteThemeLikeAPI } from '../../features/like/api/themeLikeAPI';
 
-function ContentCard({ data, headCount, type }) {
+function ContentCard({ data, headCount, type, onUnlike }) {
   const {
     themeId,
     locationName,
@@ -44,16 +44,15 @@ function ContentCard({ data, headCount, type }) {
   useEffect(() => {
     setImageUrl(img);
   }, [img]);
+  const handleImageError = () => {
+    setImageUrl(ThumbnailImg);
+  };
 
   // 좋아요 상태 관리
   useEffect(() => {
     setIsHeartActive(isLiked);
     console.log('data: ', data);
   }, [isLiked, data]);
-
-  const handleImageError = () => {
-    setImageUrl(ThumbnailImg);
-  };
 
   return (
     <ContentWrapper onClick={() => navigate(`/theme/${themeId}`)}>
@@ -86,11 +85,14 @@ function ContentCard({ data, headCount, type }) {
                 <HeartWrapper
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsHeartActive(!isHeartActive);
-                    if (isHeartActive) {
-                      deleteThemeLikeAPI(themeId);
-                    } else {
+                    const next = !isHeartActive;
+                    setIsHeartActive(next);
+                  
+                    if (next) {
                       postThemeLikeAPI(themeId);
+                    } else {
+                      deleteThemeLikeAPI(themeId);
+                      if (onUnlike) onUnlike(themeId);
                     }
                   }}
                 >
@@ -152,11 +154,14 @@ function ContentCard({ data, headCount, type }) {
                 <HeartWrapper
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsHeartActive(!isHeartActive);
-                    if (isHeartActive) {
-                      deleteThemeLikeAPI(themeId);
-                    } else {
+                    const next = !isHeartActive;
+                    setIsHeartActive(next);
+                  
+                    if (next) {
                       postThemeLikeAPI(themeId);
+                    } else {
+                      deleteThemeLikeAPI(themeId);
+                      if (onUnlike) onUnlike(themeId);
                     }
                   }}
                 >
@@ -180,8 +185,9 @@ function ContentCard({ data, headCount, type }) {
 // PropTypes 정의 (eslint 에러 방지)
 ContentCard.propTypes = {
   data: PropTypes.object.isRequired,
-  type: PropTypes.string.isRequired,
+  type: PropTypes.string,
   headCount: PropTypes.number.isRequired,
+  onUnlike: PropTypes.func,
 };
 
 export default ContentCard;
