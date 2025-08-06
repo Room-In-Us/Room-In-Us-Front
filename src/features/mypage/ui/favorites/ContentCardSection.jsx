@@ -2,8 +2,7 @@ import styled from "styled-components"
 import { getFavoriteThemesAPI } from "../../api/favoriteThemesAPI";
 import ContentCard from "../../../../shared/components/ContentCard";
 import { useEffect, useState } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { likedThemeState } from "../../../like/modal/likeAtom";
+import { useRecoilValue } from "recoil";
 import { headCountState } from "../../model/favoriteAtom";
 
 export default function ContentCardSection() {
@@ -12,8 +11,6 @@ export default function ContentCardSection() {
 	const headCount = useRecoilValue(headCountState);
 
 	const [themeList, setThemeList] = useState([]);
-
-	const setLikedThemes = useSetRecoilState(likedThemeState);
 
 	const handleUnlike = (themeId) => {
 		setThemeList(prevList => prevList.filter(item => item.themeId !== themeId));
@@ -29,13 +26,12 @@ export default function ContentCardSection() {
 				response.contents.forEach(item => {
 					initialLikes[item.themeId] = true;
 				});
-				setLikedThemes(initialLikes);
 			} catch (error) {
 				console.error('좋아요한 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
 			}
 		};
 		fetchData();
-	}, [headCount, setLikedThemes]);
+	}, [headCount]);
 
 	return (
 		<Wrapper>

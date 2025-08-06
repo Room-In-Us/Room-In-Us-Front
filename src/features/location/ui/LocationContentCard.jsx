@@ -10,6 +10,7 @@ import HeartIcon2 from '../../../shared/assets/icons/common/heart/heart_hover.sv
 import HeartIcon3 from '../../../shared/assets/icons/common/heart/heart_active.svg?react';
 import { formatNumberWithCommas } from '../../../shared/utils/formatUtils';
 import { levelTextConversion, genreListConversion, satisfactionConversion } from '../../../shared/utils/dataUtils';
+import { postThemeLikeAPI, deleteThemeLikeAPI } from '../../../features/like/api/themeLikeAPI';
 
 function LocationContentCard({ data, headCount, type }) {
   const {
@@ -24,11 +25,12 @@ function LocationContentCard({ data, headCount, type }) {
     genreList,
     price,
     maxHeadcount,
+    isLiked,
   } = data;
 
   // state 관리
-  const [isHeartActive, setIsHeartActive] = useState(false);
   const [imageUrl, setImageUrl] = useState(img);
+  const [isHeartActive, setIsHeartActive] = useState(isLiked);
   
   // navigate
   const navigate = useNavigate();
@@ -37,6 +39,12 @@ function LocationContentCard({ data, headCount, type }) {
   useEffect(() => {
     setImageUrl(img);
   }, [img]);
+
+  // 좋아요 상태 관리
+  useEffect(() => {
+    setIsHeartActive(isLiked);
+    console.log('data: ', data);
+  }, [isLiked, data]);
   
   const handleImageError = () => {
     setImageUrl(ThumbnailImg);
@@ -110,9 +118,14 @@ function LocationContentCard({ data, headCount, type }) {
 
           {/* 하트 아이콘 영역 */}
           <HeartWrapper
-            onClick={(event) => {
-              event.stopPropagation();
+            onClick={(e) => {
+              e.stopPropagation();
               setIsHeartActive(!isHeartActive);
+              if (isHeartActive) {
+                deleteThemeLikeAPI(themeId);
+              } else {
+                postThemeLikeAPI(themeId);
+              }
             }}
           >
             {isHeartActive ? (

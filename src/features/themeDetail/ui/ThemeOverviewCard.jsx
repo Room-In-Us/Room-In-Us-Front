@@ -11,12 +11,12 @@ import ReservationIcon from '../../../shared/assets/icons/themeDetail/reservatio
 import ScheduleIcon from '../../../shared/assets/icons/themeDetail/scheduleIcon.svg?react';
 import PropTypes from 'prop-types';
 import useDevice from "../../../shared/hooks/useDevice";
-// import { postThemeLikeAPI, deleteThemeLikeAPI } from "../../like/api/themeLikeAPI";
+import { postThemeLikeAPI, deleteThemeLikeAPI } from "../../like/api/themeLikeAPI";
 
 function ThemeOverviewCard({ themeData }) {
   // state 관리
-  const [isHeartActive, setIsHeartActive] = useState(false);
   const [imageUrl, setImageUrl] = useState(themeData.img);
+  const [isHeartActive, setIsHeartActive] = useState(themeData.isLiked);
 
   const navigate = useNavigate();
 
@@ -29,6 +29,12 @@ function ThemeOverviewCard({ themeData }) {
   const handleImageError = () => {
     setImageUrl(ThumbnailImg);
   };
+
+  // 좋아요 상태 관리
+  useEffect(() => {
+    setIsHeartActive(themeData.isLiked);
+    console.log('data: ', themeData);
+  }, [themeData.isLiked, themeData]);
 
   return (
     <ComponentWrapper>
@@ -94,9 +100,14 @@ function ThemeOverviewCard({ themeData }) {
                 <StyledShareIcon/>
               </InteractionButton>
               <InteractionButton
-                onClick={(event) => {
-                  event.stopPropagation();
+                onClick={(e) => {
+                  e.stopPropagation();
                   setIsHeartActive(!isHeartActive);
+                  if (isHeartActive) {
+                    deleteThemeLikeAPI(themeData.themeId);
+                  } else {
+                    postThemeLikeAPI(themeData.themeId);
+                  }
                 }}
               >
                 {isHeartActive ? (
@@ -143,9 +154,14 @@ function ThemeOverviewCard({ themeData }) {
               <StyledShareIcon/>
             </InteractionButton>
             <InteractionButton
-              onClick={(event) => {
-                event.stopPropagation();
+              onClick={(e) => {
+                e.stopPropagation();
                 setIsHeartActive(!isHeartActive);
+                if (isHeartActive) {
+                  deleteThemeLikeAPI(themeData.themeId);
+                } else {
+                  postThemeLikeAPI(themeData.themeId);
+                }
               }}
             >
               {isHeartActive ? (

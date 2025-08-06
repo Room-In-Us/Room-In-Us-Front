@@ -11,9 +11,7 @@ import HeartIcon3 from '../assets/icons/common/heart/heart_active.svg?react';
 import { formatNumberWithCommas } from '../utils/formatUtils';
 import { levelTextConversion, genreListConversion, satisfactionConversion } from '../utils/dataUtils';
 import useDevice from '../hooks/useDevice';
-import { deleteThemeLikeAPI, postThemeLikeAPI } from '../../features/like/api/themeLikeAPI';
-import { useRecoilState } from 'recoil';
-import { likedThemeState } from '../../features/like/modal/likeAtom';
+import { postThemeLikeAPI, deleteThemeLikeAPI } from '../../features/like/api/themeLikeAPI';
 
 function ContentCard({ data, headCount, type, onUnlike }) {
   const {
@@ -29,13 +27,13 @@ function ContentCard({ data, headCount, type, onUnlike }) {
     genreList,
     price,
     maxHeadcount,
+    isLiked,
   } = data;
 
   // state 관리
-  const [likedThemes, setLikedThemes] = useRecoilState(likedThemeState);
-  const isHeartActive = likedThemes[themeId] || false;
   const [imageUrl, setImageUrl] = useState(img);
-  
+  const [isHeartActive, setIsHeartActive] = useState(isLiked);
+
   // navigate
   const navigate = useNavigate();
 
@@ -46,30 +44,15 @@ function ContentCard({ data, headCount, type, onUnlike }) {
   useEffect(() => {
     setImageUrl(img);
   }, [img]);
-  
   const handleImageError = () => {
     setImageUrl(ThumbnailImg);
   };
 
-  const handleHeartClick = async (event) => {
-    event.stopPropagation();
-
-    try {
-      if (isHeartActive) {
-        await deleteThemeLikeAPI(themeId);
-        if (onUnlike) onUnlike(themeId);
-      } else {
-        await postThemeLikeAPI(themeId);
-      }
-
-      setLikedThemes(prev => ({
-        ...prev,
-        [themeId]: !isHeartActive,
-      }));
-    } catch (error) {
-      console.error('좋아요 토글 실패:', error);
-    }
-  };
+  // 좋아요 상태 관리
+  useEffect(() => {
+    setIsHeartActive(isLiked);
+    console.log('data: ', data);
+  }, [isLiked, data]);
 
   return (
     <ContentWrapper onClick={() => navigate(`/theme/${themeId}`)}>
@@ -100,7 +83,18 @@ function ContentCard({ data, headCount, type, onUnlike }) {
               <>
                 {/* 하트 아이콘 영역 */}
                 <HeartWrapper
-                  onClick={handleHeartClick}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const next = !isHeartActive;
+                    setIsHeartActive(next);
+                  
+                    if (next) {
+                      postThemeLikeAPI(themeId);
+                    } else {
+                      deleteThemeLikeAPI(themeId);
+                      if (onUnlike) onUnlike(themeId);
+                    }
+                  }}
                 >
                   {isHeartActive ? (
                     <StyledHeartIcon3 />
@@ -158,7 +152,18 @@ function ContentCard({ data, headCount, type, onUnlike }) {
               <>
                 {/* 모바일 하트 아이콘 영역 */}
                 <HeartWrapper
-                  onClick={handleHeartClick}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const next = !isHeartActive;
+                    setIsHeartActive(next);
+                  
+                    if (next) {
+                      postThemeLikeAPI(themeId);
+                    } else {
+                      deleteThemeLikeAPI(themeId);
+                      if (onUnlike) onUnlike(themeId);
+                    }
+                  }}
                 >
                   {isHeartActive ? (
                     <StyledHeartIcon3 />
@@ -180,8 +185,9 @@ function ContentCard({ data, headCount, type, onUnlike }) {
 // PropTypes 정의 (eslint 에러 방지)
 ContentCard.propTypes = {
   data: PropTypes.object.isRequired,
-  type: PropTypes.string.isRequired,
+  type: PropTypes.string,
   headCount: PropTypes.number.isRequired,
+  onUnlike: PropTypes.func,
 };
 
 export default ContentCard;
