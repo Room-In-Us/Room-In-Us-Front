@@ -141,7 +141,7 @@ font-size: 0.8rem; // 임의로 지정
   @media (max-width: 1024px) {
   }
   @media (max-width: 768px) {
-    width: 90%;
+    width: 22.1875rem;
   }
 `;
 

@@ -1,20 +1,14 @@
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
 import More from '../../../../shared/assets/icons/common/more.svg?react';
-import { useRecoilState } from 'recoil';
-import { reservationSortOption } from '../../model/reservationDataList';
-import { useEffect, useRef, useState } from 'react';
-import { reservationSortAtom } from '../../model/reservationAtom';
+import Write from '../../../../shared/assets/icons/myPage/write.svg?react';
+import Thumb from '../../../../shared/assets/icons/myPage/thumbsup.svg?react';
+import Trash from '../../../../shared/assets/icons/myPage/trash.svg?react';
 
-export default function ReservationDropDown() {
+export default function ReservationDropDown({onReviewClick}) {
 
   const [isOpen, setIsOpen] = useState(false);
-  const [, setSortOption] = useRecoilState(reservationSortAtom);
   const dropdownRef = useRef(null);
-
-  const handleSelect = (option) => {
-    setSortOption(option.value);
-    setIsOpen(false);
-  };
 
   // 바깥 클릭 시 드롭다운 닫기
   useEffect(() => {
@@ -39,22 +33,34 @@ export default function ReservationDropDown() {
         }}
       />
 
-      {isOpen && (
+       {isOpen && (
         <DropDownMenu>
-          {reservationSortOption.map(({value, label, icon: Icon}) => (
           <DropDownItem
-            key={value}
             onClick={(e) => {
               e.stopPropagation();
-              handleSelect(value);
+              setIsOpen(false);
+              onReviewClick();
             }}
           >
-            <MenuIcon>
-              <Icon />
-            </MenuIcon>
-            <DropDownText>{label}</DropDownText>
+            <WriteIcon/>
+            <DropDownText>후기 작성</DropDownText>
           </DropDownItem>
-          ))}
+          <DropDownItem
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <ThumbIcon/>
+            <DropDownText>예약 일정 변경</DropDownText>
+          </DropDownItem>
+          <DropDownItem
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <TrashIcon/>
+            <DropDownText>예약 내역 삭제</DropDownText>
+          </DropDownItem>
         </DropDownMenu>
       )}
     </Wrapper>
@@ -76,6 +82,7 @@ const MoreIcon = styled(More)`
   align-items: center;
   flex-shrink: 0;
   color: #717486;
+  cursor: pointer;
 
   @media (max-width: 768px) {
     width: 1em;
@@ -122,7 +129,33 @@ const DropDownText = styled.div`
   }
 `;
 
-const MenuIcon = styled.div`
+const WriteIcon = styled(Write)`
+  display: flex;
+  width: 0.9375em;
+  height: 0.9375em;
+  justify-content: center;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    width: 0.875em;
+    height: 0.875em;
+  }
+`;
+
+const ThumbIcon = styled(Thumb)`
+  display: flex;
+  width: 0.9375em;
+  height: 0.9375em;
+  justify-content: center;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    width: 0.875em;
+    height: 0.875em;
+  }
+`;
+
+const TrashIcon = styled(Trash)`
   display: flex;
   width: 0.9375em;
   height: 0.9375em;
