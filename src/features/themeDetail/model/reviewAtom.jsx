@@ -1,4 +1,4 @@
-import { atom } from "recoil";
+import { atom, atomFamily } from "recoil";
 
 // 모달 상태
 export const reviewModalState = atom({
@@ -18,48 +18,51 @@ export const reviewSectionState = atom({
   default: 'first',
 });
 
+// 초기 후기 작성 데이터
+const defaultReviewValue = {
+
+  satisfactionLevel: null,
+  review: "",
+  reviewComment: "",
+
+  playedAt: null,
+  participantList: [
+    {
+      proficiency: '',
+      remark: '',
+      isOwner: true,
+    },
+    {
+      proficiency: '',
+      remark: '',
+      isOwner: false,
+    },
+  ],
+  isEscaped: true,
+  remainingTime: '00:00:00',
+  failReason: null,
+  hasViewedEnding: null,
+  usedHint: null,
+  minRecommendedHeadcount: null,
+  maxRecommendedHeadcount: null,
+  reviewTagList: [],
+
+  lockRatio: null,
+  level: null,
+  levelComment: "",
+  horrorLevel: null,
+  horrorComment: "",
+  activityLevel: null,
+  activityComment: "",
+  recommendedCloth: "",
+  storyLevel: null,
+  storyComment: "",
+  interiorLevel: null,
+  interiorComment: ""
+};
+
 // 후기 작성 데이터 상태
-export const reviewState = atom({
-  key: "reviewState",
-  default: {
-
-    satisfactionLevel: null,
-    review: "",
-    reviewComment: "",
-
-    playedAt: null,
-    participantList: [
-      {
-        proficiency: '',
-        remark: '',
-        isOwner: true,
-      },
-      {
-        proficiency: '',
-        remark: '',
-        isOwner: false,
-      },
-    ],
-    isEscaped: true,
-    remainingTime: '00:00:00',
-    failReason: null,
-    hasViewedEnding: null,
-    usedHint: null,
-    minRecommendedHeadcount: null,
-    maxRecommendedHeadcount: null,
-    reviewTagList: [],
-
-    lockRatio: null,
-    level: null,
-    levelComment: "",
-    horrorLevel: null,
-    horrorComment: "",
-    activityLevel: null,
-    activityComment: "",
-    recommendedCloth: "",
-    storyLevel: null,
-    storyComment: "",
-    interiorLevel: null,
-    interiorComment: ""
-  },
+export const reviewStateFamily = atomFamily({
+  key: 'reviewStateFamily',
+  default: defaultReviewValue,
 });

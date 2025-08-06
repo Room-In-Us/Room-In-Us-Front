@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { reviewModalState, reviewSectionState } from "../../themeDetail/model/reviewAtom.jsx";
+import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from 'recoil';
+import { reviewModalState, reviewSectionState, reviewStateFamily } from "../../themeDetail/model/reviewAtom.jsx";
 import ReviewFirst from "./ReviewFirst.jsx";
 import ReviewSecond from "./ReviewSecond.jsx";
 import ReviewThird from "./ReviewThird.jsx";
@@ -9,7 +9,6 @@ import CloseIcon from "../../../shared/assets/icons/reviewWrite/closeicon.svg";
 import LikeIcon from "../../../shared/assets/icons/reviewWrite/likeIcon.svg";
 import ReviewLast from "./ReviewLast.jsx";
 import { postReviewAPI } from "../api/postReviewAPI.js";
-import { reviewState } from "../../themeDetail/model/reviewAtom.jsx";
 
 function ReviewWriteModal({themeData}) {
 
@@ -17,7 +16,8 @@ function ReviewWriteModal({themeData}) {
   const setReviewModalOpen = useSetRecoilState(reviewModalState);
   const [reviewSection, setReviewSection] = useRecoilState(reviewSectionState);
   const isModalOpen = useRecoilValue(reviewModalState);
-  const reviewData = useRecoilValue(reviewState);
+  const reviewData = useRecoilValue(reviewStateFamily(themeData.themeId));
+  const resetReview = useResetRecoilState(reviewStateFamily(themeData.themeId));
   const [, setIsSubmitting] = useState(false);
 
   // 모달 닫기 핸들러
@@ -62,6 +62,7 @@ function ReviewWriteModal({themeData}) {
       console.log("reviewData:", reviewData);
 
       await postReviewAPI(themeData.themeId, reviewData);
+      resetReview();
       setReviewSection("last");
     } catch (err) {
       console.error("후기 전송 실패:", err);

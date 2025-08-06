@@ -15,7 +15,7 @@ import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubT
 import useDevice from '../../../shared/hooks/useDevice.js';
 import InfoBox from '../../../shared/components/InfoBox.jsx';
 import { useRecoilState } from 'recoil';
-import { reviewState } from '../../themeDetail/model/reviewAtom.jsx';
+import { reviewStateFamily } from '../../themeDetail/model/reviewAtom.jsx';
 
 export default function ReviewSecond({themeData}) {
 
@@ -23,7 +23,7 @@ export default function ReviewSecond({themeData}) {
   const { isMobile } = useDevice();
 
   // 후기 데이터 상태
-  const [review, setReview] = useRecoilState(reviewState);
+  const [review, setReview] = useRecoilState(reviewStateFamily(themeData.themeId));
 
   // 체크박스 상태
   const [checkedDate, setCheckedDate] = useState(false);
@@ -170,6 +170,8 @@ export default function ReviewSecond({themeData}) {
 
               <DatePickerWrapper>
                 <VisitDatePicker
+                  themeId={themeData.themeId}
+                  disabled={checkedDate}
                   selectedDate={review.playedAt}
                   onChange={(date) => {
                     setReview(prev => ({...prev, playedAt: date.toISOString().split('T')[0]}));
@@ -230,7 +232,8 @@ export default function ReviewSecond({themeData}) {
                 </DropdownItem>
               ))}
               </Container2>
-              <EscapeResultDetails 
+              <EscapeResultDetails
+                themeId={themeData.themeId}
                 disabled={review.isEscaped} 
                 selected={review.isEscaped} 
                 onUpdate={({ remainingTime, failReason, hasViewedEnding }) => {
@@ -350,6 +353,7 @@ export default function ReviewSecond({themeData}) {
             </Wrap>
             <DatePickerWrapper>
               <VisitDatePicker
+                themeId={themeData.themeId}
                 disabled={checkedDate}
                 selectedDate={review.playedAt}
                 onChange={(date) => {
@@ -410,6 +414,7 @@ export default function ReviewSecond({themeData}) {
             ))}
             </Container2>
             <EscapeResultDetails
+              themeId={themeData.themeId}
               disabled={review.isEscaped} 
               selected={review.isEscaped} 
               onUpdate={({ remainingTime, failReason, hasViewedEnding }) => {

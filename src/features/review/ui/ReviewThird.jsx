@@ -6,7 +6,7 @@ import { GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, Theme
 import InputBox from "./InputBox.jsx";
 import useDevice from "../../../shared/hooks/useDevice.js";
 import { useRecoilState } from 'recoil';
-import { reviewState } from '../../themeDetail/model/reviewAtom.jsx';
+import { reviewStateFamily } from '../../themeDetail/model/reviewAtom.jsx';
 
 export default function ReviewThird({themeData}) {
 
@@ -14,7 +14,7 @@ export default function ReviewThird({themeData}) {
   const { isMobile } = useDevice();
   
   // 후기 데이터 상태
-  const [review, setReview] = useRecoilState(reviewState);
+  const [review, setReview] = useRecoilState(reviewStateFamily(themeData.themeId));
   
   // 체크박스 상태
   const [checkedRange, setCheckedRange] = useState(false);
