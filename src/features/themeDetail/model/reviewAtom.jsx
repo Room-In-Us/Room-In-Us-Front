@@ -6,6 +6,12 @@ export const reviewModalState = atom({
   default: false,
 });
 
+// 선택된 테마 정보 상태
+export const selectedThemeDataState = atom({
+  key: 'selectedThemeDataState',
+  default: null,
+});
+
 // 후기 작성 섹션 상태
 export const reviewSectionState = atom({
   key: 'reviewSectionState',

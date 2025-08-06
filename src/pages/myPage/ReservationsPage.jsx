@@ -4,11 +4,17 @@ import LeftArrow from "../../shared/assets/icons/common/arrow/leftArrow.svg?reac
 import useDevice from "../../shared/hooks/useDevice";
 import CalendarSection from "../../features/mypage/ui/reservations/CalendarSection";
 import ScheduleSection from "../../features/mypage/ui/reservations/ScheduleSection";
+import { useRecoilValue } from "recoil";
+import { reviewModalState, selectedThemeDataState } from "../../features/themeDetail/model/reviewAtom";
+import ReviewWriteModal from "../../features/review/ui/ReviewWriteModal";
 
 function ReservationsPage() {
   const navigate = useNavigate();
 
   const { isMobile } = useDevice();
+
+  const isModalOpen = useRecoilValue(reviewModalState);
+  const selectedThemeData = useRecoilValue(selectedThemeDataState);
 
   return (
     <PageWrapper>
@@ -34,6 +40,13 @@ function ReservationsPage() {
 
         {/* 일정 관리 영역 */}
         <ScheduleSection />
+
+        {/* 모달 전역 렌더링 */}
+        {isModalOpen && selectedThemeData && (
+          <ModalBackdrop>
+            <ReviewWriteModal themeData={selectedThemeData} />
+          </ModalBackdrop>
+        )}
 
       </ContentWrapper>
     </PageWrapper>
@@ -114,4 +127,17 @@ const SubText = styled.div`
   @media (max-width: 768px) {
     font-size: 0.75em;
   }
+`;
+
+const ModalBackdrop = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3500;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

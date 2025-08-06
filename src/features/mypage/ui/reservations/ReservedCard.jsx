@@ -7,6 +7,8 @@ import ThumbnailImg from '../../../../shared/assets/images/common/thumbnailImg.p
 import AwardsIcon from '../../../../shared/assets/icons/common/awards.svg?react';
 import Logo from '../../../../shared/assets/icons/common/logo.svg?react';
 import ReservationDropDown from "./ReservationDropDown";
+import { useSetRecoilState } from "recoil";
+import { reviewModalState, selectedThemeDataState } from "../../../themeDetail/model/reviewAtom";
 
 export default function ReservedCard({ data }) {
     const {
@@ -25,6 +27,8 @@ export default function ReservedCard({ data }) {
 
   // state 관리
   const [imageUrl, setImageUrl] = useState(themeImg);
+  const setReviewModalOpen = useSetRecoilState(reviewModalState);
+  const setSelectedThemeData = useSetRecoilState(selectedThemeDataState);
   
   // navigate
   const navigate = useNavigate();
@@ -42,9 +46,9 @@ export default function ReservedCard({ data }) {
   };
 
   return (
-    <Wrapper onClick={() => navigate(`/theme/${themeId}`)}>
+    <Wrapper>
 
-      <ThemeItemBox>
+      <ThemeItemBox onClick={() => navigate(`/theme/${themeId}`)}>
         {/* 이미지 영역 */}
         <ImageSection imgUrl={imageUrl}>
           <LocationTag>
@@ -82,7 +86,12 @@ export default function ReservedCard({ data }) {
         </TagAndTitleWrapper>
 
         {/* 더보기 영역 */}
-        <ReservationDropDown />
+        <ReservationDropDown 
+          onReviewClick={() => {
+            setSelectedThemeData({data, img: data.themeImg});
+            setReviewModalOpen(true);
+          }}
+        />
                   
       </ThemeItemBox>
         
@@ -104,7 +113,7 @@ const Wrapper = styled.div`
   border-radius: 0.625em;
   border: 1px solid var(--RIU_Primary-80, #8DA3FF);
   overflow: hidden;
-  cursor: pointer;
+  // cursor: pointer;
 
   @media (max-width: 768px) {
     display: flex;
@@ -122,6 +131,7 @@ const ThemeItemBox = styled.div`
   flex: 1 0 0;
   background: var(--RIU_Monochrome-10, #F9F9FB);
   transition: background 0.2s ease-in-out;
+  cursor: pointer;
 
   &:hover {
     background: var(--RIU_Primary-0, #E8EAFF);
