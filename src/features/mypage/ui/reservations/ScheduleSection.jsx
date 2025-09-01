@@ -6,6 +6,8 @@ import { format } from "date-fns";
 import { getMyReservationsAPI } from "../../api/reservationAPI";
 import ReservedCard from "./ReservedCard";
 import Pen from '../../../../shared/assets/icons/myPage/pen.svg?react';
+import { scheduleModalState } from "../../../schedule/modal/scheduleAtom";
+import ScheduleModal from "../../../schedule/ui/ScheduleModal";
 
 export default function ScheduleSection() {
 
@@ -15,6 +17,9 @@ export default function ScheduleSection() {
 
   const reservationsMap = useRecoilValue(reservationListState);
   const reservations = reservationsMap[yearMonth] || [];
+
+  const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
+  const isModalOpen = useRecoilValue(scheduleModalState);
 
   useEffect(() => {
     const year = format(currentMonth, 'yyyy');
@@ -42,7 +47,7 @@ export default function ScheduleSection() {
     <Wrapper>
       <HeaderWrapper>
         <MainText>{format(currentMonth, 'yyyy년 M월')}에 예약한 방탈출</MainText>
-        <Btn>
+        <Btn onClick={() => {setScheduleWriteModal(true);}}>
           <PenIcon />
           <BtnText>일정 관리하기</BtnText>
         </Btn>
@@ -64,6 +69,14 @@ export default function ScheduleSection() {
             ))}
           </CardSection>
         ))
+      )}
+
+      
+      {/* 일정 관리 모달 */}
+      {isModalOpen && (
+        <ModalBackdrop>
+          <ScheduleModal />
+        </ModalBackdrop>
       )}
     </Wrapper>
   )
@@ -161,4 +174,17 @@ const Line = styled.div`
   flex-grow: 1;
   height: 1px;
   border-bottom: 1px dashed var(--RIU_Monochrome-70, #B3B6C3);
+`;
+
+const ModalBackdrop = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3500;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
