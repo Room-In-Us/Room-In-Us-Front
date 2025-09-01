@@ -35,7 +35,7 @@ const CustomDateInput = React.forwardRef(({ disabled, value, onToggle }, ref) =>
 // eslint 에러 방지
 CustomDateInput.displayName = "CustomDateInput";
 
-export default function VisitDatePicker({ disabled, themeId }) {
+export default function VisitDatePicker({ disabled, themeId, onChange }) {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -48,6 +48,11 @@ export default function VisitDatePicker({ disabled, themeId }) {
       ...prev,
       playedAt: formatted,
     }));
+
+    if (onChange) {
+      onChange(date);
+    }
+
     handleClose();
   };
 

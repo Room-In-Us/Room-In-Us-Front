@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components"
+import styled, { css } from "styled-components"
 import useDevice from "../../../../shared/hooks/useDevice";
 import { useEffect, useState } from "react";
 import { genreListConversion, levelTextConversion, satisfactionConversion } from "../../../../shared/utils/dataUtils";
@@ -9,8 +9,10 @@ import Logo from '../../../../shared/assets/icons/common/logo.svg?react';
 import ReservationDropDown from "./ReservationDropDown";
 import { useSetRecoilState } from "recoil";
 import { reviewModalState, selectedThemeDataState } from "../../../themeDetail/model/reviewAtom";
+import Plus from '../../../../shared/assets/icons/common/plusIcon.svg?react';
+import Trash from "../../../../shared/assets/icons/reviewWrite/trashicon.svg?react";
 
-export default function ReservedCard({ data }) {
+export default function ReservedCard({ data, isModal, setSelectedTheme, setSelectedThemeId }) {
     const {
     themeId,
     locationName,
@@ -23,7 +25,7 @@ export default function ReservedCard({ data }) {
     themeName,
     genreList,
     reservedAt,
-  } = data;
+  } = data || {};
 
   // state 관리
   const [imageUrl, setImageUrl] = useState(themeImg);
@@ -45,40 +47,59 @@ export default function ReservedCard({ data }) {
     setImageUrl(ThumbnailImg);
   };
 
-  return (
-    <Wrapper>
+  const handleRemoveSelection = (e) => {
+    e.stopPropagation();
+    setSelectedTheme(null);
+    setSelectedThemeId(null);
+  };
 
+  return (
+    <>
+      {data ? (
+        <Wrapper>
       <ThemeItemBox onClick={() => navigate(`/theme/${themeId}`)}>
         {/* 이미지 영역 */}
-        <ImageSection imgUrl={imageUrl}>
-          <LocationTag>
-            <LocationText>{locationName}</LocationText>
+        <ImageSection isModal={isModal} imgUrl={imageUrl}>
+          <LocationTag isModal={isModal}>
+            <LocationText isModal={isModal}>{locationName}</LocationText>
           </LocationTag>
-          {awardsYear && <AwardsTag><StyledAwards/>{awardsYear}</AwardsTag>}
+          {awardsYear && 
+          <AwardsTag isModal={isModal}>
+            <StyledAwards isModal={isModal}/>
+            <AwardsTagText isModal={isModal}>{awardsYear}</AwardsTagText>
+          </AwardsTag>}
           {/* 보이지 않는 img 태그 추가 (onError 감지용) */}
           <img src={imageUrl} alt="테마 이미지" onError={handleImageError} />
         </ImageSection>
 
-        <TagAndTitleWrapper>
+        <TagAndTitleWrapper isModal={isModal}>
           {/* 태그 영역 */}
-          <TagSection>
-            <ScoreTag>⭐&nbsp;&nbsp;&nbsp;{satisfactionConversion(satisfactionLevel)}</ScoreTag>
-            <Tag>{levelTextConversion(level)}</Tag>
-            <Tag>{playTime}분</Tag>
+          <TagSection isModal={isModal}>
+            <ScoreTag isModal={isModal}>
+              <ScoreTagText isModal={isModal}>⭐&nbsp;&nbsp;&nbsp;{satisfactionConversion(satisfactionLevel)}</ScoreTagText>
+            </ScoreTag>
+            <Tag isModal={isModal}>
+              <TagText isModal={isModal}>{levelTextConversion(level)}</TagText>
+            </Tag>
+            <Tag isModal={isModal}>
+              <TagText isModal={isModal}>{playTime}분</TagText>
+            </Tag>
           </TagSection>
 
           <TitleGenreSection>
             {/* 제목 영역 */}
             <TitleSection>
-              <CafeName>{storeName}</CafeName>
-              <Title>{themeName}</Title>
+              <CafeName isModal={isModal}>{storeName}</CafeName>
+              <Title isModal={isModal}>{themeName}</Title>
             </TitleSection>
 
             {/* 장르 영역 */}
-            <GenreSection>
+            <GenreSection isModal={isModal}>
               {genreList &&
                 genreListConversion(genreList).map((genre, index) => (
-                  <Tag key={index}>{genre}</Tag>
+                  <Tag  isModal={isModal} key={index}>
+                    <TagText isModal={isModal}>{genre}</TagText>
+                  </Tag>
               ))}
             </GenreSection>
           </TitleGenreSection>
@@ -86,12 +107,16 @@ export default function ReservedCard({ data }) {
         </TagAndTitleWrapper>
 
         {/* 더보기 영역 */}
-        <ReservationDropDown 
-          onReviewClick={() => {
-            setSelectedThemeData({data, img: data.themeImg});
-            setReviewModalOpen(true);
-          }}
-        />
+        {isModal ? (
+          <TrashIcon onClick={handleRemoveSelection} />
+        ) : (
+          <ReservationDropDown
+            onReviewClick={() => {
+              setSelectedThemeData({ data, img: data.themeImg });
+              setReviewModalOpen(true);
+            }}
+          />
+        )}
                   
       </ThemeItemBox>
         
@@ -102,8 +127,25 @@ export default function ReservedCard({ data }) {
           <ReservationText>예약 완료</ReservationText>
         </ReservationInfoBox>
       </ReservationBox>
-
-    </Wrapper>
+        </Wrapper>
+      ) : (
+        // data가 null일 때 (초기 상태 또는 선택 취소)
+      <Wrapper>
+        <ThemeItemBox2>
+          <PlusIcon />
+          <InfoText>선택한 테마가<br/>표시됩니다.</InfoText>
+        </ThemeItemBox2>
+        
+        <ReservationBox>
+        <LogoIcon />
+        <ReservationInfoBox>
+          {/* <ReservationDate>2025.05.05 10pm</ReservationDate> */}
+          <ReservationText>일정을<br />선택해주세요</ReservationText>
+        </ReservationInfoBox>
+      </ReservationBox>
+            </Wrapper>
+      )}
+    </>
   )
 }
 
@@ -113,7 +155,8 @@ const Wrapper = styled.div`
   border-radius: 0.625em;
   border: 1px solid var(--RIU_Primary-80, #8DA3FF);
   overflow: hidden;
-  // cursor: pointer;
+  width: 100%;
+  height: 100%;
 
   @media (max-width: 768px) {
     display: flex;
@@ -143,6 +186,22 @@ const ThemeItemBox = styled.div`
   }
 `;
 
+const ThemeItemBox2 = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625em;
+  flex: 1;
+
+  // @media (max-width: 768px) {
+  //   gap: 0.5em;
+  //   align-self: stretch;
+  // }
+`;
+
 const ImageSection = styled.div`
   display: flex;
   border-radius: 0.5625rem;
@@ -155,6 +214,12 @@ const ImageSection = styled.div`
   position: relative;
   flex-shrink: 0;
 
+  ${props => props.isModal && css`
+    width: 10em;
+    height: 10em;
+    border-radius: 0.5625em;
+  `}
+
   img {
     display: none;
   }
@@ -165,6 +230,12 @@ const ImageSection = styled.div`
     height: 8.75rem;
     display: flex;
     flex-direction: column;
+
+    ${props => props.isModal && css`
+      width: 8.75em;
+      height: 8.75em;
+      border-radius: 0.375em;
+    `}
   }
 `;
 
@@ -180,9 +251,21 @@ const LocationTag = styled.div`
   border-radius: 0.9375rem;
   background: var(--RIU_Primary-400, #515DBA);
 
+  ${props => props.isModal && css`
+      padding: 0.3125em 0.75em;
+      margin: 0.5em 0 0 0.5em;
+      height: 1.375em;
+      border-radius: 0.9375em;
+  `}
+
   @media (max-width: 768px) {
     height: 1.125rem;
     font-size: 0.625rem;
+    
+    ${props => props.isModal && css`
+      height: 1.125em;
+      font-size: 0.625em;
+    `}
   }
 `;
 
@@ -190,6 +273,10 @@ const LocationText = styled.div`
   color: var(--RIU_Monochrome-10, #F9F9FB);
   font-family: 'Pretendard-Bold';
   font-size: 0.65625rem;
+
+  ${props => props.isModal && css`
+      font-size: 0.65625em;
+  `}
 `;
 
 const AwardsTag = styled.div`
@@ -205,18 +292,48 @@ const AwardsTag = styled.div`
   align-items: center;
   gap: 0.25rem;
   background: var(--RIU_Monochrome-10, #F9F9FB);
+
+  ${props => props.isModal && css`
+      border-radius: 0.9375em;
+      padding: 0 0.75em;
+      margin: 0.5em 0 0 0.5em;
+      height: 1.375em;
+      gap: 0.25em;
+  `}
+
+  @media (max-width: 768px) {
+    height: 1.125rem;
+
+    ${props => props.isModal && css`
+      height: 1.125em;
+    `}
+  }
+`;
+
+const AwardsTagText = styled.div`
   color: var(--RIU_Primary-80, #8DA3FF);
   font-family: 'Pretendard-Bold';
   font-size: 0.65625rem;
 
+  ${props => props.isModal && css`
+      font-size: 0.65625em;
+  `}
+
   @media (max-width: 768px) {
-    height: 1.125rem;
     font-size: 0.625rem;
+
+    ${props => props.isModal && css`
+      font-size: 0.625em;
+    `}
   }
 `;
 
 const StyledAwards = styled(AwardsIcon)`
   width: 0.625rem;
+
+  ${props => props.isModal && css`
+      width: 0.625em;
+  `}
 `;
 
 const TagAndTitleWrapper = styled.div`
@@ -228,8 +345,16 @@ const TagAndTitleWrapper = styled.div`
   gap: 0.875rem;
   flex: 1 0 0;
 
+  ${props => props.isModal && css`
+      gap: 0.875em;
+  `}
+
   @media (max-width: 768px) {
-    gap: 0.5em;
+    gap: 0.5rem;
+
+    ${props => props.isModal && css`
+        gap: 0.5em;
+    `}
   }
 `;
 
@@ -239,8 +364,16 @@ const TagSection = styled.div`
   align-items: center;
   gap: 0.375rem;
 
+  ${props => props.isModal && css`
+      gap: 0.375em;
+  `}
+
   @media (max-width: 768px) {
     gap: 0.25rem;
+
+    ${props => props.isModal && css`
+      gap: 0.25em;
+  `}
   }
 `;
 
@@ -252,14 +385,39 @@ const ScoreTag = styled.div`
   justify-content: center;
   align-items: center;
   background: var(--RIU_Primary-100, #718FF2);
+
+  ${props => props.isModal && css`
+      border-radius: 0.1875em;
+      padding: 0 0.46875em;
+      height: 1.375em;
+  `}
+
+  @media (max-width: 768px) {
+    height: 1rem;
+    padding: 0 0.3rem;
+
+    ${props => props.isModal && css`
+      height: 1em;
+      padding: 0 0.3em;
+    `}
+  }
+`;
+
+const ScoreTagText = styled.div`
   color: var(--RIU_Monochrome-10, #F9F9FB);
   font-family: 'Pretendard-Bold';
   font-size: 0.65625rem;
 
+  ${props => props.isModal && css`
+      font-size: 0.65625em;
+  `}
+
   @media (max-width: 768px) {
-    height: 1rem;
     font-size: 0.5rem;
-    padding: 0 0.3rem;
+
+    ${props => props.isModal && css`
+      font-size: 0.5em;
+    `}
   }
 `;
 
@@ -271,19 +429,47 @@ const Tag = styled.div`
   justify-content: center;
   align-items: center;
   background: var(--RIU_Monochrome-20, #F0F0F4);
-  color: var(--RIU_Monochrome-80, #A1A4B5);
-  font-family: 'Pretendard-Medium';
-  font-size: 0.65625rem;
-  transition: background 0.2s ease-in-out;
+
+  ${props => props.isModal && css`
+      border-radius: 0.1875em;
+      padding: 0 0.46875em;
+      height: 1.375em;
+  `}
 
   ${Wrapper}:hover & {
     background: var(--RIU_Primary-20, #D0D8FF);
-    color: var(--RIU_Primary-200, #6680DF);
   }
 
   @media (max-width: 768px) {
     height: 1rem;
+
+    ${props => props.isModal && css`
+      height: 1em;
+    `}
+  }
+`;
+
+const TagText = styled.div`
+  font-family: 'Pretendard-Medium';
+  font-size: 0.65625rem;
+  transition: background 0.2s ease-in-out;
+  color: var(--RIU_Monochrome-80, #A1A4B5);
+
+  ${Wrapper}:hover & {
+    color: var(--RIU_Primary-200, #6680DF);
+  }
+
+  ${props => props.isModal && css`
+      font-size: 0.65625em;
+  `}
+
+
+  @media (max-width: 768px) {
     font-size: 0.5rem;
+
+    ${props => props.isModal && css`
+      font-size: 0.5em;
+    `}
   }
 `;
 
@@ -324,6 +510,10 @@ const CafeName = styled.div`
   text-overflow: ellipsis;
   word-break: break-all;
 
+  ${props => props.isModal && css`
+      font-size: 0.625em;
+  `}
+
   @media (max-width: 768px) {
     width: 100%;
     font-size: 0.625rem;
@@ -345,6 +535,10 @@ const Title = styled.div`
   -webkit-box-orient: vertical;
   overflow-wrap: break-word;
 
+  ${props => props.isModal && css`
+      font-size: 1.125em;
+  `}
+
   @media (max-width: 768px) {
     width: 100%;
     font-size: 1rem;
@@ -357,8 +551,16 @@ const GenreSection = styled.div`
   align-items: center;
   gap: 0.1875rem;
 
+  ${props => props.isModal && css`
+      gap: 0.1875em;
+  `}
+
   @media (max-width: 768px) {
     gap: 0.25rem;
+
+    ${props => props.isModal && css`
+      gap: 0.25em;
+    `}
   }
 `;
 
@@ -415,8 +617,43 @@ const ReservationText = styled.div`
   color: var(--RIU_Primary-20, #D0D8FF);
   font-family: Pretendard-Bold;
   font-size: 0.875em;
+  text-align: center;
 
   @media (max-width: 768px) {
     font-size: 0.75em;
+  }
+`;
+
+const PlusIcon = styled(Plus)`
+  display: flex;
+  width: 2.5em;
+  height: 2.5em;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+`;
+
+const InfoText = styled.div`
+  color: var(--RIU_Monochrome-70, #B3B6C3);
+  text-align: center;
+  font-family: Pretendard-Medium;
+  font-size: 0.875em;
+`;
+
+const TrashIcon = styled(Trash)`
+  display: flex;
+  width: 1.3125em;
+  height: 1.3125em;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  path {
+    fill: #717486;
+  }
+
+  @media (max-width: 768px) {
+    width: 1em;
+    height: 1em;
   }
 `;
