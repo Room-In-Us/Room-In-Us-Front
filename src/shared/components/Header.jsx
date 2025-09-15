@@ -375,7 +375,8 @@ const MobileHeaderWrapper = styled.div`
 `;
 
 const StyledMenuIcon = styled(MenuIcon)`
-  width: 1.25rem;
+  width: 1.5625rem;
+  height: 1.5625rem;
   cursor: pointer;
 `;
 

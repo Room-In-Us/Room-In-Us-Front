@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import GoogleMapComponent from "../features/location/ui/GoogleMapComponent";
 import MarkerIcon from "../shared/assets/icons/location/markerIcon.svg?react";
@@ -8,6 +8,8 @@ import StoreCard from "../features/location/ui/StoreCard";
 import { useRecoilState } from "recoil";
 import { stationCardVisible, storeCardVisible, zoneId, storePageNumber, locationRegionId, zoneName, storeCount, themeCount } from "../features/location/model/locationAtom";
 import { getLocationZonesAPI } from "../features/location/api/locationAPI";
+import useDevice from "../shared/hooks/useDevice";
+import { Sheet } from "react-modal-sheet";
 
 function LocationPage() {
   // 상태 관리
@@ -26,6 +28,14 @@ function LocationPage() {
   const [, setThemeCount] = useRecoilState(themeCount); // 구역별 테마 개수
   const [, setIsZoneId] = useRecoilState(zoneId);
   const [, setCurrentPage] = useRecoilState(storePageNumber);
+
+  const sheetRef = useRef(null);
+
+  // 스냅 포인트
+  const snapPoints = [0, 0.1, 0.5, 1];
+
+  // 반응형 함수
+  const { isMobile } = useDevice();
 
   // 지역 선택 핸들러
   const handleLocationCheck = (id) => {
@@ -66,6 +76,7 @@ function LocationPage() {
       {/* 지도 영역 */}
       <GoogleMapComponent />
 
+      {!isMobile ? (
       <OverlayWrapper>
         {/* 지역 선택 영역 */}
         <LocationButtonWrapper>
@@ -134,6 +145,79 @@ function LocationPage() {
         }
 
       </OverlayWrapper>
+      ) : (
+
+        // 모바일 바텀시트
+        <>
+          {/* 모바일 바텀시트 */}
+          <Sheet
+            ref={sheetRef}
+            isOpen={true}                // 항상 열림(버튼 없음)
+            onClose={() => sheetRef.current?.snapTo(0)} // 아래로 드래그 시 피크로
+            snapPoints={snapPoints}
+            initialSnap={1}              // 처음엔 피크 상태
+          >
+            <Sheet.Container style={{ zIndex: 3000 }}>
+              <Sheet.Header />           {/* 손잡이(드래그 핸들) */}
+              <Sheet.Content>
+                <div style={{ maxHeight: "80dvh", overflow: "auto", WebkitOverflowScrolling: "touch" }}>
+                  {/* === 기존 컴포넌트 그대로 사용 === */}
+
+                  {/* 지역 선택 영역 (그대로 재사용) */}
+                  <LocationButtonWrapper style={{ width: "100%" }}>
+                    <LocationButton
+                      isSeoulCheck={isSeoulCheck}
+                      onClick={() => handleLocationCheck(1)}
+                    >
+                      <StyledMarkerIcon isSeoulCheck={isSeoulCheck}/>
+                      <LocationText>서울</LocationText>
+                    </LocationButton>
+                    <LocationButton
+                      isSeoulCheck={!isSeoulCheck}
+                      onClick={() => handleLocationCheck(2)}
+                    >
+                      <StyledMarkerIcon isSeoulCheck={!isSeoulCheck}/>
+                      <LocationText>경기/인천</LocationText>
+                    </LocationButton>
+                  </LocationButtonWrapper>
+
+                  {/* 역 리스트 (폭만 100%로) */}
+                  <div style={{ width: "100%" }}>
+                    {stationList.map((station, index) => (
+                      <StationList
+                        key={index}
+                        isSelected={selectedStationIndices[regionId] === index}
+                        onClick={() => {
+                          handleStationSelect(station);
+                          setSelectedStationIndices({
+                            [regionId]: index,
+                            [regionId === 1 ? 2 : 1]: null,
+                          });
+                          // 필요시 선택 후 피크로 접기: sheetRef.current?.snapTo(0);
+                        }}
+                      >
+                        <StationTitle>{station.zoneName}</StationTitle>
+                        <ListEnterWrapper>
+                          <StoreNumber>{station.storeCount}</StoreNumber>
+                          <StyledArrowIcon />
+                        </ListEnterWrapper>
+                      </StationList>
+                    ))}
+                  </div>
+
+                  {isStationCardVisible && <StationCard />}
+                  {isStoreCardVisible && <StoreCard />}
+
+                  {/* === 끝 === */}
+                </div>
+              </Sheet.Content>
+            </Sheet.Container>
+
+            {/* 바깥(딤) 탭 → 피크로 접힘 */}
+            <Sheet.Backdrop onTap={() => sheetRef.current?.snapTo(0)} style={{ zIndex: 2990 }} />
+          </Sheet>
+        </>
+      )}
     </PageWrapper>
   );
 };
