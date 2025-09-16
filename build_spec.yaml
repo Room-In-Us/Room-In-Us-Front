@@ -1,0 +1,47 @@
+version: 0.1
+component: build
+timeoutInSeconds: 1000
+shell: bash
+env:
+  variables:
+    NODE_ENV: "development"
+    VITE_GOOGLE_MAPS_API_KEY: "${GOOGLE_MAPS_KEY}"
+    VITE_SERVER_URL_API: "${DEV_SERVER_URL}"
+  # exportedVariables are made available to use as parameters in sucessor Build Pipeline stages  
+  # For this Build to run, the Build Pipeline needs to have a BUILDRUN_HASH parameter set
+  exportedVariables:
+    - BUILDRUN_HASH
+
+steps:
+  - type: Command
+    name: "Define unique build tag"
+    timeoutInSeconds: 140
+    command: |
+      echo "OCI_BUILD_RUN_ID: ${OCI_BUILD_RUN_ID}"
+      export BUILDRUN_HASH=`echo ${OCI_BUILD_RUN_ID} | rev | cut -c 1-7`
+      echo "BUILDRUN_HASH: " $BUILDRUN_HASH
+  
+  - type: Command
+    name: "Install Nodejs"
+    command: |
+      sudo yum install -y oracle-nodejs-release-el7 oracle-release-el7
+      echo "Installation Complete..."
+  
+  - type: Command
+    name: "Frontend build"
+    command: |
+      npm install
+      npm run build
+      echo "Build Done..."
+  
+  - type: Command
+    name: "Zip build files"
+    command: |
+      cd dist
+      zip -r build.zip ./*
+      echo "Zip complete"
+
+outputArtifacts:
+  - name: dev-frontend-artifact
+    type: BINARY
+    location: dist/build.zip
