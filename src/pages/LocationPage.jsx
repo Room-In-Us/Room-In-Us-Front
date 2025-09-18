@@ -32,7 +32,8 @@ function LocationPage() {
   const sheetRef = useRef(null);
 
   // 스냅 포인트
-  const snapPoints = [0, 0.1, 0.5, 1];
+  const snapPoints = [0, 26, 0.9, 1];
+  const PEEK_INDEX = 2;
 
   // 반응형 함수
   const { isMobile } = useDevice();
@@ -147,24 +148,29 @@ function LocationPage() {
       </OverlayWrapper>
       ) : (
 
-        // 모바일 바텀시트
         <>
           {/* 모바일 바텀시트 */}
           <Sheet
             ref={sheetRef}
-            isOpen={true}                // 항상 열림(버튼 없음)
-            onClose={() => sheetRef.current?.snapTo(0)} // 아래로 드래그 시 피크로
+            isOpen={true}
+            initialSnap={PEEK_INDEX}
             snapPoints={snapPoints}
-            initialSnap={1}              // 처음엔 피크 상태
+            onClose={() => sheetRef.current?.snapTo(PEEK_INDEX)}
+            onSnap={(index) => {
+              if (index === 0) sheetRef.current?.snapTo(PEEK_INDEX);
+            }}
           >
             <Sheet.Container style={{ zIndex: 3000 }}>
-              <Sheet.Header />           {/* 손잡이(드래그 핸들) */}
+              {/* 손잡이(드래그 핸들) */}
+              <Sheet.Header>
+                <HeaderDragHandle />
+              </Sheet.Header>
+              
               <Sheet.Content>
-                <div style={{ maxHeight: "80dvh", overflow: "auto", WebkitOverflowScrolling: "touch" }}>
-                  {/* === 기존 컴포넌트 그대로 사용 === */}
+                <SheetBody>
 
-                  {/* 지역 선택 영역 (그대로 재사용) */}
-                  <LocationButtonWrapper style={{ width: "100%" }}>
+                  {/* 지역 선택 영역 */}
+                  <LocationButtonWrapper>
                     <LocationButton
                       isSeoulCheck={isSeoulCheck}
                       onClick={() => handleLocationCheck(1)}
@@ -209,12 +215,15 @@ function LocationPage() {
                   {isStoreCardVisible && <StoreCard />}
 
                   {/* === 끝 === */}
-                </div>
+                </SheetBody>
               </Sheet.Content>
             </Sheet.Container>
 
             {/* 바깥(딤) 탭 → 피크로 접힘 */}
-            <Sheet.Backdrop onTap={() => sheetRef.current?.snapTo(0)} style={{ zIndex: 2990 }} />
+            <Sheet.Backdrop
+              onTap={() => sheetRef.current?.snapTo(PEEK_INDEX)}
+              style={{ zIndex: 2990 }}
+            />
           </Sheet>
         </>
       )}
@@ -256,6 +265,10 @@ font-size: 1.5em; // 임의로 지정
   background: var(--RIU_Monochrome-10, #F9F9FB);
   z-index: 300;
   pointer-events: auto;
+
+  @media (max-width: 768px) {
+    background: var(--RIU_Monochrome-30, #E7E8ED);
+  }
 `;
 
 const LocationButton = styled.div`
@@ -386,4 +399,20 @@ const StyledArrowIcon = styled(ArrowIcon)`
   path {
     fill: var(--RIU_Monochrome-200, #717486);
   }
+`;
+
+// 모바일 시트
+const HeaderDragHandle = styled.div`
+  border-radius: 0.625em;
+  margin: 0.625em auto;
+  width: 6.25em;
+  height: 0.375em;
+  background-color: var(--RIU_Monochrome-40, #DFDFE6);
+`;
+
+const SheetBody = styled.div`
+  height: 100%;
+  // maxHeight: 80dvh;
+  overflow: auto;
+  WebkitOverflowScrolling: touch;
 `;
