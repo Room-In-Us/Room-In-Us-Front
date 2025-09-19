@@ -162,14 +162,16 @@ function LocationPage() {
               if (index === 0) sheetRef.current?.snapTo(PEEK_INDEX);
             }}
           >
-            <Sheet.Container style={{ fontSize: '0.6rem', maxHeight: '80vh', zIndex: 3000 }}>
+            <Sheet.Container style={{ fontSize: '0.7rem', maxHeight: '80vh', zIndex: 3000 }}>
               {/* 손잡이(드래그 핸들) */}
               <Sheet.Header>
                 <HeaderDragHandle />
               </Sheet.Header>
               
               <Sheet.Content>
-                <SheetBody>
+              {!(isStationCardVisible || isStoreCardVisible) && (
+                // 역 목록 화면
+                <MobileSheetBody>
 
                   {/* 지역 선택 영역 */}
                   <LocationButtonWrapper>
@@ -213,11 +215,23 @@ function LocationPage() {
                     ))}
                   </MobileStationListWrapper>
 
-                  {isStationCardVisible && <StationCard />}
-                  {isStoreCardVisible && <StoreCard />}
-
                   {/* === 끝 === */}
-                </SheetBody>
+                </MobileSheetBody>
+                )}
+
+                {/* 매장 목록 화면 */}
+                {isStationCardVisible && (
+                  <MobileSheetBody>
+                    <StationCard />
+                  </ MobileSheetBody>
+                )}
+
+                {/* 테마 목록 화면 */}
+                {isStoreCardVisible && (
+                  <MobileSheetBody>
+                    <StoreCard />
+                  </ MobileSheetBody>
+                )}
               </Sheet.Content>
             </Sheet.Container>
 
@@ -225,7 +239,7 @@ function LocationPage() {
             {snapIndex == PEEK_INDEX && (
               <Sheet.Backdrop
                 onTap={() => sheetRef.current?.snapTo(1)}
-                style={{ backgroundColor: 'transparent', zIndex: 2990 }}  // 필요시 딤 z-index 조정
+                style={{ backgroundColor: 'transparent', zIndex: 2990 }}
               />
             )}
           </Sheet>
@@ -419,7 +433,7 @@ const HeaderDragHandle = styled.div`
   background-color: var(--RIU_Monochrome-40, #DFDFE6);
 `;
 
-const SheetBody = styled.div`
+const MobileSheetBody = styled.div`
   height: 100%;
   display: flex;
   overflow: hidden;

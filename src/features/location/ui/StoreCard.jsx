@@ -144,6 +144,13 @@ const ComponentWrapper = styled.div`
   flex-shrink: 0;
   background: var(--RIU_Monochrome-20, #F0F0F4);
   pointer-events: auto;
+
+  @media (max-width: 768px) {
+    border-radius: 0;
+    padding: 1.5em;
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 const GoBackButtonWrapper = styled.div`
@@ -152,6 +159,11 @@ const GoBackButtonWrapper = styled.div`
   box-sizing: border-box;
   align-items: center;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    font-size: 1.2em;
+    padding: 0;
+  }
 `;
 
 const StyledLeftArrowIcon = styled(LeftArrowIcon)`
