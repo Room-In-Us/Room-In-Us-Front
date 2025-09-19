@@ -32,8 +32,9 @@ function LocationPage() {
   const sheetRef = useRef(null);
 
   // 스냅 포인트
-  const snapPoints = [0, 26, 0.9, 1];
-  const PEEK_INDEX = 2;
+  const snapPoints = [0, 26, 0.4, 0.9, 1];
+  const PEEK_INDEX = 3;
+  const [snapIndex,] = useState(PEEK_INDEX);
 
   // 반응형 함수
   const { isMobile } = useDevice();
@@ -220,10 +221,12 @@ function LocationPage() {
             </Sheet.Container>
 
             {/* 바깥(딤) 탭 → 피크로 접힘 */}
-            <Sheet.Backdrop
-              onTap={() => sheetRef.current?.snapTo(PEEK_INDEX)}
-              style={{ zIndex: 2990 }}
-            />
+            {snapIndex > PEEK_INDEX && (
+              <Sheet.Backdrop
+                onTap={() => sheetRef.current?.snapTo(PEEK_INDEX)}
+                style={{ zIndex: 2990 }}  // 필요시 딤 z-index 조정
+              />
+            )}
           </Sheet>
         </>
       )}
