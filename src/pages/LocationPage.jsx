@@ -32,9 +32,9 @@ function LocationPage() {
   const sheetRef = useRef(null);
 
   // 스냅 포인트
-  const snapPoints = [0, 26, 0.4, 0.9, 1];
+  const snapPoints = [0, 26, 0.5, 1];
   const PEEK_INDEX = 3;
-  const [snapIndex,] = useState(PEEK_INDEX);
+  const [snapIndex, setSnapIndex] = useState(PEEK_INDEX);
 
   // 반응형 함수
   const { isMobile } = useDevice();
@@ -158,10 +158,11 @@ function LocationPage() {
             snapPoints={snapPoints}
             onClose={() => sheetRef.current?.snapTo(PEEK_INDEX)}
             onSnap={(index) => {
+              setSnapIndex(index);
               if (index === 0) sheetRef.current?.snapTo(PEEK_INDEX);
             }}
           >
-            <Sheet.Container style={{ zIndex: 3000 }}>
+            <Sheet.Container style={{ fontSize: '0.6rem', maxHeight: '80vh', zIndex: 3000 }}>
               {/* 손잡이(드래그 핸들) */}
               <Sheet.Header>
                 <HeaderDragHandle />
@@ -189,7 +190,7 @@ function LocationPage() {
                   </LocationButtonWrapper>
 
                   {/* 역 리스트 (폭만 100%로) */}
-                  <div style={{ width: "100%" }}>
+                  <MobileStationListWrapper>
                     {stationList.map((station, index) => (
                       <StationList
                         key={index}
@@ -210,7 +211,7 @@ function LocationPage() {
                         </ListEnterWrapper>
                       </StationList>
                     ))}
-                  </div>
+                  </MobileStationListWrapper>
 
                   {isStationCardVisible && <StationCard />}
                   {isStoreCardVisible && <StoreCard />}
@@ -221,10 +222,10 @@ function LocationPage() {
             </Sheet.Container>
 
             {/* 바깥(딤) 탭 → 피크로 접힘 */}
-            {snapIndex > PEEK_INDEX && (
+            {snapIndex == PEEK_INDEX && (
               <Sheet.Backdrop
-                onTap={() => sheetRef.current?.snapTo(PEEK_INDEX)}
-                style={{ zIndex: 2990 }}  // 필요시 딤 z-index 조정
+                onTap={() => sheetRef.current?.snapTo(1)}
+                style={{ backgroundColor: 'transparent', zIndex: 2990 }}  // 필요시 딤 z-index 조정
               />
             )}
           </Sheet>
@@ -374,6 +375,10 @@ const StationList = styled.div`
   line-height: normal;
   transition: background 0.2s ease;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const StationTitle = styled.div`
@@ -406,6 +411,7 @@ const StyledArrowIcon = styled(ArrowIcon)`
 
 // 모바일 시트
 const HeaderDragHandle = styled.div`
+  font-size: 1rem;
   border-radius: 0.625em;
   margin: 0.625em auto;
   width: 6.25em;
@@ -415,7 +421,20 @@ const HeaderDragHandle = styled.div`
 
 const SheetBody = styled.div`
   height: 100%;
-  // maxHeight: 80dvh;
+  display: flex;
+  overflow: hidden;
+`;
+
+const MobileStationListWrapper = styled.div`
+font-size: 1.3em; // 임의로 지정
+  width: 100%;
   overflow: auto;
-  WebkitOverflowScrolling: touch;
+  -webkit-overflow-scrolling: touch;
+
+  // 스크롤바 제거
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
