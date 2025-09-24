@@ -31,6 +31,7 @@ function StationCard() {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [sortStatus, setSortStatus] = useState("RECOMMEND");
 
+  // 반응형 함수
   const { isMobile } = useDevice();
 
   // 돌아가기 핸들러

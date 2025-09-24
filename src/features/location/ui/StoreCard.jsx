@@ -5,12 +5,16 @@ import LocationIcon from "../../../shared/assets/icons/location/storeLocationIco
 import LinkIcon from "../../../shared/assets/icons/location/storeLinkIcon.svg?react";
 import TelIcon from "../../../shared/assets/icons/location/storeTelIcon.svg?react";
 import CopyIcon from "../../../shared/assets/icons/location/copyIcon.svg?react";
+import FilterImg from '../../../shared/assets/icons/genre/filter.svg';
 import { useRecoilState } from "recoil";
 import { stationCardVisible, storeCardVisible, locationStoreId } from "../../../features/location/model/locationAtom";
 import LocationPeopleFilter from "./filter/LocationPeopleFilter";
 import LocationSortFilter from "./filter/LocationSortFilter";
 import LocationContentCard from "./LocationContentCard";
 import { getLocationListAPI, getLocationStoreInfoAPI } from "../api/locationAPI";
+import BottomSheet from "../../../shared/components/BottomSheet";
+import { sortOptions } from '../../../shared/components/filter/OptionList.js';
+import useDevice from "../../../shared/hooks/useDevice";
 
 function StoreCard() {
   // 상태 관리
@@ -21,6 +25,27 @@ function StoreCard() {
   const [, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
   const [storeId,] = useRecoilState(locationStoreId);
   const [storeInfo, setStoreInfo] = useState([]);
+
+  // 지역 필터 관련 상태
+  // const [regions, setRegions] = useState([]);
+  // const [zones, setZones] = useState([]);
+  // const [zoneList, setZoneList] = useState([]);
+  // const [selectedRegion, setSelectedRegion] = useState("지역 전체");
+  // const [selectedZone, setSelectedZone] = useState(null);
+  // const [activeRegionId, setActiveRegionId] = useState(1);
+  // const [selectedZones, setSelectedZones] = useState([]);
+  // const [isAllZoneSelected, setIsAllZoneSelected] = useState(false);
+  // const [regionId, setRegionId] = useState();
+  // const [zoneIdList, setZoneIdList] = useState();
+
+  // 바텀 시트 상태
+  const [isBottomSheetOpen, setBottomSheetOpen] = useState(false);
+
+  // 모바일 필터 상태
+  const [isFilterActive, setIsFilterActive] = useState(true);
+  
+  // 반응형 함수
+  const { isMobile } = useDevice();
 
   // 돌아가기 핸들러
   const handleStationSelect = () => {
@@ -69,6 +94,147 @@ function StoreCard() {
       console.log(err);
     }
   };
+
+  // 필터 적용 함수 수정
+  const handleApplyFilters = ({ people, sort }) => {
+    setHeadCount(people);
+    setSelectedSort(sort);
+    setIsFilterActive(true);
+
+    // if (region === "지역 전체") {
+    //   setSelectedRegion("지역 전체");
+    //   setSelectedZones([]);
+    //   setZoneList([]);
+    // } 
+    // // "서울 전체" 선택 시 서울의 모든 구역 설정
+    // else if (region === "서울 전체") {
+    //   setSelectedRegion("서울 전체");
+    //   setZoneList(zones);
+    // } 
+    // // "경기/인천 전체" 선택 시 경기/인천의 모든 구역 설정
+    // else if (region === "경기/인천 전체") {
+    //   setSelectedRegion("경기/인천 전체");
+    //   setZoneList(zones);
+    // } 
+    // // 특정 구역 선택 시 해당 구역만 설정
+    // else if (zones && zones.length > 0) {
+    //   setSelectedRegion(region);
+    //   setSelectedZones(zones);
+    //   setZoneList([]);
+    // } 
+    // // 초기화 상태
+    // else {
+    //   setSelectedRegion(region);
+    //   setSelectedZones([]);
+    //   setZoneList([]);
+    // }
+  };
+
+  // 리셋 처리 함수
+  const handleResetFilters = ({ people, sort }) => {
+    setHeadCount(people);  
+    setSelectedSort(sort);
+    // setSelectedRegion(region); 
+    // setSelectedZones([]); 
+    // setZoneList([]);
+    // setIsAllZoneSelected(false); 
+    setIsFilterActive(true);
+  };
+
+  // 전체 지역 버튼 클릭 핸들러
+  // const handleRegionAllClick = () => {
+  //   setActiveRegionId(1);
+  //   setSelectedRegion("지역 전체");
+  //   setSelectedZones([]);
+  //   // fetchZones(1);
+  //   setRegionId(null); 
+  //   setZoneIdList(null);  
+  // };
+
+  // 지역 버튼 클릭 핸들러 (구역 렌더링)
+    // const handleTabClick = (regionId) => {
+    //   setActiveRegionId(regionId); 
+    //   setSelectedZones([]);     
+    //   setSelectedZone(null);  
+    //   // fetchZones(regionId);    
+    // };
+      
+    // const handleTabAllClick = async (regionId, buttonText) => {
+    //   setActiveRegionId(regionId);
+    //   setIsAllZoneSelected(true);
+    //   setSelectedZones([]);
+    //   setZoneList([]);
+    //   setSelectedRegion(buttonText);
+  
+    //   // await getZoneAPI(regionId);
+    //   setZoneIdList(null); 
+    //   setRegionId(regionId);
+    // };
+      
+    // // 지역 선택 핸들러
+    // const handleRegionSelect = (regionName) => {
+    //   setSelectedRegion(regionName);
+    //   setSelectedZone(null);
+    // };
+      
+    // // 구역 선택 핸들러
+    // const handleZoneSelect = async (zoneName) => {
+    //   setIsAllZoneSelected(false);
+    
+    //   setSelectedZones((prevZones) => {
+    //     let updatedZones;
+    
+    //     if (prevZones.includes(zoneName)) {
+    //       // 이미 선택된 경우 → 제거
+    //       updatedZones = prevZones.filter((name) => name !== zoneName);
+    //     } else {
+    //       // 새로 선택
+    //       updatedZones = [...prevZones, zoneName];
+    //     }
+    
+    //     // 선택 텍스트 표시용
+    //     if (updatedZones.length === 0) {
+    //       setSelectedRegion("지역 선택");
+    //     } else if (updatedZones.length === 1) {
+    //       setSelectedRegion(updatedZones[0]);
+    //     } else {
+    //       setSelectedRegion(`${updatedZones[0]} 외 ${updatedZones.length - 1}개`);
+    //     }
+    
+    //     // zoneIdList 생성
+    //     const selectedIds = zones
+    //       .filter((zone) => updatedZones.includes(zone.zoneName))
+    //       .map((zone) => zone.zoneId);
+    
+    //     setZoneIdList(selectedIds);  
+    //     setRegionId(activeRegionId);   
+    
+    //     return updatedZones;
+    //   });
+    // }; 
+
+  // 바텀 시트 오픈 함수
+  const handleOpenBottomSheet = () => {
+    setBottomSheetOpen(true);
+    // setSelectedRegion(selectedRegion);
+    // setSelectedZone(selectedZone);
+  };
+
+  const getMobileFilterText = () => {
+    const peopleText = `${headCount}인`;
+    const sortText =  sortOptions.find(option => option.value === selectedSort)?.label || selectedSort;
+
+    // let regionText = selectedRegion;
+  
+    // if (selectedZones.length > 1) {
+    //   const currentRegion = regions.find(r => r.regionId === activeRegionId)?.regionName || '';
+    //   regionText = `${currentRegion} ${selectedZones.length}`;
+    // } else if (selectedZones.length === 1) {
+    //   regionText = selectedZones[0];
+    // }
+  
+    return `${peopleText}, ${sortText}`;
+  };
   
   return (
     <ComponentWrapper>
@@ -111,12 +277,46 @@ function StoreCard() {
         <ThemeNumber>
           테마 목록 &#40;{themeList.length}&#41;
         </ThemeNumber>
-        <FilterWrapper>
-          {/* 인원 필터 */}
-          <LocationPeopleFilter onSelect={(count) => handlePeopleFilterChange(count)} selected={headCount} />
-          {/* 정렬 필터 */}
-          <LocationSortFilter onSelect={(value) => setSelectedSort(value)} selected={selectedSort} />
-        </FilterWrapper>
+        {isMobile ? (
+          <>
+            <Filter onClick={handleOpenBottomSheet}>
+              <FilterIcon src={FilterImg} $isSelected={isFilterActive}/>
+              <LocationFilterText $isSelected={isFilterActive}>{getMobileFilterText()}</LocationFilterText>
+            </Filter>
+            <BottomSheet
+              isOpen={isBottomSheetOpen}
+              onClose={() => setBottomSheetOpen(false)}
+              onApply={handleApplyFilters}
+              onReset={handleResetFilters}
+              // selectedRegion={selectedRegion}
+              // selectedZone={selectedZone}
+              selectedPeople={headCount}
+              selectedSort={selectedSort}
+              // regions={regions}  
+              // zones={zones}     
+              // zoneList={zoneList}
+              // activeRegionId={activeRegionId}
+              // selectedZones={selectedZones}
+              // onTabClick={handleTabClick}
+              // onRegionSelect={handleRegionSelect}
+              // onRegionAllClick={handleRegionAllClick}
+              // onTabAllClick={handleTabAllClick}
+              // onZoneSelect={handleZoneSelect}
+              // isAllZoneSelected={isAllZoneSelected}
+              setHeadCount={setHeadCount}
+              setSelectedSort={setSelectedSort}
+              // setSelectedRegion={setSelectedRegion}
+              isLocationPage={true}
+            />
+          </>
+        ) : (
+          <FilterWrapper>
+            {/* 인원 필터 */}
+            <LocationPeopleFilter onSelect={(count) => handlePeopleFilterChange(count)} selected={headCount} />
+            {/* 정렬 필터 */}
+            <LocationSortFilter onSelect={(value) => setSelectedSort(value)} selected={selectedSort} />
+          </FilterWrapper>
+        )}
       </FilterTitleWrapper>
 
       {/* 콘텐츠 카드 영역 */}
@@ -161,6 +361,7 @@ const GoBackButtonWrapper = styled.div`
   align-self: stretch;
 
   @media (max-width: 768px) {
+    margin-bottom: 1.875em;
     font-size: 1.2em;
     padding: 0;
   }
@@ -186,6 +387,10 @@ const TitleWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 1.25em;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const Title = styled.div`
@@ -200,12 +405,20 @@ const DescriptionWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 0.5em;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const DescriptionList = styled.div`
   display: flex;
   align-items: center;
   gap: 0.625em;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
 `;
 
 const StyledLocationIcon = styled(LocationIcon)`
@@ -231,6 +444,13 @@ const DescriptionText = styled.a`
   white-space: nowrap;
   text-overflow: ellipsis;
   word-break: break-all;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    min-width: 0;
+    flex: 1;
+    text-align: start;
+  }
 `;
 
 const StyledCopyIcon = styled(CopyIcon)`
@@ -280,5 +500,61 @@ const ContentCardWrapper = styled.div`
   -ms-overflow-style: none;
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  @media (max-width: 768px) {
+    height: auto;
+    flex: 1;
+  }
+`;
+
+// 모바일
+const Filter = styled.div`
+  display: flex;
+  padding: 0.625rem 1.25rem;
+  align-items: flex-start;
+  gap: 0.625rem;
+  border-radius: 1.25rem;
+  border: 1px solid var(--RIU_Primary-40, #B9C3FF);
+  background: var(--RIU_Monochrome-10, #F9F9FB);
+  cursor: pointer;
+
+  @media (max-width: 1024px) {
+    padding: 0.46875rem 0.9375rem;
+    align-items: center;
+    gap: 0.46875rem;
+    font-size: 0.65625rem;
+  }
+  @media (max-width: 768px) {
+    padding: 0.375rem 0.875rem;
+    align-items: center;
+    gap: 0.375rem;
+  }
+`;
+
+const FilterIcon = styled.img`
+  display: flex;
+  width: 0.9375rem;
+  height: 0.9375rem;
+  justify-content: center;
+  align-items: center;
+
+  svg{
+    background: ${({ $isSelected }) => ($isSelected ? "var(--RIU_Primary-300, #5B6ACC)" : "var(--RIU_Monochrome-200, #717486)")};
+  }
+
+  filter: ${({ $isSelected }) =>
+    $isSelected
+      ? "invert(32%) sepia(79%) saturate(722%) hue-rotate(203deg) brightness(96%) contrast(97%)"
+      : "none"};
+`;
+
+const LocationFilterText = styled.div`
+  font-family: ${({ $isSelected }) => $isSelected ? 'Pretendard-Bold' : 'Pretendard-Medium'};
+  font-size: 0.875rem;
+  color: ${({ $isSelected }) => $isSelected ? "var(--RIU_Primary-300, #5B6ACC)" : "var(--RIU_Monochrome-200, #717486)"};
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
   }
 `;
