@@ -133,14 +133,15 @@ export default function ReservedCard({ data, isModal, setSelectedTheme, setSelec
       <Wrapper>
         <ThemeItemBox2>
           <PlusIcon />
-          <InfoText>선택한 테마가<br/>표시됩니다.</InfoText>
+          <InfoText>선택한 테마가<br/>표시됩니다</InfoText>
         </ThemeItemBox2>
         
         <ReservationBox>
-        <LogoIcon />
+        { !isMobile && (<LogoIcon />)}
         <ReservationInfoBox>
-          {/* <ReservationDate>2025.05.05 10pm</ReservationDate> */}
-          <ReservationText>일정을<br />선택해주세요</ReservationText>
+          <ReservationText>
+            {isMobile ? "일정을 선택해주세요" : <>일정을<br/>선택해주세요</>}
+          </ReservationText>
         </ReservationInfoBox>
       </ReservationBox>
             </Wrapper>
@@ -160,9 +161,7 @@ const Wrapper = styled.div`
 
   @media (max-width: 768px) {
     display: flex;
-    width: 21.6875em;
     flex-direction: column;
-    align-items: flex-start;
   }
 `;
 
@@ -194,12 +193,13 @@ const ThemeItemBox2 = styled.div`
   justify-content: center;
   align-items: center;
   gap: 0.625em;
-  flex: 1;
+  box-sizing: border-box;
 
-  // @media (max-width: 768px) {
-  //   gap: 0.5em;
-  //   align-self: stretch;
-  // }
+  @media (max-width: 768px) {
+    height: 10em;
+    padding: 0.625em;
+    gap: 0.5em;
+  }
 `;
 
 const ImageSection = styled.div`
@@ -631,6 +631,11 @@ const PlusIcon = styled(Plus)`
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    width: 1.5625em;
+    height: 1.5625em;
+  }
 `;
 
 const InfoText = styled.div`
@@ -638,6 +643,10 @@ const InfoText = styled.div`
   text-align: center;
   font-family: Pretendard-Medium;
   font-size: 0.875em;
+
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const TrashIcon = styled(Trash)`

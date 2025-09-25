@@ -1,18 +1,15 @@
 import styled, { css } from "styled-components";
-import useDevice from "../../../shared/hooks/useDevice";
 import Search from '../../../shared/assets/icons/common/searchIcon.svg?react';
 import { useCallback, useEffect, useState } from "react";
 import { getThemesAPI } from '../../../features/search/api/getSearchAPI';
 import NoResultFace from '../../../shared/assets/icons/myPage/noresultface.svg?react';
 import ReservedCard from "../../mypage/ui/reservations/ReservedCard";
 import VisitDatePicker from "../../review/ui/VisitDatePicker";
-import TimePicker from "./TimePicker";
+import ScheduleTimePicker from "./ScheduleTimePicker";
 
 export default function ScheduleItemSection({ isModal, onStateChange }) {
 
-  // 반응형
-  const { isMobile } = useDevice();
-
+  // 상태
   const [searchValue, setSearchValue] = useState("");
   const [themes, setThemes] = useState([]);
   const [selectedThemeId, setSelectedThemeId] = useState(null);
@@ -46,7 +43,7 @@ export default function ScheduleItemSection({ isModal, onStateChange }) {
   }, []);
 
   const [visitDate, setVisitDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState({ hour: '10', minute: '00' }); // 초기값 설정
+  const [reservedAt, setReservedAt] = useState(null);
 
   // 날짜 선택 핸들러
   const handleDateChange = useCallback((date) => {
@@ -54,19 +51,9 @@ export default function ScheduleItemSection({ isModal, onStateChange }) {
   }, []);
 
   // 시간 선택 핸들러
-  const handleTimeChange = useCallback((newTime) => {
-    setSelectedTime(prev => ({ ...prev, ...newTime }));
+  const handleTimeChange = useCallback((isoString) => {
+    setReservedAt(isoString);
   }, []);
-
-  // API 호출 시 사용할 최종 `reservedAt` 값 구성
-  const reservedAt = (() => {
-    if (!visitDate) return null;
-    const year = visitDate.getFullYear();
-    const month = String(visitDate.getMonth() + 1).padStart(2, '0');
-    const day = String(visitDate.getDate()).padStart(2, '0');
-    const { hour, minute } = selectedTime;
-    return `${year}-${month}-${day}T${hour}:${minute}:00`;
-  })();
 
   const isSubmitEnabled = !!selectedThemeId && !!visitDate;
 
@@ -81,12 +68,11 @@ export default function ScheduleItemSection({ isModal, onStateChange }) {
       onStateChange({
         selectedThemeId,
         visitDate,
-        selectedTime,
         isSubmitEnabled,
         reservedAt,
       });
     }
-  }, [selectedThemeId, visitDate, selectedTime, isSubmitEnabled, reservedAt, onStateChange]);
+  }, [selectedThemeId, visitDate, isSubmitEnabled, reservedAt, onStateChange]);
 
   return (
     <Wrapper>
@@ -132,10 +118,14 @@ export default function ScheduleItemSection({ isModal, onStateChange }) {
       </SearchSection>
       <DropDownWrapper>
 
-        {/* 임시 */}
-        <VisitDatePicker onChange={handleDateChange} />
-        <TimePicker onTimeChange={handleTimeChange} />
-      
+        <HalfBox>
+          <VisitDatePicker onChange={handleDateChange} />
+        </HalfBox>
+
+        <HalfBox>
+          <ScheduleTimePicker onTimeChange={handleTimeChange} />
+        </HalfBox>
+
       </DropDownWrapper>
 
       {selectedTheme ? (
@@ -163,6 +153,12 @@ const Wrapper = styled.div`
   align-items: center;
   gap: 1.875em;
   width: 100%;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    gap: 1.25em;
+  }
 `;
 
 const SearchSection = styled.div`
@@ -188,6 +184,13 @@ const SearchIcon2 = styled(Search)`
   height: 2.5em;
   justify-content: center;
   align-items: center;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    width: 1.875em;
+    height: 1.875em;
+  }
 `;
 
 const NoResultFaceIcon = styled(NoResultFace)`
@@ -196,6 +199,13 @@ const NoResultFaceIcon = styled(NoResultFace)`
   height: 2.5em;
   justify-content: center;
   align-items: center;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    width: 1.875em;
+    height: 1.875em;
+  }
 `;
 
 const InputBoxWrapper = styled.div`
@@ -209,6 +219,12 @@ const InputBoxWrapper = styled.div`
   border: 1px solid var(--RIU_Monochrome-60, #C4C6D1);
   background: var(--RIU_Monochrome-10, #F9F9FB);
   box-sizing: border-box;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    height: 2.25em;
+  }
 `;
 
 const SearchTextWrapper =  styled.text`
@@ -230,6 +246,12 @@ const SearchInput = styled.input`
 
   &::placeholder {
     color: var(--RIU_Monochrome-100, #818496);
+  }
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    font-size: 0.625em;
   }
 `;
 
@@ -256,6 +278,12 @@ const ResultBox = styled.div`
   &:hover::-webkit-scrollbar-thumb {
     border-radius: 30px;
     background-color: #8DA3FF;
+  }
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    height: 14.0625em;
   }
 `;
 
@@ -290,34 +318,53 @@ const ResultItem = styled.div`
       background: var(--RIU_Primary-0, #E8EAFF);
     }
   `}
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    height: 2.8125em;
+  }
 `;
 
 const ResultTitle = styled.div`
   color: var(--RIU_Primary-600, #303281);
   font-family: Pretendard-ExtraBold;
   font-size: 0.875em;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;
 
 const ResultSubText = styled.div`
   color: var(--RIU_Primary-80, #8DA3FF);
   font-family: Pretendard-Bold;
   font-size: 0.625em;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    font-size: 0.5em;
+  }
 `;
 
 const DropDownWrapper = styled.div`
+  width: 100%;
   display: flex;
   align-items: flex-start;
   gap: 1.875em;
 
-  .date-picker-wrapper {
-    width: 17.1875em;
-    height: 2.625em;
-
-    .react-datepicker__input-container {
-      width: 100%;
-      height: 100%;
-    }
+  @media (max-width: 1024px) {
   }
+  @media (max-width: 768px) {
+    gap: 0.625em;
+  }
+`;
+
+const HalfBox = styled.div`
+  flex: 1;
 `;
 
 const InfoText = styled.div`
@@ -325,4 +372,10 @@ const InfoText = styled.div`
   text-align: center;
   font-family: Pretendard-Medium;
   font-size: 0.875em;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    font-size: 0.625em;
+  }
 `;

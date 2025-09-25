@@ -92,7 +92,8 @@ font-size: 0.8rem; // 임의로 지정
   @media (max-width: 1024px) {
   }
   @media (max-width: 768px) {
-    // width: 22.1875rem;
+    width: 22.1875rem;
+    height: auto;
   }
 `;
 
@@ -145,6 +146,13 @@ const IndexWrapper = styled.div`
   align-items: flex-start;
   gap: 1.875em;
   box-sizing: border-box;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    padding: 1.25em 0.875em;
+    gap: 1.25em;
+  }
 `;
 
 const SubmitBtn = styled.div`
@@ -159,10 +167,22 @@ const SubmitBtn = styled.div`
   background: ${({ $isEnabled }) => $isEnabled ? 'var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%))' : 'var(--RIU_Monochrome-70, #B3B6C3)'};
   box-sizing: border-box;
   cursor: ${({ $isEnabled }) => $isEnabled ? 'pointer' : ''};
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    height: 2.5em;
+  }
 `;
 
 const SubmitBtnText = styled.div`
   color: ${({ $isEnabled }) => $isEnabled ? 'var(--RIU_Monochrome-10, #F9F9FB)' : 'var(--RIU_Monochrome-300, #696C7E)'};
   font-family: Pretendard-Bold;
   font-size: 1em;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    font-size: 0.875em;
+  }
 `;

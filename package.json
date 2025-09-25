@@ -11,12 +11,17 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@hookform/resolvers": "^3.10.0",
+    "@mui/material": "^7.3.2",
+    "@mui/x-date-pickers": "^8.11.2",
     "@react-google-maps/api": "^2.20.3",
     "@reduxjs/toolkit": "^2.2.7",
     "@use-gesture/react": "^10.3.1",
     "axios": "^1.7.5",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.18",
     "mkcert": "^3.2.0",
     "prop-types": "^15.8.1",
     "props-type": "^1.0.1",
