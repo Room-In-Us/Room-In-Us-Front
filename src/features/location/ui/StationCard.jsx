@@ -9,6 +9,7 @@ import { useRecoilState } from "recoil";
 import { stationCardVisible, storeCardVisible, zoneId, storePageNumber, locationStoreId, locationRegionId, zoneName, storeCount, themeCount, centerLatAndLng, storeLatAndLngList, zoomLevel } from "../../../features/location/model/locationAtom";
 import { getSeoulZonesInfoAPI, getSeoulZoneStoreListAPI, getZoneStoreListAPI } from "../api/locationAPI";
 import { stationLineConversion } from "../../../shared/utils/stationLineUtils";
+import useDevice from "../../../shared/hooks/useDevice";
 
 function StationCard() {
   // 상태 관리
@@ -29,6 +30,15 @@ function StationCard() {
   const [, setZoomLevel] = useRecoilState(zoomLevel); // 줌 레벨
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [sortStatus, setSortStatus] = useState("RECOMMEND");
+
+  // 반응형 함수
+  const { isMobile } = useDevice();
+
+  // 돌아가기 핸들러
+  const handleStationSelect = () => {
+    setIsStationCardVisible(false);
+    setIsStoreCardVisible(false);
+  };
 
   // 매장 선택 핸들러
   const handleStoreSelect = (id) => {
@@ -57,7 +67,7 @@ function StationCard() {
     const fetchData = async () => {
       try {
         if (isZoneId > 0 && isZoneId < 17) {
-          const response = await getSeoulZoneStoreListAPI(isZoneId, currentPage, 10, sortStatus);
+          const response = await getSeoulZoneStoreListAPI(isZoneId, currentPage, isMobile ? 6 : 10, sortStatus);
           console.log('서울 구역 매장 목록: ', response);
           setTotalPages(response.storeData.totalPages);
           setCenterLatAndLng({ // 구역 중앙 좌표
@@ -67,7 +77,7 @@ function StationCard() {
           setStoreList(response.storeData.contents); // 매장 리스트
           setZoomLevel(16); // 줌 레벨
         } else {
-          const response = await getZoneStoreListAPI(regionId, isZoneId, currentPage, 10, sortStatus);
+          const response = await getZoneStoreListAPI(regionId, isZoneId, currentPage, isMobile ? 6 : 10, sortStatus);
           console.log('수도권 구역 매장 목록: ', response);
           setTotalPages(response.storeData.totalPages);
           setCenterLatAndLng({ // 구역 중앙 좌표
@@ -82,7 +92,7 @@ function StationCard() {
       }
     };
     fetchData();
-  }, [isZoneId, currentPage, regionId, setCenterLatAndLng, setStoreList, setZoomLevel, sortStatus]);
+  }, [isZoneId, currentPage, regionId, setCenterLatAndLng, setStoreList, setZoomLevel, sortStatus, isMobile]);
 
   // 페이지 이동
   const handlePageClick = (page) => {
@@ -103,6 +113,14 @@ function StationCard() {
 
   return (
     <ComponentWrapper>
+      {/* 돌아가기 버튼 영역 */}
+      {isMobile && (
+        <GoBackButtonWrapper>
+          <MobileLeftArrowIcon onClick={handleStationSelect}/>
+          <GoBackText onClick={handleStationSelect}>지역 선택으로 돌아가기</GoBackText>
+        </GoBackButtonWrapper>
+      )}
+
       {/* 타이틀 영역 */}
       <TitleWrapper>
         <StationTitleWrapper>
@@ -247,6 +265,36 @@ const ComponentWrapper = styled.div`
   flex-shrink: 0;
   background: var(--RIU_Monochrome-20, #F0F0F4);
   pointer-events: auto;
+
+  @media (max-width: 768px) {
+    border-radius: 0;
+    padding: 1.5em;
+    width: 100%;
+    height: 100%;
+  }
+`;
+
+const GoBackButtonWrapper = styled.div`
+  font-size: 1.2em;
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  align-self: stretch;
+`;
+
+const MobileLeftArrowIcon = styled(LeftArrowIcon)`
+  padding-right: 0.625em;
+  width: 1.25em;
+  height: 1.25em;
+  fill: #717486;
+  cursor: pointer;
+`;
+
+const GoBackText = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  font-family: 'Pretendard-Medium';
+  line-height: normal;
+  cursor: pointer;
 `;
 
 const TitleWrapper = styled.div`
@@ -460,6 +508,10 @@ const PagingWrapper = styled.div`
   height: 100%;
   justify-content: space-between;
   align-items: end;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const StyledLeftArrowIcon = styled(LeftArrowIcon)`

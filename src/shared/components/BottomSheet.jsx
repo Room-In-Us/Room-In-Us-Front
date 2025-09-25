@@ -6,13 +6,6 @@ import SortFilter from "./filter/SortFilter";
 import useDevice from "../../shared/hooks/useDevice";
 import ResetIcon from '../assets/icons/common/filterIcon/reset.svg';
 
-// 탭 리스트
-const tabs = [
-  { id: "people", label: "가격" },
-  { id: "sort", label: "정렬" },
-  { id: "region", label: "지역" },
-];
-
 export default function BottomSheet({
   isOpen,
   onClose,
@@ -36,6 +29,7 @@ export default function BottomSheet({
   setHeadCount,
   setSelectedSort,
   setSelectedRegion,
+  isLocationPage,
   }) {
   const { isMobile } = useDevice();
   const [activeTab, setActiveTab] = useState("people");
@@ -43,6 +37,13 @@ export default function BottomSheet({
   const peopleRef = useRef();
   const sortRef = useRef();
   const regionRef = useRef();
+
+  // 탭 리스트
+  const tabs = [
+    { id: "people", label: "가격" },
+    { id: "sort", label: "정렬" },
+    ...(isLocationPage ? [] : [{ id: "region", label: "지역" }]),
+  ];
 
   useEffect(() => {
     if (isOpen && isMobile) {
@@ -64,7 +65,7 @@ export default function BottomSheet({
 
     setHeadCount(2);
     setSelectedSort("HIGH_SATISFACTION_LEVEL");
-    setSelectedRegion("지역 전체");
+    !isLocationPage && setSelectedRegion("지역 전체");
 
     if (peopleRef.current) {
       peopleRef.current.reset();
@@ -90,6 +91,7 @@ export default function BottomSheet({
     let zoneValues = [];
 
     // 서울 전체 또는 경기/인천 전체를 선택한 경우
+    if (!isLocationPage) {
     if (activeRegionId === 1 && selectedRegion === "서울 전체") {
       regionValue = "서울 전체";
       zoneValues = zoneList
@@ -111,6 +113,7 @@ export default function BottomSheet({
       regionValue = "지역 전체";
       zoneValues = [];
     }
+  }
 
     onApply({
       people: peopleRef.current?.getValue?.() ?? selectedPeople,

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import NoiseFilter from '../shared/assets/icons/login/loginNoiseFilter.svg';
 import TextLogo from '../shared/assets/icons/common/textLogo.svg?react'
-import LoginIllust from '../shared/assets/icons/login/loginIllust.svg?react';
+import LoginIllust from '../shared/assets/images/login/loginIllust.png';
 import KakaoLogo from '../shared/assets/icons/login/kakaoLogo.svg?react';
 import GoogleLogo from '../shared/assets/icons/login/googleLogo.svg?react';
 import useDevice from '../shared/hooks/useDevice';
@@ -26,7 +26,7 @@ function LoginPage() {
       <ContentWrapper>
         {/* 로고 영역 */}
         {isMobile && <StyledTextLogo/>}
-        <StyledIllust/>
+        <StyledIllust src={LoginIllust}/>
         <DescriptionWrapper>
           방탈출 후기와 예약을 한 눈에 살필 수 있는
           <BoldText>루미너스</BoldText>
@@ -136,7 +136,7 @@ const ContentWrapper = styled.div`
   }
 `;
 
-const StyledIllust = styled(LoginIllust)`
+const StyledIllust = styled.img`
   width: 18.75em;
   height: 18.75em;
   flex-shrink: 0;

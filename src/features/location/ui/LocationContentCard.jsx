@@ -174,6 +174,7 @@ const ContentWrapper = styled.div`
 const ImageSection = styled.div`
   border-radius: 0.375rem;
   width: 7.875rem;
+  min-width: 7.875rem;
   height: 7.875rem;
   display: flex;
   flex-direction: column;

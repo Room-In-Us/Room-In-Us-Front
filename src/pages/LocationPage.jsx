@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import GoogleMapComponent from "../features/location/ui/GoogleMapComponent";
 import MarkerIcon from "../shared/assets/icons/location/markerIcon.svg?react";
@@ -8,6 +8,8 @@ import StoreCard from "../features/location/ui/StoreCard";
 import { useRecoilState } from "recoil";
 import { stationCardVisible, storeCardVisible, zoneId, storePageNumber, locationRegionId, zoneName, storeCount, themeCount } from "../features/location/model/locationAtom";
 import { getLocationZonesAPI } from "../features/location/api/locationAPI";
+import useDevice from "../shared/hooks/useDevice";
+import { Sheet } from "react-modal-sheet";
 
 function LocationPage() {
   // 상태 관리
@@ -26,6 +28,16 @@ function LocationPage() {
   const [, setThemeCount] = useRecoilState(themeCount); // 구역별 테마 개수
   const [, setIsZoneId] = useRecoilState(zoneId);
   const [, setCurrentPage] = useRecoilState(storePageNumber);
+
+  const sheetRef = useRef(null);
+
+  // 스냅 포인트
+  const snapPoints = [0, 26, 0.5, 1];
+  const PEEK_INDEX = 3;
+  const [snapIndex, setSnapIndex] = useState(PEEK_INDEX);
+
+  // 반응형 함수
+  const { isMobile } = useDevice();
 
   // 지역 선택 핸들러
   const handleLocationCheck = (id) => {
@@ -66,6 +78,7 @@ function LocationPage() {
       {/* 지도 영역 */}
       <GoogleMapComponent />
 
+      {!isMobile ? (
       <OverlayWrapper>
         {/* 지역 선택 영역 */}
         <LocationButtonWrapper>
@@ -134,6 +147,104 @@ function LocationPage() {
         }
 
       </OverlayWrapper>
+      ) : (
+
+        <>
+          {/* 모바일 바텀시트 */}
+          <Sheet
+            ref={sheetRef}
+            isOpen={true}
+            initialSnap={PEEK_INDEX}
+            snapPoints={snapPoints}
+            onClose={() => sheetRef.current?.snapTo(PEEK_INDEX)}
+            onSnap={(index) => {
+              setSnapIndex(index);
+              if (index === 0) sheetRef.current?.snapTo(PEEK_INDEX);
+            }}
+          >
+            <Sheet.Container style={{ fontSize: '0.7rem', maxHeight: '80vh', zIndex: 3000 }}>
+              {/* 손잡이(드래그 핸들) */}
+              <Sheet.Header>
+                <HeaderDragHandle />
+              </Sheet.Header>
+              
+              <Sheet.Content>
+              {!(isStationCardVisible || isStoreCardVisible) && (
+                // 역 목록 화면
+                <MobileSheetBody>
+
+                  {/* 지역 선택 영역 */}
+                  <LocationButtonWrapper>
+                    <LocationButton
+                      isSeoulCheck={isSeoulCheck}
+                      onClick={() => handleLocationCheck(1)}
+                    >
+                      <StyledMarkerIcon isSeoulCheck={isSeoulCheck}/>
+                      <LocationText>서울</LocationText>
+                    </LocationButton>
+                    <LocationButton
+                      isSeoulCheck={!isSeoulCheck}
+                      onClick={() => handleLocationCheck(2)}
+                    >
+                      <StyledMarkerIcon isSeoulCheck={!isSeoulCheck}/>
+                      <LocationText>경기/인천</LocationText>
+                    </LocationButton>
+                  </LocationButtonWrapper>
+
+                  {/* 역 리스트 (폭만 100%로) */}
+                  <MobileStationListWrapper>
+                    {stationList.map((station, index) => (
+                      <StationList
+                        key={index}
+                        isSelected={selectedStationIndices[regionId] === index}
+                        onClick={() => {
+                          handleStationSelect(station);
+                          setSelectedStationIndices({
+                            [regionId]: index,
+                            [regionId === 1 ? 2 : 1]: null,
+                          });
+                          // 필요시 선택 후 피크로 접기: sheetRef.current?.snapTo(0);
+                        }}
+                      >
+                        <StationTitle>{station.zoneName}</StationTitle>
+                        <ListEnterWrapper>
+                          <StoreNumber>{station.storeCount}</StoreNumber>
+                          <StyledArrowIcon />
+                        </ListEnterWrapper>
+                      </StationList>
+                    ))}
+                  </MobileStationListWrapper>
+
+                  {/* === 끝 === */}
+                </MobileSheetBody>
+                )}
+
+                {/* 매장 목록 화면 */}
+                {isStationCardVisible && (
+                  <MobileSheetBody>
+                    <StationCard />
+                  </ MobileSheetBody>
+                )}
+
+                {/* 테마 목록 화면 */}
+                {isStoreCardVisible && (
+                  <MobileSheetBody>
+                    <StoreCard />
+                  </ MobileSheetBody>
+                )}
+              </Sheet.Content>
+            </Sheet.Container>
+
+            {/* 바깥(딤) 탭 → 피크로 접힘 */}
+            {snapIndex == PEEK_INDEX && (
+              <Sheet.Backdrop
+                onTap={() => sheetRef.current?.snapTo(1)}
+                style={{ backgroundColor: 'transparent', zIndex: 2990 }}
+              />
+            )}
+          </Sheet>
+        </>
+      )}
     </PageWrapper>
   );
 };
@@ -172,6 +283,10 @@ font-size: 1.5em; // 임의로 지정
   background: var(--RIU_Monochrome-10, #F9F9FB);
   z-index: 300;
   pointer-events: auto;
+
+  @media (max-width: 768px) {
+    background: var(--RIU_Monochrome-30, #E7E8ED);
+  }
 `;
 
 const LocationButton = styled.div`
@@ -274,6 +389,10 @@ const StationList = styled.div`
   line-height: normal;
   transition: background 0.2s ease;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const StationTitle = styled.div`
@@ -301,5 +420,35 @@ const StyledArrowIcon = styled(ArrowIcon)`
 
   path {
     fill: var(--RIU_Monochrome-200, #717486);
+  }
+`;
+
+// 모바일 시트
+const HeaderDragHandle = styled.div`
+  font-size: 1rem;
+  border-radius: 0.625em;
+  margin: 0.625em auto;
+  width: 6.25em;
+  height: 0.375em;
+  background-color: var(--RIU_Monochrome-40, #DFDFE6);
+`;
+
+const MobileSheetBody = styled.div`
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+`;
+
+const MobileStationListWrapper = styled.div`
+font-size: 1.3em; // 임의로 지정
+  width: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+
+  // 스크롤바 제거
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
   }
 `;
