@@ -316,6 +316,10 @@ const StoreInfoWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 0.625rem;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const StoreName = styled.div`
@@ -335,12 +339,20 @@ const DescriptionWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 0.5rem;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const DescriptionList = styled.div`
   display: flex;
   align-items: center;
   gap: 0.625rem;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
 `;
 
 const StyledLocationIcon = styled(LocationIcon)`
@@ -384,7 +396,11 @@ const DescriptionText = styled.a`
   word-break: break-all;
 
   @media (max-width: 768px) {
+    width: 100%;
+    min-width: 0;
+    flex: 1;
     font-size: 0.75rem;
+    text-align: start;
   }
 `;
 

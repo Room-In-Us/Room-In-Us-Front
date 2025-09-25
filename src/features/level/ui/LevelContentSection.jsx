@@ -340,29 +340,30 @@ export default function LevelContentSection() {
       {/* 바텀 시트 추가 */}
       {isMobile && (
         <BottomSheet
-        isOpen={isBottomSheetOpen}
-        onClose={() => setBottomSheetOpen(false)}
-        onApply={handleApplyFilters}
-        onReset={handleResetFilters}
-        selectedRegion={selectedRegion}
-        selectedZone={selectedZone}
-        selectedPeople={headCount}
-        selectedSort={selectedSort}
-        regions={regions}  
-        zones={zones}     
-        zoneList={zoneList}
-        activeRegionId={activeRegionId}
-        selectedZones={selectedZones}
-        onTabClick={handleTabClick}
-        onRegionSelect={handleRegionSelect}
-        onRegionAllClick={handleRegionAllClick}
-        onTabAllClick={handleTabAllClick}
-        onZoneSelect={handleZoneSelect}
-        isAllZoneSelected={isAllZoneSelected}
-        setHeadCount={setHeadCount}
-        setSelectedSort={setSelectedSort}
-        setSelectedRegion={setSelectedRegion}
-      />
+          isOpen={isBottomSheetOpen}
+          onClose={() => setBottomSheetOpen(false)}
+          onApply={handleApplyFilters}
+          onReset={handleResetFilters}
+          selectedRegion={selectedRegion}
+          selectedZone={selectedZone}
+          selectedPeople={headCount}
+          selectedSort={selectedSort}
+          regions={regions}
+          zones={zones}
+          zoneList={zoneList}
+          activeRegionId={activeRegionId}
+          selectedZones={selectedZones}
+          onTabClick={handleTabClick}
+          onRegionSelect={handleRegionSelect}
+          onRegionAllClick={handleRegionAllClick}
+          onTabAllClick={handleTabAllClick}
+          onZoneSelect={handleZoneSelect}
+          isAllZoneSelected={isAllZoneSelected}
+          setHeadCount={setHeadCount}
+          setSelectedSort={setSelectedSort}
+          setSelectedRegion={setSelectedRegion}
+          isLocationPage={false}
+        />
       )}
 
       {/* 콘텐츠 카드 영역 */}
