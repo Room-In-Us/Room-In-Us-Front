@@ -6,11 +6,16 @@ import Pen from '../../../shared/assets/icons/myPage/pen.svg?react';
 import ScheduleItemSection from './ScheduleItemSection';
 import { useCallback, useState } from 'react';
 import { addReservationsAPI } from '../api/addReservationAPI';
+import { format } from 'date-fns';
+import { calendarMonthState, reservationListState } from '../../mypage/model/reservationAtom';
+import { getMyReservationsAPI } from '../../mypage/api/reservationAPI';
 
 export default function ScheduleModal() {
 
   const isModalOpen = useRecoilValue(scheduleModalState);
   const setScheduleModalOpen = useSetRecoilState(scheduleModalState);
+  const currentMonth = useRecoilValue(calendarMonthState);
+  const setReservationList = useSetRecoilState(reservationListState);
 
   // 모달 닫기 핸들러
   const handleClose = () => {
@@ -48,6 +53,18 @@ export default function ScheduleModal() {
       }
       
       await addReservationsAPI(selectedThemeId, reservedAt);
+
+      const year = format(currentMonth, 'yyyy');
+      const month = format(currentMonth, 'MM');
+      const data = await getMyReservationsAPI(year, month);
+      const allDates = data?.themeReservationList || {};
+      const allReservations = Object.values(allDates).flat();
+
+      setReservationList(prev => ({
+        ...prev,
+        [`${year}-${month}`]: allReservations,
+      }));
+
       alert('예약이 성공적으로 추가되었습니다.');
       handleClose();
     } catch (error) {
@@ -92,7 +109,8 @@ font-size: 0.8rem; // 임의로 지정
   @media (max-width: 1024px) {
   }
   @media (max-width: 768px) {
-    // width: 22.1875rem;
+    width: 22.1875rem;
+    height: auto;
   }
 `;
 
@@ -145,6 +163,13 @@ const IndexWrapper = styled.div`
   align-items: flex-start;
   gap: 1.875em;
   box-sizing: border-box;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    padding: 1.25em 0.875em;
+    gap: 1.25em;
+  }
 `;
 
 const SubmitBtn = styled.div`
@@ -159,10 +184,22 @@ const SubmitBtn = styled.div`
   background: ${({ $isEnabled }) => $isEnabled ? 'var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%))' : 'var(--RIU_Monochrome-70, #B3B6C3)'};
   box-sizing: border-box;
   cursor: ${({ $isEnabled }) => $isEnabled ? 'pointer' : ''};
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    height: 2.5em;
+  }
 `;
 
 const SubmitBtnText = styled.div`
   color: ${({ $isEnabled }) => $isEnabled ? 'var(--RIU_Monochrome-10, #F9F9FB)' : 'var(--RIU_Monochrome-300, #696C7E)'};
   font-family: Pretendard-Bold;
   font-size: 1em;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    font-size: 0.875em;
+  }
 `;
