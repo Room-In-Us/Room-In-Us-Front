@@ -45,3 +45,6 @@ outputArtifacts:
   - name: dev-frontend-artifact
     type: BINARY
     location: dist/build.zip
+  - name: deployment-spec
+    type: BINARY
+    location: deployment_spec.yaml
