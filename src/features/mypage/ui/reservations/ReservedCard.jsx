@@ -112,6 +112,7 @@ export default function ReservedCard({ data, isModal, setSelectedTheme, setSelec
           <TrashIcon onClick={handleRemoveSelection} />
         ) : (
           <ReservationDropDown
+            reservation={data}
             onReviewClick={() => {
               setSelectedThemeData({ data, img: data.themeImg });
               setReviewModalOpen(true);

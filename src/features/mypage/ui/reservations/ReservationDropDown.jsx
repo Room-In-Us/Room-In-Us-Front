@@ -4,11 +4,19 @@ import More from '../../../../shared/assets/icons/common/more.svg?react';
 import Write from '../../../../shared/assets/icons/myPage/write.svg?react';
 import Thumb from '../../../../shared/assets/icons/myPage/thumbsup.svg?react';
 import Trash from '../../../../shared/assets/icons/myPage/trash.svg?react';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { calendarMonthState, reservationListState } from '../../model/reservationAtom';
+import { deleteReservationAPI, getMyReservationsAPI } from '../../api/reservationAPI';
+import { format } from 'date-fns';
+import PopUpModal from '../../../../shared/components/PopUpModal';
 
-export default function ReservationDropDown({onReviewClick}) {
+export default function ReservationDropDown({onReviewClick, reservation}) {
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const currentMonth = useRecoilValue(calendarMonthState);
+  const setReservationList = useSetRecoilState(reservationListState);
 
   // 바깥 클릭 시 드롭다운 닫기
   useEffect(() => {
@@ -23,6 +31,33 @@ export default function ReservationDropDown({onReviewClick}) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  const handleDelete = async () => {
+    if (!window.confirm("정말 예약을 삭제하시겠습니까?")) return;
+
+    try {
+      await deleteReservationAPI(reservation.themeId, reservation.themeReservationId);
+
+      const year = format(currentMonth, "yyyy");
+      const month = format(currentMonth, "MM");
+      const data = await getMyReservationsAPI(year, month);
+
+      const allDates = data?.themeReservationList || {};
+      const allReservations = Object.values(allDates).flat();
+
+      setReservationList(prev => ({
+        ...prev,
+        [`${year}-${month}`]: allReservations,
+      }));
+
+      alert("예약이 삭제되었습니다.");
+    } catch (error) {
+      alert("예약 삭제에 실패했습니다.");
+      console.error(error);
+    } finally {
+      setIsOpen(false);
+    }
+  };
 
   return (
     <Wrapper ref={dropdownRef}>
@@ -42,7 +77,7 @@ export default function ReservationDropDown({onReviewClick}) {
               onReviewClick();
             }}
           >
-            <WriteIcon/>
+            <ThumbIcon/>
             <DropDownText>후기 작성</DropDownText>
           </DropDownItem>
           <DropDownItem
@@ -50,12 +85,14 @@ export default function ReservationDropDown({onReviewClick}) {
               e.stopPropagation();
             }}
           >
-            <ThumbIcon/>
+            <WriteIcon/>
             <DropDownText>예약 일정 변경</DropDownText>
           </DropDownItem>
           <DropDownItem
             onClick={(e) => {
               e.stopPropagation();
+              setIsOpen(false);
+              setIsDeleteModalOpen(true);
             }}
           >
             <TrashIcon/>
@@ -63,6 +100,18 @@ export default function ReservationDropDown({onReviewClick}) {
           </DropDownItem>
         </DropDownMenu>
       )}
+      
+
+      <PopUpModal
+        isOpen={isDeleteModalOpen}
+        title="예약 삭제"
+        message="정말 이 예약을 삭제하시겠습니까?"
+        subMessage="삭제한 예약 정보는 일정 캘린더에서도 삭제됩니다."
+        confirmText="삭제"
+        cancelText="취소"
+        onConfirm={handleDelete}
+        onCancel={() => setIsDeleteModalOpen(false)}
+      />
     </Wrapper>
   )
 }
