@@ -7,7 +7,6 @@ import ScheduleItemSection from './ScheduleItemSection';
 import { useCallback, useState } from 'react';
 import { addReservationsAPI } from '../api/addReservationAPI';
 import { format } from 'date-fns';
-import { ca } from 'date-fns/locale';
 import { calendarMonthState, reservationListState } from '../../mypage/model/reservationAtom';
 import { getMyReservationsAPI } from '../../mypage/api/reservationAPI';
 
