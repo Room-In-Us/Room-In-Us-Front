@@ -6,6 +6,7 @@ import NoResultFace from '../../../shared/assets/icons/myPage/noresultface.svg?r
 import ReservedCard from "../../mypage/ui/reservations/ReservedCard";
 import VisitDatePicker from "../../review/ui/VisitDatePicker";
 import ScheduleTimePicker from "./ScheduleTimePicker";
+import dayjs from "dayjs";
 
 export default function ScheduleItemSection({ isModal, onStateChange }) {
 
@@ -51,9 +52,14 @@ export default function ScheduleItemSection({ isModal, onStateChange }) {
   }, []);
 
   // 시간 선택 핸들러
-  const handleTimeChange = useCallback((isoString) => {
-    setReservedAt(isoString);
-  }, []);
+  const handleTimeChange = useCallback((timeString) => {
+    if (!visitDate) return;
+
+    const datePart = dayjs(visitDate).format("YYYY-MM-DD");
+    const finalValue = dayjs(`${datePart}T${timeString}`);
+
+    setReservedAt(finalValue.format("YYYY-MM-DDTHH:mm:ss"));
+  }, [visitDate]);
 
   const isSubmitEnabled = !!selectedThemeId && !!visitDate;
 
@@ -131,7 +137,7 @@ export default function ScheduleItemSection({ isModal, onStateChange }) {
       {selectedTheme ? (
         <ReservedCard 
           isModal={isModal} 
-          data={selectedTheme}
+          data={{ ...selectedTheme, reservedAt }}
           setSelectedTheme={setSelectedTheme} 
           setSelectedThemeId={setSelectedThemeId}
         />

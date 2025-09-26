@@ -6,11 +6,17 @@ import Pen from '../../../shared/assets/icons/myPage/pen.svg?react';
 import ScheduleItemSection from './ScheduleItemSection';
 import { useCallback, useState } from 'react';
 import { addReservationsAPI } from '../api/addReservationAPI';
+import { format } from 'date-fns';
+import { ca } from 'date-fns/locale';
+import { calendarMonthState, reservationListState } from '../../mypage/model/reservationAtom';
+import { getMyReservationsAPI } from '../../mypage/api/reservationAPI';
 
 export default function ScheduleModal() {
 
   const isModalOpen = useRecoilValue(scheduleModalState);
   const setScheduleModalOpen = useSetRecoilState(scheduleModalState);
+  const currentMonth = useRecoilValue(calendarMonthState);
+  const setReservationList = useSetRecoilState(reservationListState);
 
   // 모달 닫기 핸들러
   const handleClose = () => {
@@ -48,6 +54,18 @@ export default function ScheduleModal() {
       }
       
       await addReservationsAPI(selectedThemeId, reservedAt);
+
+      const year = format(currentMonth, 'yyyy');
+      const month = format(currentMonth, 'MM');
+      const data = await getMyReservationsAPI(year, month);
+      const allDates = data?.themeReservationList || {};
+      const allReservations = Object.values(allDates).flat();
+
+      setReservationList(prev => ({
+        ...prev,
+        [`${year}-${month}`]: allReservations,
+      }));
+
       alert('예약이 성공적으로 추가되었습니다.');
       handleClose();
     } catch (error) {

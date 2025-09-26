@@ -11,6 +11,7 @@ import { useSetRecoilState } from "recoil";
 import { reviewModalState, selectedThemeDataState } from "../../../themeDetail/model/reviewAtom";
 import Plus from '../../../../shared/assets/icons/common/plusIcon.svg?react';
 import Trash from "../../../../shared/assets/icons/reviewWrite/trashicon.svg?react";
+import dayjs from "dayjs";
 
 export default function ReservedCard({ data, isModal, setSelectedTheme, setSelectedThemeId }) {
     const {
@@ -123,7 +124,7 @@ export default function ReservedCard({ data, isModal, setSelectedTheme, setSelec
       <ReservationBox>
         { !isMobile && (<LogoIcon />)}
         <ReservationInfoBox>
-          <ReservationDate>{reservedAt}</ReservationDate>
+          <ReservationDate>{reservedAt ? dayjs(reservedAt).format("MM월 DD일 HH:mm") : ""}</ReservationDate>
           <ReservationText>예약 완료</ReservationText>
         </ReservationInfoBox>
       </ReservationBox>

@@ -37,7 +37,7 @@ export default function ScheduleTimePicker({ onTimeChange }) {
     const finalValue = dayjs().hour(tempHour).minute(newValue.minute()).second(0);
     setValue(finalValue);
     setIsSelected(true);
-    onTimeChange(finalValue.format("YYYY-MM-DDTHH:mm:ss")); // ISO 형식 전달
+    onTimeChange(finalValue.format("HH:mm:ss"));
     handleClose();
   };
 
