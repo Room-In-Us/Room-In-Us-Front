@@ -16,3 +16,20 @@ export const getMyReservationsAPI = async (year, month) => {
     throw error;
   }
 }
+
+export const deleteReservationAPI = async (themeId, reservationId) => {
+  try {
+    const params = {
+      themeId,
+      reservationId,
+    };
+
+    const response = await api.delete(`themes/${themeId}/reservations/${reservationId}`, {params});
+    console.log('예약한 방탈출 목록 삭제 성공: ', response);
+
+    return response.data;
+  } catch (error) {
+    console.error('예약한 방탈출 목록 삭제 실패: ', error);
+    throw error;
+  }
+}
