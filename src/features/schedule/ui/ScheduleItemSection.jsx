@@ -7,6 +7,8 @@ import ReservedCard from "../../mypage/ui/reservations/ReservedCard";
 import VisitDatePicker from "../../review/ui/VisitDatePicker";
 import ScheduleTimePicker from "./ScheduleTimePicker";
 import dayjs from "dayjs";
+import { useRecoilValue } from "recoil";
+import { scheduleModalState } from "../modal/scheduleAtom";
 
 export default function ScheduleItemSection({ isModal, onStateChange }) {
 
@@ -15,6 +17,7 @@ export default function ScheduleItemSection({ isModal, onStateChange }) {
   const [themes, setThemes] = useState([]);
   const [selectedThemeId, setSelectedThemeId] = useState(null);
   const [selectedTheme, setSelectedTheme] = useState(null);
+  const {mode, reservation} = useRecoilValue(scheduleModalState);
 
   const handleSearch = useCallback(async () => {
     try {
@@ -49,19 +52,27 @@ export default function ScheduleItemSection({ isModal, onStateChange }) {
   // 날짜 선택 핸들러
   const handleDateChange = useCallback((date) => {
     setVisitDate(date);
-  }, []);
+
+    // 시간이 이미 선택돼 있다면 날짜와 합쳐서 reservedAt 갱신
+    if (reservedAt) {
+      const timePart = dayjs(reservedAt).format("HH:mm:ss");
+      const finalValue = dayjs(`${dayjs(date).format("YYYY-MM-DD")}T${timePart}`);
+      setReservedAt(finalValue.format("YYYY-MM-DDTHH:mm:ss"));
+    }
+  }, [reservedAt]);
 
   // 시간 선택 핸들러
   const handleTimeChange = useCallback((timeString) => {
-    if (!visitDate) return;
+    // 날짜가 선택되지 않았다면 reservation.reservedAt에서 날짜를 기본값으로 사용
+    const datePart = visitDate
+      ? dayjs(visitDate).format("YYYY-MM-DD")
+      : dayjs(reservation?.reservedAt).format("YYYY-MM-DD");
 
-    const datePart = dayjs(visitDate).format("YYYY-MM-DD");
     const finalValue = dayjs(`${datePart}T${timeString}`);
-
     setReservedAt(finalValue.format("YYYY-MM-DDTHH:mm:ss"));
-  }, [visitDate]);
+  }, [visitDate, reservation]);
 
-  const isSubmitEnabled = !!selectedThemeId && !!visitDate;
+  const isSubmitEnabled = !!selectedThemeId && (!!visitDate || !!reservedAt);
 
   useEffect(() => {
     console.log('--- ScheduleItemSection 상태 업데이트 ---');
@@ -79,6 +90,15 @@ export default function ScheduleItemSection({ isModal, onStateChange }) {
       });
     }
   }, [selectedThemeId, visitDate, isSubmitEnabled, reservedAt, onStateChange]);
+
+  useEffect(() => {
+    if (mode === "edit" && reservation) {
+      setSelectedTheme(reservation);
+      setSelectedThemeId(reservation.themeId);
+      setReservedAt(reservation.reservedAt); 
+      setVisitDate(dayjs(reservation.reservedAt));
+    }
+  }, [mode, reservation]);
 
   return (
     <Wrapper>
@@ -140,6 +160,7 @@ export default function ScheduleItemSection({ isModal, onStateChange }) {
           data={{ ...selectedTheme, reservedAt }}
           setSelectedTheme={setSelectedTheme} 
           setSelectedThemeId={setSelectedThemeId}
+          hideTrash={mode === "edit"}
         />
       ) : (
         <ReservedCard 

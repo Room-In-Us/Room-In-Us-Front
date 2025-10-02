@@ -13,7 +13,7 @@ import Plus from '../../../../shared/assets/icons/common/plusIcon.svg?react';
 import Trash from "../../../../shared/assets/icons/reviewWrite/trashicon.svg?react";
 import dayjs from "dayjs";
 
-export default function ReservedCard({ data, isModal, setSelectedTheme, setSelectedThemeId }) {
+export default function ReservedCard({ data, isModal, hideTrash=false, setSelectedTheme, setSelectedThemeId }) {
     const {
     themeId,
     locationName,
@@ -109,7 +109,7 @@ export default function ReservedCard({ data, isModal, setSelectedTheme, setSelec
 
         {/* 더보기 영역 */}
         {isModal ? (
-          <TrashIcon onClick={handleRemoveSelection} />
+          !hideTrash && <TrashIcon onClick={handleRemoveSelection} />
         ) : (
           <ReservationDropDown
             reservation={data}
