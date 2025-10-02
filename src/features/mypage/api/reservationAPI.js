@@ -33,3 +33,16 @@ export const deleteReservationAPI = async (themeId, reservationId) => {
     throw error;
   }
 }
+
+export const patchReservationAPI = async (themeId, reservationId, reservedAt) => {
+  try {
+    const body = { reservedAt };
+    const response = await api.patch(`themes/${themeId}/reservations/${reservationId}`, body);
+    console.log('예약한 방탈출 목록 수정 성공: ', response);
+
+    return response.data;
+  } catch (error) {
+    console.error('예약한 방탈출 목록 수정 실패: ', error);
+    throw error;
+  }
+}

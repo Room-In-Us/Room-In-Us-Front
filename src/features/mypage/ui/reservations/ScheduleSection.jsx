@@ -19,7 +19,8 @@ export default function ScheduleSection() {
   const reservations = reservationsMap[yearMonth] || [];
 
   const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
-  const isModalOpen = useRecoilValue(scheduleModalState);
+  // const isModalOpen = useRecoilValue(scheduleModalState);
+  const modalState = useRecoilValue(scheduleModalState);
 
   useEffect(() => {
     const year = format(currentMonth, 'yyyy');
@@ -47,7 +48,7 @@ export default function ScheduleSection() {
     <Wrapper>
       <HeaderWrapper>
         <MainText>{format(currentMonth, 'yyyy년 M월')}에 예약한 방탈출</MainText>
-        <Btn onClick={() => {setScheduleWriteModal(true);}}>
+        <Btn onClick={() => {setScheduleWriteModal({ isOpen: true, mode: 'add', reservation: null });}}>
           <PenIcon />
           <BtnText>일정 관리하기</BtnText>
         </Btn>
@@ -73,7 +74,7 @@ export default function ScheduleSection() {
 
       
       {/* 일정 관리 모달 */}
-      {isModalOpen && (
+      {modalState.isOpen && (
         <ModalBackdrop>
           <ScheduleModal />
         </ModalBackdrop>

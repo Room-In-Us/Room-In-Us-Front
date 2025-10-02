@@ -9,6 +9,7 @@ import { calendarMonthState, reservationListState } from '../../model/reservatio
 import { deleteReservationAPI, getMyReservationsAPI } from '../../api/reservationAPI';
 import { format } from 'date-fns';
 import PopUpModal from '../../../../shared/components/PopUpModal';
+import { scheduleModalState } from '../../../schedule/modal/scheduleAtom';
 
 export default function ReservationDropDown({onReviewClick, reservation}) {
 
@@ -17,6 +18,7 @@ export default function ReservationDropDown({onReviewClick, reservation}) {
   const dropdownRef = useRef(null);
   const currentMonth = useRecoilValue(calendarMonthState);
   const setReservationList = useSetRecoilState(reservationListState);
+  const setScheduleModal = useSetRecoilState(scheduleModalState);
 
   // 바깥 클릭 시 드롭다운 닫기
   useEffect(() => {
@@ -80,14 +82,18 @@ export default function ReservationDropDown({onReviewClick, reservation}) {
             <ThumbIcon/>
             <DropDownText>후기 작성</DropDownText>
           </DropDownItem>
+
           <DropDownItem
             onClick={(e) => {
               e.stopPropagation();
+              setIsOpen(false);
+              setScheduleModal({isOpen: true, mode: 'edit', reservation});
             }}
           >
             <WriteIcon/>
             <DropDownText>예약 일정 변경</DropDownText>
           </DropDownItem>
+
           <DropDownItem
             onClick={(e) => {
               e.stopPropagation();
