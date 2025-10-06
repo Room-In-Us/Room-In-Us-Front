@@ -65,7 +65,6 @@ function LocationPage() {
         const response = await getLocationZonesAPI(regionId);
         console.log('구역별 역 목록: ', response);
         setStationList(response);
-        setIsZoneId(response.zoneId);
       } catch (error) {
         console.error('구역별 역 목록 데이터를 불러오는 중 오류 발생:', error);
       }
