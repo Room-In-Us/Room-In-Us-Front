@@ -13,6 +13,7 @@ import InstagramIcon from '../assets/icons/common/instagramIcon.svg?react';
 import EmailIcon from '../assets/icons/common/emailIcon.svg?react';
 import InquiryIcon from '../assets/icons/common/inquiryIcon.svg?react';
 import LeftArrowIcon from '../assets/icons/common/arrow/leftArrow.svg?react';
+import { postLogoutAPI } from '../../features/auth/api/authAPI';
 
 function Header() {
   // navigate, location
@@ -107,10 +108,19 @@ function Header() {
   }, [location.pathname, isMobile]);
 
   // 로그아웃 함수
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    alert("로그아웃 되었습니다.");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      // 서버 로그아웃
+      await postLogoutAPI();
+    } catch (error) {
+      console.error("로그아웃 API 요청 실패:", error);
+    } finally {
+      // 프론트 토큰 정리
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("userCode");
+      alert("로그아웃 되었습니다.");
+      navigate("/login");
+    }
   };
 
   return (

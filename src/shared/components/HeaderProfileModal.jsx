@@ -6,6 +6,7 @@ import MypageIcon from "../assets/icons/common/myPageIcon.svg?react"
 import LogoutIcon from "../assets/icons/common/logoutIcon.svg?react";
 import { useNavigate } from "react-router-dom";
 import { getMemberInfoAPI } from "../../features/auth/api/memberAPI";
+import { postLogoutAPI } from "../../features/auth/api/authAPI";
 
 function HeaderProfileModal({ visible }) {
   const navigate = useNavigate();
@@ -30,10 +31,19 @@ function HeaderProfileModal({ visible }) {
   }, [isLoggedIn]);
 
   // 로그아웃 함수
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    alert("로그아웃 되었습니다.");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      // 서버 로그아웃
+      await postLogoutAPI();
+    } catch (error) {
+      console.error("로그아웃 API 요청 실패:", error);
+    } finally {
+      // 프론트 토큰 정리
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("userCode");
+      alert("로그아웃 되었습니다.");
+      navigate("/login");
+    }
   };
 
   return (

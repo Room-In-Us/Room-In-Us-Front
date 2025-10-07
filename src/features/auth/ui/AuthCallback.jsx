@@ -10,11 +10,13 @@ const AuthCallback = () => {
   useEffect(() => {
     if (userCode) {
       localStorage.setItem("userCode", userCode);
-      console.log("userCode:", userCode);
+      // URL 정리
+      window.history.replaceState({}, document.title, window.location.pathname);
       navigate('/signup');
-    } else {
+    } else if (accessToken) {
       localStorage.setItem("accessToken", accessToken);
-      console.log("accessToken:", accessToken);
+      // URL 정리
+      window.history.replaceState({}, document.title, window.location.pathname);
       navigate('/');
     }
   }, [userCode, accessToken, navigate]);
