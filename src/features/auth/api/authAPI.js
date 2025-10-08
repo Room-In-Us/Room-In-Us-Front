@@ -63,3 +63,15 @@ export const postLogoutAPI = async () => {
     throw error;
   }
 };
+
+// 액세스 토큰 재발급 API
+export const postRefreshTokenAPI = async () => {
+  try {
+    const response = await api.post('access-token');
+    console.log('토큰 재발급 요청 성공:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('토큰 재발급 요청 실패:', error);
+    throw error;
+  }
+};
