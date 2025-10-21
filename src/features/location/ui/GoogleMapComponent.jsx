@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { useRecoilValue } from 'recoil';
-import { storeLatAndLngList, centerLatAndLng, zoomLevel } from '../model/locationAtom.jsx';
+import { useRecoilValue, useRecoilState } from 'recoil';
+import { storeInfoList, centerLatAndLng, zoomLevel, storeCardVisible, stationCardVisible, locationStoreId } from '../model/locationAtom.jsx';
 import { GoogleMap, MarkerF, OverlayView } from '@react-google-maps/api';
 import { googleMapStyles } from '../../../shared/styles/googleMapStyles.js';
 import MarkerIcon from '../../../shared/assets/images/location/marker.png';
@@ -8,11 +8,23 @@ import AwardMarkerIcon from '../../../shared/assets/images/location/awardMarker.
 
 function GoogleMapComponent() {
   // 중앙 좌표
-  const centerState = useRecoilValue(centerLatAndLng);
+  const [centerState, setCenterLatAndLng] = useRecoilState(centerLatAndLng);
   // 매장 리스트
-  const storeList = useRecoilValue(storeLatAndLngList);
+  const storeList = useRecoilValue(storeInfoList);
   // 줌 레벨
-  const zoomLevelState = useRecoilValue(zoomLevel);
+  const [zoomLevelState, setZoomLevel] = useRecoilState(zoomLevel);
+
+  // 상태 관리 (핀 클릭 시 매장 포커싱)
+  const [, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
+  const [, setIsStationCardVisible] = useRecoilState(stationCardVisible);
+  const [, setStoreId] = useRecoilState(locationStoreId);
+
+  // 매장 선택 핸들러
+  const handleStoreSelect = (id) => {
+    setIsStoreCardVisible(true);
+    setIsStationCardVisible(false);
+    setStoreId(id);
+  };
 
   // 지도 사이즈
   const containerStyle = {
@@ -35,8 +47,8 @@ function GoogleMapComponent() {
           options={options}
         >
           {
-            storeList.map((store, index) => (
-              <div key={index}>
+            storeList.map((store) => (
+              <div key={store.storeId}>
                 <MarkerF
                   position={{ lat: store.latitude, lng: store.longitude }}
                   icon={{
@@ -44,12 +56,23 @@ function GoogleMapComponent() {
                     scaledSize: new window.google.maps.Size(22.8, 32.4),
                     // scaledSize: new window.google.maps.Size(38, 54), // 원래 사이즈
                   }}
+                  onClick={() => {
+                    handleStoreSelect(store.storeId);
+                    setCenterLatAndLng({ lat: store.latitude, lng: store.longitude });
+                    setZoomLevel(18);
+                  }}
                 />
                 <OverlayView
                   position={{ lat: store.latitude, lng: store.longitude }}
                   mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
                 >
-                  <CafeNameBox>
+                  <CafeNameBox
+                    onClick={() => {
+                      handleStoreSelect(store.storeId);
+                      setCenterLatAndLng({ lat: store.latitude, lng: store.longitude });
+                      setZoomLevel(18);
+                    }}
+                  >
                     <CafeNameText>{store.storeName}</CafeNameText>
                   </CafeNameBox>
                 </OverlayView>
@@ -80,6 +103,7 @@ const CafeNameBox = styled.div`
   justify-content: center;
   align-items: center;
   align-self: stretch;
+  cursor: pointer;
 `;
 
 const CafeNameText = styled.div`

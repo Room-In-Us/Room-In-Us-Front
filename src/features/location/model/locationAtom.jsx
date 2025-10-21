@@ -60,9 +60,9 @@ export const themeCount = atom({
   default: null,
 });
 
-// 매장 위도, 경도 리스트
-export const storeLatAndLngList = atom({
-  key: 'storeLatAndLngList',
+// 매장 정보 리스트
+export const storeInfoList = atom({
+  key: 'storeInfoList',
   default: [],
 });
 

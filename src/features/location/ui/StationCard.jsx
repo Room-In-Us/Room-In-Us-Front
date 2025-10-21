@@ -6,7 +6,7 @@ import ArrowIcon from "../../../shared/assets/icons/common/arrow/rightArrow.svg?
 import RightArrowIcon from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
 import LeftArrowIcon from "../../../shared/assets/icons/common/arrow/leftArrow.svg?react";
 import { useRecoilState } from "recoil";
-import { stationCardVisible, storeCardVisible, zoneId, storePageNumber, locationStoreId, locationRegionId, zoneName, storeCount, themeCount, centerLatAndLng, storeLatAndLngList, zoomLevel } from "../../../features/location/model/locationAtom";
+import { stationCardVisible, storeCardVisible, zoneId, storePageNumber, locationStoreId, locationRegionId, zoneName, storeCount, themeCount, centerLatAndLng, storeInfoList, zoomLevel } from "../../../features/location/model/locationAtom";
 import { getSeoulZonesInfoAPI, getSeoulZoneStoreListAPI, getZoneStoreListAPI } from "../api/locationAPI";
 import { stationLineConversion } from "../../../shared/utils/stationLineUtils";
 import useDevice from "../../../shared/hooks/useDevice";
@@ -26,7 +26,7 @@ function StationCard() {
   const [CapitalStoreCount,] = useRecoilState(storeCount); // 구역별 매장 개수
   const [CapitalThemeCount,] = useRecoilState(themeCount); // 구역별 테마 개수
   const [, setCenterLatAndLng] = useRecoilState(centerLatAndLng); // 구역 중앙 좌표
-  const [storeList, setStoreList] = useRecoilState(storeLatAndLngList); // 매장 리스트
+  const [storeList, setStoreList] = useRecoilState(storeInfoList); // 매장 리스트
   const [, setZoomLevel] = useRecoilState(zoomLevel); // 줌 레벨
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [sortStatus, setSortStatus] = useState("RECOMMEND");
