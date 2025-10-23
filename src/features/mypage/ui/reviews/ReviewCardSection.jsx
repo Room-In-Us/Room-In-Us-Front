@@ -12,7 +12,7 @@ export default function ReviewCardSection() {
 
   useEffect(() => {
     getMyReviewAPI(1, 1000, sortOption).then((data) => {
-      setReviews(data.contents);
+      setReviews(data);
     });
   }, [sortOption]);
 

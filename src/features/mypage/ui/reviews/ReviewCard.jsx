@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react";
-import { getThemeDetailAPI } from "../../../themeDetail/api/themeDetailAPI";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components"
+import { getThemeDetailAPI } from "../../../themeDetail/api/themeDetailAPI";
 import DefaultThumbnail from '../../../../shared/assets/images/common/thumbnailImg.png';
 import BlueStar from "../../../../shared/assets/icons/themeDetail/blueStar.svg?react";
 import { createReviewInfoItems } from "../../model/reviewDataList";
 import useDevice from "../../../../shared/hooks/useDevice";
 import { formatDateToDot } from "../../../../shared/utils/dataUtils";
+import Pen from '../../../../shared/assets/icons/myPage/pen.svg?react';
+import Trash from '../../../../shared/assets/icons/reviewWrite/trashicon.svg?react';
 
 export default function ReviewCard({ data }) {
 
   const { isMobile } = useDevice();
 
+  const navigate = useNavigate();
+
   const {
+    reviewId,
     themeId,
     storeName,
     themeName,
@@ -97,9 +103,15 @@ export default function ReviewCard({ data }) {
           <Date>작성일자 : {formatDateToDot(createdAt) || '-'}</Date>
         </DateBox>
         { !isMobile && (
-          <Btn>
-            <BtnText>후기 상세보기</BtnText>
-          </Btn>
+          <BtnWrapper>
+            <Btn>
+              <BtnText onClick={() => navigate(`/theme/${themeId}/review/${reviewId}`)}>
+                후기 상세보기
+              </BtnText>
+            </Btn>
+            <ModifyBtn><PenIcon /></ModifyBtn>
+            <ModifyBtn><TrashIcon /></ModifyBtn>
+          </BtnWrapper>
         )}
       </ItemsBox>
     </Wrapper>
@@ -284,9 +296,16 @@ const Date = styled.div`
   }
 `;
 
+const BtnWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  align-self: stretch;
+`;
+
 const Btn = styled.div`
   display: flex;
-  width: 100%;
+  flex: 1;
   height: 2.5em;
   padding: 0.875em 0em;
   justify-content: center;
@@ -302,4 +321,44 @@ const BtnText = styled.div`
   color: var(--RIU_Primary-100, #718FF2);
   font-family: Pretendard-Bold;
   font-size: 0.875em;
+`;
+
+const ModifyBtn = styled.div`
+  display: flex;
+  width: 2.5em;
+  height: 2.5em;
+  padding: 0.875em 0;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625em;
+  border-radius: 2.5em;
+  border: 1px solid var(--RIU_Monochrome-80, #A1A4B5);
+  background: var(--RIU_Monochrome-10, #F9F9FB);
+  box-sizing: border-box;
+  cursor: pointer;
+`;
+
+const PenIcon = styled(Pen)`
+  display: flex;
+  width: 1.25em;
+  height: 1.25em;
+  justify-content: center;
+  align-items: center;
+
+  path {
+    fill: #717486;
+  }
+`;
+
+const TrashIcon = styled(Trash)`
+  display: flex;
+  width: 1.75em;
+  height: 1.75em;
+  justify-content: center;
+  align-items: center;
+  object-fit: contain;
+
+  path {
+    fill: #717486;
+  }
 `;
