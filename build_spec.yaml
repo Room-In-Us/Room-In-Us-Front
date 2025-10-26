@@ -7,8 +7,6 @@ env:
     NODE_ENV: "development"
     VITE_GOOGLE_MAPS_API_KEY: "${GOOGLE_MAPS_KEY}"
     VITE_SERVER_URL_API: "${DEV_SERVER_URL}"
-  # exportedVariables are made available to use as parameters in sucessor Build Pipeline stages  
-  # For this Build to run, the Build Pipeline needs to have a BUILDRUN_HASH parameter set
   exportedVariables:
     - BUILDRUN_HASH
 
@@ -30,6 +28,12 @@ steps:
   - type: Command
     name: "Frontend build"
     command: |
+      echo "=== Exporting environment variables ==="
+      export VITE_GOOGLE_MAPS_API_KEY="${VITE_GOOGLE_MAPS_API_KEY}"
+      export VITE_SERVER_URL_API="${VITE_SERVER_URL_API}"
+      echo "VITE_GOOGLE_MAPS_API_KEY=${VITE_GOOGLE_MAPS_API_KEY}"
+      echo "VITE_SERVER_URL_API=${VITE_SERVER_URL_API}"
+      echo "======================================="
       npm install
       npm run build
       echo "Build Done..."
