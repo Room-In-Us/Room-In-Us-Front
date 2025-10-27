@@ -5,8 +5,8 @@ shell: bash
 env:
   variables:
     NODE_ENV: "development"
-    VITE_GOOGLE_MAPS_API_KEY: "${GOOGLE_MAPS_KEY}"
-    VITE_SERVER_URL_API: "${DEV_SERVER_URL}"
+    VITE_GOOGLE_MAPS_API_KEY: "${VITE_GOOGLE_MAPS_API_KEY}"
+    VITE_SERVER_URL_API: "${VITE_SERVER_URL_API}"
   exportedVariables:
     - BUILDRUN_HASH
 
