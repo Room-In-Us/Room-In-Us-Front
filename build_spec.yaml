@@ -26,14 +26,20 @@ steps:
       echo "Installation Complete..."
   
   - type: Command
+    name: "Create .env.production"
+    command: |
+      echo "Creating .env.production file..."
+      cat > .env.production << EOF
+      VITE_GOOGLE_MAPS_API_KEY=${VITE_GOOGLE_MAPS_API_KEY}
+      VITE_SERVER_URL_API=${VITE_SERVER_URL_API}
+      EOF
+      echo "=== .env.production content ==="
+      cat .env.production
+      echo "================================"
+  
+  - type: Command
     name: "Frontend build"
     command: |
-      echo "=== Exporting environment variables ==="
-      export VITE_GOOGLE_MAPS_API_KEY="${VITE_GOOGLE_MAPS_API_KEY}"
-      export VITE_SERVER_URL_API="${VITE_SERVER_URL_API}"
-      echo "VITE_GOOGLE_MAPS_API_KEY=${VITE_GOOGLE_MAPS_API_KEY}"
-      echo "VITE_SERVER_URL_API=${VITE_SERVER_URL_API}"
-      echo "======================================="
       npm install
       npm run build
       echo "Build Done..."
