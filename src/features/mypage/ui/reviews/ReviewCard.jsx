@@ -9,12 +9,15 @@ import useDevice from "../../../../shared/hooks/useDevice";
 import { formatDateToDot } from "../../../../shared/utils/dataUtils";
 import Pen from '../../../../shared/assets/icons/myPage/pen.svg?react';
 import Trash from '../../../../shared/assets/icons/reviewWrite/trashicon.svg?react';
+import { deleteMyReviewAPI } from "../../api/myReviewAPI";
+import PopUpModal from '../../../../shared/components/PopUpModal';
 
-export default function ReviewCard({ data }) {
+export default function ReviewCard({ data, onDeleted }) {
 
   const { isMobile } = useDevice();
-
   const navigate = useNavigate();
+  const [thumbnailUrl, setThumbnailUrl] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const {
     reviewId,
@@ -31,8 +34,6 @@ export default function ReviewCard({ data }) {
     participantCnt,
     review
   } = data;
-
-  const [thumbnailUrl, setThumbnailUrl] = useState(null);
 
   const infoItems = createReviewInfoItems({
     review,
@@ -54,6 +55,18 @@ export default function ReviewCard({ data }) {
         setThumbnailUrl(null);
       });
     }, [themeId]);
+
+  const handleDelete = async () => {
+    try {
+      await deleteMyReviewAPI(themeId, reviewId);
+      alert("후기가 삭제되었습니다.");
+      setIsDeleteModalOpen(false);
+      if (onDeleted) onDeleted(reviewId); 
+    } catch (error) {
+      console.error('[ReviewCard] 후기 삭제 실패:', error);
+      alert("삭제 중 오류가 발생했습니다.");
+    }
+  };
 
   return (
     <Wrapper>
@@ -110,10 +123,20 @@ export default function ReviewCard({ data }) {
               </BtnText>
             </Btn>
             <ModifyBtn><PenIcon /></ModifyBtn>
-            <ModifyBtn><TrashIcon /></ModifyBtn>
+            <ModifyBtn onClick={() => setIsDeleteModalOpen(true)}><TrashIcon /></ModifyBtn>
           </BtnWrapper>
         )}
       </ItemsBox>
+      <PopUpModal
+        isOpen={isDeleteModalOpen}
+        title="후기 삭제"
+        message="이 후기를 삭제하시겠습니까?"
+        subMessage="삭제 후에는 복구할 수 없습니다."
+        confirmText="삭제"
+        cancelText="취소"
+        onConfirm={handleDelete}
+        onCancel={() => setIsDeleteModalOpen(false)}
+      />
     </Wrapper>
   )
 }

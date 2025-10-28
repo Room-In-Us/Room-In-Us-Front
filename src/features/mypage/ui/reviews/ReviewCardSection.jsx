@@ -16,10 +16,14 @@ export default function ReviewCardSection() {
     });
   }, [sortOption]);
 
+  const handleReviewDeleted = (deletedReviewId) => {
+    setReviews((prev) => prev.filter((review) => review.reviewId !== deletedReviewId));
+  };
+
   return (
     <Wrapper>
       {reviews.map((review) => (
-        <ReviewCard key={review.reviewId} data={review} />
+        <ReviewCard key={review.reviewId} data={review} onDeleted={handleReviewDeleted} />
       ))}
     </Wrapper>
   )

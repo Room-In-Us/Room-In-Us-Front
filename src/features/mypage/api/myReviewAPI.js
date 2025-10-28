@@ -20,3 +20,14 @@ export const getMyReviewAPI = async (page, size, sortOption) => {
     throw error;
   }
 }
+
+export const deleteMyReviewAPI = async (themeId, reviewId) => {
+  try {
+    const response = await api.delete(`themes/${themeId}/reviews/${reviewId}`);
+    console.log('후기 삭제 성공:', response);
+    return response.data;
+  } catch (error) {
+    console.error('후기 삭제 실패:', error);
+    throw error;
+  }
+};
