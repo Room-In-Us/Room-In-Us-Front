@@ -27,7 +27,7 @@ export default function StarRating({ value = 0, onChange }) {
           {/* 왼쪽 반 클릭: 0.5 단위 */}
           <Half onClick={() => handleClick(val - 0.5)} onMouseEnter={() => handleMouseEnter(val - 0.5)} />
           {/* 오른쪽 반 클릭: 정수 단위 */}
-          <Half right onClick={() => handleClick(val)} onMouseEnter={() => handleMouseEnter(val)} />
+          <Half $right onClick={() => handleClick(val)} onMouseEnter={() => handleMouseEnter(val)} />
           <StarImg src={icon} onMouseLeave={handleMouseLeave} />
         </StarWrapper>
       );
@@ -100,7 +100,7 @@ const FeedbackText = styled.div`
 const Half = styled.div`
   position: absolute;
   top: 0;
-  ${({ right }) => right ? "left: 50%;" : "left: 0;"}
+  ${({ $right }) => $right ? "left: 50%;" : "left: 0;"}
   width: 50%;
   height: 100%;
   z-index: 1;

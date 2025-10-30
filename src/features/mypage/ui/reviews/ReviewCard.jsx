@@ -1,17 +1,29 @@
 import { useEffect, useState } from "react";
-import { getThemeDetailAPI } from "../../../themeDetail/api/themeDetailAPI";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components"
+import { getThemeDetailAPI } from "../../../themeDetail/api/themeDetailAPI";
 import DefaultThumbnail from '../../../../shared/assets/images/common/thumbnailImg.png';
 import BlueStar from "../../../../shared/assets/icons/themeDetail/blueStar.svg?react";
 import { createReviewInfoItems } from "../../model/reviewDataList";
 import useDevice from "../../../../shared/hooks/useDevice";
 import { formatDateToDot } from "../../../../shared/utils/dataUtils";
+import Pen from '../../../../shared/assets/icons/myPage/pen.svg?react';
+import Trash from '../../../../shared/assets/icons/reviewWrite/trashicon.svg?react';
+import { deleteMyReviewAPI } from "../../api/myReviewAPI";
+import PopUpModal from '../../../../shared/components/PopUpModal';
+import { useSetRecoilState } from "recoil";
+import { reviewStateFamily } from "../../../themeDetail/model/reviewAtom";
+import { getReviewDetailAPI } from "../../../reviewDetail/api/reviewDetailAPI";
 
-export default function ReviewCard({ data }) {
+export default function ReviewCard({ data, onDeleted, onEdit }) {
 
   const { isMobile } = useDevice();
+  const navigate = useNavigate();
+  const [thumbnailUrl, setThumbnailUrl] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const {
+    reviewId,
     themeId,
     storeName,
     themeName,
@@ -26,8 +38,6 @@ export default function ReviewCard({ data }) {
     review
   } = data;
 
-  const [thumbnailUrl, setThumbnailUrl] = useState(null);
-
   const infoItems = createReviewInfoItems({
     review,
     participantCnt,
@@ -35,6 +45,8 @@ export default function ReviewCard({ data }) {
     remainingTime,
     isEscaped
   });
+
+  const setReviewData = useSetRecoilState(reviewStateFamily(themeId));
 
   useEffect(() => {
     if (!themeId) return;
@@ -48,6 +60,43 @@ export default function ReviewCard({ data }) {
         setThumbnailUrl(null);
       });
     }, [themeId]);
+
+  const handleDelete = async () => {
+    try {
+      await deleteMyReviewAPI(themeId, reviewId);
+      alert("후기가 삭제되었습니다.");
+      setIsDeleteModalOpen(false);
+      if (onDeleted) onDeleted(reviewId); 
+    } catch (error) {
+      console.error('[ReviewCard] 후기 삭제 실패:', error);
+      alert("삭제 중 오류가 발생했습니다.");
+    }
+  };
+
+  const handleEdit = async () => {
+    try {
+      const themeData = await getThemeDetailAPI(themeId);
+
+      const reviewDetail = await getReviewDetailAPI(themeId, reviewId);
+console.log("[ReviewCard] reviewDetail:", reviewDetail);
+
+      const mergedData = {
+        ...reviewDetail,
+        img: themeData.img || "",
+      };
+
+      setReviewData(mergedData);
+
+      onEdit({
+        ...mergedData,
+        themeName: themeName,
+        storeName: storeName,
+      });
+    } catch (error) {
+      console.error("[ReviewCard] 후기 수정 모드 진입 실패:", error);
+      alert("후기 정보를 불러오는 중 오류가 발생했습니다.");
+    }
+  };
 
   return (
     <Wrapper>
@@ -97,11 +146,27 @@ export default function ReviewCard({ data }) {
           <Date>작성일자 : {formatDateToDot(createdAt) || '-'}</Date>
         </DateBox>
         { !isMobile && (
-          <Btn>
-            <BtnText>후기 상세보기</BtnText>
-          </Btn>
+          <BtnWrapper>
+            <Btn>
+              <BtnText onClick={() => navigate(`/theme/${themeId}/review/${reviewId}`)}>
+                후기 상세보기
+              </BtnText>
+            </Btn>
+            <ModifyBtn onClick={handleEdit}><PenIcon /></ModifyBtn>
+            <ModifyBtn onClick={() => setIsDeleteModalOpen(true)}><TrashIcon /></ModifyBtn>
+          </BtnWrapper>
         )}
       </ItemsBox>
+      <PopUpModal
+        isOpen={isDeleteModalOpen}
+        title="후기 삭제"
+        message="이 후기를 삭제하시겠습니까?"
+        subMessage="삭제 후에는 복구할 수 없습니다."
+        confirmText="삭제"
+        cancelText="취소"
+        onConfirm={handleDelete}
+        onCancel={() => setIsDeleteModalOpen(false)}
+      />
     </Wrapper>
   )
 }
@@ -284,9 +349,16 @@ const Date = styled.div`
   }
 `;
 
+const BtnWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  align-self: stretch;
+`;
+
 const Btn = styled.div`
   display: flex;
-  width: 100%;
+  flex: 1;
   height: 2.5em;
   padding: 0.875em 0em;
   justify-content: center;
@@ -302,4 +374,44 @@ const BtnText = styled.div`
   color: var(--RIU_Primary-100, #718FF2);
   font-family: Pretendard-Bold;
   font-size: 0.875em;
+`;
+
+const ModifyBtn = styled.div`
+  display: flex;
+  width: 2.5em;
+  height: 2.5em;
+  padding: 0.875em 0;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625em;
+  border-radius: 2.5em;
+  border: 1px solid var(--RIU_Monochrome-80, #A1A4B5);
+  background: var(--RIU_Monochrome-10, #F9F9FB);
+  box-sizing: border-box;
+  cursor: pointer;
+`;
+
+const PenIcon = styled(Pen)`
+  display: flex;
+  width: 1.25em;
+  height: 1.25em;
+  justify-content: center;
+  align-items: center;
+
+  path {
+    fill: #717486;
+  }
+`;
+
+const TrashIcon = styled(Trash)`
+  display: flex;
+  width: 1.75em;
+  height: 1.75em;
+  justify-content: center;
+  align-items: center;
+  object-fit: contain;
+
+  path {
+    fill: #717486;
+  }
 `;

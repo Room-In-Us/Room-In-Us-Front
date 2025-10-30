@@ -27,7 +27,7 @@ function PriceTable({ themePrice }) {
       <tbody>
         {themePrice.map(({ headcount, price }, index) => (
           <tr key={index}>
-            <CountTd isLast={index === themePrice.length - 1}>
+            <CountTd $isLast={index === themePrice.length - 1}>
               <TdText type="count">
                 {headcount}인
               </TdText>
@@ -37,7 +37,7 @@ function PriceTable({ themePrice }) {
                 {formatNumberWithCommas(headcount * price)}
               </TdText>
             </PriceTd>
-            <PerPersonTd isLast={index === themePrice.length - 1}>
+            <PerPersonTd $isLast={index === themePrice.length - 1}>
               <TdText type="perPerson">
                 {formatNumberWithCommas(price)}
               </TdText>
@@ -129,7 +129,7 @@ const SinglePriceTitle = styled.th`
 `;
 
 const CountTd = styled.td`
-  border-bottom-left-radius: ${(props) => (props.isLast) ? '0.625rem' : '0'};
+  border-bottom-left-radius: ${(props) => (props.$isLast) ? '0.625rem' : '0'};
   padding: 0.625rem 0rem;
   box-sizing: border-box;
   width: 5rem;
@@ -159,7 +159,7 @@ const PriceTd = styled.td`
 `;
 
 const PerPersonTd = styled.td`
-  border-bottom-right-radius: ${(props) => (props.isLast) ? '0.625rem' : '0'};
+  border-bottom-right-radius: ${(props) => (props.$isLast) ? '0.625rem' : '0'};
   height: 3.125rem;
   padding: 0.625rem 0rem;
   box-sizing: border-box;

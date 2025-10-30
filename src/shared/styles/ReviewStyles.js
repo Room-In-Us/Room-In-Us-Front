@@ -14,8 +14,8 @@ export const Wrap1 = styled.div`
 export const Wrap2 = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: ${({ isLast }) => (isLast ? 'center' : 'flex-start')};
-  gap: ${({ isLast }) => (isLast ? '0.625em' : '0.25em')};
+  align-items: ${({ $isLast }) => ($isLast ? 'center' : 'flex-start')};
+  gap: ${({ $isLast }) => ($isLast ? '0.625em' : '0.25em')};
 
   @media (max-width: 1024px) {
   }

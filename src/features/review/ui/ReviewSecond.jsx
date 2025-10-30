@@ -16,6 +16,7 @@ import useDevice from '../../../shared/hooks/useDevice.js';
 import InfoBox from '../../../shared/components/InfoBox.jsx';
 import { useRecoilState } from 'recoil';
 import { reviewStateFamily } from '../../themeDetail/model/reviewAtom.jsx';
+import { format } from "date-fns";
 
 export default function ReviewSecond({themeData}) {
 
@@ -174,7 +175,7 @@ export default function ReviewSecond({themeData}) {
                   disabled={checkedDate}
                   selectedDate={review.playedAt}
                   onChange={(date) => {
-                    setReview(prev => ({...prev, playedAt: date.toISOString().split('T')[0]}));
+                    setReview(prev => ({...prev, playedAt: format(date, "yyyy-MM-dd")}));
                   }}
                 />
               </DatePickerWrapper>
@@ -196,7 +197,7 @@ export default function ReviewSecond({themeData}) {
                   onMouseLeave={() => setIsInfoOpen(false)}
                 >
                   <CircleInfoIcon />
-                  <InfoPopup ref={infoRef} isInfoOpen={isInfoOpen}>
+                  <InfoPopup ref={infoRef} $isInfoOpen={isInfoOpen}>
                     <InfoBox />
                   </InfoPopup>
                 </IconWrapper>
@@ -578,8 +579,8 @@ const IconWrapper = styled.div`
 `;
 
 const InfoPopup = styled.div`
-  visibility: ${({ isInfoOpen }) => (isInfoOpen ? 'visible' : 'hidden')};
-  opacity: ${({ isInfoOpen }) => (isInfoOpen ? '1' : '0')};
+  visibility: ${({ $isInfoOpen }) => ($isInfoOpen ? 'visible' : 'hidden')};
+  opacity: ${({ $isInfoOpen }) => ($isInfoOpen ? '1' : '0')};
   transition: all 0.2s ease-in-out;
   position: absolute;
   bottom: 0;
