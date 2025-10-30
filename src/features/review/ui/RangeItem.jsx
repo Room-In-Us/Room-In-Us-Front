@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import Thumb from '../../../shared/assets/icons/reviewWrite/thumb.svg?react';
 import Line from '../../../shared/assets/icons/reviewWrite/line.svg';
@@ -11,41 +11,39 @@ export default function RangeItem({ disabled, onChange, value }) {
   const isDragging = useRef(false);
 
   // 마우스 이벤트
-  const handleMouseDown = (e) => {
-    if (disabled) return;
-    isDragging.current = true;
-    handleMove(e);
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging.current) return;
-    handleMove(e);
-  };
-
-  const handleMouseUp = () => {
-    isDragging.current = false;
-  };
-
-  const handleTouchMove = (e) => {
-    if (!isDragging.current) return;
-    handleMove(e);
-  };
-
-  const handleMove = (e) => {
+  const handleMove = useCallback((e) => {
     if (!sliderRef.current) return;
-    const rect = sliderRef.current.getBoundingClientRect();
 
+    const rect = sliderRef.current.getBoundingClientRect();
     const margin = 0.75 * 16;
     let relativeX = e.clientX - rect.left;
 
     relativeX = Math.max(margin, Math.min(rect.width - margin, relativeX));
-
     let percent = (relativeX / rect.width) * 100;
-
     const stepped = Math.round(percent / 10) * 10;
 
     onChange?.(stepped);
-  };
+  }, [onChange]);
+
+  const handleMouseDown = useCallback((e) => {
+    if (disabled) return;
+    isDragging.current = true;
+    handleMove(e);
+  }, [disabled, handleMove]);
+
+  const handleMouseMove = useCallback((e) => {
+    if (!isDragging.current) return;
+    handleMove(e);
+  }, [handleMove]);
+
+  const handleMouseUp = useCallback(() => {
+    isDragging.current = false;
+  }, []);
+
+  const handleTouchMove = useCallback((e) => {
+    if (!isDragging.current) return;
+    handleMove(e);
+  }, [handleMove]);
 
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove);
@@ -58,7 +56,7 @@ export default function RangeItem({ disabled, onChange, value }) {
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleMouseUp);
     };
-  }, []);
+  }, [handleMouseMove, handleMouseUp, handleTouchMove]);
 
   return (
     <SliderContainer>
@@ -72,7 +70,7 @@ export default function RangeItem({ disabled, onChange, value }) {
       
         <LineWrapper>
           {Array.from({ length: 11 }).map((_, i) => (
-            <LineDiv key={i} src={i % 5 === 0 ? BoldLine : Line} bold={i % 5 === 0} />
+            <LineDiv key={i} src={i % 5 === 0 ? BoldLine : Line} $bold={i % 5 === 0} />
           ))}
         </LineWrapper>
 
@@ -83,7 +81,7 @@ export default function RangeItem({ disabled, onChange, value }) {
               left: `calc(${value}% - ${value * 0.0125}em)`, 
               transform: 'translateY(-50%)' 
             }}
-            src={Thumb}
+            // src={Thumb}
           />
           
         </Track>
@@ -154,7 +152,7 @@ const LineWrapper = styled.div`
 `;
 
 const LineDiv = styled.img`
-  height: ${({ bold }) => (bold ? '0.875em' : '0.625em')};
+  height: ${({ $bold }) => ($bold ? '0.875em' : '0.625em')};
 `;
 
 const ThumbIcon = styled(Thumb)`

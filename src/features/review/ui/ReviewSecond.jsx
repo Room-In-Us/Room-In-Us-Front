@@ -197,7 +197,7 @@ export default function ReviewSecond({themeData}) {
                   onMouseLeave={() => setIsInfoOpen(false)}
                 >
                   <CircleInfoIcon />
-                  <InfoPopup ref={infoRef} isInfoOpen={isInfoOpen}>
+                  <InfoPopup ref={infoRef} $isInfoOpen={isInfoOpen}>
                     <InfoBox />
                   </InfoPopup>
                 </IconWrapper>
@@ -579,8 +579,8 @@ const IconWrapper = styled.div`
 `;
 
 const InfoPopup = styled.div`
-  visibility: ${({ isInfoOpen }) => (isInfoOpen ? 'visible' : 'hidden')};
-  opacity: ${({ isInfoOpen }) => (isInfoOpen ? '1' : '0')};
+  visibility: ${({ $isInfoOpen }) => ($isInfoOpen ? 'visible' : 'hidden')};
+  opacity: ${({ $isInfoOpen }) => ($isInfoOpen ? '1' : '0')};
   transition: all 0.2s ease-in-out;
   position: absolute;
   bottom: 0;
