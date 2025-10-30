@@ -9,14 +9,15 @@ import CloseIcon from "../../../shared/assets/icons/reviewWrite/closeicon.svg";
 import LikeIcon from "../../../shared/assets/icons/reviewWrite/likeIcon.svg";
 import ReviewLast from "./ReviewLast.jsx";
 import { postReviewAPI } from "../api/postReviewAPI.js";
+import { putMyReviewAPI } from "../../mypage/api/myReviewAPI.js";
 
-function ReviewWriteModal({themeData}) {
+function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
 
   // 상태 관리
   const setReviewModalOpen = useSetRecoilState(reviewModalState);
   const [reviewSection, setReviewSection] = useRecoilState(reviewSectionState);
   const isModalOpen = useRecoilValue(reviewModalState);
-  const reviewData = useRecoilValue(reviewStateFamily(themeData.themeId));
+  const [reviewData,] = useRecoilState(reviewStateFamily(themeData.themeId));
   const resetReview = useResetRecoilState(reviewStateFamily(themeData.themeId));
   const [, setIsSubmitting] = useState(false);
 
@@ -28,9 +29,12 @@ function ReviewWriteModal({themeData}) {
   // 초기화 효과
   useEffect(() => {
     if (isModalOpen) {
+      if (!isEditMode) {
+        resetReview();
+      }
       setReviewSection("first");
     }
-  }, [isModalOpen, setReviewSection]);
+  }, [isModalOpen, isEditMode, resetReview, setReviewSection]);
 
   const sectionComponents = [
     <ReviewFirst themeData={themeData} key="first" />, 
@@ -58,20 +62,30 @@ function ReviewWriteModal({themeData}) {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      console.log("themeId:", themeData.themeId);
-      console.log("reviewData:", reviewData);
+      const latestData = reviewData;
 
-      await postReviewAPI(themeData.themeId, reviewData);
+      if (isEditMode) {
+        await putMyReviewAPI(themeData.themeId, reviewId, latestData);
+        console.log("[ReviewWriteModal] 후기 수정 요청 데이터:", latestData);
+
+        alert("후기가 수정되었습니다.");
+
+        if (onUpdated) onUpdated();
+      } else {
+        console.log("[ReviewWriteModal] 후기 작성 요청 데이터:", latestData);
+        await postReviewAPI(themeData.themeId, latestData);
+        alert("후기가 작성되었습니다.");
+      }
       resetReview();
       setReviewSection("last");
     } catch (err) {
       console.error("후기 전송 실패:", err);
-      alert("후기 전송 실패: 다시 시도해주세요.");
+      alert("[ReviewWriteModal] 후기 전송 실패");
     } finally {
       setIsSubmitting(false);
     }
   };
-  
+
   return (
     <ModalWrapper>
 
@@ -89,7 +103,7 @@ function ReviewWriteModal({themeData}) {
 
         {/* 버튼 영역 */}
         {reviewSection === "first" && (
-          <NextBtn onClick={goNext} isFirstLast>
+          <NextBtn onClick={goNext} $isFirstLast>
             <NextBtnText>다음</NextBtnText>
           </NextBtn>
         )}
@@ -98,7 +112,7 @@ function ReviewWriteModal({themeData}) {
             <PrevBtn onClick={goPrev}>
               <PrevBtnText>이전</PrevBtnText>
             </PrevBtn>
-            <NextBtn onClick={goNext} isCompact>
+            <NextBtn onClick={goNext} $isCompact>
               <NextBtnText>다음</NextBtnText>
             </NextBtn>
           </BtnSection>
@@ -109,14 +123,16 @@ function ReviewWriteModal({themeData}) {
             <PrevBtn onClick={goPrev}>
               <PrevBtnText>이전</PrevBtnText>
             </PrevBtn>
-            <NextBtn onClick={handleSubmit} isCompact>
-              <NextBtnText>후기 작성 완료</NextBtnText>
+            <NextBtn onClick={handleSubmit} $isCompact>
+              <NextBtnText>
+                {isEditMode ? "후기 수정 완료" : "후기 작성 완료"}
+              </NextBtnText>
             </NextBtn>
           </BtnSection>
         )}
 
         {reviewSection === "last" && (
-          <NextBtn onClick={handleClose} isFirstLast>
+          <NextBtn onClick={handleClose} $isFirstLast>
             <NextBtnText>닫기</NextBtnText>
           </NextBtn>
         )}
@@ -246,7 +262,7 @@ const PrevBtnText = styled.div`
 
 const NextBtn = styled.div`
   display: flex;
-  width: ${({ isCompact }) => isCompact ? '23.125em' : '100%'};
+  width: ${({ $isCompact }) => $isCompact ? '23.125em' : '100%'};
   height: 3.125em;
   padding: 0.875em 0em;
   justify-content: center;
@@ -259,7 +275,7 @@ const NextBtn = styled.div`
   @media (max-width: 1024px) {
   }
   @media (max-width: 768px) {
-    width: ${({ isFirstLast }) => isFirstLast ? '100%' : 'calc(100% - 7.125em - 1em)'};
+    width: ${({ $isFirstLast }) => $isFirstLast ? '100%' : 'calc(100% - 7.125em - 1em)'};
     height: 2.5em;
   }
 `;

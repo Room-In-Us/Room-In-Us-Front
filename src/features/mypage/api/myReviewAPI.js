@@ -31,3 +31,14 @@ export const deleteMyReviewAPI = async (themeId, reviewId) => {
     throw error;
   }
 };
+
+export const putMyReviewAPI = async (themeId, reviewId, data) => {
+  try {
+    const response = await api.put(`themes/${themeId}/reviews/${reviewId}`, data);
+    console.log('후기 수정 성공:', response);
+    return response.data;
+  } catch (error) {
+    console.error('후기 수정 실패:', error);
+    throw error;
+  }
+};

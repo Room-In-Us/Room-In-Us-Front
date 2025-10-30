@@ -11,8 +11,11 @@ import Pen from '../../../../shared/assets/icons/myPage/pen.svg?react';
 import Trash from '../../../../shared/assets/icons/reviewWrite/trashicon.svg?react';
 import { deleteMyReviewAPI } from "../../api/myReviewAPI";
 import PopUpModal from '../../../../shared/components/PopUpModal';
+import { useSetRecoilState } from "recoil";
+import { reviewStateFamily } from "../../../themeDetail/model/reviewAtom";
+import { getReviewDetailAPI } from "../../../reviewDetail/api/reviewDetailAPI";
 
-export default function ReviewCard({ data, onDeleted }) {
+export default function ReviewCard({ data, onDeleted, onEdit }) {
 
   const { isMobile } = useDevice();
   const navigate = useNavigate();
@@ -43,6 +46,8 @@ export default function ReviewCard({ data, onDeleted }) {
     isEscaped
   });
 
+  const setReviewData = useSetRecoilState(reviewStateFamily(themeId));
+
   useEffect(() => {
     if (!themeId) return;
 
@@ -65,6 +70,31 @@ export default function ReviewCard({ data, onDeleted }) {
     } catch (error) {
       console.error('[ReviewCard] 후기 삭제 실패:', error);
       alert("삭제 중 오류가 발생했습니다.");
+    }
+  };
+
+  const handleEdit = async () => {
+    try {
+      const themeData = await getThemeDetailAPI(themeId);
+
+      const reviewDetail = await getReviewDetailAPI(themeId, reviewId);
+console.log("[ReviewCard] reviewDetail:", reviewDetail);
+
+      const mergedData = {
+        ...reviewDetail,
+        img: themeData.img || "",
+      };
+
+      setReviewData(mergedData);
+
+      onEdit({
+        ...mergedData,
+        themeName: themeName,
+        storeName: storeName,
+      });
+    } catch (error) {
+      console.error("[ReviewCard] 후기 수정 모드 진입 실패:", error);
+      alert("후기 정보를 불러오는 중 오류가 발생했습니다.");
     }
   };
 
@@ -122,7 +152,7 @@ export default function ReviewCard({ data, onDeleted }) {
                 후기 상세보기
               </BtnText>
             </Btn>
-            <ModifyBtn><PenIcon /></ModifyBtn>
+            <ModifyBtn onClick={handleEdit}><PenIcon /></ModifyBtn>
             <ModifyBtn onClick={() => setIsDeleteModalOpen(true)}><TrashIcon /></ModifyBtn>
           </BtnWrapper>
         )}
