@@ -12,23 +12,19 @@ function HeaderProfileModal({ visible }) {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState('');
 
-  // 로컬 스토리지에서 토큰 호출
-  const isLoggedIn = !!localStorage.getItem("accessToken");
-
-  // 닉네임 가져오기 (로그인 상태일 때만 실행)
   useEffect(() => {
-    if (isLoggedIn) {
-      const fetchNickName = async () => {
-        try {
-          const response = await getMemberInfoAPI();
-          setNickname(response.nickname);
-        } catch (error) {
-          console.error("닉네임 불러오는 중 오류 발생:", error);
-        }
-      };
-      fetchNickName();
-    }
-  }, [isLoggedIn]);
+    if (!visible) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const me = await getMemberInfoAPI();
+        if (!cancelled) setNickname(me.nickname);
+      } catch {
+        if (!cancelled) setNickname('');
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [visible]);
 
   // 로그아웃 함수
   const handleLogout = async () => {
@@ -42,7 +38,7 @@ function HeaderProfileModal({ visible }) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("userCode");
       alert("로그아웃 되었습니다.");
-      navigate("/login");
+      window.location.replace('/login');
     }
   };
 

@@ -253,14 +253,14 @@ const ErrorText = styled.div`
   font-style: normal;
   font-weight: 500;
   line-height: normal;
-  visibility: ${(props) => (props.errorState ? 'visibility' : 'hidden')};
+  visibility: ${(props) => (props.errorState ? 'visibile' : 'hidden')};
   opacity: ${(props) => (props.errorState ? 1 : 0)};
   transition: all 0.2s ease-in-out;
 `;
 
 const NavigatorWrapper = styled.div`
   padding: 1.25rem;
-  box-sizing: border-size;
+  box-sizing: border-box;
   width: 32.5rem;
   display: flex;
   flex-direction: column;
@@ -281,7 +281,7 @@ const NavigatorBox = styled.div`
   justify-content: space-between;
   align-items: center;
   align-self: stretch;
-  cursor: pointer
+  cursor: pointer;
 `;
 
 const NavigatorText = styled.div`
