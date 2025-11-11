@@ -68,12 +68,16 @@ export const postLogoutAPI = async () => {
 
 // 액세스 토큰 재발급 API
 export const postRefreshTokenAPI = async () => {
-  try {
-    const response = await api.post('access-token');
-    console.log('토큰 재발급 요청 성공:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('토큰 재발급 요청 실패:', error);
-    throw error;
+  const res = await api.post('access-token', null, {
+    __skipRefresh: true,
+    __skipAuth: true,
+    validateStatus: () => true,
+  });
+  if (res.status !== 200) {
+    throw new Error(`refresh failed: ${res.status}`);
   }
+  if (!res.data?.accessToken) {
+    throw new Error('refresh failed: no accessToken');
+  }
+  return res.data;
 };

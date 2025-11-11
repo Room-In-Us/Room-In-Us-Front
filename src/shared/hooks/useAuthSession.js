@@ -6,8 +6,18 @@ export default function useAuthSession() {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
 
   const check = async () => {
+    const onLogin = window.location.pathname === '/login';
+  
+    // 로그인 페이지에서는 members 호출 방지
+    if (onLogin) {
+      setIsLoggedIn(false);
+      return;
+    }
+  
     try {
-      const res = await api.get('members', { validateStatus: () => true });
+      const res = await api.get('members', {
+        validateStatus: () => true,
+      });
       setIsLoggedIn(res.status === 200);
     } catch {
       setIsLoggedIn(false);
@@ -16,10 +26,8 @@ export default function useAuthSession() {
 
   useEffect(() => {
     check();
-
     const onFocus = () => check();
     const onVis = () => document.visibilityState === 'visible' && check();
-
     window.addEventListener('focus', onFocus);
     document.addEventListener('visibilitychange', onVis);
     return () => {
@@ -28,5 +36,5 @@ export default function useAuthSession() {
     };
   }, []);
 
-  return isLoggedIn; // null(로딩), true, false
+  return isLoggedIn;
 }
