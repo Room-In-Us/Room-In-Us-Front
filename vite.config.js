@@ -11,20 +11,21 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, root, '');
 
   return {
-  plugins: [react(), svgr(), mkcert()],
-  server: {
-    https: true,
-    proxy: {
-      '/api': {
-        target: env.VITE_SERVER_URL_API,
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+    plugins: [react(), svgr(), mkcert()],
+    server: {
+      https: true,
+      proxy: {
+        '/api': {
+          target: env.VITE_SERVER_URL_API,
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/api/, ''),
+        },
+      },
+      cors: {
+        origin: 'https://localhost:5173',
+        credentials: true,
       },
     },
-    cors: {
-      origin: 'https://localhost:5173',
-      credentials: true,
-    },
-  },}
+  };
 });
