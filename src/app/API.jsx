@@ -1,33 +1,30 @@
-import axios from 'axios';
 import { postRefreshTokenAPI } from '../features/auth/api/authAPI';
 
-// axios 인스턴스 생성
+import axios from 'axios';
+
 export const api = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL_API,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true, // 쿠키 포함 설정
+  headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,
 });
 
-// 요청 인터셉터 (이제 Authorization 헤더는 사용하지 않음)
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("accessToken");
-    // const token = import.meta.env.VITE_TEST_TOKEN; // 임시로 테스트 토큰 사용
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
+const onLoginPage = () => window.location.pathname === '/login';
 
-/* 토큰 재발급 인터셉터(에러 발생 시 수정) */
+// 요청 인터셉터: 로컬스토리지 토큰이 있으면 Authorization 추가
+api.interceptors.request.use((config) => {
+  if (config.__skipAuth) return config;
+
+  const token = localStorage.getItem('accessToken');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+// 재발급 큐/락
 let isRefreshing = false;
 let queue = [];
+
+const isRefreshOrLogout = (url = '') =>
+  url.startsWith('access-token') || url.startsWith('members/logout');
 
 api.interceptors.response.use(
   (res) => res,
@@ -35,16 +32,31 @@ api.interceptors.response.use(
     const { response, config } = error;
     if (!response) return Promise.reject(error);
 
-    // 401 처리
-    if (response.status === 401 && !config._retry) {
+    const status = response.status;
+    const url = (config?.url || '').toString();
+
+    const hasBearer = !!localStorage.getItem('accessToken');
+
+    // 재발급 금지 조건들
+    const skip =
+      onLoginPage() ||                      // 로그인 화면에서는 절대 재발급 금지
+      config.__skipRefresh === true ||      // 명시적 스킵
+      isRefreshOrLogout(url);               // 재발급/로그아웃 API는 재발급 시도하지 않음
+
+    if (skip) {
+      return Promise.reject(error);
+    }
+
+    // 보호 API에서만 401 처리
+    if (status === 401 && !config._retry && hasBearer) {
       config._retry = true;
 
-      // 이미 토큰 재발급 중이면 큐에 대기
+      // 이미 재발급 중이면 큐 대기
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
-          queue.push((token) => {
-            if (token) {
-              config.headers.Authorization = `Bearer ${token}`;
+          queue.push((newToken) => {
+            if (newToken) {
+              config.headers.Authorization = `Bearer ${newToken}`;
               resolve(api(config));
             } else {
               reject(error);
@@ -54,29 +66,24 @@ api.interceptors.response.use(
       }
 
       isRefreshing = true;
-
       try {
-        // 토큰 재발급
         const data = await postRefreshTokenAPI();
-        const newToken = data.accessToken;
-        localStorage.setItem('accessToken', newToken);
+        const newToken = data?.accessToken;
+        if (!newToken) throw new Error('no accessToken in refresh response');
 
-        // 대기 중 요청 처리
+        localStorage.setItem('accessToken', newToken);
         queue.forEach((cb) => cb(newToken));
         queue = [];
 
-        // 현재 요청 다시 실행
         config.headers.Authorization = `Bearer ${newToken}`;
         return api(config);
-      } catch (refreshError) {
-        console.error('토큰 재발급 실패:', refreshError);
-        // 재발급 실패
+      } catch (e) {
+        // 재발급 실패 -> 완전 로그아웃
         localStorage.removeItem('accessToken');
         localStorage.removeItem('userCode');
-        window.location.replace('/login');
         queue.forEach((cb) => cb(null));
         queue = [];
-        return Promise.reject(refreshError);
+        return Promise.reject(e);
       } finally {
         isRefreshing = false;
       }

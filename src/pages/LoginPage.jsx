@@ -5,10 +5,14 @@ import LoginIllust from '../shared/assets/images/login/loginIllust.png';
 import KakaoLogo from '../shared/assets/icons/login/kakaoLogo.svg?react';
 import GoogleLogo from '../shared/assets/icons/login/googleLogo.svg?react';
 import useDevice from '../shared/hooks/useDevice';
+import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
   // 반응형 함수
   const { isMobile } = useDevice();
+
+  // 네비게이션
+  const navigate = useNavigate();
 
   // 카카오 로그인
   const handleKakaoLogin = () => {
@@ -51,6 +55,7 @@ function LoginPage() {
             <LoginText type='google'>구글 계정으로 로그인</LoginText>
           </SocialLoginButton>
         </ButtonSection>
+        <GuestAccessButton onClick={() => navigate('/')}>로그인 없이 둘러보기</GuestAccessButton>
       </ContentWrapper>
     </PageWrapper>
   );
@@ -251,5 +256,17 @@ const StyledGoogleLogo = styled(GoogleLogo)`
     width: 1.17188em;
     height: 1.17188em;
     flex-shrink: 0;
+  }
+`;
+
+const GuestAccessButton = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  font-family: 'Pretendard-Regular';
+  font-size: 1em;
+  line-height: normal;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 0.875em;
   }
 `;

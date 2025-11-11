@@ -14,6 +14,7 @@ import EmailIcon from '../assets/icons/common/emailIcon.svg?react';
 import InquiryIcon from '../assets/icons/common/inquiryIcon.svg?react';
 import LeftArrowIcon from '../assets/icons/common/arrow/leftArrow.svg?react';
 import { postLogoutAPI } from '../../features/auth/api/authAPI';
+import useAuthSession from '../hooks/useAuthSession';
 
 function Header() {
   // navigate, location
@@ -28,7 +29,7 @@ function Header() {
   const [headerKeyword, setHeaderKeyword] = useState('');
 
   // 로컬 스토리지에서 토큰 호출
-  const isLoggedIn = !!localStorage.getItem("accessToken");
+  const isLoggedIn = useAuthSession();
 
   // 페이지 이동
   const handleNavigation = (path) => {
@@ -119,7 +120,7 @@ function Header() {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("userCode");
       alert("로그아웃 되었습니다.");
-      navigate("/login");
+      window.location.replace('/login');
     }
   };
 
