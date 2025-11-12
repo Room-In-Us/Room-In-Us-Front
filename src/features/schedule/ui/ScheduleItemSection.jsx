@@ -9,9 +9,9 @@ import ScheduleTimePicker from "./ScheduleTimePicker";
 import dayjs from "dayjs";
 import { useRecoilValue } from "recoil";
 import { scheduleModalState } from "../modal/scheduleAtom";
+import { getThemeDetailAPI } from "../../themeDetail/api/themeDetailAPI";
 
-export default function ScheduleItemSection({ isModal, onStateChange }) {
-
+export default function ScheduleItemSection({ themeId, isModal, onStateChange }) {
   // 상태
   const [searchValue, setSearchValue] = useState("");
   const [themes, setThemes] = useState([]);
@@ -27,7 +27,44 @@ export default function ScheduleItemSection({ isModal, onStateChange }) {
       console.error('검색 실패:', error);
       setThemes([]);
     }
-  }, [searchValue]); 
+  }, [searchValue]);
+
+  // 테마 상세 정보 조회
+  const fetchThemeById = useCallback(async (id) => {
+    try {
+      const data = await getThemeDetailAPI(id);
+      if (data) return data;
+    } catch (e) {
+      console.error("fetchThemeById 실패:", e);
+      return null;
+    }
+  }, []);
+
+  // 초기 선택: 생성 모드에서만 themeId를 반영
+  useEffect(() => {
+    if (!themeId) return;
+    if (mode === "edit") return;
+    if (selectedThemeId) return;
+
+    (async () => {
+      const theme = await fetchThemeById(themeId);
+      if (theme) {
+        const unified = { ...theme, themeImg: theme.img || theme.themeImg };
+        setSelectedTheme(unified);
+        setSelectedThemeId(unified.themeId);
+      }
+    })();
+  }, [themeId, mode, selectedThemeId, fetchThemeById]);
+
+  // 편집 모드 초기 로딩
+  useEffect(() => {
+    if (mode === "edit" && reservation) {
+      setSelectedTheme(reservation);
+      setSelectedThemeId(reservation.themeId);
+      setReservedAt(reservation.reservedAt);
+      setVisitDate(dayjs(reservation.reservedAt));
+    }
+  }, [mode, reservation]);
 
   useEffect(() => {
     if (searchValue.trim() !== '') {
@@ -254,7 +291,7 @@ const InputBoxWrapper = styled.div`
   }
 `;
 
-const SearchTextWrapper =  styled.text`
+const SearchTextWrapper =  styled.div`
   width: 100%;
   height: 100%;
   display: flex;

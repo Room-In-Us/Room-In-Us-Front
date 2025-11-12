@@ -11,7 +11,7 @@ import { calendarMonthState, reservationListState } from '../../mypage/model/res
 import { deleteReservationAPI, getMyReservationsAPI, patchReservationAPI } from '../../mypage/api/reservationAPI';
 import PopUpModal from '../../../shared/components/PopUpModal';
 
-export default function ScheduleModal() {
+export default function ScheduleModal({themeId}) {
 
   const modalState = useRecoilValue(scheduleModalState);
   const { mode, reservation } = modalState;
@@ -106,7 +106,11 @@ export default function ScheduleModal() {
       </ModalHeader>
       <IndexWrapper>
 
-        <ScheduleItemSection isModal={modalState.isOpen} onStateChange={handleStateChange} />
+        <ScheduleItemSection
+          themeId={themeId}
+          isModal={modalState.isOpen}
+          onStateChange={handleStateChange}
+        />
 
         <BtnWrapper>
           <SubmitBtn $isEnabled={submitState.isSubmitEnabled} onClick={handleSubmit}>

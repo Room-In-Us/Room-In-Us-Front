@@ -12,12 +12,17 @@ import ScheduleIcon from '../../../shared/assets/icons/themeDetail/scheduleIcon.
 import PropTypes from 'prop-types';
 import useDevice from "../../../shared/hooks/useDevice";
 import { postThemeLikeAPI, deleteThemeLikeAPI } from "../../like/api/themeLikeAPI";
+import { useSetRecoilState, useRecoilValue } from "recoil";
+import { scheduleModalState } from "../../schedule/modal/scheduleAtom";
+import ScheduleModal from "../../schedule/ui/ScheduleModal";
 
 function ThemeOverviewCard({ themeData }) {
   // state 관리
   const [imageUrl, setImageUrl] = useState(themeData.img);
   const [isHeartActive, setIsHeartActive] = useState(themeData.isLiked);
   const [showTooltip, setShowTooltip] = useState(false);
+  const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
+  const modalState = useRecoilValue(scheduleModalState);
 
   const navigate = useNavigate();
 
@@ -85,7 +90,7 @@ function ThemeOverviewCard({ themeData }) {
                     예약하러 가기
                   </ButtonText>
                 </StyledButton>
-                <StyledButton onClick={() => navigate('/mypage/reservations')}>
+                <StyledButton onClick={() => {setScheduleWriteModal({ isOpen: true, mode: 'add', reservation: null });}}>
                   <StyledScheduleIcon/>
                   <ButtonText>
                     일정에 추가하기
@@ -181,6 +186,13 @@ function ThemeOverviewCard({ themeData }) {
          </MobileBottomWrapper> 
         )}
       </ContentWrapper>
+
+      {/* 일정 관리 모달 */}
+      {modalState.isOpen && (
+        <ModalBackdrop>
+          <ScheduleModal themeId={themeData.themeId} />
+        </ModalBackdrop>
+      )}
     </ComponentWrapper>
   )
 }
@@ -575,4 +587,17 @@ const Tooltip = styled.div`
     85% { opacity: 1; transform: translate(-50%, 0); }
     100% { opacity: 0; transform: translate(-50%, 4px); }
   }
+`;
+
+const ModalBackdrop = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3500;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
