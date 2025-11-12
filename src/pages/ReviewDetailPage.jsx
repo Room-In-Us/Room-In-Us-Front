@@ -14,6 +14,10 @@ import CloseIcon from "../shared/assets/icons/survey/modalCancelIcon.svg?react"
 import ReservationIcon from "../shared/assets/icons/themeDetail/reservationIcon.svg?react";
 import CalenderIcon from "../shared/assets/icons/themeDetail/scheduleIcon.svg?react";
 import PencilIcon from "../shared/assets/icons/themeDetail/pencilIcon.svg?react";
+import useAuthSession from "../shared/hooks/useAuthSession";
+import ScheduleModal from "../features/schedule/ui/ScheduleModal";
+import { scheduleModalState } from "../features/schedule/modal/scheduleAtom";
+import PopUpModal from "../shared/components/PopUpModal";
 
 function ReviewDetailPage() {
   // 상태 관리
@@ -21,11 +25,18 @@ function ReviewDetailPage() {
   const setReviewWriteModal = useSetRecoilState(reviewModalState);
   const [themeDetail, setThemeDetail] = useState({});
   const [isFloatingButtonOpen, setIsFloatingButtonOpen] = useState(false);
+  const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
+  const modalState = useRecoilValue(scheduleModalState);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const { themeId, reviewId } = useParams();
 
+  // 로그인 상태 검증
+  const isLoggedIn = useAuthSession();
+
   const { isMobile } = useDevice();
+
   // 테마 상세 api 호출
   useEffect(() => {
     async function fetchThemeDetail() {
@@ -78,13 +89,29 @@ function ReviewDetailPage() {
                   예약하기
                 </ButtonText>
               </InteractionButton>
-              <InteractionButton onClick={() => navigate('/mypage/reservations')}>
+              <InteractionButton
+                onClick={() => {
+                  if (!isLoggedIn) {
+                    setIsLoginModalOpen(true);
+                    return;
+                  }
+                  setScheduleWriteModal({ isOpen: true, mode: 'add', reservation: null });
+                  setIsFloatingButtonOpen(false);
+                }}>
                 <StyledCalenderIcon />
                 <ButtonText>
                   일정 추가하기
                 </ButtonText>
               </InteractionButton>
-              <InteractionButton onClick={() => {setReviewWriteModal(true); setIsFloatingButtonOpen(false)}}>
+              <InteractionButton
+                onClick={() => {
+                  if (!isLoggedIn) {
+                    setIsLoginModalOpen(true);
+                    return;
+                  }
+                  setReviewWriteModal(true);
+                  setIsFloatingButtonOpen(false);
+                }}>
                 <StyledPencilIcon />
                 <ButtonText>
                   후기 작성하기
@@ -100,6 +127,25 @@ function ReviewDetailPage() {
             <StyledMoreIcon/>
           </FloatingButton>
           )
+      )}
+
+      {/* 로그인 모달 */}
+      <PopUpModal
+        isOpen={isLoginModalOpen}
+        title=""
+        message="로그인 후 사용할 수 있는 기능입니다."
+        subMessage="로그인하시겠습니까?"
+        confirmText="확인"
+        cancelText="취소"
+        onConfirm={() => navigate('/login')}
+        onCancel={() => setIsLoginModalOpen(false)}
+      />
+
+      {/* 일정 관리 모달 */}
+      {modalState.isOpen && (
+        <ModalBackdrop ModalBackdrop>
+          <ScheduleModal themeId={themeId} />
+        </ModalBackdrop>
       )}
     </PageWrapper>
   )

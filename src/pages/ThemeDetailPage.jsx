@@ -19,6 +19,7 @@ import PencilIcon from "../shared/assets/icons/themeDetail/pencilIcon.svg?react"
 import useAuthSession from "../shared/hooks/useAuthSession";
 import ScheduleModal from "../features/schedule/ui/ScheduleModal";
 import { scheduleModalState } from "../features/schedule/modal/scheduleAtom";
+import PopUpModal from "../shared/components/PopUpModal";
 
 function ThemeDetailPage() {
   // 상태 관리
@@ -30,6 +31,7 @@ function ThemeDetailPage() {
   const [isFloatingButtonOpen, setIsFloatingButtonOpen] = useState(false);
   const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
   const modalState = useRecoilValue(scheduleModalState);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const { themeId } = useParams();
@@ -109,7 +111,7 @@ function ThemeDetailPage() {
               <InteractionButton
                 onClick={() => {
                   if (!isLoggedIn) {
-                    alert('로그인 후 이용해주세요.');
+                    setIsLoginModalOpen(true);
                     return;
                   }
                   setScheduleWriteModal({ isOpen: true, mode: 'add', reservation: null });
@@ -123,7 +125,7 @@ function ThemeDetailPage() {
               <InteractionButton
                 onClick={() => {
                   if (!isLoggedIn) {
-                    alert('로그인 후 이용해주세요.');
+                    setIsLoginModalOpen(true);
                     return;
                   }
                   setReviewWriteModal(true);
@@ -145,6 +147,19 @@ function ThemeDetailPage() {
           </FloatingButton>
           )
       )}
+
+      {/* 로그인 모달 */}
+      <PopUpModal
+        isOpen={isLoginModalOpen}
+        title=""
+        message="로그인 후 사용할 수 있는 기능입니다."
+        subMessage="로그인하시겠습니까?"
+        confirmText="확인"
+        cancelText="취소"
+        onConfirm={() => navigate('/login')}
+        onCancel={() => setIsLoginModalOpen(false)}
+      />
+
       {/* 일정 관리 모달 */}
       {modalState.isOpen && (
         <ScheduleModal themeId={themeId} />

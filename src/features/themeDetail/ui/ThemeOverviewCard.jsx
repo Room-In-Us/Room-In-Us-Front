@@ -15,6 +15,8 @@ import { useSetRecoilState, useRecoilValue } from "recoil";
 import { scheduleModalState } from "../../schedule/modal/scheduleAtom";
 import ScheduleModal from "../../schedule/ui/ScheduleModal";
 import useAuthSession from "../../../shared/hooks/useAuthSession";
+import PopUpModal from "../../../shared/components/PopUpModal";
+import { useNavigate } from "react-router-dom";
 
 function ThemeOverviewCard({ themeData }) {
   // state 관리
@@ -23,9 +25,12 @@ function ThemeOverviewCard({ themeData }) {
   const [showTooltip, setShowTooltip] = useState(false);
   const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
   const modalState = useRecoilValue(scheduleModalState);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // 로그인 상태 검증
   const isLoggedIn = useAuthSession();
+  
+  const navigate = useNavigate();
   
   const { isMobile } = useDevice();
   
@@ -93,7 +98,7 @@ function ThemeOverviewCard({ themeData }) {
                 </StyledButton>
                 <StyledButton onClick={() => {
                   if (!isLoggedIn) {
-                    alert('로그인 후 이용해주세요.');
+                    setIsLoginModalOpen(true);
                     return;
                   }
                   setScheduleWriteModal({ isOpen: true, mode: 'add', reservation: null });
@@ -118,7 +123,7 @@ function ThemeOverviewCard({ themeData }) {
               <InteractionButton
                 onClick={(e) => {
                   if (!isLoggedIn) {
-                    alert('로그인 후 이용해주세요.');
+                    setIsLoginModalOpen(true);
                     return;
                   }
                   e.stopPropagation();
@@ -151,7 +156,15 @@ function ThemeOverviewCard({ themeData }) {
                 예약하러 가기
               </ButtonText>
             </StyledButton>
-            <StyledButton type="schedule" onClick={() => {setScheduleWriteModal({ isOpen: true, mode: 'add', reservation: null });}}>
+            <StyledButton
+              type="schedule"
+              onClick={() => {
+                if (!isLoggedIn) {
+                  setIsLoginModalOpen(true);
+                  return;
+                }
+                setScheduleWriteModal({ isOpen: true, mode: 'add', reservation: null });
+              }}>
               <StyledScheduleIcon/>
               <ButtonText>
                 일정에 추가하기
@@ -169,7 +182,7 @@ function ThemeOverviewCard({ themeData }) {
             <InteractionButton
               onClick={(e) => {
                 if (!isLoggedIn) {
-                  alert('로그인 후 이용해주세요.');
+                  setIsLoginModalOpen(true);
                   return;
                 }
                 e.stopPropagation();
@@ -194,6 +207,18 @@ function ThemeOverviewCard({ themeData }) {
          </MobileBottomWrapper> 
         )}
       </ContentWrapper>
+
+      {/* 로그인 모달 */}
+      <PopUpModal
+        isOpen={isLoginModalOpen}
+        title=""
+        message="로그인 후 사용할 수 있는 기능입니다."
+        subMessage="로그인하시겠습니까?"
+        confirmText="확인"
+        cancelText="취소"
+        onConfirm={() => navigate('/login')}
+        onCancel={() => setIsLoginModalOpen(false)}
+      />
 
       {/* 일정 관리 모달 */}
       {modalState.isOpen && (

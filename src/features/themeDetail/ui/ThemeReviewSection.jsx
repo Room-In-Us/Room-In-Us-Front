@@ -11,6 +11,8 @@ import { useSetRecoilState } from 'recoil';
 import { reviewModalState } from "../model/reviewAtom";
 import PropTypes from 'prop-types';
 import useAuthSession from "../../../shared/hooks/useAuthSession";
+import PopUpModal from "../../../shared/components/PopUpModal";
+import { useNavigate } from "react-router-dom";
 
 function ThemeReviewSection({ themeId }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -18,8 +20,11 @@ function ThemeReviewSection({ themeId }) {
   const [satisfactionAvg, setSatisfactionAvg] = useState(0);
   const [reviewCnt, setReviewCnt] = useState(0);
   const [reviews, setReviews] = useState([]);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const setModal = useSetRecoilState(reviewModalState);
+
+  const navigate = useNavigate();
 
   // 로그인 상태 검증
   const isLoggedIn = useAuthSession();
@@ -70,7 +75,7 @@ function ThemeReviewSection({ themeId }) {
           <ReviewWriteButton
             onClick={() => {
               if (!isLoggedIn) {
-                alert('로그인 후 이용해주세요.');
+                setIsLoginModalOpen(true);
                 return;
               }
               setModal(true);
@@ -97,7 +102,7 @@ function ThemeReviewSection({ themeId }) {
           <ReviewWriteButton
             onClick={() => {
               if (!isLoggedIn) {
-                alert('로그인 후 이용해주세요.');
+                setIsLoginModalOpen(true);
                 return;
               }
               setModal(true);
@@ -138,6 +143,19 @@ function ThemeReviewSection({ themeId }) {
           />
         </PagingWrapper>
       )}
+
+      {/* 로그인 모달 */}
+      <PopUpModal
+        isOpen={isLoginModalOpen}
+        title=""
+        message="로그인 후 사용할 수 있는 기능입니다."
+        subMessage="로그인하시겠습니까?"
+        confirmText="확인"
+        cancelText="취소"
+        onConfirm={() => navigate('/login')}
+        onCancel={() => setIsLoginModalOpen(false)}
+      />
+
     </SectionWrapper>
   );
 }
