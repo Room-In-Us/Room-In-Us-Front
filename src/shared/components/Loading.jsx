@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const Loading = () => {
   return (
     <LoadingWrapper>
-      <MoonLoader color="#8E59FF" loading="true" size={30} speedMultiplier={1} />
+      <MoonLoader color="#6680DF" loading={true} size={30} speedMultiplier={1} />
     </LoadingWrapper>
   );
 };

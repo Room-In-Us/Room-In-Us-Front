@@ -12,6 +12,7 @@ import PreferenceSection from "./preferences/PreferenceSection";
 import PositionSection from "./preferences/PositionSection";
 import InfoSection from "./preferences/InfoSection.jsx";
 import NoDataIcon from "../../../shared/assets/images/common/noData/noDataImageLarge.png";
+import Loading from "../../../shared/components/Loading.jsx";
 
 function UserInfoModal() {
   // 상태 관리
@@ -19,18 +20,29 @@ function UserInfoModal() {
   const userId = useRecoilValue(userInfoIdState);
   const userName = useRecoilValue(userInfoNameState);
   const [userInfoList, setUserInfoList] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // 모달 닫기 핸들러
   const handleClose = () => {
     setModalOpen(false);
   };
 
+  // 데이터 확인 함수
+  const hasAnyData = (obj) => {
+    if (!obj) return false;
+    return Object.values(obj).some((value) => {
+      if (Array.isArray(value)) return value.length > 0;
+      return !!value;
+    });
+  };
+
   // 유저 정보 호출
   useEffect(() => {
     const fetchPreferences = async () => {
+      setIsLoading(true);
       try {
         const data = await getUserInfoAPI(userId);
-        setUserInfoList({
+        const mapped = {
           proficiency: data.proficiency,
           preferredGenreList: data.preferredGenreList,
           preferredHeadcount: data.preferredHeadcount,
@@ -39,9 +51,13 @@ function UserInfoModal() {
           preferredDevice: data.preferredDevice,
           horrorPos: data.horrorPos,
           preference: data.preference,
-        });
+        };
+        setUserInfoList(mapped || {});
       } catch (error) {
         console.error("유저 정보 로딩 실패:", error);
+        setUserInfoList({});
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -66,10 +82,9 @@ function UserInfoModal() {
           <TitleDescription>님의 방탈출 취향</TitleDescription>
         </TitleWrapper>
 
-        {userInfoList && Object.values(userInfoList).some((value) => {
-          if (Array.isArray(value)) return value.length > 0;
-          return !!value;
-        }) ? (
+        {isLoading ? (
+          <Loading />
+        ) : hasAnyData(userInfoList) ? (
           <>
             {/* 숙련도 섹션 */}
             <ProficiencySection userInfo={userInfoList?.proficiency} />
