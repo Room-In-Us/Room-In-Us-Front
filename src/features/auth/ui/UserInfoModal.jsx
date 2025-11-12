@@ -101,11 +101,6 @@ function UserInfoModal() {
             </NoDataText>
           </NoDataWrapper>
         )}
-
-        {/* 버튼 영역 */}
-        <CloseBtn onClick={handleClose}>
-          <CloseBtnText>닫기</CloseBtnText>
-        </CloseBtn>
       </ContentWrapper>
 
     </ModalWrapper>
@@ -167,33 +162,6 @@ const StyledCloseIcon = styled.img`
   width: 1.25em;
   height: 1.25em;
   cursor: pointer;
-`;
-
-const CloseBtn = styled.div`
-  display: flex;
-  width: 100%;
-  height: 3.125em;
-  padding: 0.875em 0em;
-  justify-content: center;
-  align-items: center;
-  border-radius: 2.5em;
-  background: var(--RIU_Primary-0, #E8EAFF);
-  box-sizing: border-box;
-  cursor: pointer;
-
-  @media (max-width: 768px) {
-    height: 2.5em;
-  }
-`;
-
-const CloseBtnText = styled.div`
-  color: var(--RIU_Primary-100, #718FF2);
-  font-family: Pretendard-Bold;
-  font-size: 1em;
-
-  @media (max-width: 768px) {
-    font-size: 0.875em;
-  }
 `;
 
 const ContentWrapper = styled.div`
