@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
 import ThumbnailImg from '../../../shared/assets/images/common/thumbnailImg.png';
 import InfoIcon from '../../../shared/assets/icons/themeDetail/infoIcon.svg?react';
 import ShareIcon from '../../../shared/assets/icons/themeDetail/shareIcon.svg?react';
@@ -15,6 +14,7 @@ import { postThemeLikeAPI, deleteThemeLikeAPI } from "../../like/api/themeLikeAP
 import { useSetRecoilState, useRecoilValue } from "recoil";
 import { scheduleModalState } from "../../schedule/modal/scheduleAtom";
 import ScheduleModal from "../../schedule/ui/ScheduleModal";
+import useAuthSession from "../../../shared/hooks/useAuthSession";
 
 function ThemeOverviewCard({ themeData }) {
   // state 관리
@@ -24,8 +24,9 @@ function ThemeOverviewCard({ themeData }) {
   const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
   const modalState = useRecoilValue(scheduleModalState);
 
-  const navigate = useNavigate();
-
+  // 로그인 상태 검증
+  const isLoggedIn = useAuthSession();
+  
   const { isMobile } = useDevice();
   
   // 이미지 로드 실패 시, 기본 썸네일로 변경
@@ -90,7 +91,13 @@ function ThemeOverviewCard({ themeData }) {
                     예약하러 가기
                   </ButtonText>
                 </StyledButton>
-                <StyledButton onClick={() => {setScheduleWriteModal({ isOpen: true, mode: 'add', reservation: null });}}>
+                <StyledButton onClick={() => {
+                  if (!isLoggedIn) {
+                    alert('로그인 후 이용해주세요.');
+                    return;
+                  }
+                  setScheduleWriteModal({ isOpen: true, mode: 'add', reservation: null });
+                }}>
                   <StyledScheduleIcon/>
                   <ButtonText>
                     일정에 추가하기
@@ -110,6 +117,10 @@ function ThemeOverviewCard({ themeData }) {
               </InteractionButton>
               <InteractionButton
                 onClick={(e) => {
+                  if (!isLoggedIn) {
+                    alert('로그인 후 이용해주세요.');
+                    return;
+                  }
                   e.stopPropagation();
                   setIsHeartActive(!isHeartActive);
                   if (isHeartActive) {
@@ -140,7 +151,7 @@ function ThemeOverviewCard({ themeData }) {
                 예약하러 가기
               </ButtonText>
             </StyledButton>
-            <StyledButton type="schedule" onClick={() => navigate('/mypage/reservations')}>
+            <StyledButton type="schedule" onClick={() => {setScheduleWriteModal({ isOpen: true, mode: 'add', reservation: null });}}>
               <StyledScheduleIcon/>
               <ButtonText>
                 일정에 추가하기
@@ -150,20 +161,17 @@ function ThemeOverviewCard({ themeData }) {
 
           <InteractionWrapper>
             <InteractionButton
-              onClick={() => {
-                navigator.clipboard.writeText(window.location.href)
-                  .then(() => {
-                    alert('링크가 복사되었습니다!');
-                  })
-                  .catch((err) => {
-                    console.error('링크 복사 실패:', err);
-                  });
-              }}
+              onClick={handleCopyLink}
             >
+              {showTooltip && <Tooltip>주소 복사 완료!</Tooltip>}
               <StyledShareIcon/>
             </InteractionButton>
             <InteractionButton
               onClick={(e) => {
+                if (!isLoggedIn) {
+                  alert('로그인 후 이용해주세요.');
+                  return;
+                }
                 e.stopPropagation();
                 setIsHeartActive(!isHeartActive);
                 if (isHeartActive) {

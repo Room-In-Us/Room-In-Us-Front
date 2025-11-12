@@ -10,6 +10,7 @@ import { getThemeReviewsListAPI } from "../api/themeDetailAPI";
 import { useSetRecoilState } from 'recoil';
 import { reviewModalState } from "../model/reviewAtom";
 import PropTypes from 'prop-types';
+import useAuthSession from "../../../shared/hooks/useAuthSession";
 
 function ThemeReviewSection({ themeId }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -19,6 +20,9 @@ function ThemeReviewSection({ themeId }) {
   const [reviews, setReviews] = useState([]);
 
   const setModal = useSetRecoilState(reviewModalState);
+
+  // 로그인 상태 검증
+  const isLoggedIn = useAuthSession();
 
   const pageSize = 3;
 
@@ -63,7 +67,14 @@ function ThemeReviewSection({ themeId }) {
           </NoDataWrapper>
 
           {/* 리뷰 작성 버튼 */}
-          <ReviewWriteButton onClick={() => setModal(true)}>
+          <ReviewWriteButton
+            onClick={() => {
+              if (!isLoggedIn) {
+                alert('로그인 후 이용해주세요.');
+                return;
+              }
+              setModal(true);
+          }}>
             <StyledPencilIcon/>
             <ReviewWriteButtonText>
               후기 작성하기
@@ -83,7 +94,14 @@ function ThemeReviewSection({ themeId }) {
           </RatingContainer>
 
           {/* 리뷰 작성 버튼 */}
-          <ReviewWriteButton onClick={() => setModal(true)}>
+          <ReviewWriteButton
+            onClick={() => {
+              if (!isLoggedIn) {
+                alert('로그인 후 이용해주세요.');
+                return;
+              }
+              setModal(true);
+          }}>
             <StyledPencilIcon/>
             <ReviewWriteButtonText>
               후기 작성하기
