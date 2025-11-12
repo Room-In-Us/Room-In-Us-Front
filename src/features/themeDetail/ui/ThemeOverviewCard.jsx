@@ -17,6 +17,7 @@ function ThemeOverviewCard({ themeData }) {
   // state 관리
   const [imageUrl, setImageUrl] = useState(themeData.img);
   const [isHeartActive, setIsHeartActive] = useState(themeData.isLiked);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const navigate = useNavigate();
 
@@ -35,6 +36,18 @@ function ThemeOverviewCard({ themeData }) {
     setIsHeartActive(themeData.isLiked);
     console.log('data: ', themeData);
   }, [themeData.isLiked, themeData]);
+
+  // 복사 기능
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href)
+      .then(() => {
+        setShowTooltip(true);
+        setTimeout(() => setShowTooltip(false), 1500);
+      })
+      .catch((err) => {
+        console.error('링크 복사 실패:', err);
+      });
+  };
 
   return (
     <ComponentWrapper>
@@ -86,17 +99,8 @@ function ThemeOverviewCard({ themeData }) {
 
             {/* 상호작용 영역 */}
             <InteractionWrapper>
-              <InteractionButton
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href)
-                    .then(() => {
-                      alert('링크가 복사되었습니다!');
-                    })
-                    .catch((err) => {
-                      console.error('링크 복사 실패:', err);
-                    });
-                }}
-              >
+              <InteractionButton onClick={handleCopyLink}>
+                {showTooltip && <Tooltip>주소 복사 완료!</Tooltip>}
                 <StyledShareIcon/>
               </InteractionButton>
               <InteractionButton
@@ -508,4 +512,67 @@ const MobileBottomWrapper = styled.div`
   align-items: flex-start;
   align-self: stretch;
   gap: 0.625rem;
+`;
+
+const Tooltip = styled.div`
+  width: 5.625rem;
+  height: 1.625rem;
+  position: absolute;
+  bottom: 105%;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-shrink: 0;
+
+  /* 배경/스트로크/라운드 */
+  background: var(--RIU_Monochrome-10, #F9F9FB);
+  border: 1px solid var(--RIU_Primary-100, #718FF2);
+  border-radius: 0.25rem;
+
+  /* 내용 정렬 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* 텍스트 스타일 */
+  color: var(--RIU_Primary-100, #718FF2);
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: normal;
+  z-index: 20;
+
+  /* 등장/퇴장 애니메이션 (원 코드 유지) */
+  animation: fadeInOut 1.5s ease forwards;
+
+  /* 꼬리: 스트로크(바깥) */
+  &::before {
+    border-width: 0.5rem 0.3125rem 0 0.3125rem;
+    border-style: solid;
+    border-color: var(--RIU_Primary-100, #718FF2) transparent transparent transparent;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    content: "";
+  }
+
+  /* 꼬리: 필(안쪽) */
+  &::after {
+    border-width: 0.5rem 0.3125rem 0 0.3125rem;
+    border-style: solid;
+    border-color: var(--RIU_Monochrome-10, #F9F9FB) transparent transparent transparent;
+    position: absolute;
+    top: calc(100% - 1px);
+    left: 50%;
+    transform: translateX(-50%);
+    content: "";
+  }
+
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, 4px); }
+    15% { opacity: 1; transform: translate(-50%, 0); }
+    85% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, 4px); }
+  }
 `;
