@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
 import ThumbnailImg from '../../../shared/assets/images/common/thumbnailImg.png';
 import InfoIcon from '../../../shared/assets/icons/themeDetail/infoIcon.svg?react';
 import ShareIcon from '../../../shared/assets/icons/themeDetail/shareIcon.svg?react';
@@ -12,14 +11,27 @@ import ScheduleIcon from '../../../shared/assets/icons/themeDetail/scheduleIcon.
 import PropTypes from 'prop-types';
 import useDevice from "../../../shared/hooks/useDevice";
 import { postThemeLikeAPI, deleteThemeLikeAPI } from "../../like/api/themeLikeAPI";
+import { useSetRecoilState, useRecoilValue } from "recoil";
+import { scheduleModalState } from "../../schedule/modal/scheduleAtom";
+import ScheduleModal from "../../schedule/ui/ScheduleModal";
+import useAuthSession from "../../../shared/hooks/useAuthSession";
+import PopUpModal from "../../../shared/components/PopUpModal";
+import { useNavigate } from "react-router-dom";
 
 function ThemeOverviewCard({ themeData }) {
   // state 관리
   const [imageUrl, setImageUrl] = useState(themeData.img);
   const [isHeartActive, setIsHeartActive] = useState(themeData.isLiked);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
+  const modalState = useRecoilValue(scheduleModalState);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
+  // 로그인 상태 검증
+  const isLoggedIn = useAuthSession();
+  
   const navigate = useNavigate();
-
+  
   const { isMobile } = useDevice();
   
   // 이미지 로드 실패 시, 기본 썸네일로 변경
@@ -35,6 +47,18 @@ function ThemeOverviewCard({ themeData }) {
     setIsHeartActive(themeData.isLiked);
     console.log('data: ', themeData);
   }, [themeData.isLiked, themeData]);
+
+  // 복사 기능
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href)
+      .then(() => {
+        setShowTooltip(true);
+        setTimeout(() => setShowTooltip(false), 1500);
+      })
+      .catch((err) => {
+        console.error('링크 복사 실패:', err);
+      });
+  };
 
   return (
     <ComponentWrapper>
@@ -72,7 +96,13 @@ function ThemeOverviewCard({ themeData }) {
                     예약하러 가기
                   </ButtonText>
                 </StyledButton>
-                <StyledButton onClick={() => navigate('/mypage/reservations')}>
+                <StyledButton onClick={() => {
+                  if (!isLoggedIn) {
+                    setIsLoginModalOpen(true);
+                    return;
+                  }
+                  setScheduleWriteModal({ isOpen: true, mode: 'add', reservation: null });
+                }}>
                   <StyledScheduleIcon/>
                   <ButtonText>
                     일정에 추가하기
@@ -86,21 +116,16 @@ function ThemeOverviewCard({ themeData }) {
 
             {/* 상호작용 영역 */}
             <InteractionWrapper>
-              <InteractionButton
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href)
-                    .then(() => {
-                      alert('링크가 복사되었습니다!');
-                    })
-                    .catch((err) => {
-                      console.error('링크 복사 실패:', err);
-                    });
-                }}
-              >
+              <InteractionButton onClick={handleCopyLink}>
+                {showTooltip && <Tooltip>주소 복사 완료!</Tooltip>}
                 <StyledShareIcon/>
               </InteractionButton>
               <InteractionButton
                 onClick={(e) => {
+                  if (!isLoggedIn) {
+                    setIsLoginModalOpen(true);
+                    return;
+                  }
                   e.stopPropagation();
                   setIsHeartActive(!isHeartActive);
                   if (isHeartActive) {
@@ -131,7 +156,15 @@ function ThemeOverviewCard({ themeData }) {
                 예약하러 가기
               </ButtonText>
             </StyledButton>
-            <StyledButton type="schedule" onClick={() => navigate('/mypage/reservations')}>
+            <StyledButton
+              type="schedule"
+              onClick={() => {
+                if (!isLoggedIn) {
+                  setIsLoginModalOpen(true);
+                  return;
+                }
+                setScheduleWriteModal({ isOpen: true, mode: 'add', reservation: null });
+              }}>
               <StyledScheduleIcon/>
               <ButtonText>
                 일정에 추가하기
@@ -141,20 +174,17 @@ function ThemeOverviewCard({ themeData }) {
 
           <InteractionWrapper>
             <InteractionButton
-              onClick={() => {
-                navigator.clipboard.writeText(window.location.href)
-                  .then(() => {
-                    alert('링크가 복사되었습니다!');
-                  })
-                  .catch((err) => {
-                    console.error('링크 복사 실패:', err);
-                  });
-              }}
+              onClick={handleCopyLink}
             >
+              {showTooltip && <Tooltip>주소 복사 완료!</Tooltip>}
               <StyledShareIcon/>
             </InteractionButton>
             <InteractionButton
               onClick={(e) => {
+                if (!isLoggedIn) {
+                  setIsLoginModalOpen(true);
+                  return;
+                }
                 e.stopPropagation();
                 setIsHeartActive(!isHeartActive);
                 if (isHeartActive) {
@@ -177,6 +207,25 @@ function ThemeOverviewCard({ themeData }) {
          </MobileBottomWrapper> 
         )}
       </ContentWrapper>
+
+      {/* 로그인 모달 */}
+      <PopUpModal
+        isOpen={isLoginModalOpen}
+        title=""
+        message="로그인 후 사용할 수 있는 기능입니다."
+        subMessage="로그인하시겠습니까?"
+        confirmText="확인"
+        cancelText="취소"
+        onConfirm={() => navigate('/login')}
+        onCancel={() => setIsLoginModalOpen(false)}
+      />
+
+      {/* 일정 관리 모달 */}
+      {modalState.isOpen && (
+        <ModalBackdrop>
+          <ScheduleModal themeId={themeData.themeId} />
+        </ModalBackdrop>
+      )}
     </ComponentWrapper>
   )
 }
@@ -508,4 +557,80 @@ const MobileBottomWrapper = styled.div`
   align-items: flex-start;
   align-self: stretch;
   gap: 0.625rem;
+`;
+
+const Tooltip = styled.div`
+  width: 5.625rem;
+  height: 1.625rem;
+  position: absolute;
+  bottom: 105%;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-shrink: 0;
+
+  /* 배경/스트로크/라운드 */
+  background: var(--RIU_Monochrome-10, #F9F9FB);
+  border: 1px solid var(--RIU_Primary-100, #718FF2);
+  border-radius: 0.25rem;
+
+  /* 내용 정렬 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* 텍스트 스타일 */
+  color: var(--RIU_Primary-100, #718FF2);
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: normal;
+  z-index: 20;
+
+  /* 등장/퇴장 애니메이션 (원 코드 유지) */
+  animation: fadeInOut 1.5s ease forwards;
+
+  /* 꼬리: 스트로크(바깥) */
+  &::before {
+    border-width: 0.5rem 0.3125rem 0 0.3125rem;
+    border-style: solid;
+    border-color: var(--RIU_Primary-100, #718FF2) transparent transparent transparent;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    content: "";
+  }
+
+  /* 꼬리: 필(안쪽) */
+  &::after {
+    border-width: 0.5rem 0.3125rem 0 0.3125rem;
+    border-style: solid;
+    border-color: var(--RIU_Monochrome-10, #F9F9FB) transparent transparent transparent;
+    position: absolute;
+    top: calc(100% - 1px);
+    left: 50%;
+    transform: translateX(-50%);
+    content: "";
+  }
+
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, 4px); }
+    15% { opacity: 1; transform: translate(-50%, 0); }
+    85% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, 4px); }
+  }
+`;
+
+const ModalBackdrop = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3500;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

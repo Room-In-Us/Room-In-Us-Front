@@ -373,27 +373,6 @@ font-size: 1.3em; // 임의로 지정
   }
 `;
 
-const StationList = styled.div`
-  border-bottom: 1px solid var(--RIU_Monochrome-50, #D6D6DF);
-  padding: 0em 1.25em 0em 2.5em;
-  box-sizing: border-box;
-  display: flex;
-  width: 15em;
-  height: 3.125em;
-  justify-content: space-between;
-  align-items: center;
-  flex-shrink: 0;
-  background: ${(props) =>
-    props.isSelected ? "var(--RIU_Monochrome-10, #F9F9FB)" : "var(--RIU_Monochrome-20, #F0F0F4)"};
-  line-height: normal;
-  transition: background 0.2s ease;
-  cursor: pointer;
-
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-`;
-
 const StationTitle = styled.div`
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Medium';
@@ -419,6 +398,43 @@ const StyledArrowIcon = styled(ArrowIcon)`
 
   path {
     fill: var(--RIU_Monochrome-200, #717486);
+  }
+`;
+
+const StationList = styled.div`
+  border-bottom: 1px solid var(--RIU_Monochrome-50, #D6D6DF);
+  padding: 0em 1.25em 0em 2.5em;
+  box-sizing: border-box;
+  display: flex;
+  width: 15em;
+  height: 3.125em;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  background: ${(props) =>
+    props.isSelected ? "var(--RIU_Monochrome-10, #F9F9FB)" : "var(--RIU_Monochrome-20, #F0F0F4)"};
+  line-height: normal;
+  transition: background 0.1s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: ${(props) =>
+      props.isSelected ? "var(--RIU_Monochrome-10, #F9F9FB)" : "var(--RIU_Primary-60, #A2ADFF)"};
+    ${StationTitle} {
+      color: ${(props) => (props.isSelected ? "var(--RIU_Monochrome-500, #515467)" : "var(--RIU_Monochrome-10, #F9F9FB)")};
+    }
+    ${StoreNumber} {
+      color: ${(props) => (props.isSelected ? "var(--RIU_Primary-80, #8DA3FF)" : "var(--RIU_Primary-0, #E8EAFF)")};
+    }
+    ${StyledArrowIcon} {
+      path {
+        fill: ${(props) => (props.isSelected ? "var(--RIU_Monochrome-200, #717486)" : "var(--RIU_Monochrome-10, #F9F9FB)")};
+      }
+    }
+  }
+  
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 

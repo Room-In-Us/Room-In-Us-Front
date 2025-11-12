@@ -58,7 +58,8 @@ function PreferencesPage() {
       console.log("성향조사 제출 결과: ", payload);
       const response = await patchPreferencesAPI(payload);
       console.log("성향조사 제출 결과: ", response);
-      alert("성향조사 결과가 저장되었습니다.")
+      alert("성향조사 결과가 저장되었습니다.");
+      navigate('/mypage');
     } catch (error) {
       console.error("성향조사 제출 중 오류 발생:", error);
     }

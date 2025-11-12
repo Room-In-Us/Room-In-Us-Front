@@ -28,7 +28,7 @@ function Header() {
   const [isScrolledBeyond, setIsScrolledBeyond] = useState(false);
   const [headerKeyword, setHeaderKeyword] = useState('');
 
-  // 로컬 스토리지에서 토큰 호출
+  // 토큰 호출
   const isLoggedIn = useAuthSession();
 
   // 페이지 이동
