@@ -76,13 +76,22 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
   const handleEdit = async () => {
     try {
       const themeData = await getThemeDetailAPI(themeId);
-
       const reviewDetail = await getReviewDetailAPI(themeId, reviewId);
-console.log("[ReviewCard] reviewDetail:", reviewDetail);
+      console.log("[ReviewCard] reviewDetail:", reviewDetail);
+
+      // null 상태 기반으로 토글 체크박스 상태 복원
+      const uiState = {
+        checkedDate: reviewDetail.playedAt === null,
+        checkedHint: reviewDetail.usedHint === null,
+        checkedPeople:
+          reviewDetail.minRecommendedHeadcount === null &&
+          reviewDetail.maxRecommendedHeadcount === null,
+      };
 
       const mergedData = {
         ...reviewDetail,
         img: themeData.img || "",
+        uiState,
       };
 
       setReviewData(mergedData);

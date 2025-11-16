@@ -2,7 +2,7 @@ import styled from "styled-components";
 import StarRating from "./StarRating";
 import ReviewDropdown from "./ReviewDropdown";
 import { overallOptions } from "../modal/reviewDataList";
-import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3, Wrap5 } from "../../../shared/styles/ReviewStyles.js";
+import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3 } from "../../../shared/styles/ReviewStyles.js";
 import useDevice from '../../../shared/hooks/useDevice.js';
 import { useRecoilState } from "recoil";
 import { reviewStateFamily } from "../../themeDetail/model/reviewAtom.jsx";
@@ -35,7 +35,7 @@ export default function ReviewFirst({themeData}) {
         <Wrap3>
 
           <ImgSection>
-            <ThemeImg src={themeData?.img || ''} />
+            <ThemeImg src={themeData?.img || themeData?.themeImg || ''} />
             <MsgWrapper>
               <Asterisk>*</Asterisk>
               <GuideMsg>표는 필수 입력 사항입니다.</GuideMsg>
@@ -44,17 +44,17 @@ export default function ReviewFirst({themeData}) {
           
           <Scroll>
             <ReviewSection>
-              <StarRating 
-                value={review.satisfactionLevel}
-                onChange={(val) =>
-                  setReview(prev => ({ ...prev, satisfactionLevel: val }))
-                }
-              />
               <OverallSection>
                 <Wrap4>
                   <ItemText>총평</ItemText>
                   <Asterisk2>*</Asterisk2>
                 </Wrap4>
+                <StarRating 
+                  value={review.satisfactionLevel}
+                  onChange={(val) =>
+                    setReview(prev => ({ ...prev, satisfactionLevel: val }))
+                  }
+                />
                 <ReviewDropdown
                   placeholder='총평 선택'
                   options={overallOptions}
@@ -65,6 +65,7 @@ export default function ReviewFirst({themeData}) {
                   variant='overall'
                 />
               </OverallSection>
+
               <ThoughtSection>
                 <ItemText>테마 체험 소감을 간단히 적어주세요!</ItemText>
                 <InputWrapper>
@@ -91,28 +92,26 @@ export default function ReviewFirst({themeData}) {
 
             <ThemeImg src={themeData?.img || ''} />
 
-            <Wrap5>
               <Wrap2>
                 <ThemeTitle>{themeData?.themeName || '테마명'}</ThemeTitle>
                 <ThemeSubText>테마에 만족하셨나요?</ThemeSubText>
               </Wrap2>
 
+          </Wrapper>
+
+          <ReviewSection>
+            <OverallSection>
+
+              <Wrap4>
+                <ItemText>총평</ItemText>
+                <Asterisk>*</Asterisk>
+              </Wrap4>
               <StarRating
                 value={review.satisfactionLevel}
                 onChange={(val) =>
                   setReview(prev => ({ ...prev, satisfactionLevel: val }))
                 }
               />
-            </Wrap5>
-
-          </Wrapper>
-
-          <ReviewSection>
-            <OverallSection>
-              <Wrap4>
-                <ItemText>총평</ItemText>
-                <Asterisk>*</Asterisk>
-              </Wrap4>
               <ReviewDropdown
                 placeholder='총평 선택'
                 options={overallOptions}

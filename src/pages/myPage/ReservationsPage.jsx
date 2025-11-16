@@ -44,7 +44,7 @@ function ReservationsPage() {
         {/* 모달 전역 렌더링 */}
         {isModalOpen && selectedThemeData && (
           <ModalBackdrop>
-            <ReviewWriteModal themeData={selectedThemeData} />
+            <ReviewWriteModal themeData={{...selectedThemeData.data, img: selectedThemeData.img,}} />
           </ModalBackdrop>
         )}
 

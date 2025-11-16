@@ -19,26 +19,33 @@ export default function EscapeResultDetails ({selected, themeId}) {
     : {min: 0, sec: 0};
   
   const checkedTime = review.remainingTime === null;
-  const checkedEnding = review.failReason === null && review.hasViewedEnding === true;
+  // 엔딩 열람 체크박스: hasViewedEnding이 true일 때 체크됨 (failReason과 독립적)
+  const checkedEnding = review.hasViewedEnding === true;
 
   const handleTimeChange = (newTime) => {
     const formattedTime = `00:${String(newTime.min).padStart(2, "0")}:${String(newTime.sec).padStart(2, "0")}`;
     setReview(prev => ({ ...prev, remainingTime: formattedTime }));
   };
 
+  // 기억 안 남 토글 핸들러 (성공 시)
   const toggleCheckedTime = () => {
-    setReview(prev => ({ ...prev, remainingTime: prev.remainingTime ? null : "00:00:00" }));
+    const next = !checkedTime;
+    setReview(prev => ({
+      ...prev,
+      remainingTime: next ? null : "00:00:00",
+    }));
   };
 
   const handleReasonChange = (value) => {
     setReview(prev => ({ ...prev, failReason: value }));
   };
 
+  // 엔딩 열람 토글 핸들러 (실패 시) - failReason과 독립적으로 동작
   const toggleCheckedEnding = () => {
+    const next = !checkedEnding;
     setReview(prev => ({
       ...prev,
-      failReason: prev.failReason ? null : null,
-      hasViewedEnding: !prev.hasViewedEnding,
+      hasViewedEnding: next ? true : false,
     }));
   };
 
@@ -60,7 +67,6 @@ export default function EscapeResultDetails ({selected, themeId}) {
       return (
       <Wrapper2>
         <ReviewDropdown
-          disabled={checkedEnding}
           placeholder='실패 사유 선택'
           options={failOptions}
           selected={review.failReason}

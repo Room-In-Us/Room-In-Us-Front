@@ -7,15 +7,21 @@ export default function PopUpModal({
   title = "알림",
   message,
   subMessage,
+  messageList,
   onConfirm,
   onCancel,
   confirmText = "확인",
   cancelText = "취소",
+  showCancel = true,
 }) {
   if (!isOpen) return null;
+
+  // subMessage가 줄바꿈으로 구분된 문자열인 경우 배열로 변환
+  const displayList = messageList || (subMessage && subMessage.includes('\n') ? subMessage.split('\n') : null);
+
   return (
     <Backdrop onClick={(e) => e.stopPropagation()}>
-      <Wrapper>
+      <Wrapper $hasList={!!displayList}>
         <PopUpHeader>
           <PopUpNameWrapper>
             <CautionIcon />
@@ -26,12 +32,22 @@ export default function PopUpModal({
         <PopUpBox>
           <PopUpContentBox>
             <PopUpTitle>{message}</PopUpTitle>
-            <PopUpDetail>{subMessage}</PopUpDetail>
+            {displayList ? (
+              <PopUpList>
+                {displayList.map((item, index) => (
+                  <PopUpListItem key={index}>{item}</PopUpListItem>
+                ))}
+              </PopUpList>
+            ) : (
+              <PopUpDetail>{subMessage}</PopUpDetail>
+            )}
           </PopUpContentBox>
           <PopUpBtnWrapper>
-            <PopUpBtn mode='cancel' onClick={onCancel}>
-              <BtnText mode='cancel'>{cancelText}</BtnText>
-            </PopUpBtn>
+            {showCancel && (
+              <PopUpBtn mode='cancel' onClick={onCancel}>
+                <BtnText mode='cancel'>{cancelText}</BtnText>
+              </PopUpBtn>
+            )}
             <PopUpBtn mode='confirm' onClick={onConfirm}>
               <BtnText mode='confirm'>{confirmText}</BtnText>
             </PopUpBtn>
@@ -59,7 +75,9 @@ const Backdrop = styled.div`
 
 const Wrapper = styled.div`
   width: 25rem;
-  height: 16.44rem;
+  height: ${({ $hasList }) => $hasList ? 'auto' : '16.44rem'};
+  min-height: 16.44rem;
+  max-height: 80vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -69,7 +87,8 @@ const Wrapper = styled.div`
 
   @media (max-width: 768px) {
     width: 18.75rem;
-    height: 15.81rem;
+    height: ${({ $hasList }) => $hasList ? 'auto' : '15.81rem'};
+    min-height: 15.81rem;
   }
 `;
 
@@ -152,6 +171,30 @@ const PopUpDetail = styled.div`
   font-family: Pretendard-Medium;
   font-size: 0.875rem;
 
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
+`;
+
+const PopUpList = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    gap: 0.25rem;
+  }
+`;
+
+const PopUpListItem = styled.div`
+  color: var(--RIU_Monochrome-100, #818496);
+  font-family: Pretendard-Medium;
+  font-size: 0.875rem;
+  
   @media (max-width: 768px) {
     font-size: 0.75rem;
   }

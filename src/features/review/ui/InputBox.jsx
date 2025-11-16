@@ -7,7 +7,10 @@ import SelectedIcon from '../../../shared/assets/icons/common/filterIcon/selecte
 export default function InputBox({ rateValue, rateOnChange, label, placeholder, value, onChange, active, selected, handleSelect }) {
   return (
     <ItemSection>
-      <ItemText>{label}</ItemText>
+      <Wrap4>       
+        <ItemText>{label}</ItemText>
+        <Asterisk2>*</Asterisk2>
+      </Wrap4>
       <StarRating
         value={rateValue}
         onChange={rateOnChange}
@@ -143,4 +146,23 @@ const Container2 = styled.div`
   display: flex;
   align-items: center;
   gap: 0.625em;
+`;
+
+const Wrap4 = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+`;
+
+const Asterisk2 = styled.div`
+  color: var(--RIU_Primary-100, #718FF2);
+  text-align: center;
+  font-family: Pretendard-Bold;
+  font-size: 0.875em;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;

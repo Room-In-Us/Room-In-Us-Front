@@ -17,6 +17,7 @@ import InfoBox from '../../../shared/components/InfoBox.jsx';
 import { useRecoilState } from 'recoil';
 import { reviewStateFamily } from '../../themeDetail/model/reviewAtom.jsx';
 import { format } from "date-fns";
+import { getPreferencesAPI } from '../../mypage/api/surveyAPI.js';
 
 export default function ReviewSecond({themeData}) {
 
@@ -27,15 +28,48 @@ export default function ReviewSecond({themeData}) {
   const [review, setReview] = useRecoilState(reviewStateFamily(themeData.themeId));
 
   // 체크박스 상태
-  const [checkedDate, setCheckedDate] = useState(false);
-  const [checkedHint, setCheckedHint] = useState(false);
-  const [checkedPeople, setCheckedPeople] = useState(false);
+  const checkedDate = review.uiState?.checkedDate ?? false;
+  const checkedHint = review.uiState?.checkedHint ?? false;
+  const checkedPeople = review.uiState?.checkedPeople ?? false;
 
   // 플레이 인원 상태
   const players = review.participantList.map((p, i) => ({
     ...p,
     isOwner: i === 0,
   }));
+
+  const initializedRef = useRef(false);
+
+  // 유저 성향 API로부터 proficiency 자동 세팅
+    useEffect(() => {
+      async function fetchUserProficiency() {
+        if (initializedRef.current) return
+        initializedRef.current = true;
+    
+        try {
+          const pref = await getPreferencesAPI();
+          const userProficiency = pref?.proficiency;
+    
+          if (userProficiency === null || userProficiency === undefined) return;
+    
+          setReview(prev => {
+            const alreadyHasValue = prev.participantList?.[0]?.proficiency;
+            if (alreadyHasValue) return prev;
+    
+            return {
+              ...prev,
+              participantList: prev.participantList.map((p, index) =>
+                index === 0 ? { ...p, proficiency: userProficiency } : p
+              ),
+            };
+          });
+        } catch (err) {
+          console.error("유저 성향 불러오기 실패:", err);
+        }
+      }
+    
+      fetchUserProficiency();
+    }, [setReview]);
 
   // info 팝업 상태
   const [isInfoOpen, setIsInfoOpen] = useState(false);
@@ -123,21 +157,44 @@ export default function ReviewSecond({themeData}) {
     }));
   };
 
-  // 추천 인원 기재 선택 핸들러
-  const handleTogglePeople = () => {
-    setCheckedPeople(prev => {
-      const next = !prev;
-      if (next) {
-        setReview(prev => ({
-          ...prev,
-          minRecommendedHeadcount: null,
-          maxRecommendedHeadcount: null,
-        }));
-      }
-      return next;
-    });
+  // 방문 일자 기억 안 남 토글 핸들러
+  const handleToggleDate = () => {
+    const next = !review.uiState.checkedDate;
+
+    setReview(prev => ({
+      ...prev,
+      uiState: { ...prev.uiState, checkedDate: next },
+      ...(next
+        ? { playedAt: null }
+        : {}),
+    }));
   };
 
+  // 사용 힌트 수 기재 안 함 토글 핸들러
+  const handleToggleHint = () => {
+    const next = !review.uiState.checkedHint;
+
+    setReview(prev => ({
+      ...prev,
+      uiState: { ...prev.uiState, checkedHint: next },
+      ...(next
+        ? { usedHint: null }
+        : {}),
+    }));
+  };
+
+  // 추천 인원 기재 선택 핸들러
+  const handleTogglePeople = () => {
+    const next = !review.uiState.checkedPeople;
+
+    setReview(prev => ({
+      ...prev,
+      uiState: { ...prev.uiState, checkedPeople: next },
+      ...(next
+        ? { minRecommendedHeadcount: null, maxRecommendedHeadcount: null }
+        : {}),
+    }));
+  };
 
   return (
     <Wrap1>
@@ -152,7 +209,7 @@ export default function ReviewSecond({themeData}) {
       <Wrap3>
     
         <ImgSection>
-          <ThemeImg src={themeData?.img || ''} />
+          <ThemeImg src={themeData?.img || themeData?.themeImg || ''}/>
           <MsgWrapper>
             <Asterisk>*</Asterisk>
             <GuideMsg>표는 필수 입력 사항입니다.</GuideMsg>
@@ -183,7 +240,7 @@ export default function ReviewSecond({themeData}) {
               <ToggleCheckbox
                 label='기억 안 남'
                 checked={checkedDate}
-                onToggle={()=>setCheckedDate(prev => !prev)}
+                onToggle={handleToggleDate}
               />
             </ItemSection>
 
@@ -267,7 +324,7 @@ export default function ReviewSecond({themeData}) {
               <ToggleCheckbox
                 label='기재 안 함'
                 checked={checkedHint}
-                onToggle={()=>setCheckedHint(prev => !prev)}
+                onToggle={handleToggleHint}
               />
             </ItemSection2>
 
@@ -366,7 +423,7 @@ export default function ReviewSecond({themeData}) {
             <ToggleCheckbox
               label='기억 안 남'
               checked={checkedDate}
-              onToggle={()=>setCheckedDate(prev => !prev)}
+              onToggle={handleToggleDate}
             />
           </ItemSection>
 
@@ -448,7 +505,7 @@ export default function ReviewSecond({themeData}) {
             <ToggleCheckbox
               label='기재 안 함'
               checked={checkedHint}
-              onToggle={()=>setCheckedHint(prev => !prev)}
+              onToggle={handleToggleHint}
             />
           </ItemSection2>
 
