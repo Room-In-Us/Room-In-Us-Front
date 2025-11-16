@@ -1,7 +1,5 @@
-import { useState } from "react";
 import styled from 'styled-components'
 import RangeItem from './RangeItem.jsx';
-import { ToggleCheckbox } from "./ToggleCheckBox.jsx";
 import { GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3 } from "../../../shared/styles/ReviewStyles.js";
 import InputBox from "./InputBox.jsx";
 import useDevice from "../../../shared/hooks/useDevice.js";
@@ -15,9 +13,6 @@ export default function ReviewThird({themeData}) {
   
   // 후기 데이터 상태
   const [review, setReview] = useRecoilState(reviewStateFamily(themeData.themeId));
-  
-  // 체크박스 상태
-  const [checkedRange, setCheckedRange] = useState(false);
 
   // 복장 추천 선택 핸들러러
   const handleSelect = (value) => {
@@ -40,7 +35,7 @@ export default function ReviewThird({themeData}) {
           <Wrap3>
             
             <ImgSection >
-              <ThemeImg src={themeData?.img || ''} />
+              <ThemeImg src={themeData?.img || themeData?.themeImg || ''} />
               <MsgWrapper>
                 <Asterisk3>별점</Asterisk3>
                 <GuideMsg>은 필수 입력 사항입니다.</GuideMsg>
@@ -51,29 +46,16 @@ export default function ReviewThird({themeData}) {
 
               <Wrapper>
                 <ItemSection>
-                  <Wrap>
-                    <ItemText>장치/자물쇠 비율</ItemText>
-                    <ToggleCheckbox
-                      label='기재 안 함'
-                      checked={checkedRange}
-                      onToggle={() => {
-                        setCheckedRange(prev => {
-                          const next = !prev;
-                          if (next) {
-                            setReview(prev => ({ ...prev, lockRatio: null }));
-                          }
-                          return next;
-                        });
-                      }}
-                    />
-                  </Wrap>
+                    <Wrap4>
+                      <ItemText>장치/자물쇠 비율</ItemText>
+                      <Asterisk2>*</Asterisk2>
+                    </Wrap4>
 
                   <RangeItem 
-                    disabled={checkedRange}
                     onChange={(value) => {
                       setReview(prev => ({
                         ...prev,
-                        lockRatio: checkedRange ? null : Math.round(value / 10),
+                        lockRatio: Math.round(value / 10) || null,
                       }))
                     }}
                     value={(review.lockRatio ?? 0) * 10}
@@ -188,29 +170,16 @@ export default function ReviewThird({themeData}) {
 
           <Wrapper>
             <ItemSection>
-              <Wrap>
-                <ItemText>장치/자물쇠 비율</ItemText>
-                <ToggleCheckbox
-                  label='기재 안 함'
-                  checked={checkedRange}
-                  onToggle={() => {
-                    setCheckedRange(prev => {
-                      const next = !prev;
-                      if (next) {
-                        setReview(prev => ({ ...prev, lockRatio: null }));
-                      }
-                      return next;
-                    });
-                  }}
-                />
-              </Wrap>
+                <Wrap4>
+                  <ItemText>장치/자물쇠 비율</ItemText>
+                  <Asterisk2>*</Asterisk2>
+                </Wrap4>
 
               <RangeItem
-                disabled={checkedRange}
                 onChange={(value) => {
                   setReview(prev => ({
                     ...prev,
-                    lockRatio: checkedRange ? null : Math.round(value / 10),
+                    lockRatio: Math.round(value / 10) || null,
                   }))
                 }} 
                 value={(review.lockRatio ?? 0) * 10}
@@ -345,9 +314,21 @@ const Asterisk3 = styled.div`
   }
 `;
 
-const Wrap = styled.div`
-  width: 100%;
+const Wrap4 = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 0.25em;
+`;
+
+const Asterisk2 = styled.div`
+  color: var(--RIU_Primary-100, #718FF2);
+  text-align: center;
+  font-family: Pretendard-Bold;
+  font-size: 0.875em;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
 `;

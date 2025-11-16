@@ -10,6 +10,7 @@ import LikeIcon from "../../../shared/assets/icons/reviewWrite/likeIcon.svg";
 import ReviewLast from "./ReviewLast.jsx";
 import { postReviewAPI } from "../api/postReviewAPI.js";
 import { putMyReviewAPI } from "../../mypage/api/myReviewAPI.js";
+import PopUpModal from "../../../shared/components/PopUpModal.jsx";
 
 function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
 
@@ -20,6 +21,8 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
   const [reviewData,] = useRecoilState(reviewStateFamily(themeData.themeId));
   const resetReview = useResetRecoilState(reviewStateFamily(themeData.themeId));
   const [, setIsSubmitting] = useState(false);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [errorMessages, setErrorMessages] = useState([]);
 
   // 모달 닫기 핸들러
   const handleClose = () => {
@@ -40,7 +43,7 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
     <ReviewFirst themeData={themeData} key="first" />, 
     <ReviewSecond themeData={themeData} key="second" />, 
     <ReviewThird themeData={themeData} key="third" />, 
-    <ReviewLast themeData={themeData} key="last" />
+    <ReviewLast themeData={themeData} isEditMode={isEditMode} key="last" />
   ];
 
   const currentSectionIndex = ["first", "second", "third", "last"].indexOf(reviewSection);
@@ -58,29 +61,155 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
     else if (reviewSection === "third") setReviewSection("second");
   };  
 
+  // 필수 데이터 검증 함수
+  const validateRequiredFields = (data) => {
+    const missingFields = [];
+    const fieldNames = {
+      satisfactionLevel: '총평 점수',
+      review: '총평 선택',
+      participantList: '플레이 인원',
+      level: '난이도 점수',
+      horrorLevel: '공포도 점수',
+      activityLevel: '활동성 점수',
+      storyLevel: '스토리 점수',
+      interiorLevel: '인테리어 점수'
+    };
+
+    // satisfactionLevel 검증
+    if (!data.satisfactionLevel || data.satisfactionLevel === 0) {
+      missingFields.push(fieldNames.satisfactionLevel);
+    }
+
+    // review 검증
+    if (!data.review) {
+      missingFields.push(fieldNames.review);
+    }
+
+    // participantList 검증 (배열이 있고, 각 항목에 proficiency가 있어야 함)
+    if (!data.participantList || !Array.isArray(data.participantList) || 
+        data.participantList.length === 0 || 
+        data.participantList.some(p => p.proficiency === null || p.proficiency === undefined || p.proficiency === '')) {
+      missingFields.push(fieldNames.participantList);
+    }
+
+    // level 검증
+    if (data.level === null || data.level === undefined || data.level === 0) {
+      missingFields.push(fieldNames.level);
+    }
+
+    // horrorLevel 검증
+    if (data.horrorLevel === null || data.horrorLevel === undefined || data.horrorLevel === 0) {
+      missingFields.push(fieldNames.horrorLevel);
+    }
+
+    // activityLevel 검증
+    if (data.activityLevel === null || data.activityLevel === undefined || data.activityLevel === 0) {
+      missingFields.push(fieldNames.activityLevel);
+    }
+
+    // storyLevel 검증
+    if (data.storyLevel === null || data.storyLevel === undefined || data.storyLevel === 0) {
+      missingFields.push(fieldNames.storyLevel);
+    }
+
+    // interiorLevel 검증
+    if (data.interiorLevel === null || data.interiorLevel === undefined || data.interiorLevel === 0) {
+      missingFields.push(fieldNames.interiorLevel);
+    }
+
+    return missingFields;
+  };
+
   // 후기 작성 제출 핸들러
+  // const handleSubmit = async () => {
+  //   // 필수 데이터 검증
+  //   const missingFields = validateRequiredFields(reviewData);
+    
+  //   if (missingFields.length > 0) {
+  //     setErrorMessages(missingFields);
+  //     setErrorModalOpen(true);
+  //     return;
+  //   }
+
+  //   setIsSubmitting(true);
+  //   try {
+  //     const { uiState, ...serverData } = reviewData;
+  //     void uiState;
+
+  //     if (isEditMode) {
+  //       await putMyReviewAPI(themeData.themeId, reviewId, serverData);
+  //       console.log("[ReviewWriteModal] 후기 수정 요청 데이터:", serverData);
+  //       alert("후기가 수정되었습니다.");
+
+  //       if (onUpdated) onUpdated();
+  //     } else {
+  //       await postReviewAPI(themeData.themeId, serverData);
+  //       console.log("[ReviewWriteModal] 후기 작성 요청 데이터:", serverData);
+  //       alert("후기가 작성되었습니다.");
+  //     }
+  //     resetReview();
+  //     setReviewSection("last");
+  //   } catch (err) {
+  //     console.error("후기 전송 실패:", err);
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
   const handleSubmit = async () => {
+
+    const { uiState, ...serverData } = reviewData;
+    void uiState;
+  
     setIsSubmitting(true);
+  
     try {
-      const latestData = reviewData;
-
+      // 수정 모드
       if (isEditMode) {
-        await putMyReviewAPI(themeData.themeId, reviewId, latestData);
-        console.log("[ReviewWriteModal] 후기 수정 요청 데이터:", latestData);
-
+        await putMyReviewAPI(themeData.themeId, reviewId, serverData);
+        console.log("[ReviewWriteModal] 후기 수정 요청 데이터:", serverData);
         alert("후기가 수정되었습니다.");
-
+  
         if (onUpdated) onUpdated();
-      } else {
-        console.log("[ReviewWriteModal] 후기 작성 요청 데이터:", latestData);
-        await postReviewAPI(themeData.themeId, latestData);
-        alert("후기가 작성되었습니다.");
+        resetReview();
+        setReviewSection("last");
+        return;
       }
+  
+      // 작성 모드
+      const response = await postReviewAPI(themeData.themeId, serverData);
+  
+      if (!response.success) {
+        const rawMsg = response?.message ?? '알 수 없는 오류가 발생했습니다.';
+      
+        const serverErrors =
+          typeof rawMsg === "string" && rawMsg.includes(',')
+            ? rawMsg.split(',').map(m => m.trim())
+            : [rawMsg];
+      
+        setErrorMessages(serverErrors);
+        setErrorModalOpen(true);
+        return;
+      }
+  
+      const missingFields = validateRequiredFields(reviewData);
+  
+      if (missingFields.length > 0) {
+        setErrorMessages(missingFields);
+        setErrorModalOpen(true);
+        return;
+      }
+  
+      // ---------------------------
+      // 4) 모든 것이 정상일 때
+      // ---------------------------
+      console.log("[ReviewWriteModal] 후기 작성 요청 데이터:", serverData);
+      alert("후기가 작성되었습니다.");
       resetReview();
       setReviewSection("last");
+  
     } catch (err) {
       console.error("후기 전송 실패:", err);
-      alert("[ReviewWriteModal] 후기 전송 실패");
     } finally {
       setIsSubmitting(false);
     }
@@ -137,6 +266,18 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
           </NextBtn>
         )}
       </Wrapper>
+
+      {/* 에러 모달 */}
+      <PopUpModal
+        isOpen={errorModalOpen}
+        title="후기 작성 실패"
+        message="다음 필수 항목이 누락되었습니다."
+        messageList={errorMessages}
+        confirmText="확인"
+        showCancel={false}
+        onConfirm={() => setErrorModalOpen(false)}
+        onCancel={() => setErrorModalOpen(false)}
+      />
     </ModalWrapper>
   )
 }

@@ -22,18 +22,18 @@ export const reviewSectionState = atom({
 const defaultReviewValue = {
 
   satisfactionLevel: null,
-  review: "",
+  review: null,
   reviewComment: "",
 
   playedAt: null,
   participantList: [
     {
-      proficiency: '',
+      proficiency: null,
       remark: '',
       isOwner: true,
     },
     {
-      proficiency: '',
+      proficiency: null,
       remark: '',
       isOwner: false,
     },
@@ -47,18 +47,24 @@ const defaultReviewValue = {
   maxRecommendedHeadcount: null,
   reviewTagList: [],
 
-  lockRatio: null,
+  lockRatio: 5,
   level: null,
   levelComment: "",
   horrorLevel: null,
   horrorComment: "",
   activityLevel: null,
   activityComment: "",
-  recommendedCloth: "",
+  recommendedCloth: null,
   storyLevel: null,
   storyComment: "",
   interiorLevel: null,
-  interiorComment: ""
+  interiorComment: "",
+
+  uiState: {
+    checkedDate: false,
+    checkedHint: false,
+    checkedPeople: false,
+  },
 };
 
 // 후기 작성 데이터 상태
