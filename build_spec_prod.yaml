@@ -1,0 +1,55 @@
+version: 0.1
+component: build
+timeoutInSeconds: 1000
+shell: bash
+env:
+  exportedVariables:
+    - BUILDRUN_HASH
+
+steps:
+  - type: Command
+    name: "Define unique build tag"
+    timeoutInSeconds: 140
+    command: |
+      echo "OCI_BUILD_RUN_ID: ${OCI_BUILD_RUN_ID}"
+      export BUILDRUN_HASH=`echo ${OCI_BUILD_RUN_ID} | rev | cut -c 1-7`
+      echo "BUILDRUN_HASH: " $BUILDRUN_HASH
+  
+  - type: Command
+    name: "Install Nodejs"
+    command: |
+      sudo yum install -y oracle-nodejs-release-el7 oracle-release-el7
+      echo "Installation Complete..."
+  
+  - type: Command
+    name: "Create .env.production"
+    command: |
+      echo "Creating .env.production file..."
+      echo "Parameters check:"
+      echo "VITE_GOOGLE_MAPS_API_KEY=${VITE_GOOGLE_MAPS_API_KEY}"
+      echo "VITE_SERVER_URL_API=${VITE_SERVER_URL_API}"
+      echo ""
+      echo "VITE_GOOGLE_MAPS_API_KEY=${VITE_GOOGLE_MAPS_API_KEY}" > .env.production
+      echo "VITE_SERVER_URL_API=${VITE_SERVER_URL_API}" >> .env.production
+      echo "=== .env.production content ==="
+      cat .env.production
+      echo "================================"
+  
+  - type: Command
+    name: "Frontend build"
+    command: |
+      npm install
+      npm run build
+      echo "Build Done..."
+  
+  - type: Command
+    name: "Zip build files"
+    command: |
+      cd dist
+      zip -r build.zip ./*
+      echo "Zip complete"
+
+outputArtifacts:
+  - name: prod-frontend-artifact  # dev와 다른 artifact 이름
+    type: BINARY
+    location: dist/build.zip
