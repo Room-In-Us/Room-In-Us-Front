@@ -12,6 +12,8 @@ import { formatNumberWithCommas } from '../utils/formatUtils';
 import { levelTextConversion, genreListConversion, satisfactionConversion } from '../utils/dataUtils';
 import useDevice from '../hooks/useDevice';
 import { postThemeLikeAPI, deleteThemeLikeAPI } from '../../features/like/api/themeLikeAPI';
+import PopUpModal from './PopUpModal';
+import useAuthSession from '../hooks/useAuthSession';
 
 function ContentCard({ data, headCount, type, onUnlike }) {
   const {
@@ -33,6 +35,10 @@ function ContentCard({ data, headCount, type, onUnlike }) {
   // state 관리
   const [imageUrl, setImageUrl] = useState(img);
   const [isHeartActive, setIsHeartActive] = useState(isLiked);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  // 로그인 상태 검증
+  const isLoggedIn = useAuthSession();
 
   // navigate
   const navigate = useNavigate();
@@ -85,6 +91,11 @@ function ContentCard({ data, headCount, type, onUnlike }) {
                 <HeartWrapper
                   onClick={(e) => {
                     e.stopPropagation();
+                    if (!isLoggedIn) {
+                      setIsLoginModalOpen(true);
+                      return;
+                    }
+
                     const next = !isHeartActive;
                     setIsHeartActive(next);
                   
@@ -154,6 +165,10 @@ function ContentCard({ data, headCount, type, onUnlike }) {
                 <HeartWrapper
                   onClick={(e) => {
                     e.stopPropagation();
+                    if (!isLoggedIn) {
+                      setIsLoginModalOpen(true);
+                      return;
+                    }
                     const next = !isHeartActive;
                     setIsHeartActive(next);
                   
@@ -178,6 +193,18 @@ function ContentCard({ data, headCount, type, onUnlike }) {
             )}
         </PriceSection>
       </ItemWrapper>
+
+      {/* 로그인 모달 */}
+      <PopUpModal
+        isOpen={isLoginModalOpen}
+        title=""
+        message="로그인 후 사용할 수 있는 기능입니다."
+        subMessage="로그인하시겠습니까?"
+        confirmText="확인"
+        cancelText="취소"
+        onConfirm={() => navigate('/login')}
+        onCancel={() => setIsLoginModalOpen(false)}
+      />
     </ContentWrapper>
   )
 }

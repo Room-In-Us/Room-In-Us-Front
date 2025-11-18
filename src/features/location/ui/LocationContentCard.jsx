@@ -11,6 +11,8 @@ import HeartIcon3 from '../../../shared/assets/icons/common/heart/heart_active.s
 import { formatNumberWithCommas } from '../../../shared/utils/formatUtils';
 import { levelTextConversion, genreListConversion, satisfactionConversion } from '../../../shared/utils/dataUtils';
 import { postThemeLikeAPI, deleteThemeLikeAPI } from '../../../features/like/api/themeLikeAPI';
+import PopUpModal from '../../../shared/components/PopUpModal';
+import useAuthSession from '../../../shared/hooks/useAuthSession';
 
 function LocationContentCard({ data, headCount, type }) {
   const {
@@ -31,6 +33,10 @@ function LocationContentCard({ data, headCount, type }) {
   // state 관리
   const [imageUrl, setImageUrl] = useState(img);
   const [isHeartActive, setIsHeartActive] = useState(isLiked);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  
+  // 로그인 상태 검증
+  const isLoggedIn = useAuthSession();
   
   // navigate
   const navigate = useNavigate();
@@ -120,6 +126,10 @@ function LocationContentCard({ data, headCount, type }) {
           <HeartWrapper
             onClick={(e) => {
               e.stopPropagation();
+              if (!isLoggedIn) {
+                setIsLoginModalOpen(true);
+                return;
+              }
               setIsHeartActive(!isHeartActive);
               if (isHeartActive) {
                 deleteThemeLikeAPI(themeId);
@@ -139,6 +149,18 @@ function LocationContentCard({ data, headCount, type }) {
           </HeartWrapper>
         </PriceSection>
       </ItemWrapper>
+
+      {/* 로그인 모달 */}
+      <PopUpModal
+        isOpen={isLoginModalOpen}
+        title=""
+        message="로그인 후 사용할 수 있는 기능입니다."
+        subMessage="로그인하시겠습니까?"
+        confirmText="확인"
+        cancelText="취소"
+        onConfirm={() => navigate('/login')}
+        onCancel={() => setIsLoginModalOpen(false)}
+      />
     </ContentWrapper>
   )
 }

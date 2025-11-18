@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components"
 import Caution from '../assets/icons/common/cautionIcon.svg?react';
 import Cancel from '../assets/icons/common/cancelIconColor.svg?react';
+import { createPortal } from "react-dom";
 
 export default function PopUpModal({
   isOpen,
@@ -19,7 +20,7 @@ export default function PopUpModal({
   // subMessage가 줄바꿈으로 구분된 문자열인 경우 배열로 변환
   const displayList = messageList || (subMessage && subMessage.includes('\n') ? subMessage.split('\n') : null);
 
-  return (
+  const modalNode = (
     <Backdrop onClick={(e) => e.stopPropagation()}>
       <Wrapper $hasList={!!displayList}>
         <PopUpHeader>
@@ -55,8 +56,10 @@ export default function PopUpModal({
         </PopUpBox>
       </Wrapper>
     </Backdrop>
-    
   )
+
+  // 포탈로 body에 직접 렌더링
+  return createPortal(modalNode, document.body);
 }
 
 const Backdrop = styled.div`
@@ -69,7 +72,7 @@ const Backdrop = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 4000;
+  z-index: 9999;
   cursor: default;
 `;
 
