@@ -25,6 +25,10 @@ function StoreCard() {
   const [, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
   const [storeId,] = useRecoilState(locationStoreId);
   const [storeInfo, setStoreInfo] = useState([]);
+  // 복사 툴팁 상태 관리
+  const [showAddressTooltip, setShowAddressTooltip] = useState(false);
+  const [showUrlTooltip, setShowUrlTooltip] = useState(false);
+  const [showContactTooltip, setShowContactTooltip] = useState(false);
 
   // 지역 필터 관련 상태
   // const [regions, setRegions] = useState([]);
@@ -86,13 +90,40 @@ function StoreCard() {
     fetchData();
   }, [storeId, headCount, selectedSort]);
 
-  // 상세 정보 복사 핸들러
-  const handleInfoCopy = async (data) => {
-    try {
-      await navigator.clipboard.writeText(data);
-    } catch (err) {
-      console.log(err);
-    }
+  // 상세 정보 복사 기능
+  const showTooltipWithTimer = (setFn) => {
+    setFn(true);
+    setTimeout(() => setFn(false), 1500);
+  };
+
+  const handleAddressCopy = (data) => {
+    navigator.clipboard.writeText(data)
+      .then(() => {
+        showTooltipWithTimer(setShowAddressTooltip);
+      })
+      .catch((err) => {
+        console.error('주소 복사 실패:', err);
+      });
+  };
+
+  const handleUrlCopy = (data) => {
+    navigator.clipboard.writeText(data)
+      .then(() => {
+        showTooltipWithTimer(setShowUrlTooltip);
+      })
+      .catch((err) => {
+        console.error('URL 복사 실패:', err);
+      });
+  };
+
+  const handleContactCopy = (data) => {
+    navigator.clipboard.writeText(data)
+      .then(() => {
+        showTooltipWithTimer(setShowContactTooltip);
+      })
+      .catch((err) => {
+        console.error('연락처 복사 실패:', err);
+      });
   };
 
   // 필터 적용 함수 수정
@@ -253,7 +284,10 @@ function StoreCard() {
           <DescriptionList>
             <StyledLocationIcon/>
             <DescriptionText>{storeInfo.storeAddress}</DescriptionText>
-            <StyledCopyIcon onClick={() => handleInfoCopy(storeInfo.storeAddress)}/>
+            <CopyWrapper>
+              <StyledCopyIcon onClick={() => handleAddressCopy(storeInfo.storeAddress)}></StyledCopyIcon>
+              {showAddressTooltip && <Tooltip>주소 복사 완료!</Tooltip>}
+            </CopyWrapper>
           </DescriptionList>
           <DescriptionList>
             <StyledLinkIcon/>
@@ -262,12 +296,18 @@ function StoreCard() {
               target="_blank"
               rel="noopener noreferrer"
             >{storeInfo.storeWebsiteUrl}</DescriptionText>
-            <StyledCopyIcon onClick={() => handleInfoCopy(storeInfo.storeWebsiteUrl)}/>
+            <CopyWrapper>
+              <StyledCopyIcon onClick={() => handleUrlCopy(storeInfo.storeWebsiteUrl)}/>
+              {showUrlTooltip && <Tooltip>URL 복사 완료!</Tooltip>}
+            </CopyWrapper>
           </DescriptionList>
           <DescriptionList>
             <StyledTelIcon/>
             <DescriptionText>{storeInfo.storeContact}</DescriptionText>
-            <StyledCopyIcon onClick={() => handleInfoCopy(storeInfo.storeContact)}/>          
+            <CopyWrapper>
+              <StyledCopyIcon onClick={() => handleContactCopy(storeInfo.storeContact)}/>          
+              {showContactTooltip && <Tooltip>번호 복사 완료!</Tooltip>}
+            </CopyWrapper>
           </DescriptionList>
         </DescriptionWrapper>
       </TitleWrapper>
@@ -556,5 +596,75 @@ const LocationFilterText = styled.div`
 
   @media (max-width: 768px) {
     font-size: 0.75rem;
+  }
+`;
+
+const CopyWrapper = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Tooltip = styled.div`
+  width: 5.625rem;
+  height: 1.625rem;
+  position: absolute;
+  bottom: 105%;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-shrink: 0;
+
+  /* 배경/스트로크/라운드 */
+  background: var(--RIU_Monochrome-10, #F9F9FB);
+  border: 1px solid var(--RIU_Primary-100, #718FF2);
+  border-radius: 0.25rem;
+
+  /* 내용 정렬 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* 텍스트 스타일 */
+  color: var(--RIU_Primary-100, #718FF2);
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: normal;
+  z-index: 20;
+
+  /* 등장/퇴장 애니메이션 (원 코드 유지) */
+  animation: fadeInOut 1.5s ease forwards;
+
+  /* 꼬리: 스트로크(바깥) */
+  &::before {
+    border-width: 0.5rem 0.3125rem 0 0.3125rem;
+    border-style: solid;
+    border-color: var(--RIU_Primary-100, #718FF2) transparent transparent transparent;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    content: "";
+  }
+
+  /* 꼬리: 필(안쪽) */
+  &::after {
+    border-width: 0.5rem 0.3125rem 0 0.3125rem;
+    border-style: solid;
+    border-color: var(--RIU_Monochrome-10, #F9F9FB) transparent transparent transparent;
+    position: absolute;
+    top: calc(100% - 1px);
+    left: 50%;
+    transform: translateX(-50%);
+    content: "";
+  }
+
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, 4px); }
+    15% { opacity: 1; transform: translate(-50%, 0); }
+    85% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, 4px); }
   }
 `;
