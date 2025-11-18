@@ -161,12 +161,14 @@ function Header() {
           <SectionWrapper>
             {/* 검색 */}
             <SearchInputWrapper>
-              <SearchInput
-                type="header"
-                keyword={headerKeyword}
-                setKeyword={setHeaderKeyword}
-                onSearch={handleHeaderSearch}
-              />
+              {location.pathname !== '/search' && (
+                <SearchInput
+                  type="header"
+                  keyword={headerKeyword}
+                  setKeyword={setHeaderKeyword}
+                  onSearch={handleHeaderSearch}
+                />
+              )}
             </SearchInputWrapper>
             {/* 로그인, 프로필 */}
             {isLoggedIn ? (
