@@ -191,10 +191,10 @@ function ReviewInfoSection({ themeId, reviewId }) {
       />
 
       {/* 신고 영역 */}
-      <ReportWrapper>
+      {/* <ReportWrapper>
         <ReportText>이 후기에 문제가 있나요?</ReportText>
         <ReportButton>후기 신고하기</ReportButton>
-      </ReportWrapper>
+      </ReportWrapper> */}
     </ComponentWrapper>
   )
 }
@@ -520,41 +520,41 @@ const EscapeTagText = styled.div`
   }
 `;
 
-const ReportWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
+// const ReportWrapper = styled.div`
+//   width: 100%;
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+// `;
 
-const ReportText = styled.div`
-  color: var(--RIU_Monochrome-400, #616277);
-  font-family: 'Pretendard-Medium';
-  font-size: 0.875rem;
-  line-height: 150%;
+// const ReportText = styled.div`
+//   color: var(--RIU_Monochrome-400, #616277);
+//   font-family: 'Pretendard-Medium';
+//   font-size: 0.875rem;
+//   line-height: 150%;
 
-  @media (max-width: 768px) {
-    font-size: 0.75rem;
-  }
-`;
+//   @media (max-width: 768px) {
+//     font-size: 0.75rem;
+//   }
+// `;
 
-const ReportButton = styled.div`
-  color: var(--RIU_Primary-100, #718FF2);
-  font-family: 'Pretendard-Bold';
-  font-size: 0.875rem;
-  line-height: 150%;
-  text-decoration-line: underline;
-  text-decoration-style: solid;
-  text-decoration-skip-ink: auto;
-  text-decoration-thickness: auto;
-  text-underline-offset: auto;
-  text-underline-position: from-font;
-  cursor: pointer;
+// const ReportButton = styled.div`
+//   color: var(--RIU_Primary-100, #718FF2);
+//   font-family: 'Pretendard-Bold';
+//   font-size: 0.875rem;
+//   line-height: 150%;
+//   text-decoration-line: underline;
+//   text-decoration-style: solid;
+//   text-decoration-skip-ink: auto;
+//   text-decoration-thickness: auto;
+//   text-underline-offset: auto;
+//   text-underline-position: from-font;
+//   cursor: pointer;
 
-  @media (max-width: 768px) {
-    font-size: 0.75rem;
-  }
-`;
+//   @media (max-width: 768px) {
+//     font-size: 0.75rem;
+//   }
+// `;
 
 const TitleWrapper = styled.div`
   display: flex;
