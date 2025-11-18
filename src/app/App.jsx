@@ -23,9 +23,11 @@ import SerachPage from '../pages/SerachPage';
 import ReviewDetailPage from '../pages/ReviewDetailPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import DatePickerGlobalStyle from '../shared/styles/DatePickerGlobalStyle';
+import useAuthSession from '../shared/hooks/useAuthSession';
 
 function App() {
   const setMapsLoaded = useSetRecoilState(mapsLoadedState);
+  const isLoggedIn = useAuthSession();
 
   return (
     <LoadScript
@@ -67,11 +69,11 @@ function App() {
           <Route path="/theme/:themeId/review/:reviewId" element={<ReviewDetailPage />} />
 
           {/* 마이 페이지 */}
-          <Route path="/mypage" element={<MyPage />} />
-          <Route path="/mypage/preferences" element={<PreferencesPage />} />
-          <Route path="/mypage/reservations" element={<ReservationsPage />} />
-          <Route path="/mypage/favorites" element={<FavoritesPage />} />
-          <Route path="/mypage/reviews" element={<ReviewsPage />} />
+          <Route path="/mypage" element={isLoggedIn ? <MyPage /> : <NotFoundPage />} />
+          <Route path="/mypage/preferences" element={isLoggedIn ? <PreferencesPage /> : <NotFoundPage />} />
+          <Route path="/mypage/reservations" element={isLoggedIn ? <ReservationsPage /> : <NotFoundPage />} />
+          <Route path="/mypage/favorites" element={isLoggedIn ? <FavoritesPage /> : <NotFoundPage />} />
+          <Route path="/mypage/reviews" element={isLoggedIn ? <ReviewsPage /> : <NotFoundPage />} />
 
           {/* 성향조사 페이지 */}
           <Route path="/survey" element={<SurveyPage />} />
