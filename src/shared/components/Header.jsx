@@ -161,12 +161,14 @@ function Header() {
           <SectionWrapper>
             {/* 검색 */}
             <SearchInputWrapper>
-              <SearchInput
-                type="header"
-                keyword={headerKeyword}
-                setKeyword={setHeaderKeyword}
-                onSearch={handleHeaderSearch}
-              />
+              {location.pathname !== '/search' && (
+                <SearchInput
+                  type="header"
+                  keyword={headerKeyword}
+                  setKeyword={setHeaderKeyword}
+                  onSearch={handleHeaderSearch}
+                />
+              )}
             </SearchInputWrapper>
             {/* 로그인, 프로필 */}
             {isLoggedIn ? (
@@ -232,9 +234,11 @@ function Header() {
                 >장르 검색</MobileButton>
               </MobileButtonWrapper>
               <ProfileButtonWrapper>
-                <ProfileButton onClick={() => handleNavigation('/mypage')}>마이페이지</ProfileButton>
                 {isLoggedIn ? (
-                  <ProfileButton onClick={handleLogout}>로그아웃</ProfileButton>
+                  <>
+                    <ProfileButton onClick={() => handleNavigation('/mypage')}>마이페이지</ProfileButton>
+                    <ProfileButton onClick={handleLogout}>로그아웃</ProfileButton>
+                  </>
                 ) : (
                   <ProfileButton onClick={() => handleNavigation('/login')}>로그인</ProfileButton>
                 )}
