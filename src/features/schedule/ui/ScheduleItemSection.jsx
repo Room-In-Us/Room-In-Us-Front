@@ -197,7 +197,7 @@ export default function ScheduleItemSection({ themeId, isModal, onStateChange })
           data={{ ...selectedTheme, reservedAt }}
           setSelectedTheme={setSelectedTheme} 
           setSelectedThemeId={setSelectedThemeId}
-          hideTrash={mode === "edit"}
+          hideTrash={false}
         />
       ) : (
         <ReservedCard 

@@ -190,7 +190,8 @@ const ThemeItemBox = styled.div`
 const ThemeItemBox2 = styled.div`
   display: flex;
   width: 100%;
-  height: 100%;
+  height: 9rem;
+  flex: 1 0 0;
   flex-direction: column;
   justify-content: center;
   align-items: center;
