@@ -9,12 +9,14 @@ import leftArrow from '../../../shared/assets/icons/common/arrow/leftArrow.svg?r
 import Clock from "../../../shared/assets/icons/reviewWrite/clock.svg?react";
 import DropDown from "../../../shared/assets/icons/common/arrow/downArrow.svg?react";
 
-export default function ScheduleTimePicker({ onTimeChange }) {
+export default function ScheduleTimePicker({ onTimeChange, initialTime }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [value, setValue] = React.useState(dayjs());
+  const [value, setValue] = React.useState(
+    initialTime ? dayjs(initialTime, "HH:mm:ss") : dayjs()
+  );
   const [step, setStep] = React.useState("hour");
   const [tempHour, setTempHour] = React.useState(value.hour());
-  const [isSelected, setIsSelected] = React.useState(false);
+  const [isSelected, setIsSelected] = React.useState(!!initialTime);
 
   const handleBoxClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -40,6 +42,13 @@ export default function ScheduleTimePicker({ onTimeChange }) {
     onTimeChange(finalValue.format("HH:mm:ss"));
     handleClose();
   };
+
+  React.useEffect(() => {
+    if (initialTime) {
+      setValue(dayjs(initialTime, "HH:mm:ss"));
+      setIsSelected(true);
+    }
+  }, [initialTime]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>

@@ -35,7 +35,7 @@ const CustomDateInput = React.forwardRef(({ disabled, value, onToggle }, ref) =>
 // eslint 에러 방지
 CustomDateInput.displayName = "CustomDateInput";
 
-export default function VisitDatePicker({ disabled, themeId, onChange }) {
+export default function VisitDatePicker({ disabled, themeId, onChange, value }) {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -76,6 +76,12 @@ export default function VisitDatePicker({ disabled, themeId, onChange }) {
     }
   };
 
+  const selectedDate = value
+    ? new Date(value)   // 일정관리에서 넘겨준 날짜
+    : review.playedAt
+      ? parse(review.playedAt, 'yyyy-MM-dd', new Date())   // 후기용
+      : null;
+
   return (
     <StyledDatePickerWrapper>
       <StyledDatePicker
@@ -84,7 +90,7 @@ export default function VisitDatePicker({ disabled, themeId, onChange }) {
         onClickOutside={handleClose}
         disabled={disabled}
         calendarClassName={isClosing ? "fade-out" : "fade-in"}
-        selected={review.playedAt ? parse(review.playedAt, 'yyyy-MM-dd', new Date()) : null}
+        selected={selectedDate}
         onChange={handleChange}
         locale={ko}
         dateFormat="yyyy.MM.dd"
