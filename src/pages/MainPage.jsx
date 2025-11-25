@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import HearoSection from '../features/main/ui/HearoSection';
+import HeroSection from '../features/main/ui/HeroSection';
 import LocationSection from '../features/main/ui/LocationSection';
 import LevelSection from '../features/main/ui/LevelSection';
 import GenreSection from '../features/main/ui/GenreSection';
@@ -8,7 +8,7 @@ function MainPage() {
   return (
     <PageWrapper>
       {/* 히어로 영역 */}
-      <HearoSection />
+      <HeroSection />
       
       {/* 지역 영역 */}
       <LocationSection/>
