@@ -15,9 +15,7 @@ export default function useAuthSession() {
     }
   
     try {
-      const res = await api.get('members', {
-        validateStatus: () => true,
-      });
+      const res = await api.get('members');
       setIsLoggedIn(res.status === 200);
     } catch {
       setIsLoggedIn(false);
@@ -28,11 +26,16 @@ export default function useAuthSession() {
     check();
     const onFocus = () => check();
     const onVis = () => document.visibilityState === 'visible' && check();
+    const onRefresh = () => check();
+  
     window.addEventListener('focus', onFocus);
     document.addEventListener('visibilitychange', onVis);
+    window.addEventListener('accessTokenRefreshed', onRefresh);
+  
     return () => {
       window.removeEventListener('focus', onFocus);
       document.removeEventListener('visibilitychange', onVis);
+      window.removeEventListener('accessTokenRefreshed', onRefresh);
     };
   }, []);
 

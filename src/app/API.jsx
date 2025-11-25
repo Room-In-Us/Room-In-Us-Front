@@ -72,6 +72,8 @@ api.interceptors.response.use(
         if (!newToken) throw new Error('no accessToken in refresh response');
 
         localStorage.setItem('accessToken', newToken);
+        window.dispatchEvent(new Event('accessTokenRefreshed'));
+
         queue.forEach((cb) => cb(newToken));
         queue = [];
 
