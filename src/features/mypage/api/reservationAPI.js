@@ -17,6 +17,22 @@ export const getMyReservationsAPI = async (year, month) => {
   }
 }
 
+export const addReservationsAPI = async (themeId, reservedAt) => {
+  try {
+    const params = {
+      reservedAt,
+    };
+
+    const response = await api.post(`themes/${themeId}/reservations`, params);
+    console.log('방탈출 테마 예약 생성 api 요청 성공: ', response);
+
+    return response.data;
+  } catch (error) {
+    console.error('방탈출 테마 예약 생성 api 요청 실패: ', error);
+    throw error;
+  }
+}
+
 export const deleteReservationAPI = async (themeId, reservationId) => {
   try {
     const params = {
@@ -34,9 +50,9 @@ export const deleteReservationAPI = async (themeId, reservationId) => {
   }
 }
 
-export const patchReservationAPI = async (themeId, reservationId, reservedAt) => {
+export const patchReservationAPI = async (themeId, reservationId, reservedAt, newThemeId) => {
   try {
-    const body = { reservedAt };
+    const body = { themeId: newThemeId, reservedAt };
     const response = await api.patch(`themes/${themeId}/reservations/${reservationId}`, body);
     console.log('예약한 방탈출 목록 수정 성공: ', response);
 

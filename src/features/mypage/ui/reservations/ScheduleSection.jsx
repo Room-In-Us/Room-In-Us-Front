@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { calendarMonthState, reservationListState } from "../../model/reservationAtom";
-import { format } from "date-fns";
+import { addMonths, format, subMonths } from "date-fns";
 import { getMyReservationsAPI } from "../../api/reservationAPI";
 import ReservedCard from "./ReservedCard";
 import Pen from '../../../../shared/assets/icons/myPage/pen.svg?react';
@@ -19,23 +19,33 @@ export default function ScheduleSection() {
   const reservations = reservationsMap[yearMonth] || [];
 
   const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
-  // const isModalOpen = useRecoilValue(scheduleModalState);
   const modalState = useRecoilValue(scheduleModalState);
 
   useEffect(() => {
-    const year = format(currentMonth, 'yyyy');
-    const month = format(currentMonth, 'MM');
+    const load = async () => {
+      const prev = subMonths(currentMonth, 1);
+      const next = addMonths(currentMonth, 1);
 
-    getMyReservationsAPI(year, month).then((data) => {
-      const allDates = data?.themeReservationList || {};
-      const allReservations = Object.values(allDates).flat();
+      const targets = [prev, currentMonth, next];
 
-      setReservationList(prev => ({
-        ...prev,
-        [yearMonth]: allReservations,
-      }));
-    });
-  }, [currentMonth, setReservationList, yearMonth]);
+      for (const date of targets) {
+        const y = format(date, "yyyy");
+        const m = format(date, "MM");
+        const ym = format(date, "yyyy-MM");
+
+        const data = await getMyReservationsAPI(y, m);
+        const allDates = data?.themeReservationList || {};
+        const allReservations = Object.values(allDates).flat();
+
+        setReservationList((prev) => ({
+          ...prev,
+          [ym]: allReservations,
+        }));
+      }
+    };
+
+    load();
+  }, [currentMonth, setReservationList]);
 
   const grouped = reservations.reduce((acc, item) => {
     const date = format(new Date(item.reservedAt), 'yyyy년 M월 d일');

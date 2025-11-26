@@ -130,10 +130,14 @@ export default function ScheduleItemSection({ themeId, isModal, onStateChange })
 
   useEffect(() => {
     if (mode === "edit" && reservation) {
+
+      const parsed = dayjs(reservation.reservedAt, "YYYY.MM.DD HH:mm");
+      const iso = parsed.format("YYYY-MM-DDTHH:mm:ss");
+
+      setVisitDate(parsed);
+      setReservedAt(iso);
       setSelectedTheme(reservation);
       setSelectedThemeId(reservation.themeId);
-      setReservedAt(reservation.reservedAt); 
-      setVisitDate(dayjs(reservation.reservedAt));
     }
   }, [mode, reservation]);
 
@@ -182,11 +186,14 @@ export default function ScheduleItemSection({ themeId, isModal, onStateChange })
       <DropDownWrapper>
 
         <HalfBox>
-          <VisitDatePicker onChange={handleDateChange} />
+          <VisitDatePicker value={visitDate} onChange={handleDateChange} />
         </HalfBox>
 
         <HalfBox>
-          <ScheduleTimePicker onTimeChange={handleTimeChange} />
+          <ScheduleTimePicker 
+            onTimeChange={handleTimeChange} 
+            initialTime={reservedAt ? dayjs(reservedAt).format("HH:mm:ss") : null}
+          />
         </HalfBox>
 
       </DropDownWrapper>
@@ -197,7 +204,7 @@ export default function ScheduleItemSection({ themeId, isModal, onStateChange })
           data={{ ...selectedTheme, reservedAt }}
           setSelectedTheme={setSelectedTheme} 
           setSelectedThemeId={setSelectedThemeId}
-          hideTrash={mode === "edit"}
+          hideTrash={false}
         />
       ) : (
         <ReservedCard 

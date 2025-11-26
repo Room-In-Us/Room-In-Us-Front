@@ -5,10 +5,9 @@ import CloseIcon from "../../../shared/assets/icons/reviewWrite/closeicon.svg?re
 import Pen from '../../../shared/assets/icons/myPage/pen.svg?react';
 import ScheduleItemSection from './ScheduleItemSection';
 import { useCallback, useState } from 'react';
-import { addReservationsAPI } from '../api/addReservationAPI';
 import { format } from 'date-fns';
 import { calendarMonthState, reservationListState } from '../../mypage/model/reservationAtom';
-import { deleteReservationAPI, getMyReservationsAPI, patchReservationAPI } from '../../mypage/api/reservationAPI';
+import { addReservationsAPI, deleteReservationAPI, getMyReservationsAPI, patchReservationAPI } from '../../mypage/api/reservationAPI';
 import PopUpModal from '../../../shared/components/PopUpModal';
 
 export default function ScheduleModal({themeId}) {
@@ -64,7 +63,7 @@ export default function ScheduleModal({themeId}) {
     try {
       if (mode === "edit") {
         if (!reservation) return;
-        await patchReservationAPI(reservation.themeId, reservation.themeReservationId, reservedAt);
+        await patchReservationAPI(reservation.themeId, reservation.themeReservationId, reservedAt, selectedThemeId);
         alert("예약이 수정되었습니다.");
       } else {
         await addReservationsAPI(selectedThemeId, reservedAt);
