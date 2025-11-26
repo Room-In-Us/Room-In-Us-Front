@@ -59,7 +59,7 @@ export default function CalendarSection() {
         
         days.push(
           <DateCell
-            key={cloneDay}
+            key={format(cloneDay, 'yyyy.MM.dd')}
             isCurrentMonth={isSameMonth(cloneDay, monthStart)}
           >
             <DateNumber hasEvent={count > 0}>{format(cloneDay, 'd')}</DateNumber>
@@ -77,7 +77,11 @@ export default function CalendarSection() {
       days = [];
     }
 
-    return <DateGrid>{rows}</DateGrid>;
+    return (
+    <DateGrid key={JSON.stringify(dateCountMap)}>
+      {rows}
+    </DateGrid>
+    );
   };
 
   return (
