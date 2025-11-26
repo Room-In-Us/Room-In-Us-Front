@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
@@ -217,7 +217,7 @@ ContentCard.propTypes = {
   onUnlike: PropTypes.func,
 };
 
-export default ContentCard;
+export default memo(ContentCard);
 
 // CSS
 const ContentWrapper = styled.div`

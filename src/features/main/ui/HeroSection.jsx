@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import NoiseFilter from '../../../shared/assets/icons/main/noiseFilter.svg';
 import { useState } from "react";
 
-function HearoSection() {
+function HeroSection() {
   const navigate = useNavigate();
 
   const [keyword, setKeyword] = useState('');
@@ -19,7 +19,7 @@ function HearoSection() {
   };
 
   return (
-    <HearoWrapper>
+    <HeroWrapper>
       {/* 로고 영역 */}
       <StyledTextLogo/>
 
@@ -66,14 +66,14 @@ function HearoSection() {
           </StyledButton>
         </ButtonWrapper>
       </SearchWrapper>
-    </HearoWrapper>
+    </HeroWrapper>
   )
 }
 
-export default HearoSection;
+export default HeroSection;
 
 // CSS
-const HearoWrapper = styled.div`
+const HeroWrapper = styled.div`
   width: 100vw;
   height: 31.25rem;
   display: flex;

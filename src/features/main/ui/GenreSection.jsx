@@ -17,11 +17,13 @@ import { Pagination } from 'swiper/modules';
 import "swiper/css";
 import "swiper/css/pagination";
 import { getGenreListAPI } from "../../genre/api/genreAPI";
+import Loading from "../../../shared/components/Loading";
 
 function GenreSection() {
   // state 관리
   const [activeGenre, setActiveGenre] = useState('SENTIMENTAL');
   const [themeList, setThemeList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // navigate
   const navigate = useNavigate();
@@ -40,12 +42,15 @@ function GenreSection() {
   // 숙련도 목록 조회
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const response = await getGenreListAPI(activeGenre, headCount, 1, 8);
         console.log('장르 기반 방탈출 테마 목록: ', response.contents);
         setThemeList(response.contents);
       } catch (error) {
         console.error('장르 기반 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -89,36 +94,44 @@ function GenreSection() {
       </LevelWrapper>
 
       {/* 콘텐츠 카드 영역 */}
-      { isDesktop && (
+      {isLoading && themeList.length === 0 ? (
         <ListWrapper>
-          {themeList.map((items) => (
-            <ContentCard key={items.id} data={items} headCount={headCount} type="home"/>
-          ))}
+          <Loading />
         </ListWrapper>
-      )}
-      { !isDesktop && (
-        <StyledSwiper
-          isMobile={isMobile}
-          pagination={true} 
-          modules={[Pagination]}
-          spaceBetween={isMobile ? 30 : 70} 
-          slidesPerView={1}
-        >
-          <StyledSwiperSlide1>
+      ) : (
+        <>
+          { isDesktop && (
             <ListWrapper>
-              {themeList.slice(0, 4).map((items) => (
+              {themeList.map((items) => (
                 <ContentCard key={items.id} data={items} headCount={headCount} type="home"/>
               ))}
             </ListWrapper>
-          </StyledSwiperSlide1>
-          <StyledSwiperSlide2>
-            <ListWrapper>
-              {themeList.slice(4, 8).map((items) => (
-                <ContentCard key={items.id} data={items} headCount={headCount} type="home"/>
-              ))}
-            </ListWrapper>
-          </StyledSwiperSlide2>
-        </StyledSwiper>
+          )}
+          { !isDesktop && (
+            <StyledSwiper
+              isMobile={isMobile}
+              pagination={true} 
+              modules={[Pagination]}
+              spaceBetween={isMobile ? 30 : 70} 
+              slidesPerView={1}
+            >
+              <StyledSwiperSlide1>
+                <ListWrapper>
+                  {themeList.slice(0, 4).map((items) => (
+                    <ContentCard key={items.id} data={items} headCount={headCount} type="home"/>
+                  ))}
+                </ListWrapper>
+              </StyledSwiperSlide1>
+              <StyledSwiperSlide2>
+                <ListWrapper>
+                  {themeList.slice(4, 8).map((items) => (
+                    <ContentCard key={items.id} data={items} headCount={headCount} type="home"/>
+                  ))}
+                </ListWrapper>
+              </StyledSwiperSlide2>
+            </StyledSwiper>
+          )}
+        </>
       )}
     </SectionWrapper>
   )
