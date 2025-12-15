@@ -112,28 +112,28 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
     return missingFields;
   };
 
-const parseServerErrors = (rawMsg) => {
-  const messages = [];
-  const EXCLUDE_PHRASES = [
-    "0.5 단위로 입력해 주세요"
-  ];
+  const parseServerErrors = (rawMsg) => {
+    const messages = [];
+    const EXCLUDE_PHRASES = [
+      "0.5 단위로 입력해 주세요"
+    ];
 
-  rawMsg
-    .split("\n")
-    .map(l => l.trim())
-    .filter(Boolean)
-    .forEach(line => {
-      const [, message] = line.split(":").map(s => s.trim());
-      if (!message) return;
+    rawMsg
+      .split("\n")
+      .map(l => l.trim())
+      .filter(Boolean)
+      .forEach(line => {
+        const [, message] = line.split(":").map(s => s.trim());
+        if (!message) return;
 
-      // 제외 문구 필터링
-      if (EXCLUDE_PHRASES.some(p => message.includes(p))) return;
+        // 제외 문구 필터링
+        if (EXCLUDE_PHRASES.some(p => message.includes(p))) return;
 
-      messages.push(message);
-    });
+        messages.push(message);
+      });
 
-  return messages;
-};
+    return messages;
+  };
 
 
   const handleSubmit = async () => {
@@ -176,7 +176,6 @@ const parseServerErrors = (rawMsg) => {
       }
   
       console.log("[ReviewWriteModal] 후기 작성 요청 데이터:", serverData);
-      alert("후기가 작성되었습니다.");
       resetReview();
       setReviewSection("last");
   
