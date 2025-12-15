@@ -48,9 +48,7 @@ export default function SearchSection() {
   }, [keywordFromState]);
 
   useEffect(() => {
-    if (keyword) {
-      handleSearch();
-    }
+    handleSearch();
   }, [keyword, handleSearch]);
 
   return (
