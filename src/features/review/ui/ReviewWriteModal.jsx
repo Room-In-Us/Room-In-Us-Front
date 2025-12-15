@@ -192,7 +192,7 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
       <ModalHeader>
         <Wrap>
           <Btn src={LikeIcon} />
-          <ModalTitle>후기 작성하기</ModalTitle>
+          <ModalTitle>{isEditMode ? "후기 수정하기" : "후기 작성하기"}</ModalTitle>
         </Wrap>
         <CloseBtn src={CloseIcon} onClick={handleClose} />
       </ModalHeader>
