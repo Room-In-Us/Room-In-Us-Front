@@ -128,7 +128,7 @@ function Header() {
     <>
       {/* PC, 태블릿 버전 */}
       {(isDesktop || isTablet) && (
-        <HeaderWrapper hasScrolled={hasScrolled}>
+        <HeaderWrapper hasScrolled={hasScrolled} isLocation={location.pathname === '/location'}>
           <SectionWrapper>
             <StyledLogoIcon onClick={() => handleNavigation('/')} location={location}/>
             <ButtonWrapper isDesktop={isDesktop} isTablet={isTablet}>
