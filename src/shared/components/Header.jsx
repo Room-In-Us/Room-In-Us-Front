@@ -275,8 +275,10 @@ const HeaderWrapper = styled.div`
   align-items: center;
   gap: 1.25rem;
   z-index: 1900;
-  background: ${({ hasScrolled }) => (hasScrolled ? 'rgba(255, 255, 255, 0.3)' : 'transparent')};
-  backdrop-filter: ${({ hasScrolled }) => (hasScrolled ? 'blur(15px)' : 'none')};
+  background: ${({ isLocation, hasScrolled }) =>
+    isLocation ? '#E7E8ED' : (hasScrolled ? 'rgba(255, 255, 255, 0.3)' : 'transparent')};
+  backdrop-filter: ${({ isLocation, hasScrolled }) =>
+    isLocation ? 'none' : (hasScrolled ? 'blur(15px)' : 'none')};
   transition: all 0.3s ease-in-out;
 `;
 
