@@ -10,6 +10,7 @@ import { stationCardVisible, storeCardVisible, zoneId, storePageNumber, location
 import { getLocationZonesAPI } from "../features/location/api/locationAPI";
 import useDevice from "../shared/hooks/useDevice";
 import { Sheet } from "react-modal-sheet";
+import { useLocation } from "react-router-dom";
 
 function LocationPage() {
   // 상태 관리
@@ -29,6 +30,13 @@ function LocationPage() {
   const [, setIsZoneId] = useRecoilState(zoneId);
   const [, setCurrentPage] = useRecoilState(storePageNumber);
 
+  // 초기 구역 세팅 관련 상태 관리
+  const location = useLocation();
+  const initialRegionId = location.state?.regionId;
+  const initialZoneName = location.state?.zoneName;
+  const [entryZoneName, setEntryZoneName] = useState(initialZoneName); 
+  const regionIdForFetch = initialRegionId ?? regionId;
+
   const sheetRef = useRef(null);
 
   // 스냅 포인트
@@ -41,6 +49,7 @@ function LocationPage() {
 
   // 지역 선택 핸들러
   const handleLocationCheck = (id) => {
+    setEntryZoneName(null);
     setIsSeoulCheck(id === 1);
     setIsStationListVisible(true);
     setRegionId(id);
@@ -58,6 +67,50 @@ function LocationPage() {
     setCurrentPage(1);
   };
 
+  useEffect(() => {
+    if (!regionIdForFetch) return;
+
+    setStationList([]);
+
+    const fetchData = async () => {
+      try {
+        const response = await getLocationZonesAPI(regionIdForFetch);
+        setStationList(response);
+      } catch (error) {
+        console.error("구역별 역 목록 데이터를 불러오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchData();
+  }, [regionIdForFetch]);
+
+  useEffect(() => {
+    if (initialRegionId) {
+      setIsSeoulCheck(initialRegionId === 1);
+      setRegionId(initialRegionId);
+      setCurrentPage(1);
+    }
+  }, [initialRegionId]);
+
+  useEffect(() => {
+    if (!entryZoneName) return;
+    if (!stationList?.length) return;
+
+    const targetIndex = stationList.findIndex((s) => s.zoneName === entryZoneName);
+    if (targetIndex === -1) return;
+
+    const targetStation = stationList[targetIndex];
+    handleStationSelect(targetStation);
+
+    setSelectedStationIndices((prev) => ({
+      ...prev,
+      [regionId]: targetIndex,
+      [regionId === 1 ? 2 : 1]: null,
+    }));
+
+    setEntryZoneName(null);
+  }, [entryZoneName, stationList, regionId]);
+
   // 구역 목록 조회
   useEffect(() => {
     const fetchData = async () => {
@@ -70,7 +123,7 @@ function LocationPage() {
       }
     };
     fetchData();
-  }, [regionId, setIsZoneId]);
+  }, [regionId]);
 
   return (
     <PageWrapper>
