@@ -14,6 +14,8 @@ import { genres } from '../model/genreData';
 import CustomPagination from '../../../shared/components/CustomPagination';
 import BottomSheet from '../../../shared/components/BottomSheet';
 import { sortOptions } from '../../../shared/components/filter/OptionList';
+import NoDataImgLarge from '../../../shared/assets/images/common/noData/noDataImageLarge.png'
+import NoDataImgSmall from '../../../shared/assets/images/common/noData/noDataImageSmall.png'
 
 export default function GenreContentSection() {
 
@@ -367,27 +369,32 @@ export default function GenreContentSection() {
       )}
 
       {/* 콘텐츠 카드 영역 */}
-      <>
-        <ListWrapper>
-          {themeList
-            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-            .map((items) => (
-              <ContentCard
-                key={items.id}
-                data={{ ...items, price: items.price != null ? items.price * headCount : null }}
-                headCount={headCount}
-              />
-            ))}
-        </ListWrapper>
+      {themeList.length === 0 ? (
+        <NoDataWrapper>
+          <img src={isMobile ? NoDataImgSmall : NoDataImgLarge} alt="데이터 없음" />
+        </NoDataWrapper>
+      ) : (
+        <>
+          <ListWrapper>
+            {themeList
+              .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+              .map((items) => (
+                <ContentCard
+                  key={items.id}
+                  data={{ ...items, price: items.price != null ? items.price * headCount : null }}
+                  headCount={headCount}
+                />
+              ))}
+          </ListWrapper>
 
-        {/* 페이지네이션 */}
-        <CustomPagination
-          currentPage={currentPage}
-          totalPages={adjustedTotalPages}
-          onPageChange={handlePageChange}
-        />
-      </>
-
+          {/* 페이지네이션 */}
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={adjustedTotalPages}
+            onPageChange={handlePageChange}
+          />
+        </>
+      )}
     </Wrapper>
   )
 }
@@ -529,5 +536,22 @@ const ListWrapper = styled.div`
   @media (max-width: 768px) {
     gap: 0.625rem;
     justify-content: center;
+  }
+`;
+
+const NoDataWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 0;
+
+  img {
+    width: 16rem;
+    
+    @media (max-width: 768px) {
+      width: 10rem;
+    }
   }
 `;

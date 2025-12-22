@@ -1,20 +1,31 @@
 import styled from 'styled-components';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { activeGenreState } from '../model/genreAtom';
 import useDevice from "../../../shared/hooks/useDevice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from 'swiper/modules';
 import MainIcon from '../../../shared/assets/icons/genre/movieIcon.svg';
 import {genres} from '../model/genreData'
+// import { useLocation } from 'react-router-dom';
+// import { useEffect } from 'react';
 
 export default function GenreTabSection() {
+
+  // const location = useLocation();
     
   // 반응형 함수
-  const { isDesktop, isMobile, isTablet } = useDevice();
+  const { isMobile } = useDevice();
 
   // state 관리
-  const [activeGenre, setActiveGenre] = useRecoilState(activeGenreState);
+  const [activeGenre] = useRecoilState(activeGenreState);
+  const setActiveGenre = useSetRecoilState(activeGenreState);
   
+  // useEffect(() => {
+  //   if (location.state?.genre) {
+  //     setActiveGenre(location.state.genre);
+  //   }
+  // }, []);
+
   // 장르를 7개씩 나누는 함수
   const chunkArray = (array, size) => {
     return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>

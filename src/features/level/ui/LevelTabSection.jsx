@@ -1,24 +1,34 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { activeLevelState } from '../model/levelAtom.jsx';
 import useDevice from "../../../shared/hooks/useDevice";
 import MainIcon from '../../../shared/assets/icons/genre/movieIcon.svg';
 import CircleInfoIcon from '../../../shared/assets/icons/common/circleinfo.svg';
 import { levels } from '../model/levelData';
 import InfoBox from '../../../shared/components/InfoBox.jsx';
+// import { useLocation } from 'react-router-dom';
 
 export default function LevelTabSection() {
+
+  // const location = useLocation();
     
   // 반응형 함수
   const { isMobile } = useDevice();
 
   // state 관리
-  const [activeLevel, setActiveLevel] = useRecoilState(activeLevelState);
+  const [activeLevel] = useRecoilState(activeLevelState);
+  const setActiveLevel = useSetRecoilState(activeLevelState);
 
   // info 팝업 상태
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const infoRef = useRef(null);
+
+  // useEffect(() => {
+  //   if (location.state?.level) {
+  //     setActiveLevel(location.state.level);
+  //   }
+  // }, []);
 
   useEffect(() => {
     function handleClickOutside(e) {
