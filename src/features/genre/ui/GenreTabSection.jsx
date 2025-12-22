@@ -1,20 +1,39 @@
 import styled from 'styled-components';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { activeGenreState } from '../model/genreAtom';
 import useDevice from "../../../shared/hooks/useDevice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from 'swiper/modules';
 import MainIcon from '../../../shared/assets/icons/genre/movieIcon.svg';
 import {genres} from '../model/genreData'
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
 
 export default function GenreTabSection() {
+
+  const location = useLocation();
+  const navigate = useNavigate();
     
   // 반응형 함수
-  const { isDesktop, isMobile, isTablet } = useDevice();
+  const { isMobile } = useDevice();
 
   // state 관리
-  const [activeGenre, setActiveGenre] = useRecoilState(activeGenreState);
+  const [activeGenre] = useRecoilState(activeGenreState);
+  const setActiveGenre = useSetRecoilState(activeGenreState);
+  const initGenreRef = useRef(location.state?.genre);
   
+  useEffect(() => {
+    if (initGenreRef.current) {
+      setActiveGenre(initGenreRef.current);
+
+      // state 제거
+      navigate('.', { replace: true, state: null });
+
+      // 재실행 방지
+      initGenreRef.current = null;
+    }
+  }, [navigate, setActiveGenre]);
+
   // 장르를 7개씩 나누는 함수
   const chunkArray = (array, size) => {
     return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>

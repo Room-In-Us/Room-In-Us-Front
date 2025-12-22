@@ -13,7 +13,13 @@ export default function ContentCardSection() {
 	const [themeList, setThemeList] = useState([]);
 
 	const handleUnlike = (themeId) => {
-		setThemeList(prevList => prevList.filter(item => item.themeId !== themeId));
+		setThemeList(prevList => 
+			prevList.map(item =>
+				item.themeId === themeId
+				? { ...item, isLiked: false }
+				: item
+			)
+		);
 	};
 
 	useEffect(() => {

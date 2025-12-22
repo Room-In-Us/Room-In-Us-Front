@@ -26,6 +26,9 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
 
   // 모달 닫기 핸들러
   const handleClose = () => {
+    if (reviewSection === "last" && onUpdated) {
+      onUpdated(); //후기 목록 재조회
+    }
     setReviewModalOpen(false);
   };
 
@@ -67,7 +70,6 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
     const fieldNames = {
       satisfactionLevel: '총평 점수',
       review: '총평 선택',
-      participantList: '플레이 인원',
       level: '난이도 점수',
       horrorLevel: '공포도 점수',
       activityLevel: '활동성 점수',
@@ -83,13 +85,6 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
     // review 검증
     if (!data.review) {
       missingFields.push(fieldNames.review);
-    }
-
-    // participantList 검증 (배열이 있고, 각 항목에 proficiency가 있어야 함)
-    if (!data.participantList || !Array.isArray(data.participantList) || 
-        data.participantList.length === 0 || 
-        data.participantList.some(p => p.proficiency === null || p.proficiency === undefined || p.proficiency === '')) {
-      missingFields.push(fieldNames.participantList);
     }
 
     // level 검증
@@ -120,41 +115,29 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
     return missingFields;
   };
 
-  // 후기 작성 제출 핸들러
-  // const handleSubmit = async () => {
-  //   // 필수 데이터 검증
-  //   const missingFields = validateRequiredFields(reviewData);
-    
-  //   if (missingFields.length > 0) {
-  //     setErrorMessages(missingFields);
-  //     setErrorModalOpen(true);
-  //     return;
-  //   }
+  const parseServerErrors = (rawMsg) => {
+    const messages = [];
+    const EXCLUDE_PHRASES = [
+      "0.5 단위로 입력해 주세요"
+    ];
 
-  //   setIsSubmitting(true);
-  //   try {
-  //     const { uiState, ...serverData } = reviewData;
-  //     void uiState;
+    rawMsg
+      .split("\n")
+      .map(l => l.trim())
+      .filter(Boolean)
+      .forEach(line => {
+        const [, message] = line.split(":").map(s => s.trim());
+        if (!message) return;
 
-  //     if (isEditMode) {
-  //       await putMyReviewAPI(themeData.themeId, reviewId, serverData);
-  //       console.log("[ReviewWriteModal] 후기 수정 요청 데이터:", serverData);
-  //       alert("후기가 수정되었습니다.");
+        // 제외 문구 필터링
+        if (EXCLUDE_PHRASES.some(p => message.includes(p))) return;
 
-  //       if (onUpdated) onUpdated();
-  //     } else {
-  //       await postReviewAPI(themeData.themeId, serverData);
-  //       console.log("[ReviewWriteModal] 후기 작성 요청 데이터:", serverData);
-  //       alert("후기가 작성되었습니다.");
-  //     }
-  //     resetReview();
-  //     setReviewSection("last");
-  //   } catch (err) {
-  //     console.error("후기 전송 실패:", err);
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
+        messages.push(message);
+      });
+
+    return messages;
+  };
+
 
   const handleSubmit = async () => {
 
@@ -168,7 +151,6 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
       if (isEditMode) {
         await putMyReviewAPI(themeData.themeId, reviewId, serverData);
         console.log("[ReviewWriteModal] 후기 수정 요청 데이터:", serverData);
-        alert("후기가 수정되었습니다.");
   
         if (onUpdated) onUpdated();
         resetReview();
@@ -181,13 +163,8 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
   
       if (!response.success) {
         const rawMsg = response?.message ?? '알 수 없는 오류가 발생했습니다.';
-      
-        const serverErrors =
-          typeof rawMsg === "string" && rawMsg.includes(',')
-            ? rawMsg.split(',').map(m => m.trim())
-            : [rawMsg];
-      
-        setErrorMessages(serverErrors);
+        const parsed = parseServerErrors(rawMsg);
+        setErrorMessages(parsed);
         setErrorModalOpen(true);
         return;
       }
@@ -200,11 +177,7 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
         return;
       }
   
-      // ---------------------------
-      // 4) 모든 것이 정상일 때
-      // ---------------------------
       console.log("[ReviewWriteModal] 후기 작성 요청 데이터:", serverData);
-      alert("후기가 작성되었습니다.");
       resetReview();
       setReviewSection("last");
   
@@ -221,7 +194,7 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
       <ModalHeader>
         <Wrap>
           <Btn src={LikeIcon} />
-          <ModalTitle>후기 작성하기</ModalTitle>
+          <ModalTitle>{isEditMode ? "후기 수정하기" : "후기 작성하기"}</ModalTitle>
         </Wrap>
         <CloseBtn src={CloseIcon} onClick={handleClose} />
       </ModalHeader>

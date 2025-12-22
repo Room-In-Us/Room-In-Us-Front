@@ -6,6 +6,7 @@ import { getThemesAPI } from '../../../features/search/api/getSearchAPI';
 import CustomPagination from '../../../shared/components/CustomPagination';
 import useDevice from '../../../shared/hooks/useDevice';
 import { useLocation } from 'react-router-dom';
+import NoDataImg from '../../../shared/assets/images/common/noData/noDataImageLarge.png';
 
 export default function SearchSection() {
 
@@ -47,9 +48,7 @@ export default function SearchSection() {
   }, [keywordFromState]);
 
   useEffect(() => {
-    if (keyword) {
-      handleSearch();
-    }
+    handleSearch();
   }, [keyword, handleSearch]);
 
   return (
@@ -68,14 +67,20 @@ export default function SearchSection() {
       </TextWrapper>
 
       <ListWrapper>
-      {paginatedThemes.map((theme) => (
-        <ContentCard
-          key={theme.themeId}
-          data={theme}
-          type="search"   
-          headCount={2} 
-        />
-      ))}
+      {paginatedThemes.length === 0 ? (
+        <NoDataWrapper>
+          <img src={NoDataImg} alt="검색 결과 없음" />
+        </NoDataWrapper>
+      ) : (
+        paginatedThemes.map((theme) => (
+          <ContentCard
+            key={theme.themeId}
+            data={theme}
+            type="search"
+            headCount={2}
+          />
+        ))
+      )}
       </ListWrapper>
 
       <CustomPagination
@@ -163,5 +168,18 @@ const ListWrapper = styled.div`
   @media (max-width: 768px) {
     gap: 0.625rem;
     justify-content: center;
+  }
+`;
+
+const NoDataWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 0;
+
+  img {
+    width: 16rem;
   }
 `;

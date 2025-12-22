@@ -57,7 +57,13 @@ function LevelSection() {
       {/* 제목 영역 */}
       <TitleWrapper>
         <Title>숙련도 기반 추천</Title>
-        <LocationSearchButton onClick={() => navigate('/level')}>
+        <LocationSearchButton
+          onClick={() =>
+            navigate('/level', {
+              state: { level: activeLevel }
+            })
+          }
+        >
           더 많은 테마 둘러보기
           <StyledRightArrow/>
         </LocationSearchButton>
