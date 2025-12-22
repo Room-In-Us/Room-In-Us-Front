@@ -7,11 +7,12 @@ import MainIcon from '../../../shared/assets/icons/genre/movieIcon.svg';
 import CircleInfoIcon from '../../../shared/assets/icons/common/circleinfo.svg';
 import { levels } from '../model/levelData';
 import InfoBox from '../../../shared/components/InfoBox.jsx';
-// import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function LevelTabSection() {
 
-  // const location = useLocation();
+  const location = useLocation();
+  const navigate = useNavigate();
     
   // 반응형 함수
   const { isMobile } = useDevice();
@@ -19,16 +20,23 @@ export default function LevelTabSection() {
   // state 관리
   const [activeLevel] = useRecoilState(activeLevelState);
   const setActiveLevel = useSetRecoilState(activeLevelState);
+  const initLevelRef = useRef(location.state?.level);
 
   // info 팝업 상태
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const infoRef = useRef(null);
 
-  // useEffect(() => {
-  //   if (location.state?.level) {
-  //     setActiveLevel(location.state.level);
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (initLevelRef.current) {
+      setActiveLevel(initLevelRef.current);
+
+      // state 제거
+      navigate('.', { replace: true, state: null });
+
+      // 재실행 방지
+      initLevelRef.current = null;
+    }
+  }, [navigate, setActiveLevel]);
 
   useEffect(() => {
     function handleClickOutside(e) {
