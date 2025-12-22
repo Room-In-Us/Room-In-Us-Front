@@ -111,6 +111,15 @@ function StationCard() {
     }
   };
 
+  // 역 이름 포맷팅 (잠실 -> '역' 제거)
+  const formatStationName = (stationName, zoneName) => {
+    if (!stationName) return "";
+    if (zoneName === "잠실") {
+      return stationName.replace(/역$/, "");
+    }
+    return stationName;
+  };
+
   return (
     <ComponentWrapper>
       {/* 돌아가기 버튼 영역 */}
@@ -146,7 +155,9 @@ function StationCard() {
                 })}
 
                 {/* 역 이름 */}
-                <StationListName>{station.stationName}</StationListName>
+                <StationListName>
+                  {formatStationName(station.stationName, CapitalZoneName)}
+                </StationListName>
               </StationList>
             ))
           ) : null}
