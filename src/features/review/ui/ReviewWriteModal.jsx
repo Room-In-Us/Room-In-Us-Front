@@ -26,6 +26,9 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
 
   // 모달 닫기 핸들러
   const handleClose = () => {
+    if (reviewSection === "last" && onUpdated) {
+      onUpdated(); //후기 목록 재조회
+    }
     setReviewModalOpen(false);
   };
 
@@ -148,7 +151,6 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
       if (isEditMode) {
         await putMyReviewAPI(themeData.themeId, reviewId, serverData);
         console.log("[ReviewWriteModal] 후기 수정 요청 데이터:", serverData);
-        alert("후기가 수정되었습니다.");
   
         if (onUpdated) onUpdated();
         resetReview();
