@@ -132,7 +132,6 @@ function ReviewDetailPage() {
       {/* 로그인 모달 */}
       <PopUpModal
         isOpen={isLoginModalOpen}
-        title=""
         message="로그인 후 사용할 수 있는 기능입니다."
         subMessage="로그인하시겠습니까?"
         confirmText="확인"

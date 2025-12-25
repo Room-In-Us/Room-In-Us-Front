@@ -1,5 +1,6 @@
 import styled, { css } from "styled-components"
 import Caution from '../assets/icons/common/cautionIcon.svg?react';
+import CautionTriangle from '../assets/icons/common/cautionTriangleIcon.svg?react';
 import Cancel from '../assets/icons/common/cancelIconColor.svg?react';
 import { createPortal } from "react-dom";
 
@@ -25,7 +26,11 @@ export default function PopUpModal({
       <Wrapper $hasList={!!displayList}>
         <PopUpHeader>
           <PopUpNameWrapper>
-            <CautionIcon />
+            {title === "알림" ? (
+              <CautionTriangleIcon />
+            ) : (
+              <CautionIcon />
+            )}
             <PopUpName>{title}</PopUpName>
           </PopUpNameWrapper>
           <CancelIcon onClick={onCancel} />
@@ -120,6 +125,14 @@ const PopUpName =  styled.div`
 `;
 
 const CautionIcon = styled(Caution)`
+  display: flex;
+  width: 1.25rem;
+  height: 1.25rem;
+  justify-content: center;
+  align-items: center;
+`;
+
+const CautionTriangleIcon = styled(CautionTriangle)`
   display: flex;
   width: 1.25rem;
   height: 1.25rem;
