@@ -54,8 +54,8 @@ function LoginPage() {
             <StyledGoogleLogo />
             <LoginText type='google'>구글 계정으로 로그인</LoginText>
           </SocialLoginButton>
+          <GuestAccessButton onClick={() => navigate('/')}>로그인 없이 둘러보기</GuestAccessButton>
         </ButtonSection>
-        <GuestAccessButton onClick={() => navigate('/')}>로그인 없이 둘러보기</GuestAccessButton>
       </ContentWrapper>
     </PageWrapper>
   );
@@ -184,6 +184,7 @@ const ButtonSection = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.625em;
 `;
 
@@ -260,13 +261,20 @@ const StyledGoogleLogo = styled(GoogleLogo)`
 `;
 
 const GuestAccessButton = styled.div`
-  color: var(--RIU_Monochrome-500, #515467);
-  font-family: 'Pretendard-Regular';
-  font-size: 1em;
+  margin-top: 0.625em;
+  color: var(--RIU_Primary-100, #718FF2);
+  font-family: 'Pretendard-Bold';
+  font-size: 0.875em;
   line-height: normal;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-skip-ink: auto;
+  text-decoration-thickness: auto;
+  text-underline-offset: auto;
+  text-underline-position: from-font;
   cursor: pointer;
 
   @media (max-width: 768px) {
-    font-size: 0.875em;
+    font-size: 0.75em;
   }
 `;
