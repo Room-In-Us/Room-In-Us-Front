@@ -69,11 +69,56 @@ function App() {
           <Route path="/theme/:themeId/review/:reviewId" element={<ReviewDetailPage />} />
 
           {/* 마이 페이지 */}
-          <Route path="/mypage" element={isLoggedIn ? <MyPage /> : <NotFoundPage />} />
-          <Route path="/mypage/preferences" element={isLoggedIn ? <PreferencesPage /> : <NotFoundPage />} />
-          <Route path="/mypage/reservations" element={isLoggedIn ? <ReservationsPage /> : <NotFoundPage />} />
-          <Route path="/mypage/favorites" element={isLoggedIn ? <FavoritesPage /> : <NotFoundPage />} />
-          <Route path="/mypage/reviews" element={isLoggedIn ? <ReviewsPage /> : <NotFoundPage />} />
+          <Route
+            path="/mypage"
+            element={
+              isLoggedIn === null
+                ? <div>로딩 중…</div>
+                : isLoggedIn
+                  ? <MyPage />
+                  : <NotFoundPage />
+            }
+          />
+          <Route
+            path="/mypage/preferences"
+            element={
+              isLoggedIn === null
+                ? <div>로딩 중…</div>
+                : isLoggedIn
+                  ? <PreferencesPage />
+                  : <NotFoundPage />
+            }
+          />
+          <Route
+            path="/mypage/reservations"
+            element={
+              isLoggedIn === null
+                ? <div>로딩 중…</div>
+                : isLoggedIn
+                  ? <ReservationsPage />
+                  : <NotFoundPage />
+            }
+          />
+          <Route
+            path="/mypage/favorites"
+            element={
+              isLoggedIn === null
+                ? <div>로딩 중…</div>
+                : isLoggedIn
+                  ? <FavoritesPage />
+                  : <NotFoundPage />
+            }
+          />
+          <Route
+            path="/mypage/reviews"
+            element={
+              isLoggedIn === null
+                ? <div>로딩 중…</div>
+                : isLoggedIn
+                  ? <ReviewsPage />
+                  : <NotFoundPage />
+            }
+          />
 
           {/* 성향조사 페이지 */}
           <Route path="/survey" element={<SurveyPage />} />
