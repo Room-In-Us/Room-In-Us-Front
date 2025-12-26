@@ -1,0 +1,53 @@
+name: Build and Deploy Frontend
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Build
+        env:
+          VITE_SERVER_URL_API: ${{ secrets.VITE_SERVER_URL_API }}
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+        run: npm run build
+      
+      - name: Deploy to Instance
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.INSTANCE_IP }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "dist/*"
+          target: "/tmp/deploy"
+          strip_components: 1
+      
+      - name: Update Frontend Container
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.INSTANCE_IP }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "=== Deploying to frontend container ==="
+            docker exec frontend sh -c "rm -rf /usr/share/nginx/html/*"
+            docker cp /tmp/deploy/. frontend:/usr/share/nginx/html/
+            docker exec frontend nginx -s reload
+            rm -rf /tmp/deploy
+            echo "✓ Deployment complete!"
