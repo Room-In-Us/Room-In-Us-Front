@@ -7,9 +7,10 @@ function Footer() {
   return (
     <FooterWrapper>
       <LeftWrapper>
-        <StyledButton>루미너스 사업자 정보</StyledButton>
         <StyledButton>이용약관</StyledButton>
+        <Divider>|</Divider>
         <StyledButton>개인정보처리방침</StyledButton>
+        <Divider>|</Divider>
         <StyledButton>문의하기</StyledButton>
       </LeftWrapper>
       <RightWrapper>
@@ -25,42 +26,58 @@ export default Footer;
 
 // CSS
 const FooterWrapper = styled.div`
+  border-top: 1px solid var(--Neutral-Palette-Byte-Black-40, #C5C4D5);
   width: 100%;
   height: 2.375rem;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  background: var(--Neutral-Palette-Byte-Black-0, #FEFDFF);
 `;
 
 const LeftWrapper = styled.div`
-  margin-left: 3rem;
+  margin-left: 3.75rem;
   display: flex;
   align-items: center;
 `;
 
 const StyledButton = styled.p`
-  margin-right: 1rem;
-  color: white;
+  color: var(--Neutral-Palette-Byte-Black-200, #676676);
+  font-size: 0.75rem;
+  font-family: Pretendard-Bold;
+  line-height: 1.125rem;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-skip-ink: none;
+  text-decoration-thickness: auto;
+  text-underline-offset: auto;
+  text-underline-position: from-font;
   cursor: pointer;
-  font-size: 0.8125rem;
+`;
+
+const Divider = styled.div`
+  margin: 0 0.625rem;
+  color: #B6B5C7;
+  font-size: 0.85rem;
 `;
 
 const RightWrapper = styled.div`
-  margin-right: 3rem;
+  margin-right: 3.75rem;
   display: flex;
   align-items: center;
+  gap: 0.875rem;
 `;
 
 const StyledInstagramIcon = styled(InstagramIcon)`
-  margin: 0 0.5rem;
+  color: var(--Neutral-Palette-Byte-Black-200, #676676);
   cursor: pointer;
 `;
 
 const StyledEmailIcon = styled(EmailIcon)`
-  margin: 0 0.5rem;
+  color: var(--Neutral-Palette-Byte-Black-200, #676676);
   cursor: pointer;
 `;
 
 const StyledKakaoTalkIcon = styled(KakaoTalkIcon)`
-  margin: 0 0.5rem;
   cursor: pointer;
 `;

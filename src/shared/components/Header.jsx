@@ -511,10 +511,12 @@ const IconWrapper = styled.div`
 
 const StyledInstagramIcon = styled(InstagramIcon)`
   width: 1.25rem;
+  color: #4648A7;
   cursor: pointer;
 `;
 const StyledEmailIcon = styled(EmailIcon)`
   width: 1.25rem;
+  color: #4648A7;
   cursor: pointer;
 `;
 

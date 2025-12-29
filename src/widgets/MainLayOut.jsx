@@ -31,5 +31,6 @@ const MainWrapper = styled.div`
 `;
 
 const ContentWrapper = styled.div`
+  margin-bottom: 3rem;
   flex-grow: 1;
 `;
