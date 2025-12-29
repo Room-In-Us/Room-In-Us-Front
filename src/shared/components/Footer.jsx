@@ -4,12 +4,13 @@ import EmailIcon from "../assets/icons/common/emailIcon.svg?react";
 import KakaoTalkIcon from "../assets/icons/common/kakaoTalkIcon.svg?react";
 
 function Footer() {
+
   return (
     <FooterWrapper>
       <LeftWrapper>
-        <StyledButton>이용약관</StyledButton>
+        <StyledButton onClick={() => window.open('/terms', '_blank', 'width=600,height=800')}>이용약관</StyledButton>
         <Divider>|</Divider>
-        <StyledButton>개인정보처리방침</StyledButton>
+        <StyledButton onClick={() => window.open('/privacy', '_blank', 'width=600,height=800')}>개인정보처리방침</StyledButton>
         <Divider>|</Divider>
         <StyledButton>문의하기</StyledButton>
       </LeftWrapper>

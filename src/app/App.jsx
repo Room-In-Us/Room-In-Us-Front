@@ -24,6 +24,8 @@ import ReviewDetailPage from '../pages/ReviewDetailPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import DatePickerGlobalStyle from '../shared/styles/DatePickerGlobalStyle';
 import useAuthSession from '../shared/hooks/useAuthSession';
+import TermsPage from '../pages/TermsPage';
+import PrivacyPage from '../pages/PrivacyPage';
 
 function App() {
   const setMapsLoaded = useSetRecoilState(mapsLoadedState);
@@ -125,6 +127,10 @@ function App() {
 
           {/* 전체 검색 페이지 */}
           <Route path = '/search' element={<SerachPage />} />
+
+          {/* 이용약관 및 개인정보 처리방침 페이지 */}
+          <Route path = '/terms' element={<TermsPage />} />
+          <Route path = '/privacy' element={<PrivacyPage />} />
 
           {/* 404 Not Found 페이지 */}
           <Route path= "*" element={<NotFoundPage />} />
