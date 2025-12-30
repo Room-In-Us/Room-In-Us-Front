@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components"
 import { getThemeDetailAPI } from "../../../themeDetail/api/themeDetailAPI";
@@ -14,6 +14,8 @@ import PopUpModal from '../../../../shared/components/PopUpModal';
 import { useSetRecoilState } from "recoil";
 import { reviewStateFamily } from "../../../themeDetail/model/reviewAtom";
 import { getReviewDetailAPI } from "../../../reviewDetail/api/reviewDetailAPI";
+import More from './../../../../shared/assets/icons/common/more.svg?react';
+import ReviewActionDropDown from "./ReviewActionDropDown";
 
 export default function ReviewCard({ data, onDeleted, onEdit }) {
 
@@ -21,6 +23,9 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
   const navigate = useNavigate();
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleteSuccess, setIsDeleteSuccess] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const moreRef = useRef(null);
 
   const {
     reviewId,
@@ -59,14 +64,13 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
         console.error('썸네일 로딩 실패:', error);
         setThumbnailUrl(null);
       });
-    }, [themeId]);
+  }, [themeId]);
 
   const handleDelete = async () => {
+    setIsOpen(false);
     try {
       await deleteMyReviewAPI(themeId, reviewId);
-      alert("후기가 삭제되었습니다.");
-      setIsDeleteModalOpen(false);
-      if (onDeleted) onDeleted(reviewId); 
+      setIsDeleteSuccess(true);
     } catch (error) {
       console.error('[ReviewCard] 후기 삭제 실패:', error);
       alert("삭제 중 오류가 발생했습니다.");
@@ -74,6 +78,7 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
   };
 
   const handleEdit = async () => {
+    setIsOpen(false);
     try {
       const themeData = await getThemeDetailAPI(themeId);
       const reviewDetail = await getReviewDetailAPI(themeId, reviewId);
@@ -110,6 +115,25 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
   return (
     <Wrapper>
       <Img src={thumbnailUrl || DefaultThumbnail} />
+
+      {isMobile && (
+        <MoreWrapper ref={moreRef}>
+          <MoreIcon onClick={() => setIsOpen((v) => !v)} />
+
+          <ReviewActionDropDown
+            isOpen={isOpen}
+            anchorRef={moreRef}
+            onEdit={handleEdit}
+            onDelete={() => {
+              setIsOpen(false);          
+              setIsDeleteSuccess(false);  
+              setIsDeleteModalOpen(true);  
+            }}
+            onClose={() => setIsOpen(false)}
+          />
+        </MoreWrapper>
+      )}
+
       <ItemsBox>
         { !isMobile && (
         <>
@@ -168,19 +192,31 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
       </ItemsBox>
       <PopUpModal
         isOpen={isDeleteModalOpen}
-        title="후기 삭제"
-        message="이 후기를 삭제하시겠습니까?"
-        subMessage="삭제 후에는 복구할 수 없습니다."
-        confirmText="삭제"
-        cancelText="취소"
-        onConfirm={handleDelete}
-        onCancel={() => setIsDeleteModalOpen(false)}
+        title={isDeleteSuccess ? "삭제 완료" : "후기 삭제"}
+        message={isDeleteSuccess ? "후기가 삭제되었습니다." : "이 후기를 삭제하시겠습니까?"}
+        subMessage={isDeleteSuccess ? null : "삭제 후에는 복구할 수 없습니다."}
+        confirmText={isDeleteSuccess ? "확인" : "삭제"}
+        cancelText={isDeleteSuccess ? null : "취소"}
+        showCancel={!isDeleteSuccess}
+        onConfirm={() => {
+          if (isDeleteSuccess) {
+            setIsDeleteModalOpen(false);
+            setIsDeleteSuccess(false);
+            onDeleted(reviewId);
+          } else {
+            handleDelete();
+          }
+        }}
+        onCancel={() => {
+          if (!isDeleteSuccess) setIsDeleteModalOpen(false);
+        }}
       />
     </Wrapper>
   )
 }
 
 const Wrapper = styled.div`
+  position: relative;
   display: flex;
   padding: 0.875em;
   align-items: flex-start;
@@ -419,6 +455,26 @@ const TrashIcon = styled(Trash)`
   justify-content: center;
   align-items: center;
   object-fit: contain;
+
+  path {
+    fill: #717486;
+  }
+`;
+
+const MoreWrapper = styled.div`
+  position: absolute;
+  top: 0.875em; 
+  right: 0.875em; 
+`;
+
+const MoreIcon = styled(More)`
+  display: flex;
+  width: 1rem;
+  height: 1rem;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  cursor: pointer;
 
   path {
     fill: #717486;
