@@ -250,8 +250,8 @@ function Header() {
                 <StyledInstagramIcon/>
                 <StyledEmailIcon/>
               </IconWrapper>
-              <LegalNoticesText>이용약관</LegalNoticesText>
-              <LegalNoticesText>개인정보처리방침</LegalNoticesText>
+              <LegalNoticesText onClick={() => window.open('/terms', '_blank', 'width=600,height=800')}>이용약관</LegalNoticesText>
+              <LegalNoticesText onClick={() => window.open('/privacy', '_blank', 'width=600,height=800')}>개인정보처리방침</LegalNoticesText>
               <InquiryButton><StyledInquiryIcon/>문의하기</InquiryButton>
             </MenuBottomWrapper>
           </MenuWrapper>
@@ -511,10 +511,12 @@ const IconWrapper = styled.div`
 
 const StyledInstagramIcon = styled(InstagramIcon)`
   width: 1.25rem;
+  color: #4648A7;
   cursor: pointer;
 `;
 const StyledEmailIcon = styled(EmailIcon)`
   width: 1.25rem;
+  color: #4648A7;
   cursor: pointer;
 `;
 

@@ -9,14 +9,16 @@ function MainLayOut() {
   const { isMobile } = useDevice();
   const authPages = ['/login', '/signup', '/survey'];
   const isAuthPage = authPages.includes(location.pathname);
+  const termsPages = ['/terms', '/privacy'];
+  const isTermsPage = termsPages.includes(location.pathname);
 
   return (
     <MainWrapper>
-      { !(isAuthPage && !isMobile) && <Header /> }
+      { !(isAuthPage && !isMobile) && !(isTermsPage) && <Header /> }
       <ContentWrapper>
         <Outlet />
       </ContentWrapper>
-      { !isMobile && <Footer /> }
+      { !isMobile && !(isTermsPage) && <Footer /> }
     </MainWrapper>
   );
 }
@@ -31,5 +33,6 @@ const MainWrapper = styled.div`
 `;
 
 const ContentWrapper = styled.div`
+  margin-bottom: 3rem;
   flex-grow: 1;
 `;

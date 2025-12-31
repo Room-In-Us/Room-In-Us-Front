@@ -77,11 +77,11 @@ function AgreeSection() {
         </AgreeWrapper>
         <ListWrapper>
           <StyledCheckkBox onClick={() => handleAgree("terms")} isChecked={agreeTerms}>✓</StyledCheckkBox>
-          <Text><Option>&#91;필수&#93;</Option> 이용 약관</Text>
+          <Text style={{ cursor: 'pointer' }} onClick={() => window.open('/terms', '_blank', 'width=600,height=800')}><Option>&#91;필수&#93;</Option> 이용 약관</Text>
         </ListWrapper>
         <ListWrapper>
           <StyledCheckkBox onClick={() => handleAgree("privacy")} isChecked={agreePrivacy}>✓</StyledCheckkBox>
-          <Text><Option>&#91;필수&#93;</Option> 개인정보 수집 및 이용</Text>
+          <Text style={{ cursor: 'pointer' }} onClick={() => window.open('/privacy', '_blank', 'width=600,height=800')}><Option>&#91;필수&#93;</Option> 개인정보 수집 및 이용</Text>
         </ListWrapper>
         <ListWrapper>
           <StyledCheckkBox onClick={() => handleAgree("marketing")} isChecked={agreeMarketing}>✓</StyledCheckkBox>
