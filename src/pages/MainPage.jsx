@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import HeroSection from '../features/main/ui/HeroSection';
 import LocationSection from '../features/main/ui/LocationSection';
+import AwardsSection from '../features/main/ui/AwardsSection';
 import LevelSection from '../features/main/ui/LevelSection';
 import GenreSection from '../features/main/ui/GenreSection';
 
@@ -9,15 +10,18 @@ function MainPage() {
     <PageWrapper>
       {/* 히어로 영역 */}
       <HeroSection />
-      
+
       {/* 지역 영역 */}
-      <LocationSection/>
+      <LocationSection />
+
+      {/* 어워즈 영역 */}
+      <AwardsSection />
 
       {/* 숙련도 영역 */}
-      <LevelSection/>
+      <LevelSection />
 
       {/* 장르 영역 */}
-      <GenreSection/>
+      <GenreSection />
 
     </PageWrapper>
   );
