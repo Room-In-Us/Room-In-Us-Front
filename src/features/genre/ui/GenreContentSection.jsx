@@ -18,7 +18,6 @@ import NoDataImgLarge from '../../../shared/assets/images/common/noData/noDataIm
 import NoDataImgSmall from '../../../shared/assets/images/common/noData/noDataImageSmall.png'
 
 export default function GenreContentSection() {
-
   // 반응형 함수
   const { isMobile } = useDevice();
 
