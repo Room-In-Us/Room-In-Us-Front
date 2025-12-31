@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 
 function TermsPage() {
   const termsMarkdown = `
-    **제1조 (목적)**
+**제1조 (목적)**
 
 1. 이 약관은 플로우스탭(FlowStep)(이하 “회사”)이 온라인으로 제공하는 루미너스(RoomInUs) 및 루미너스에서 제공하는 제반 서비스(이하 “서비스”)의 이용과 관련하여 팀과 회원 간의 권리, 의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.
 
@@ -101,8 +101,10 @@ function TermsPage() {
 
   return (
     <PageWrapper>
-      <h1>이용약관</h1>
-      <ReactMarkdown>{termsMarkdown}</ReactMarkdown>
+      <Title>이용약관</Title>
+      <TermsContent>
+        <ReactMarkdown>{termsMarkdown}</ReactMarkdown>
+      </TermsContent>
     </PageWrapper>
   )
 }
@@ -111,5 +113,17 @@ export default TermsPage;
 
 // CSS
 const PageWrapper = styled.div`
-  padding: 1rem;
+  padding: 1.25rem;
+`;
+
+const Title = styled.div`
+  margin-bottom: 2rem;
+  color: var(--RIU_Monochrome-500, #515467);
+  font-family: 'Pretendard-Bold';
+  font-size: 2rem;
+`;
+
+const TermsContent = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  font-family: 'Pretendard-Regular';
 `;
