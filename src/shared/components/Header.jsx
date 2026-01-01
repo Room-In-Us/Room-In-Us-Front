@@ -247,12 +247,12 @@ function Header() {
             <MenuBottomWrapper>
               <StyledTextLogo/>
               <IconWrapper>
-                <StyledInstagramIcon/>
-                <StyledEmailIcon/>
+                <StyledInstagramIcon onClick={() => window.open('https://www.instagram.com/room.in.us_official/', '_blank')}/>
+                <StyledEmailIcon onClick={() => window.open('mailto:roominus.official@gmail.com')}/>
               </IconWrapper>
               <LegalNoticesText onClick={() => window.open('/terms', '_blank', 'width=600,height=800')}>이용약관</LegalNoticesText>
               <LegalNoticesText onClick={() => window.open('/privacy', '_blank', 'width=600,height=800')}>개인정보처리방침</LegalNoticesText>
-              <InquiryButton><StyledInquiryIcon/>문의하기</InquiryButton>
+              <InquiryButton onClick={() => window.open('https://www.notion.so/2da2f8c6055280bf9b9cee64427d1468?pvs=106', '_blank')}><StyledInquiryIcon/>문의하기</InquiryButton>
             </MenuBottomWrapper>
           </MenuWrapper>
         </>
