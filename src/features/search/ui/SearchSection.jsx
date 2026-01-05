@@ -13,9 +13,9 @@ export default function SearchSection() {
   const { isMobile } = useDevice();
 
   const location = useLocation();
-  const keywordFromState = location.state?.keyword || '';
 
-  const [keyword, setKeyword] = useState('');
+  const keywordFromState = location.state?.keyword ?? '';
+  const [keyword, setKeyword] = useState(keywordFromState);
   
   const [themes, setThemes] = useState([]);
 
@@ -34,7 +34,12 @@ export default function SearchSection() {
 
   const handleSearch = useCallback(async () => {
     try {
-      const data = await getThemesAPI({ keyword, page: 1, size: 10000 });
+      const data = await getThemesAPI({
+        keyword: keyword || undefined,
+        page: 1,
+        size: 10000,
+      });
+
       setThemes(data.contents || []);
       setCurrentPage(1);
     } catch (error) {
@@ -44,12 +49,8 @@ export default function SearchSection() {
   }, [keyword]); 
 
   useEffect(() => {
-    setKeyword(keywordFromState);
-  }, [keywordFromState]);
-
-  useEffect(() => {
     handleSearch();
-  }, [keyword, handleSearch]);
+  }, [handleSearch]);
 
   return (
     <Wrap>
