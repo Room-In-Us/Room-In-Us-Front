@@ -46,6 +46,9 @@ function ContentCard({ data, headCount, type, onUnlike }) {
   // 반응형 함수
   const { isMobile } = useDevice();
 
+  // 가격 정보 표시 타입
+  const showPerPerson = type === 'home' || type === 'search';
+
   // 이미지 로드 실패 시, 기본 썸네일로 변경
   useEffect(() => {
     setImageUrl(img);
@@ -155,8 +158,8 @@ function ContentCard({ data, headCount, type, onUnlike }) {
             </CautionWrapper>
           ) : (
             <PriceWrapper>
-              {type === 'home' && '1인'}
-              <Price>₩ {formatNumberWithCommas(price ?? 0)} {type === 'home' && '~'}</Price>
+              {showPerPerson && '1인'}
+              <Price>₩ {formatNumberWithCommas(price ?? 0)} {showPerPerson && '~'}</Price>
             </PriceWrapper>
           )}
           {isMobile && (
