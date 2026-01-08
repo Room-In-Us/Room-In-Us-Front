@@ -15,7 +15,7 @@ import { postThemeLikeAPI, deleteThemeLikeAPI } from '../../features/like/api/th
 import PopUpModal from './PopUpModal';
 import useAuthSession from '../hooks/useAuthSession';
 
-function ContentCard({ data, headCount, type, onUnlike }) {
+function ContentCard({ data, headCount, type, onUnlike, isFavoritePage = false }) {
   const {
     themeId,
     locationName,
@@ -64,7 +64,7 @@ function ContentCard({ data, headCount, type, onUnlike }) {
   }, [isLiked, data]);
 
   return (
-    <ContentWrapper onClick={() => navigate(`/theme/${themeId}`)}>
+    <ContentWrapper onClick={() => navigate(`/theme/${themeId}`, { state: { isFavoritePage } })}>
       {/* 이미지 영역 */}
       <ImageSection imgUrl={imageUrl}>
         <LocationTag>{locationName}</LocationTag>

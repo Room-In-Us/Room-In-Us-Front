@@ -16,6 +16,7 @@ function MyPage() {
   const [editState, setEditState] = useState(false);
   const [prevNickname, setPrevNickname] = useState('');
   const [errorState, setErrorState] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const navigate = useNavigate();
 
@@ -41,12 +42,18 @@ function MyPage() {
       setEditState(false);
     } catch (error) {
       console.error("닉네임 수정 중 오류 발생:", error);
+
       if (error.response?.status === 409) {
-        setErrorState(true);
-        setTimeout(() => {
-          setErrorState(false);
-        }, 2000);
+        setErrorMessage("이미 존재하는 닉네임입니다.");
+      } else {
+        setErrorMessage("닉네임 수정 중 오류가 발생했습니다.");
       }
+
+      setErrorState(true);
+
+      setTimeout(() => {
+        setErrorState(false);
+      }, 2000);
     }
   };
   
@@ -86,7 +93,9 @@ function MyPage() {
                 }}
               />
             }
-            <ErrorText errorState={errorState}>이미 존재하는 닉네임입니다.</ErrorText>
+            <ErrorText errorState={errorState}>
+              {errorMessage}
+            </ErrorText>
           </EmailWrapper>
         </InfoWrapper>
 
@@ -253,7 +262,7 @@ const ErrorText = styled.div`
   font-style: normal;
   font-weight: 500;
   line-height: normal;
-  visibility: ${(props) => (props.errorState ? 'visibile' : 'hidden')};
+  visibility: ${(props) => (props.errorState ? 'visible' : 'hidden')};
   opacity: ${(props) => (props.errorState ? 1 : 0)};
   transition: all 0.2s ease-in-out;
 `;

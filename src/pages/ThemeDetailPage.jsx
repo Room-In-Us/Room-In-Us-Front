@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import LeftArrowIcon from "../shared/assets/icons/common/arrow/leftArrow.svg?react";
 import ThemeOverviewCard from "../features/themeDetail/ui/ThemeOverviewCard";
 import ThemeInfoSection from "../features/themeDetail/ui/ThemeInfoSection";
@@ -34,6 +34,7 @@ function ThemeDetailPage() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const navigate = useNavigate();
+  const { isFavoritePage } = useLocation().state || {};
   const { themeId } = useParams();
 
   const { isMobile } = useDevice();
@@ -66,7 +67,7 @@ function ThemeDetailPage() {
         <BackButtonWrapper>
           <StyledLeftArrowIcon onClick={() => navigate(-1)}/>
           <BackButtonText onClick={() => navigate(-1)}>
-            테마 선택으로 돌아가기
+            {isFavoritePage ? '내가 찜한 테마 목록으로 돌아가기' : '테마 선택으로 돌아가기'}
           </BackButtonText>
         </BackButtonWrapper>
       )}
