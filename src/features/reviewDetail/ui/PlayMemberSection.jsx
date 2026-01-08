@@ -1,16 +1,63 @@
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components"
 import InfoIcon from "../../../shared/assets/icons/reviewDetail/infoIcon.svg?react";
 import { proficiencyConversion } from "../../../shared/utils/dataUtils";
 import PropTypes from "prop-types";
+import useDevice from "../../../shared/hooks/useDevice";
+import InfoBox from "../../../shared/components/InfoBox";
 
 function PlayMemberSection({ participantList }) {
+  const { isMobile } = useDevice();
+
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const infoRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (infoRef.current && !infoRef.current.contains(e.target)) {
+        setIsInfoOpen(false);
+      }
+    }
+
+    if (isInfoOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isInfoOpen]);
+
   return (
     <SectionWrapper>
       <TitleInfoWrapper>
         <SectionTitle>
           플레이 인원
         </SectionTitle>
-        <StyledInfoIcon/>
+        
+        {!isMobile ? (
+          <IconWrapper
+            onMouseEnter={() => setIsInfoOpen(true)}
+            onMouseLeave={() => setIsInfoOpen(false)}
+          >
+            <StyledInfoIcon />
+            <InfoPopup ref={infoRef} $isInfoOpen={isInfoOpen}>
+              <InfoBox />
+            </InfoPopup>
+          </IconWrapper>
+        ) : (
+          <IconWrapper>
+            <StyledInfoIcon onClick={() => setIsInfoOpen((prev) => !prev)} />
+            {isInfoOpen && (
+              <InfoPopup ref={infoRef} $isInfoOpen>
+                <InfoBox />
+              </InfoPopup>
+            )}
+          </IconWrapper>
+        )}
+
       </TitleInfoWrapper>
       <Divider/>
       {participantList.map((member, index) => (
@@ -72,6 +119,23 @@ const SectionTitle = styled.div`
   @media (max-width: 768px) {
     font-size: 0.875rem;
   }
+`;
+
+const IconWrapper = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+`;
+
+const InfoPopup = styled.div`
+  visibility: ${({ $isInfoOpen }) => ($isInfoOpen ? "visible" : "hidden")};
+  opacity: ${({ $isInfoOpen }) => ($isInfoOpen ? "1" : "0")};
+  transition: all 0.2s ease-in-out;
+
+  position: absolute;
+  top: 100%;
+  left: 100%;
+  z-index: 999;
 `;
 
 const Divider = styled.hr`
