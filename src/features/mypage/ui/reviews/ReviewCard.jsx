@@ -180,8 +180,8 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
         </DateBox>
         { !isMobile && (
           <BtnWrapper>
-            <Btn>
-              <BtnText onClick={() => navigate(`/theme/${themeId}/review/${reviewId}`)}>
+            <Btn onClick={() => navigate(`/theme/${themeId}/review/${reviewId}`)}>
+              <BtnText>
                 후기 상세보기
               </BtnText>
             </Btn>
