@@ -47,6 +47,7 @@ export default function ContentCardSection() {
 				data={{ ...items, price: items.price != null ? items.price * headCount : null }}
 				headCount={headCount}
 				onUnlike={handleUnlike}
+				isFavoritePage={true}
 			/>
 		))}
 		</Wrapper>
