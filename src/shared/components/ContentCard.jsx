@@ -51,7 +51,11 @@ function ContentCard({ data, headCount, type, onUnlike, isFavoritePage = false }
 
   // 이미지 로드 실패 시, 기본 썸네일로 변경
   useEffect(() => {
-    setImageUrl(img);
+    if (!img) {
+      setImageUrl(ThumbnailImg);
+    } else {
+      setImageUrl(img);
+    }
   }, [img]);
   const handleImageError = () => {
     setImageUrl(ThumbnailImg);

@@ -41,7 +41,11 @@ export default function ReservedCard({ data, isModal, hideTrash=false, setSelect
 
   // 이미지 로드 실패 시, 기본 썸네일로 변경
   useEffect(() => {
-    setImageUrl(themeImg);
+    if (!themeImg) {
+      setImageUrl(ThumbnailImg);
+    } else {
+      setImageUrl(themeImg);
+    }
   }, [themeImg]);
   
   const handleImageError = () => {
