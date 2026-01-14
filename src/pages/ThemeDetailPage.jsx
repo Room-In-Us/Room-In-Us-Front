@@ -32,6 +32,7 @@ function ThemeDetailPage() {
   const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
   const modalState = useRecoilValue(scheduleModalState);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [reviewRefetchKey, setReviewRefetchKey] = useState(0);
 
   const navigate = useNavigate();
   const { isFavoritePage } = useLocation().state || {};
@@ -81,13 +82,18 @@ function ThemeDetailPage() {
         <ThemeInfoSection
           themeData={themeDetail}
           themePrice={themePrice}
+          reviewRefetchKey={reviewRefetchKey}
         />
+
       </ContentWrapper>
 
       {/* 후기 작성 모달 */}
       {isModalOpen && (
         <ModalBackdrop>
-          <ReviewWriteModal themeData={themeDetail}/>
+          <ReviewWriteModal
+            themeData={themeDetail}
+            onUpdated={() => setReviewRefetchKey((p) => p + 1)}
+          />
         </ModalBackdrop>
       )}
 
