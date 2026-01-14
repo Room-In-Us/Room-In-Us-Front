@@ -35,7 +35,7 @@ function ThemeDetailPage() {
   const [reviewRefetchKey, setReviewRefetchKey] = useState(0);
 
   const navigate = useNavigate();
-  const { isFavoritePage } = useLocation().state || {};
+  const { backButtonText } = useLocation().state || {};
   const { themeId } = useParams();
 
   const { isMobile } = useDevice();
@@ -68,7 +68,7 @@ function ThemeDetailPage() {
         <BackButtonWrapper>
           <StyledLeftArrowIcon onClick={() => navigate(-1)}/>
           <BackButtonText onClick={() => navigate(-1)}>
-            {isFavoritePage ? '내가 찜한 테마 목록으로 돌아가기' : '테마 선택으로 돌아가기'}
+            {backButtonText || '테마 선택으로 돌아가기'}
           </BackButtonText>
         </BackButtonWrapper>
       )}

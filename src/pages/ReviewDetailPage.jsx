@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import LeftArrowIcon from "../shared/assets/icons/common/arrow/leftArrow.svg?react";
 import ThemeOverviewCard from "../features/themeDetail/ui/ThemeOverviewCard";
 import ReviewInfoSection from "../features/reviewDetail/ui/ReviewInfoSection";
@@ -30,6 +30,7 @@ function ReviewDetailPage() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { themeId, reviewId } = useParams();
 
   // 로그인 상태 검증
@@ -57,7 +58,7 @@ function ReviewDetailPage() {
         <BackButtonWrapper>
           <StyledLeftArrowIcon onClick={() => navigate(-1)}/>
           <BackButtonText onClick={() => navigate(-1)}>
-            테마 상세로 돌아가기
+            {location.state?.backButtonText || '테마 상세로 돌아가기'}
           </BackButtonText>
         </BackButtonWrapper>
       )}
