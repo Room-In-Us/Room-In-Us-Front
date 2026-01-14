@@ -47,7 +47,7 @@ export default function ContentCardSection() {
 				data={{ ...items, price: items.price != null ? items.price * headCount : null }}
 				headCount={headCount}
 				onUnlike={handleUnlike}
-				isFavoritePage={true}
+				backButtonText="내가 찜한 테마 목록으로 돌아가기"
 			/>
 		))}
 		</Wrapper>

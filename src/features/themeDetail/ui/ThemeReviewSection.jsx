@@ -14,7 +14,7 @@ import useAuthSession from "../../../shared/hooks/useAuthSession";
 import PopUpModal from "../../../shared/components/PopUpModal";
 import { useNavigate } from "react-router-dom";
 
-function ThemeReviewSection({ themeId }) {
+function ThemeReviewSection({ themeId, reviewRefetchKey }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [satisfactionAvg, setSatisfactionAvg] = useState(0);
@@ -42,7 +42,7 @@ function ThemeReviewSection({ themeId }) {
       }
     };
     fetchData();
-  }, [themeId, currentPage]);
+  }, [themeId, currentPage, reviewRefetchKey]);
 
   const handlePageClick = (page) => {
     if (page !== currentPage) setCurrentPage(page);

@@ -43,7 +43,11 @@ function LocationContentCard({ data, headCount, type }) {
 
   // 이미지 로드 실패 시, 기본 썸네일로 변경
   useEffect(() => {
-    setImageUrl(img);
+    if (!img) {
+      setImageUrl(ThumbnailImg);
+    } else {
+      setImageUrl(img);
+    }
   }, [img]);
 
   // 좋아요 상태 관리

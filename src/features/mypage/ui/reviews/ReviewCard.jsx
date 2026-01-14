@@ -180,8 +180,13 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
         </DateBox>
         { !isMobile && (
           <BtnWrapper>
-            <Btn onClick={() => navigate(`/theme/${themeId}/review/${reviewId}`)}>
-              <BtnText>
+            <Btn>
+              <BtnText
+                onClick={() =>
+                  navigate(`/theme/${themeId}/review/${reviewId}`,
+                    { state: { backButtonText: '내 후기 목록으로 돌아가기' } })
+                }
+              >
                 후기 상세보기
               </BtnText>
             </Btn>
