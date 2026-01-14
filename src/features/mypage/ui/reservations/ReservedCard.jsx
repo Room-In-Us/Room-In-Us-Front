@@ -13,7 +13,7 @@ import Plus from '../../../../shared/assets/icons/common/plusIcon.svg?react';
 import Trash from "../../../../shared/assets/icons/reviewWrite/trashicon.svg?react";
 import dayjs from "dayjs";
 
-export default function ReservedCard({ data, isModal, hideTrash=false, setSelectedTheme, setSelectedThemeId }) {
+export default function ReservedCard({ data, isModal, hideTrash=false, setSelectedTheme, setSelectedThemeId, isMyPage=false }) {
     const {
     themeId,
     locationName,
@@ -62,7 +62,11 @@ export default function ReservedCard({ data, isModal, hideTrash=false, setSelect
     <>
       {data ? (
         <Wrapper>
-      <ThemeItemBox onClick={() => navigate(`/theme/${themeId}`)}>
+      <ThemeItemBox isMyPage={isMyPage}
+        onClick={() => {
+          isMyPage && navigate(`/theme/${themeId}`, { state: { backButtonText: '내 후기 목록으로 돌아가기' } });
+        }}
+      >
         {/* 이미지 영역 */}
         <ImageSection isModal={isModal} imgUrl={imageUrl}>
           <LocationTag isModal={isModal}>
@@ -179,10 +183,10 @@ const ThemeItemBox = styled.div`
   flex: 1 0 0;
   background: var(--RIU_Monochrome-10, #F9F9FB);
   transition: background 0.2s ease-in-out;
-  cursor: pointer;
+  cursor: ${props => props.isMyPage ? 'pointer' : 'default'};
 
   &:hover {
-    background: var(--RIU_Primary-0, #E8EAFF);
+    background: ${props => props.isMyPage ? 'var(--RIU_Primary-0, #E8EAFF)' : 'var(--RIU_Monochrome-10, #F9F9FB)'};
   }
 
   @media (max-width: 768px) {
@@ -444,7 +448,7 @@ const Tag = styled.div`
   `}
 
   ${Wrapper}:hover & {
-    background: var(--RIU_Primary-20, #D0D8FF);
+    background: ${props => props.isMyPage ? 'var(--RIU_Primary-20, #D0D8FF)' : 'var(--RIU_Monochrome-20, #F0F0F4)'};
   }
 
   @media (max-width: 768px) {
@@ -463,7 +467,7 @@ const TagText = styled.div`
   color: var(--RIU_Monochrome-80, #A1A4B5);
 
   ${Wrapper}:hover & {
-    color: var(--RIU_Primary-200, #6680DF);
+    color: ${props => props.isMyPage ? 'var(--RIU_Primary-200, #6680DF)' : 'var(--RIU_Monochrome-80, #A1A4B5)'};
   }
 
   ${props => props.isModal && css`

@@ -76,7 +76,11 @@ export default function ScheduleSection() {
               <Line />
             </HrWrapper>
             {items.map((r) => (
-              <ReservedCard key={r.themeReservationId} data={r} />
+              <ReservedCard
+                key={r.themeReservationId}
+                data={r}
+                isMyPage={true}
+              />
             ))}
           </CardSection>
         ))
