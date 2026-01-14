@@ -36,7 +36,11 @@ function ThemeOverviewCard({ themeData }) {
   
   // 이미지 로드 실패 시, 기본 썸네일로 변경
   useEffect(() => {
-    setImageUrl(themeData.img);
+    if (!themeData.img) {
+      setImageUrl(ThumbnailImg);
+    } else {
+      setImageUrl(themeData.img);
+    }
   }, [themeData.img]);
   const handleImageError = () => {
     setImageUrl(ThumbnailImg);

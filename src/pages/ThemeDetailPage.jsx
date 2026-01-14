@@ -32,9 +32,10 @@ function ThemeDetailPage() {
   const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
   const modalState = useRecoilValue(scheduleModalState);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [reviewRefetchKey, setReviewRefetchKey] = useState(0);
 
   const navigate = useNavigate();
-  const { isFavoritePage } = useLocation().state || {};
+  const { backButtonText } = useLocation().state || {};
   const { themeId } = useParams();
 
   const { isMobile } = useDevice();
@@ -67,7 +68,7 @@ function ThemeDetailPage() {
         <BackButtonWrapper>
           <StyledLeftArrowIcon onClick={() => navigate(-1)}/>
           <BackButtonText onClick={() => navigate(-1)}>
-            {isFavoritePage ? '내가 찜한 테마 목록으로 돌아가기' : '테마 선택으로 돌아가기'}
+            {backButtonText || '테마 선택으로 돌아가기'}
           </BackButtonText>
         </BackButtonWrapper>
       )}
@@ -81,13 +82,18 @@ function ThemeDetailPage() {
         <ThemeInfoSection
           themeData={themeDetail}
           themePrice={themePrice}
+          reviewRefetchKey={reviewRefetchKey}
         />
+
       </ContentWrapper>
 
       {/* 후기 작성 모달 */}
       {isModalOpen && (
         <ModalBackdrop>
-          <ReviewWriteModal themeData={themeDetail}/>
+          <ReviewWriteModal
+            themeData={themeDetail}
+            onUpdated={() => setReviewRefetchKey((p) => p + 1)}
+          />
         </ModalBackdrop>
       )}
 
