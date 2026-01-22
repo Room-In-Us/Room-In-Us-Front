@@ -134,7 +134,11 @@ export default function ReservedCard({ data, isModal, hideTrash=false, setSelect
         { !isMobile && (<LogoIcon />)}
         <ReservationInfoBox>
           <ReservationDate>{reservedAt ? dayjs(reservedAt).format("MM월 DD일 HH:mm") : ""}</ReservationDate>
-          <ReservationText>예약 완료</ReservationText>
+          <ReservationText>
+            {isMyPage
+              ? (reservedAt ? '예약 완료' : '선택한 일정이 표시됩니다')
+              : (reservedAt ? '' : '선택한 일정이 표시됩니다')}
+          </ReservationText>
         </ReservationInfoBox>
       </ReservationBox>
         </Wrapper>
