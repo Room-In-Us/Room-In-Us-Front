@@ -35,7 +35,6 @@ export default function ReservationDropDown({onReviewClick, reservation}) {
   }, []);
 
   const handleDelete = async () => {
-    if (!window.confirm("정말 예약을 삭제하시겠습니까?")) return;
 
     try {
       await deleteReservationAPI(reservation.themeId, reservation.themeReservationId);
@@ -56,8 +55,6 @@ export default function ReservationDropDown({onReviewClick, reservation}) {
     } catch (error) {
       alert("예약 삭제에 실패했습니다.");
       console.error(error);
-    } finally {
-      setIsOpen(false);
     }
   };
 
