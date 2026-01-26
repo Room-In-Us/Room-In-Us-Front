@@ -49,7 +49,11 @@ export default function ScheduleItemSection({ themeId, isModal, onStateChange })
     (async () => {
       const theme = await fetchThemeById(themeId);
       if (theme) {
-        const unified = { ...theme, themeImg: theme.img || theme.themeImg };
+        const unified = {
+          ...theme,
+          themeImg: theme.img || theme.themeImg,
+          locationName: theme.locationName ?? theme.storeInfo?.locationName,
+        };
         setSelectedTheme(unified);
         setSelectedThemeId(unified.themeId);
       }
@@ -204,7 +208,7 @@ export default function ScheduleItemSection({ themeId, isModal, onStateChange })
           data={{ ...selectedTheme, reservedAt }}
           setSelectedTheme={setSelectedTheme} 
           setSelectedThemeId={setSelectedThemeId}
-          hideTrash={false}
+          hideTrash={mode !== "edit"}
         />
       ) : (
         <ReservedCard 
@@ -337,7 +341,6 @@ const ResultBox = styled.div`
   border: 1px solid var(--RIU_Monochrome-60, #C4C6D1);
   background: var(--RIU_Monochrome-10, #F9F9FB);
   box-sizing: border-box;
-  cursor: pointer;
   flex-shrink: 0;
   overflow: auto;
 
@@ -378,6 +381,7 @@ const ResultItem = styled.div`
   align-items: flex-start;
   gap: 0.625em;
   align-self: stretch;
+  cursor: pointer;
 
   &:hover {
     background: var(--RIU_Primary-0, #E8EAFF);

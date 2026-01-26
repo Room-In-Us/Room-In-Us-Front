@@ -15,7 +15,7 @@ function MainLayOut() {
   return (
     <MainWrapper>
       { !(isAuthPage && !isMobile) && !(isTermsPage) && <Header /> }
-      <ContentWrapper>
+      <ContentWrapper isAuthPage={isAuthPage}>
         <Outlet />
       </ContentWrapper>
       { !isMobile && !(isTermsPage) && <Footer /> }
@@ -33,6 +33,6 @@ const MainWrapper = styled.div`
 `;
 
 const ContentWrapper = styled.div`
-  margin-bottom: 3rem;
+  margin-bottom: ${({ isAuthPage }) => isAuthPage ? '0' : '3rem'};
   flex-grow: 1;
 `;

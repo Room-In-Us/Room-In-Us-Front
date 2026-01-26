@@ -138,11 +138,11 @@ function ReviewInfoSection({ themeId, reviewId }) {
         <SignificantSection tagList={reviewData.reviewTagList} />
       )}
 
-      {/* 장치/좌물쇠 비율 */}
+      {/* 장치/자물쇠 비율 */}
       <SectionWrapper>
         <TitleWrapper>
-          <SectionTitle>장치/좌물쇠 비율</SectionTitle>
-          <RatioText>{reviewData.lockRatio}:{10-reviewData.lockRatio}</RatioText>
+          <SectionTitle>장치/자물쇠 비율</SectionTitle>
+          <RatioText>{Number(reviewData.lockRatio)}:{10-Number(reviewData.lockRatio)}</RatioText>
         </TitleWrapper>
         <Divider/>
         <RangeWrapper>

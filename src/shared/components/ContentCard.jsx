@@ -15,7 +15,7 @@ import { postThemeLikeAPI, deleteThemeLikeAPI } from '../../features/like/api/th
 import PopUpModal from './PopUpModal';
 import useAuthSession from '../hooks/useAuthSession';
 
-function ContentCard({ data, headCount, type, onUnlike }) {
+function ContentCard({ data, headCount, type, onUnlike, backButtonText }) {
   const {
     themeId,
     locationName,
@@ -51,7 +51,11 @@ function ContentCard({ data, headCount, type, onUnlike }) {
 
   // 이미지 로드 실패 시, 기본 썸네일로 변경
   useEffect(() => {
-    setImageUrl(img);
+    if (!img) {
+      setImageUrl(ThumbnailImg);
+    } else {
+      setImageUrl(img);
+    }
   }, [img]);
   const handleImageError = () => {
     setImageUrl(ThumbnailImg);
@@ -64,7 +68,7 @@ function ContentCard({ data, headCount, type, onUnlike }) {
   }, [isLiked, data]);
 
   return (
-    <ContentWrapper onClick={() => navigate(`/theme/${themeId}`)}>
+    <ContentWrapper onClick={() => navigate(`/theme/${themeId}`, { state: { backButtonText } })}>
       {/* 이미지 영역 */}
       <ImageSection imgUrl={imageUrl}>
         <LocationTag>{locationName}</LocationTag>

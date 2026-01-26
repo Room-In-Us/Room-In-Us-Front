@@ -17,7 +17,7 @@ import useDevice from "../../../shared/hooks/useDevice";
 import { genreListConversion, mapRecommendedHeadcount } from "../../../shared/utils/dataUtils";
 import { useState } from "react";
 
-function ThemeInfoSection({ themeData, themePrice }) {
+function ThemeInfoSection({ themeData, themePrice, reviewRefetchKey }) {
   const [showAddressTooltip, setShowAddressTooltip] = useState(false);
   const [showUrlTooltip, setShowUrlTooltip] = useState(false);
   const [showContactTooltip, setShowContactTooltip] = useState(false);
@@ -138,7 +138,10 @@ function ThemeInfoSection({ themeData, themePrice }) {
       </SectionWrapper>
 
       {/* 테마 후기 */}
-      <ThemeReviewSection themeId={themeData?.themeId}/>
+      <ThemeReviewSection
+        themeId={themeData?.themeId}
+        reviewRefetchKey={reviewRefetchKey}
+      />
 
       {/* 인당 가격 안내 */}
       <SectionWrapper>

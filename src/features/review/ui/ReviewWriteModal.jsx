@@ -53,9 +53,29 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
 
   // 다음 화면 이동
   const goNext = () => {
-    if (reviewSection === "first") setReviewSection("second");
-    else if (reviewSection === "second") setReviewSection("third");
-    else if (reviewSection === "third") setReviewSection("last");
+    if (reviewSection === "first") {
+      setReviewSection("second");
+      return;
+    }
+
+    if (reviewSection === "second") {
+      const hasEmptyProficiency = reviewData.participantList.some(
+        p => !p.proficiency
+      );
+
+      if (hasEmptyProficiency) {
+        setErrorMessages(["모든 플레이 인원의 숙련도를 선택해주세요."]);
+        setErrorModalOpen(true);
+        return;
+      }
+
+      setReviewSection("third");
+      return;
+    }
+
+    if (reviewSection === "third") {
+      setReviewSection("last");
+    }
   };
 
   // 이전 화면 이동
@@ -140,6 +160,19 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
 
 
   const handleSubmit = async () => {
+    
+    // 플레이 인원 숙련도 검증
+    const invalidPlayerIndexes = reviewData.participantList
+      .map((p, i) => (!p.proficiency ? i + 1 : null))
+      .filter(Boolean);
+
+    if (invalidPlayerIndexes.length > 0) {
+      setErrorMessages([
+        `플레이 인원 ${invalidPlayerIndexes.join(', ')}번의 숙련도를 선택해주세요.`
+      ]);
+      setErrorModalOpen(true);
+      return;
+    }
 
     const { uiState, ...serverData } = reviewData;
     void uiState;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import LeftArrowIcon from "../shared/assets/icons/common/arrow/leftArrow.svg?react";
 import ThemeOverviewCard from "../features/themeDetail/ui/ThemeOverviewCard";
 import ThemeInfoSection from "../features/themeDetail/ui/ThemeInfoSection";
@@ -32,8 +32,10 @@ function ThemeDetailPage() {
   const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
   const modalState = useRecoilValue(scheduleModalState);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [reviewRefetchKey, setReviewRefetchKey] = useState(0);
 
   const navigate = useNavigate();
+  const { backButtonText } = useLocation().state || {};
   const { themeId } = useParams();
 
   const { isMobile } = useDevice();
@@ -66,7 +68,7 @@ function ThemeDetailPage() {
         <BackButtonWrapper>
           <StyledLeftArrowIcon onClick={() => navigate(-1)}/>
           <BackButtonText onClick={() => navigate(-1)}>
-            테마 선택으로 돌아가기
+            {backButtonText || '테마 선택으로 돌아가기'}
           </BackButtonText>
         </BackButtonWrapper>
       )}
@@ -80,13 +82,18 @@ function ThemeDetailPage() {
         <ThemeInfoSection
           themeData={themeDetail}
           themePrice={themePrice}
+          reviewRefetchKey={reviewRefetchKey}
         />
+
       </ContentWrapper>
 
       {/* 후기 작성 모달 */}
       {isModalOpen && (
         <ModalBackdrop>
-          <ReviewWriteModal themeData={themeDetail}/>
+          <ReviewWriteModal
+            themeData={themeDetail}
+            onUpdated={() => setReviewRefetchKey((p) => p + 1)}
+          />
         </ModalBackdrop>
       )}
 

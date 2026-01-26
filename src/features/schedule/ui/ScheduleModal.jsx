@@ -81,7 +81,6 @@ export default function ScheduleModal({themeId}) {
   // 삭제 처리
   const handleDeleteReservation = async () => {
     if (!reservation) return;
-    if (!window.confirm("정말 예약을 삭제하시겠습니까?")) return;
 
     try {
       await deleteReservationAPI(reservation.themeId, reservation.themeReservationId);
