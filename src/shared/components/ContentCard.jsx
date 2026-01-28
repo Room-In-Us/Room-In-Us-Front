@@ -14,6 +14,8 @@ import useDevice from '../hooks/useDevice';
 import { postThemeLikeAPI, deleteThemeLikeAPI } from '../../features/like/api/themeLikeAPI';
 import PopUpModal from './PopUpModal';
 import useAuthSession from '../hooks/useAuthSession';
+import { scheduleModalState } from '../../features/schedule/modal/scheduleAtom';
+import { useSetRecoilState } from 'recoil';
 
 function ContentCard({ data, headCount, type, onUnlike, backButtonText }) {
   const {
@@ -36,6 +38,7 @@ function ContentCard({ data, headCount, type, onUnlike, backButtonText }) {
   const [imageUrl, setImageUrl] = useState(img);
   const [isHeartActive, setIsHeartActive] = useState(isLiked);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const setScheduleModalState = useSetRecoilState(scheduleModalState);
 
   // 로그인 상태 검증
   const isLoggedIn = useAuthSession();
@@ -68,7 +71,17 @@ function ContentCard({ data, headCount, type, onUnlike, backButtonText }) {
   }, [isLiked, data]);
 
   return (
-    <ContentWrapper onClick={() => navigate(`/theme/${themeId}`, { state: { backButtonText } })}>
+    <ContentWrapper 
+      onClick={() => {
+        setScheduleModalState({
+          isOpen: false,
+          mode: 'add',
+          reservation: null,
+        });
+
+        navigate(`/theme/${themeId}`, { state: { backButtonText } });
+      }}
+    >
       {/* 이미지 영역 */}
       <ImageSection imgUrl={imageUrl}>
         <LocationTag>{locationName}</LocationTag>
