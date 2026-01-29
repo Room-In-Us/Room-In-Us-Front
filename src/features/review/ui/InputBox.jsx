@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import StarRating from './StarRating.jsx';
-import { clothOptions } from '../modal/reviewDataList.js';
+import { clothOptions, FEEDBACK_TEXT_MAP } from '../modal/reviewDataList.js';
 import UnselectedIcon from '../../../shared/assets/icons/common/filterIcon/unselected.svg';
 import SelectedIcon from '../../../shared/assets/icons/common/filterIcon/selected.svg';
 
@@ -14,6 +14,7 @@ export default function InputBox({ rateValue, rateOnChange, label, placeholder, 
       <StarRating
         value={rateValue}
         onChange={rateOnChange}
+        feedbackTexts={FEEDBACK_TEXT_MAP[label]}
       />
       <InputWrapper>
         <ThoughtInput placeholder={placeholder} value={value} onChange={onChange} />

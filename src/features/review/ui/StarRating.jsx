@@ -5,7 +5,7 @@ import EmptyStar from "../../../shared/assets/icons/reviewWrite/starEmpty.svg";
 import HalfStar from '../../../shared/assets/icons/reviewWrite/starhalf.svg';
 import { FEEDBACK_TEXT } from "../modal/reviewDataList";
 
-export default function StarRating({ value = 0, onChange }) {
+export default function StarRating({ value = 0, onChange, feedbackTexts }) {
   const [hovered, setHovered] = useState(null);
 
   const handleMouseEnter = (value) => setHovered(value);
@@ -34,7 +34,9 @@ export default function StarRating({ value = 0, onChange }) {
     });
   };
 
-  const feedbackText = rating > 0 ? FEEDBACK_TEXT[Math.round(rating * 2) - 1] : '\u00A0';
+  const texts = feedbackTexts?.length ? feedbackTexts : FEEDBACK_TEXT;
+
+  const feedbackText = rating > 0 ? texts[Math.round(rating * 2) - 1] : '\u00A0';
 
   return (
     <Container>
