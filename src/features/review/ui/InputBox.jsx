@@ -75,7 +75,7 @@ const ThoughtInput = styled.textarea`
   font-size: 0.75em;
   font-family: Pretendard-Medium;
   background: none;
-  color: var(--RIU_Monochrome-100, #818496);
+  color: var(--RIU_Monochrome-500, #515467);
 
   @media (max-width: 1024px) {
   }

@@ -71,7 +71,7 @@ const Box2 = styled.div`
 
 const Box2Input = styled.input`
   width: 100%;
-  color: var(--RIU_Monochrome-100, #818496);
+  color: var(--RIU_Monochrome-500, #515467);
   font-family: Pretendard-Medium;
   font-size: 0.75em;
   outline: none;
