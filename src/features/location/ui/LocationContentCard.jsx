@@ -30,13 +30,13 @@ function LocationContentCard({ data, headCount, type }) {
     isLiked,
   } = data;
 
-  // state 관리
-  const [imageUrl, setImageUrl] = useState(img);
-  const [isHeartActive, setIsHeartActive] = useState(isLiked);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  
   // 로그인 상태 검증
   const isLoggedIn = useAuthSession();
+
+  // state 관리
+  const [imageUrl, setImageUrl] = useState(img);
+  const [isHeartActive, setIsHeartActive] = useState(isLoggedIn ? isLiked : false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   
   // navigate
   const navigate = useNavigate();
@@ -52,9 +52,8 @@ function LocationContentCard({ data, headCount, type }) {
 
   // 좋아요 상태 관리
   useEffect(() => {
-    setIsHeartActive(isLiked);
-    console.log('data: ', data);
-  }, [isLiked, data]);
+    setIsHeartActive(isLoggedIn ? isLiked : false);
+  }, [isLiked, isLoggedIn]);
   
   const handleImageError = () => {
     setImageUrl(ThumbnailImg);
