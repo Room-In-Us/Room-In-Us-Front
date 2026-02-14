@@ -1,12 +1,14 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import LeftArrow from "../../shared/assets/icons/common/arrow/leftArrow.svg?react";
 import useDevice from "../../shared/hooks/useDevice";
 import CalendarSection from "../../features/mypage/ui/reservations/CalendarSection";
 import ScheduleSection from "../../features/mypage/ui/reservations/ScheduleSection";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { reviewModalState, selectedThemeDataState } from "../../features/themeDetail/model/reviewAtom";
 import ReviewWriteModal from "../../features/review/ui/ReviewWriteModal";
+import { scheduleModalState } from "../../features/schedule/modal/scheduleAtom";
 
 function ReservationsPage() {
   const navigate = useNavigate();
@@ -15,6 +17,11 @@ function ReservationsPage() {
 
   const isModalOpen = useRecoilValue(reviewModalState);
   const selectedThemeData = useRecoilValue(selectedThemeDataState);
+  const setScheduleModalState = useSetRecoilState(scheduleModalState);
+
+  useEffect(() => {
+    setScheduleModalState({ isOpen: false, mode: "add", reservation: null });
+  }, [setScheduleModalState]);
 
   return (
     <PageWrapper>

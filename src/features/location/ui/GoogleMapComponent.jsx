@@ -5,7 +5,7 @@ import { GoogleMap, MarkerF, OverlayView } from '@react-google-maps/api';
 import { googleMapStyles } from '../../../shared/styles/googleMapStyles.js';
 import MarkerIcon from '../../../shared/assets/images/location/marker.png';
 import AwardMarkerIcon from '../../../shared/assets/images/location/awardMarker.png';
-import useDevice from '../../../shared/hooks/useDevice.js';
+// import useDevice from '../../../shared/hooks/useDevice.js';
 
 function GoogleMapComponent() {
   // 중앙 좌표
@@ -16,10 +16,11 @@ function GoogleMapComponent() {
   const [zoomLevelState, setZoomLevel] = useRecoilState(zoomLevel);
 
   // 지도 우측으로 이동
-  const { isMobile } = useDevice();
+  // const { isMobile } = useDevice();
   const adjustedCenter = {
     lat: centerState.lat,
-    lng: centerState.lng - (isMobile ? 0 : 0.005),
+    lng: centerState.lng,
+    // lng: centerState.lng - (isMobile ? 0 : 0.005),
   };
 
   // 상태 관리 (핀 클릭 시 매장 포커싱)

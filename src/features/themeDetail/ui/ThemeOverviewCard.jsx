@@ -19,16 +19,16 @@ import PopUpModal from "../../../shared/components/PopUpModal";
 import { useNavigate } from "react-router-dom";
 
 function ThemeOverviewCard({ themeData }) {
+  // 로그인 상태 검증
+  const isLoggedIn = useAuthSession();
+
   // state 관리
   const [imageUrl, setImageUrl] = useState(themeData.img);
-  const [isHeartActive, setIsHeartActive] = useState(themeData.isLiked);
+  const [isHeartActive, setIsHeartActive] = useState(isLoggedIn ? themeData.isLiked : false);
   const [showTooltip, setShowTooltip] = useState(false);
   const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
   const modalState = useRecoilValue(scheduleModalState);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
-  // 로그인 상태 검증
-  const isLoggedIn = useAuthSession();
   
   const navigate = useNavigate();
   
@@ -48,9 +48,8 @@ function ThemeOverviewCard({ themeData }) {
 
   // 좋아요 상태 관리
   useEffect(() => {
-    setIsHeartActive(themeData.isLiked);
-    console.log('data: ', themeData);
-  }, [themeData.isLiked, themeData]);
+    setIsHeartActive(isLoggedIn ? themeData.isLiked : false);
+  }, [themeData.isLiked, isLoggedIn]);
 
   // 복사 기능
   const handleCopyLink = () => {
