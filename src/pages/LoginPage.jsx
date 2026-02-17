@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import NoiseFilter from '../shared/assets/icons/login/loginNoiseFilter.svg';
-import TextLogo from '../shared/assets/icons/common/textLogo.svg?react'
+import TextLogo from '../shared/assets/icons/common/textLogo.svg?react';
 import LoginIllust from '../shared/assets/images/login/loginIllust.png';
 import KakaoLogo from '../shared/assets/icons/login/kakaoLogo.svg?react';
 import GoogleLogo from '../shared/assets/icons/login/googleLogo.svg?react';
@@ -26,11 +26,11 @@ function LoginPage() {
 
   return (
     <PageWrapper>
-      {!isMobile && <StyledTextLogo/>}
+      {!isMobile && <StyledTextLogo />}
       <ContentWrapper>
         {/* 로고 영역 */}
-        {isMobile && <StyledTextLogo/>}
-        <StyledIllust src={LoginIllust}/>
+        {isMobile && <StyledTextLogo />}
+        <StyledIllust src={LoginIllust} />
         <DescriptionWrapper>
           방탈출 후기와 예약을 한 눈에 살필 수 있는
           <BoldText>루미너스</BoldText>
@@ -38,21 +38,15 @@ function LoginPage() {
 
         <ButtonSection>
           {/* 카카오 로그인 */}
-          <SocialLoginButton
-            type='kakao'
-            onClick={handleKakaoLogin}
-          >
+          <SocialLoginButton type="kakao" onClick={handleKakaoLogin}>
             <StyledKakaoLogo />
-            <LoginText type='kakao'>카카오 계정으로 로그인</LoginText>
+            <LoginText type="kakao">카카오 계정으로 로그인</LoginText>
           </SocialLoginButton>
 
           {/* 구글 로그인 */}
-          <SocialLoginButton
-            type='google'
-            onClick={handleGoogleLogin}
-          >
+          <SocialLoginButton type="google" onClick={handleGoogleLogin}>
             <StyledGoogleLogo />
-            <LoginText type='google'>구글 계정으로 로그인</LoginText>
+            <LoginText type="google">구글 계정으로 로그인</LoginText>
           </SocialLoginButton>
           <GuestAccessButton onClick={() => navigate('/')}>로그인 없이 둘러보기</GuestAccessButton>
         </ButtonSection>
@@ -64,7 +58,7 @@ function LoginPage() {
 export default LoginPage;
 
 const PageWrapper = styled.div`
-font-size: 0.75rem;
+  font-size: 0.75rem;
   width: 100vw;
   height: calc(100vh - 2.375rem); // 100vh-풋터
   display: flex;
@@ -73,20 +67,19 @@ font-size: 0.75rem;
   gap: 6.25em;
   position: relative;
   z-index: 0;
-  
-  background-color:hsla(231,100%,89%,1);
-  background-image:
-    radial-gradient(at 0% 49%, hsla(212,19%,78%,1) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, hsla(216,38%,77%,1) 0px, transparent 50%),
-    radial-gradient(at 51% 100%, hsla(228,28%,65%,1) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, hsla(232,33%,55%,1) 0px, transparent 50%),
-    radial-gradient(at 100% 44%, hsla(239,57%,59%,1) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, hsla(235,68%,66%,1) 0px, transparent 50%),
-    radial-gradient(at 52% 0%, hsla(228,60%,81%,1) 0px, transparent 50%),
-    radial-gradient(at 0% 0%, hsla(213,20%,80%,1) 0px, transparent 50%);
+
+  background-color: hsla(231, 100%, 89%, 1);
+  background-image: radial-gradient(at 0% 49%, hsla(212, 19%, 78%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(216, 38%, 77%, 1) 0px, transparent 50%),
+    radial-gradient(at 51% 100%, hsla(228, 28%, 65%, 1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, hsla(232, 33%, 55%, 1) 0px, transparent 50%),
+    radial-gradient(at 100% 44%, hsla(239, 57%, 59%, 1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(235, 68%, 66%, 1) 0px, transparent 50%),
+    radial-gradient(at 52% 0%, hsla(228, 60%, 81%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 0%, hsla(213, 20%, 80%, 1) 0px, transparent 50%);
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -111,9 +104,9 @@ const StyledTextLogo = styled(TextLogo)`
 
   @media (max-width: 768px) {
     height: 5.67188em;
-    fill: #718FF2;
+    fill: #718ff2;
     line {
-      stroke: #718FF2;
+      stroke: #718ff2;
     }
   }
 `;
@@ -129,7 +122,7 @@ const ContentWrapper = styled.div`
   justify-content: center;
   align-items: center;
   gap: 2.5em;
-  background-color: #FFF;
+  background-color: #fff;
   z-index: 1;
 
   @media (max-width: 768px) {
@@ -189,7 +182,7 @@ const ButtonSection = styled.div`
 `;
 
 const LoginText = styled.div`
-  color: ${({type}) => (type == 'kakao' ? '#000' : '#1E1E2B')};
+  color: ${({ type }) => (type == 'kakao' ? '#000' : '#1E1E2B')};
   font-family: 'Pretendard-Bold';
   line-height: 130%;
   z-index: 1;
@@ -200,7 +193,7 @@ const LoginText = styled.div`
 `;
 
 const SocialLoginButton = styled.div`
-  border: ${({type}) => (type == 'kakao' ? 'none' : '1px solid #B7C1D4')};
+  border: ${({ type }) => (type == 'kakao' ? 'none' : '1px solid #B7C1D4')};
   display: flex;
   width: 100%;
   height: 3.125em;
@@ -209,13 +202,13 @@ const SocialLoginButton = styled.div`
   gap: 0.625em;
   align-self: stretch;
   border-radius: 2.5em;
-  background: ${({type}) => (type == 'kakao' ? '#FEE500' : '#FFF')};
+  background: ${({ type }) => (type == 'kakao' ? '#FEE500' : '#FFF')};
   cursor: pointer;
   position: relative;
   overflow: hidden;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -262,7 +255,7 @@ const StyledGoogleLogo = styled(GoogleLogo)`
 
 const GuestAccessButton = styled.div`
   margin-top: 0.625em;
-  color: var(--RIU_Primary-100, #718FF2);
+  color: var(--RIU_Primary-100, #718ff2);
   font-family: 'Pretendard-Bold';
   font-size: 0.875em;
   line-height: normal;

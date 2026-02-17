@@ -26,6 +26,7 @@ import DatePickerGlobalStyle from '../shared/styles/DatePickerGlobalStyle';
 import useAuthSession from '../shared/hooks/useAuthSession';
 import TermsPage from '../pages/TermsPage';
 import PrivacyPage from '../pages/PrivacyPage';
+import LandingPage from '../pages/LandingPage';
 
 function App() {
   const setMapsLoaded = useSetRecoilState(mapsLoadedState);
@@ -40,6 +41,9 @@ function App() {
       <Routes>
         {/* 메인 레이아웃 적용 */}
         <Route element={<MainLayOut />}>
+          {/* 랜딩 페이지 */}
+          <Route path="/landing" element={<LandingPage />} />
+
           {/* 메인 페이지 */}
           <Route path="/" element={<MainPage />} />
 
@@ -59,7 +63,7 @@ function App() {
           <Route path="/location" element={<LocationPage />} />
 
           {/* 숙련도 페이지 */}
-          <Route path="/level" element={<LevelPage/>} />
+          <Route path="/level" element={<LevelPage />} />
 
           {/* 장르 페이지 */}
           <Route path="/genre" element={<GenrePage />} />
@@ -73,67 +77,37 @@ function App() {
           {/* 마이 페이지 */}
           <Route
             path="/mypage"
-            element={
-              isLoggedIn === null
-                ? <div>로딩 중…</div>
-                : isLoggedIn
-                  ? <MyPage />
-                  : <NotFoundPage />
-            }
+            element={isLoggedIn === null ? <div>로딩 중…</div> : isLoggedIn ? <MyPage /> : <NotFoundPage />}
           />
           <Route
             path="/mypage/preferences"
-            element={
-              isLoggedIn === null
-                ? <div>로딩 중…</div>
-                : isLoggedIn
-                  ? <PreferencesPage />
-                  : <NotFoundPage />
-            }
+            element={isLoggedIn === null ? <div>로딩 중…</div> : isLoggedIn ? <PreferencesPage /> : <NotFoundPage />}
           />
           <Route
             path="/mypage/reservations"
-            element={
-              isLoggedIn === null
-                ? <div>로딩 중…</div>
-                : isLoggedIn
-                  ? <ReservationsPage />
-                  : <NotFoundPage />
-            }
+            element={isLoggedIn === null ? <div>로딩 중…</div> : isLoggedIn ? <ReservationsPage /> : <NotFoundPage />}
           />
           <Route
             path="/mypage/favorites"
-            element={
-              isLoggedIn === null
-                ? <div>로딩 중…</div>
-                : isLoggedIn
-                  ? <FavoritesPage />
-                  : <NotFoundPage />
-            }
+            element={isLoggedIn === null ? <div>로딩 중…</div> : isLoggedIn ? <FavoritesPage /> : <NotFoundPage />}
           />
           <Route
             path="/mypage/reviews"
-            element={
-              isLoggedIn === null
-                ? <div>로딩 중…</div>
-                : isLoggedIn
-                  ? <ReviewsPage />
-                  : <NotFoundPage />
-            }
+            element={isLoggedIn === null ? <div>로딩 중…</div> : isLoggedIn ? <ReviewsPage /> : <NotFoundPage />}
           />
 
           {/* 성향조사 페이지 */}
           <Route path="/survey" element={<SurveyPage />} />
 
           {/* 전체 검색 페이지 */}
-          <Route path = '/search' element={<SerachPage />} />
+          <Route path="/search" element={<SerachPage />} />
 
           {/* 이용약관 및 개인정보 처리방침 페이지 */}
-          <Route path = '/terms' element={<TermsPage />} />
-          <Route path = '/privacy' element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
 
           {/* 404 Not Found 페이지 */}
-          <Route path= "*" element={<NotFoundPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
 

@@ -11,14 +11,16 @@ function MainLayOut() {
   const isAuthPage = authPages.includes(location.pathname);
   const termsPages = ['/terms', '/privacy'];
   const isTermsPage = termsPages.includes(location.pathname);
+  const landingPages = ['/landing'];
+  const isLandingPage = landingPages.includes(location.pathname);
 
   return (
     <MainWrapper>
-      { !(isAuthPage && !isMobile) && !(isTermsPage) && <Header /> }
-      <ContentWrapper isAuthPage={isAuthPage}>
+      {!(isAuthPage && !isMobile) && !isTermsPage && <Header />}
+      <ContentWrapper hasMarginBottom={isAuthPage || isLandingPage}>
         <Outlet />
       </ContentWrapper>
-      { !isMobile && !(isTermsPage) && <Footer /> }
+      {!isMobile && !isTermsPage && !isLandingPage && <Footer />}
     </MainWrapper>
   );
 }
@@ -33,6 +35,6 @@ const MainWrapper = styled.div`
 `;
 
 const ContentWrapper = styled.div`
-  margin-bottom: ${({ isAuthPage }) => isAuthPage ? '0' : '3rem'};
+  margin-bottom: ${({ hasMarginBottom }) => (hasMarginBottom ? '0' : '3rem')};
   flex-grow: 1;
 `;
