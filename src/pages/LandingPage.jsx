@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import LogoIcon from '../shared/assets/icons/common/logo.svg?react';
-import TextLogo from '../shared/assets/icons/landing/landingTextLogo.svg?react';
+import TextLogo from '../shared/assets/icons/landing/landingTextLogo1.svg?react';
 import NoiseFilter from '../shared/assets/icons/login/loginNoiseFilter.svg';
+import LandingSection1 from '../features/landing/LandingSection1';
 
 function LandingPage() {
   const [darkOpacity, setDarkOpacity] = useState(0);
@@ -54,7 +55,7 @@ function LandingPage() {
 
       {/* 스크롤로 올라오는 콘텐츠 */}
       <ScrollLayer>
-        <Section></Section>
+        <LandingSection1 />
 
         <Section>
           <h2>섹션 2</h2>
@@ -72,13 +73,11 @@ function LandingPage() {
 
 export default LandingPage;
 
-/* -------------------- Layout -------------------- */
-
+// CSS
 const Root = styled.div`
   width: 100%;
 `;
 
-/** 첫 화면: fixed로 깔아두는 히어로 */
 const HeroFixed = styled.div`
   font-size: 0.75rem;
   position: fixed;
@@ -149,6 +148,7 @@ const HeroContentLayer = styled.div`
 `;
 
 const ScrollLayer = styled.div`
+  font-size: 0.75rem;
   padding-top: 90vh;
   position: relative;
   z-index: 1;
