@@ -42,10 +42,10 @@ function App() {
         {/* 메인 레이아웃 적용 */}
         <Route element={<MainLayOut />}>
           {/* 랜딩 페이지 */}
-          <Route path="/landing" element={<LandingPage />} />
+          <Route path="/" element={<LandingPage />} />
 
           {/* 메인 페이지 */}
-          <Route path="/" element={<MainPage />} />
+          <Route path="/home" element={<MainPage />} />
 
           {/* 로그인 페이지 */}
           <Route path="/login" element={<LoginPage />} />

@@ -6,6 +6,7 @@ import TextLogo from '../shared/assets/icons/landing/landingTextLogo1.svg?react'
 import NoiseFilter from '../shared/assets/icons/login/loginNoiseFilter.svg';
 import LandingSection1 from '../features/landing/LandingSection1';
 import LandingSection2 from '../features/landing/LandingSection2';
+import LandingSection3 from '../features/landing/LandingSection3';
 
 function LandingPage() {
   const [darkOpacity, setDarkOpacity] = useState(0);
@@ -48,7 +49,7 @@ function LandingPage() {
             </TextRowWrapper>
           </DescriptionWrapper>
 
-          <Button onClick={() => navigate('/')}>
+          <Button onClick={() => navigate('/home')}>
             <ButtonText>바로 시작하기</ButtonText>
           </Button>
         </HeroContentLayer>
@@ -58,6 +59,7 @@ function LandingPage() {
       <ScrollLayer>
         <LandingSection1 />
         <LandingSection2 />
+        <LandingSection3 />
       </ScrollLayer>
     </Root>
   );
@@ -160,7 +162,6 @@ const LogoWrapper = styled.div`
 
 const StyledLogoIcon = styled(LogoIcon)`
   width: 5em;
-  cursor: pointer;
 `;
 
 const DescriptionWrapper = styled.div`

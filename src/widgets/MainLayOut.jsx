@@ -11,7 +11,7 @@ function MainLayOut() {
   const isAuthPage = authPages.includes(location.pathname);
   const termsPages = ['/terms', '/privacy'];
   const isTermsPage = termsPages.includes(location.pathname);
-  const landingPages = ['/landing'];
+  const landingPages = ['/'];
   const isLandingPage = landingPages.includes(location.pathname);
 
   return (

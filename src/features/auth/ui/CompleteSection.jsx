@@ -1,6 +1,6 @@
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
-import SignupIllust from "../../../shared/assets/images/auth/signupIllust.png";
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import SignupIllust from '../../../shared/assets/images/auth/signupIllust.png';
 
 function CompleteSection() {
   const navigate = useNavigate();
@@ -8,17 +8,15 @@ function CompleteSection() {
   return (
     <SectionWrapper>
       <ContentWrapper>
-        <PageNumber>
-          Hi! 👋
-        </PageNumber>
+        <PageNumber>Hi! 👋</PageNumber>
         <TextWrapper>
           <Title>회원가입이 완료되었습니다</Title>
           <Description>루미너스에 가입해주셔서 감사합니다!</Description>
         </TextWrapper>
         <ImageWrapper>
-          <StyledImg src={SignupIllust}/>
+          <StyledImg src={SignupIllust} />
           <ImageText>
-            간단한 조사를 통해 방탈출 성향을 등록해주시면 <br/>
+            간단한 조사를 통해 방탈출 성향을 등록해주시면 <br />
             루미너스가 좋은 서비스로 보답할게요!
           </ImageText>
         </ImageWrapper>
@@ -28,10 +26,10 @@ function CompleteSection() {
         <StyledButton onClick={() => navigate('/survey')}>
           <ButtonText>성향조사 하기</ButtonText>
         </StyledButton>
-        <PassButton onClick={() => navigate('/')}>다음에 할게요</PassButton>
+        <PassButton onClick={() => navigate('/home')}>다음에 할게요</PassButton>
       </ButtonWrapper>
     </SectionWrapper>
-  )
+  );
 }
 
 export default CompleteSection;
@@ -47,7 +45,7 @@ const SectionWrapper = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: stretch;
-  background-color: #FFF;
+  background-color: #fff;
   z-index: 1;
 
   @media (max-width: 768px) {
@@ -82,7 +80,7 @@ const TextWrapper = styled.div`
 `;
 
 const Title = styled.div`
-  color: var(--RIU_Primary-100, #718FF2);
+  color: var(--RIU_Primary-100, #718ff2);
   font-family: 'Pretendard-Bold';
   font-size: 1.125em;
   line-height: 130%;
@@ -151,14 +149,14 @@ const StyledButton = styled.button`
   gap: 0.625em;
   align-self: stretch;
   border-radius: 2.5em;
-  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
+  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5b6acc 0%, #718ff2 100%));
   cursor: pointer;
   position: relative;
   overflow: hidden;
   transition: all 0.2s ease-in-out;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -179,7 +177,7 @@ const StyledButton = styled.button`
 `;
 
 const ButtonText = styled.div`
-  color: #FFF;
+  color: #fff;
   font-family: 'Pretendard-Bold';
   line-height: 130%;
   z-index: 1;

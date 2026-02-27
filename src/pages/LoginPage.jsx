@@ -48,7 +48,7 @@ function LoginPage() {
             <StyledGoogleLogo />
             <LoginText type="google">구글 계정으로 로그인</LoginText>
           </SocialLoginButton>
-          <GuestAccessButton onClick={() => navigate('/')}>로그인 없이 둘러보기</GuestAccessButton>
+          <GuestAccessButton onClick={() => navigate('/home')}>로그인 없이 둘러보기</GuestAccessButton>
         </ButtonSection>
       </ContentWrapper>
     </PageWrapper>

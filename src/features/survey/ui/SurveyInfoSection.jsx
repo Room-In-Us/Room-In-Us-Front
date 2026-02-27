@@ -1,18 +1,18 @@
-import { useState } from "react";
-import styled from "styled-components";
+import { useState } from 'react';
+import styled from 'styled-components';
 import { useRecoilState } from 'recoil';
-import { surveySectionState, surveyState } from "../model/surveyAtom";
-import { useNavigate } from "react-router-dom";
-import RightArrow from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
-import LeftArrow from "../../../shared/assets/icons/common/arrow/leftArrow.svg?react";
-import SurveyImage from "../../../shared/assets/images/survey/surveyImage6.png";
-import { patchPreferencesAPI } from "../api/surveyAPI";
+import { surveySectionState, surveyState } from '../model/surveyAtom';
+import { useNavigate } from 'react-router-dom';
+import RightArrow from '../../../shared/assets/icons/common/arrow/rightArrow.svg?react';
+import LeftArrow from '../../../shared/assets/icons/common/arrow/leftArrow.svg?react';
+import SurveyImage from '../../../shared/assets/images/survey/surveyImage6.png';
+import { patchPreferencesAPI } from '../api/surveyAPI';
 
 function SurveyInfoSection() {
   // state 관리
   const [, setSurveySection] = useRecoilState(surveySectionState);
   const [survey, setSurvey] = useRecoilState(surveyState);
-  const [text, setText] = useState(survey.preference || "");
+  const [text, setText] = useState(survey.preference || '');
 
   // navigate
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ function SurveyInfoSection() {
   const handleTextChange = (e) => {
     const newText = e.target.value;
     setText(newText);
-    setSurvey(prev => ({
+    setSurvey((prev) => ({
       ...prev,
       preference: newText.trim(),
     }));
@@ -41,12 +41,12 @@ function SurveyInfoSection() {
         preference: text.trim() || null,
       };
 
-      console.log("성향조사 제출 결과: ", payload);
+      console.log('성향조사 제출 결과: ', payload);
       const response = await patchPreferencesAPI(payload);
-      console.log("성향조사 제출 결과: ", response);
-      setSurveySection("complete");
+      console.log('성향조사 제출 결과: ', response);
+      setSurveySection('complete');
     } catch (error) {
-      console.error("성향조사 제출 중 오류 발생:", error);
+      console.error('성향조사 제출 중 오류 발생:', error);
     }
   };
 
@@ -54,17 +54,13 @@ function SurveyInfoSection() {
     <SectionWrapper>
       <ContentWrapper>
         <ArrowWrapper>
-          <StyledLeftArrow onClick={() => setSurveySection("position")}/>
-          <PageNumber>
-            6/6
-          </PageNumber>
-          <StyledRightArrow/>
+          <StyledLeftArrow onClick={() => setSurveySection('position')} />
+          <PageNumber>6/6</PageNumber>
+          <StyledRightArrow />
         </ArrowWrapper>
-        <StyeldSurveyImage src={SurveyImage}/>
+        <StyeldSurveyImage src={SurveyImage} />
         <TitleWrapper>
-          <Title>
-            그 외 설명하고픈 내 취향은?
-          </Title>
+          <Title>그 외 설명하고픈 내 취향은?</Title>
           <Description>
             <div>이왕 하는 방탈출, 이런 건 꼭 있었으면 좋겠다!</div>
             <div>나만의 방탈출 취향 TMI를 공유해 주세요.</div>
@@ -84,12 +80,10 @@ function SurveyInfoSection() {
         <StyledButton onClick={handleSubmitSurvey}>
           <ButtonText>제출하기</ButtonText>
         </StyledButton>
-        <MainButton onClick={() => navigate('/')}>
-          루미너스 메인으로 이동하기
-        </MainButton>
+        <MainButton onClick={() => navigate('/home')}>루미너스 메인으로 이동하기</MainButton>
       </ButtonWrapper>
     </SectionWrapper>
-  )
+  );
 }
 
 export default SurveyInfoSection;
@@ -105,7 +99,7 @@ const SectionWrapper = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: stretch;
-  background-color: #FFF;
+  background-color: #fff;
   z-index: 1;
 
   @media (max-width: 768px) {
@@ -143,7 +137,7 @@ const StyledLeftArrow = styled(LeftArrow)`
 const StyledRightArrow = styled(RightArrow)`
   width: 1.25em;
   height: 1.25em;
-  fill: #C4C6D1;
+  fill: #c4c6d1;
 `;
 
 const PageNumber = styled.div`
@@ -151,7 +145,7 @@ const PageNumber = styled.div`
   font-family: 'Pretendard-Bold';
   line-height: 130%;
 
-  @media(max-width: 768px) {
+  @media (max-width: 768px) {
     font-size: 0.75em;
   }
 `;
@@ -159,7 +153,7 @@ const PageNumber = styled.div`
 const StyeldSurveyImage = styled.img`
   height: 15em;
 
-  @media(max-width: 768px) {
+  @media (max-width: 768px) {
     height: 11.875em;
   }
 `;
@@ -172,7 +166,7 @@ const TitleWrapper = styled.div`
 `;
 
 const Title = styled.div`
-  color: var(--RIU_Primary-100, #718FF2);
+  color: var(--RIU_Primary-100, #718ff2);
   font-family: 'Pretendard-Bold';
   font-size: 1.125em;
   line-height: 130%;
@@ -187,19 +181,19 @@ const Description = styled.div`
   flex-direction: column;
   align-items: center;
 
-  @media(max-width: 768px) {
+  @media (max-width: 768px) {
     font-size: 0.75em;
   }
 `;
 
 const StyledTextarea = styled.textarea`
-  border: 1px solid var(--RIU_Monochrome-60, #C4C6D1);
+  border: 1px solid var(--RIU_Monochrome-60, #c4c6d1);
   padding: 1.25em;
   box-sizing: border-box;
   width: 100%;
   height: 12.5em;
   resize: none;
-  background: var(--RIU_Monochrome-10, #F9F9FB);
+  background: var(--RIU_Monochrome-10, #f9f9fb);
   font-family: 'Pretendard-Regular';
   font-size: 1em;
   line-height: 1.25em;
@@ -208,7 +202,7 @@ const StyledTextarea = styled.textarea`
   outline: none;
 
   &::placeholder {
-    color: var(--RIU_Monochrome-80, #A1A4B5);
+    color: var(--RIU_Monochrome-80, #a1a4b5);
     font-family: 'Pretendard-Medium';
     font-size: 0.875em;
     line-height: 130%;
@@ -243,14 +237,14 @@ const StyledButton = styled.button`
   gap: 0.625em;
   align-self: stretch;
   border-radius: 2.5em;
-  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
+  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5b6acc 0%, #718ff2 100%));
   cursor: pointer;
   position: relative;
   overflow: hidden;
   transition: all 0.2s ease-in-out;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -271,7 +265,7 @@ const StyledButton = styled.button`
 `;
 
 const ButtonText = styled.div`
-  color: #F9F9FB;
+  color: #f9f9fb;
   font-family: 'Pretendard-Bold';
   line-height: 130%;
   z-index: 1;
