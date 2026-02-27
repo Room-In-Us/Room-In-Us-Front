@@ -5,6 +5,7 @@ import LogoIcon from '../shared/assets/icons/common/logo.svg?react';
 import TextLogo from '../shared/assets/icons/landing/landingTextLogo1.svg?react';
 import NoiseFilter from '../shared/assets/icons/login/loginNoiseFilter.svg';
 import LandingSection1 from '../features/landing/LandingSection1';
+import LandingSection2 from '../features/landing/LandingSection2';
 
 function LandingPage() {
   const [darkOpacity, setDarkOpacity] = useState(0);
@@ -56,16 +57,7 @@ function LandingPage() {
       {/* 스크롤로 올라오는 콘텐츠 */}
       <ScrollLayer>
         <LandingSection1 />
-
-        <Section>
-          <h2>섹션 2</h2>
-          <p>이후부터는 일반 스크롤처럼 쭉 이어지게 됩니다.</p>
-        </Section>
-
-        <Section>
-          <h2>섹션 3</h2>
-          <p>원하시는 만큼 섹션을 추가하시면 됩니다.</p>
-        </Section>
+        <LandingSection2 />
       </ScrollLayer>
     </Root>
   );
@@ -153,24 +145,6 @@ const ScrollLayer = styled.div`
   position: relative;
   z-index: 1;
   pointer-events: none;
-`;
-
-const Section = styled.section`
-  background: #ffffff;
-  min-height: 80vh;
-  padding: 32px 20px;
-
-  /* 히어로 위로 올라오는 “카드” 느낌 */
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-
-  /* 섹션이 이어질 때 각 섹션 사이 간격 */
-  & + & {
-    margin-top: 16px;
-    border-radius: 24px;
-  }
-
-  pointer-events: auto;
 `;
 
 const LogoWrapper = styled.div`

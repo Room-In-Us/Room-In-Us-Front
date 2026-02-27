@@ -70,15 +70,6 @@ const SectionWrapper = styled.section`
   justify-content: center;
   align-items: flex-start;
   gap: 5em;
-
-  // min-height: 80vh;
-  // padding: 32px 20px;
-
-  // /* 섹션이 이어질 때 각 섹션 사이 간격 */
-  // & + & {
-  //   margin-top: 16px;
-  // }
-
   pointer-events: auto;
 `;
 
