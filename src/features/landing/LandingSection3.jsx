@@ -43,9 +43,11 @@ function LandingSection3() {
                 <StyledLocationIcon />
               </ButtonTop>
               <ButtonBottom>
-                지역별로
-                <br />
-                모아보기
+                <ButtonText>
+                  지역별로
+                  <br />
+                  모아보기
+                </ButtonText>
               </ButtonBottom>
             </StyledButton>
 
@@ -55,9 +57,11 @@ function LandingSection3() {
                 <StyledLevelIcon />
               </ButtonTop>
               <ButtonBottom>
-                숙련도별로
-                <br />
-                모아보기
+                <ButtonText>
+                  숙련도별로
+                  <br />
+                  모아보기
+                </ButtonText>
               </ButtonBottom>
             </StyledButton>
 
@@ -67,9 +71,11 @@ function LandingSection3() {
                 <StyledGenreIcon />
               </ButtonTop>
               <ButtonBottom>
-                장르별로
-                <br />
-                모아보기
+                <ButtonText>
+                  장르별로
+                  <br />
+                  모아보기
+                </ButtonText>
               </ButtonBottom>
             </StyledButton>
           </ButtonWrapper>
@@ -77,10 +83,10 @@ function LandingSection3() {
 
         <BottomButtonWrapper>
           <BottomButton type="primary" onClick={() => navigate('/home')}>
-            <ButtonText type="primary">바로 시작하기</ButtonText>
+            <BottomButtonText type="primary">바로 시작하기</BottomButtonText>
           </BottomButton>
           <BottomButton type="secondary" onClick={() => window.open('mailto:roominus.official@gmail.com')}>
-            <ButtonText type="secondary">비즈니스 컨택</ButtonText>
+            <BottomButtonText type="secondary">비즈니스 컨택</BottomButtonText>
           </BottomButton>
         </BottomButtonWrapper>
       </HearoWrapper>
@@ -133,6 +139,12 @@ const HearoWrapper = styled.div`
     pointer-events: none;
   }
   pointer-events: auto;
+
+  @media (max-width: 768px) {
+    padding: 3.125em 0;
+    border-radius: 1.875rem 1.875rem 0 0;
+    gap: 5em;
+  }
 `;
 
 const BackgroundPiece = styled.div`
@@ -149,6 +161,10 @@ const StyledTextLogo = styled(TextLogo)`
   height: 11em;
   flex-shrink: 0;
   z-index: 100;
+
+  @media (max-width: 768px) {
+    height: 6.15625em;
+  }
 `;
 
 const Text = styled.div`
@@ -157,6 +173,10 @@ const Text = styled.div`
   font-size: 3em;
   line-height: normal;
   z-index: 100;
+
+  @media (max-width: 768px) {
+    font-size: 1.75em;
+  }
 `;
 
 const SearchWrapper = styled.div`
@@ -166,6 +186,10 @@ const SearchWrapper = styled.div`
   justify-content: center;
   gap: 1.875em;
   z-index: 100;
+
+  @media (max-width: 768px) {
+    gap: 0.9375em;
+  }
 `;
 
 const InputWrapper = styled.div`
@@ -195,8 +219,9 @@ const ButtonWrapper = styled.div`
   @media (max-width: 1024px) {
     gap: 1.40625em;
   }
+
   @media (max-width: 768px) {
-    font-size: 0.5em;
+    gap: 0.9375em;
   }
 `;
 
@@ -212,6 +237,10 @@ const ButtonTop = styled.div`
 
   @media (max-width: 1024px) {
     height: 3.28125em;
+  }
+
+  @media (max-width: 768px) {
+    height: 2.1875em;
   }
 `;
 
@@ -234,6 +263,10 @@ const StyledButton = styled.div`
   @media (max-width: 1024px) {
     width: 5.625em;
   }
+
+  @media (max-width: 768px) {
+    width: 3.75em;
+  }
 `;
 
 const ButtonBottom = styled.div`
@@ -244,6 +277,13 @@ const ButtonBottom = styled.div`
   justify-content: center;
   align-items: center;
   background-color: #1b1c5c;
+
+  @media (max-width: 1024px) {
+    height: 1.5625em;
+  }
+`;
+
+const ButtonText = styled.div`
   color: #f9f9fb;
   text-align: center;
   font-family: 'Pretendard-Medium';
@@ -251,8 +291,7 @@ const ButtonBottom = styled.div`
   line-height: 130%;
 
   @media (max-width: 1024px) {
-    height: 2.34375em;
-    font-size: 0.65625em;
+    font-size: 0.4375em;
   }
 `;
 
@@ -261,17 +300,26 @@ const StyledLocationIcon = styled(LocationIcon)`
   @media (max-width: 1024px) {
     width: 1.7578125em;
   }
+  @media (max-width: 768px) {
+    width: 1.17188em;
+  }
 `;
 const StyledLevelIcon = styled(LevelIcon)`
   width: 2.34375em;
   @media (max-width: 1024px) {
     width: 1.7578125em;
   }
+  @media (max-width: 768px) {
+    width: 1.17188em;
+  }
 `;
 const StyledGenreIcon = styled(GenreIcon)`
   width: 2.34375em;
   @media (max-width: 1024px) {
     width: 1.7578125em;
+  }
+  @media (max-width: 768px) {
+    width: 1.17188em;
   }
 `;
 
@@ -280,6 +328,11 @@ const BottomButtonWrapper = styled.div`
   align-items: flex-start;
   gap: 2.5em;
   z-index: 100;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1.25em;
+  }
 `;
 
 const BottomButton = styled.div`
@@ -296,11 +349,20 @@ const BottomButton = styled.div`
       ? 'var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5b6acc 0%, #718ff2 100%))'
       : 'var(--RIU_Monochrome-10, #F9F9FB);'};
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    width: 18.75em;
+    height: 2.5em;
+  }
 `;
 
-const ButtonText = styled.div`
+const BottomButtonText = styled.div`
   color: ${({ type }) => (type === 'primary' ? '#fff' : 'var(--RIU_Primary-200, #6680DF)')};
   font-family: 'Pretendard-Bold';
   font-size: 1.125em;
   line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.875em;
+  }
 `;

@@ -71,12 +71,23 @@ const SectionWrapper = styled.section`
   align-items: flex-start;
   gap: 5em;
   pointer-events: auto;
+
+  @media (max-width: 768px) {
+    padding: 3.125em 1.5em 7.5em 1.5em;
+    border-radius: 1.875em 1.875em 0 0;
+    align-items: center;
+  }
 `;
 
 const InfoAndImgWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 5em;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 3.75em;
+  }
 `;
 
 const InfoWrapper = styled.div`
@@ -84,11 +95,20 @@ const InfoWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 2.5em;
+
+  @media (max-width: 768px) {
+    gap: 1.25em;
+  }
 `;
 
 const StyledTextLogo = styled(TextLogo)`
   width: 21.3125em;
   height: 7.5em;
+
+  @media (max-width: 768px) {
+    width: 17.5em;
+    height: 6.15625em;
+  }
 `;
 
 const InfoBoldText = styled.div`
@@ -96,6 +116,10 @@ const InfoBoldText = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 3em;
   line-height: 1.5;
+
+  @media (max-width: 768px) {
+    font-size: 1.75em;
+  }
 `;
 
 const InfoText = styled.div`
@@ -103,11 +127,20 @@ const InfoText = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 1.25em;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.875em;
+  }
 `;
 
 const StyledImg1 = styled.img`
   width: 46em;
   height: 46em;
+
+  @media (max-width: 768px) {
+    width: 20.9375em;
+    height: 20.9375em;
+  }
 `;
 
 const ListWrapper = styled.div`

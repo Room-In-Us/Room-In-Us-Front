@@ -33,18 +33,27 @@ const ItemWrapper = styled.div`
   align-items: center;
   gap: 3.125em;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    padding: 1.875em 0;
+    flex-direction: column;
+  }
 `;
 
 const StyledImg = styled.img`
   width: 14.375em;
   height: 14.375em;
-  aspect-ratio: 1/1;
 `;
 
 const DescriptionWrapper = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 1.25em;
+
+  @media (max-width: 768px) {
+    gap: 0.625em;
+    flex-direction: column;
+  }
 `;
 
 const Number = styled.div`
@@ -52,6 +61,10 @@ const Number = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 2.1875em;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 1.125em;
+  }
 `;
 
 const TextWrapper = styled.div`
@@ -59,6 +72,10 @@ const TextWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 1.25em;
+
+  @media (max-width: 768px) {
+    gap: 0.625em;
+  }
 `;
 
 const Title = styled.div`
@@ -66,6 +83,10 @@ const Title = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 3.875em;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 1.875em;
+  }
 `;
 
 const Description = styled.div`
@@ -74,4 +95,8 @@ const Description = styled.div`
   font-size: 1.25em;
   line-height: 150%;
   white-space: pre-line;
+
+  @media (max-width: 768px) {
+    font-size: 0.875em;
+  }
 `;

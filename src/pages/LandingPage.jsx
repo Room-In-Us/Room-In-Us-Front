@@ -121,6 +121,10 @@ const HeroFixed = styled.div`
     pointer-events: none;
     z-index: 1;
   }
+
+  @media (max-width: 768px) {
+    gap: 1.875em;
+  }
 `;
 
 const HeroContentLayer = styled.div`
@@ -139,6 +143,10 @@ const HeroContentLayer = styled.div`
   transform-origin: center;
 
   transition: transform 80ms linear;
+
+  @media (max-width: 768px) {
+    gap: 1.875em;
+  }
 `;
 
 const ScrollLayer = styled.div`
@@ -151,17 +159,27 @@ const ScrollLayer = styled.div`
 
 const LogoWrapper = styled.div`
   border-radius: 1.25em;
+  width: 7.5em;
+  height: 7.5em;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 7.5em;
-  height: 7.5em;
   background-color: var(--RIU_Monochrome-10, #f9f9fb);
   z-index: 1;
+
+  @media (max-width: 768px) {
+    border-radius: 0.625em;
+    width: 3.75em;
+    height: 3.75em;
+  }
 `;
 
 const StyledLogoIcon = styled(LogoIcon)`
   width: 5em;
+
+  @media (max-width: 768px) {
+    width: 2.5em;
+  }
 `;
 
 const DescriptionWrapper = styled.div`
@@ -170,6 +188,10 @@ const DescriptionWrapper = styled.div`
   align-items: flex-start;
   gap: 1.25em;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    gap: 0.625em;
+  }
 `;
 
 const Text = styled.div`
@@ -177,12 +199,20 @@ const Text = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 3em;
   line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 1.75em;
+  }
 `;
 
 const TextRowWrapper = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 1.25em;
+
+  @media (max-width: 768px) {
+    gap: 0.625em;
+  }
 `;
 
 const StyledTextLogo = styled(TextLogo)`
@@ -190,11 +220,8 @@ const StyledTextLogo = styled(TextLogo)`
   height: 4.875em;
 
   @media (max-width: 768px) {
-    height: 5.67188em;
-    fill: #718ff2;
-    line {
-      stroke: #718ff2;
-    }
+    height: 2.25em;
+    width: 6.1875em;
   }
 `;
 
@@ -205,11 +232,15 @@ const Button = styled.div`
   height: 3.5em;
   justify-content: center;
   align-items: center;
-  gap: 0.625em;
   flex-shrink: 0;
   background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5b6acc 0%, #718ff2 100%));
   cursor: pointer;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    width: 15em;
+    height: 2.5em;
+  }
 `;
 
 const ButtonText = styled.div`
@@ -217,4 +248,8 @@ const ButtonText = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1.125em;
   line-height: 1.4625em;
+
+  @media (max-width: 768px) {
+    font-size: 0.875em;
+  }
 `;

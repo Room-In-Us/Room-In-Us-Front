@@ -99,6 +99,10 @@ const SectionWrapper = styled.section`
   gap: 5em;
   position: relative;
   pointer-events: auto;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 const BackgroundPiece = styled.div`
@@ -114,6 +118,11 @@ const BackgroundPiece = styled.div`
 const StyledTextLogo = styled(TextLogo)`
   width: 21.3125em;
   height: 7.5em;
+
+  @media (max-width: 768px) {
+    width: 17.5em;
+    height: 6.15625em;
+  }
 `;
 
 const TitleWrapper = styled.div`
@@ -128,6 +137,10 @@ const Title = styled.h2`
   font-size: 3em;
   line-height: normal;
   text-align: center;
+
+  @media (max-width: 768px) {
+    font-size: 1.75em;
+  }
 `;
 
 const CarouselWrapper = styled.div`
@@ -156,13 +169,8 @@ const StyledSwiper = styled(Swiper)`
   }
 
   @media (max-width: 768px) {
-    width: 20rem;
-    padding-bottom: 2.3rem;
-
-    .swiper-pagination-bullet {
-      width: 0.375rem;
-      height: 0.375rem;
-    }
+    width: 18rem;
+    padding-bottom: 2.75rem;
   }
 `;
 
@@ -175,6 +183,10 @@ const NavArrowRight = styled(ArrowIcon)`
   path {
     fill: ${({ $disabled }) => ($disabled ? 'var(--RIU_Monochrome-60, #C4C6D1)' : 'var(--RIU_Primary-100, #718FF2)')};
   }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const NavArrowLeft = styled(ArrowIcon)`
@@ -185,5 +197,9 @@ const NavArrowLeft = styled(ArrowIcon)`
 
   path {
     fill: ${({ $disabled }) => ($disabled ? 'var(--RIU_Monochrome-60, #C4C6D1)' : 'var(--RIU_Primary-100, #718FF2)')};
+  }
+
+  @media (max-width: 768px) {
+    display: none;
   }
 `;

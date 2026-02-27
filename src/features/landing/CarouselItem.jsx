@@ -18,14 +18,18 @@ export default CarouselItem;
 
 // CSS
 const Card = styled.div`
+  padding: 2.5em;
   border-radius: 1.25em;
   display: flex;
-  padding: 2.5em;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 1.875em;
   background: var(--RIU_Monochrome-10, #f9f9fb);
+
+  @media (max-width: 768px) {
+    height: 32em;
+  }
 `;
 
 const TitleWrapper = styled.div`
@@ -39,6 +43,10 @@ const Number = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 1.25em;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 1em;
+  }
 `;
 
 const Title = styled.div`
@@ -46,11 +54,20 @@ const Title = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 1.875em;
   line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 1.5em;
+  }
 `;
 
 const StyledImg = styled.img`
   width: 20.9375em;
   height: 23.125em;
+
+  @media (max-width: 768px) {
+    width: 16.3125em;
+    height: 18em;
+  }
 `;
 
 const Desc = styled.div`
@@ -59,4 +76,8 @@ const Desc = styled.div`
   font-size: 1.125em;
   line-height: 150%;
   white-space: pre-line;
+
+  @media (max-width: 768px) {
+    font-size: 0.875em;
+  }
 `;
