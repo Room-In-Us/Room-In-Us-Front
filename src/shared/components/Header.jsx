@@ -98,7 +98,9 @@ function Header() {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       setHasScrolled(scrollY > 10);
-      setIsScrolledBeyond(location.pathname === '/home' && isMobile && scrollY > 350); // 히어로 영역 벗어나면 true
+      setIsScrolledBeyond(
+        isMobile && ((location.pathname === '/home' && scrollY > 350) || (location.pathname === '/' && scrollY > 600)),
+      ); // 히어로 영역 벗어나면 true
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -316,7 +318,7 @@ const StyledLogoIcon = styled(LogoIcon)`
       fill: ${({ isScrolledBeyond, location, isAuthPage }) =>
         isAuthPage
           ? '#E8EAFF'
-          : location.pathname === '/home'
+          : location.pathname === '/' || location.pathname === '/home'
             ? isScrolledBeyond
               ? '#718FF2'
               : '#E8EAFF'
