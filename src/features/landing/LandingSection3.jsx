@@ -7,6 +7,7 @@ import GenreIcon from '../../shared/assets/icons/main/genreIcon.svg?react';
 import { useNavigate } from 'react-router-dom';
 import NoiseFilter from '../../shared/assets/icons/main/noiseFilter.svg';
 import { useState } from 'react';
+import { Fade } from 'react-awesome-reveal';
 
 function LandingSection3() {
   const navigate = useNavigate();
@@ -22,73 +23,83 @@ function LandingSection3() {
     <SectionWrapper>
       <BackgroundPiece />
       <HearoWrapper>
-        {/* 로고 영역 */}
-        <StyledTextLogo />
-        <Text>
-          지금 바로 루미너스와 함께
-          <br />
-          방탈출 여정을 시작하세요!
-        </Text>
+        <ContentLayer>
+          {/* 로고 영역 */}
+          <Fade direction="up" duration={700} triggerOnce>
+            <StyledTextLogo />
+          </Fade>
+          <Fade direction="up" duration={700} triggerOnce>
+            <Text>
+              지금 바로 루미너스와 함께
+              <br />
+              방탈출 여정을 시작하세요!
+            </Text>
+          </Fade>
 
-        <SearchWrapper>
-          {/* 검색창 */}
-          <InputWrapper>
-            <SearchInput type="main" keyword={keyword} setKeyword={setKeyword} onSearch={goToSearchPage} />
-          </InputWrapper>
+          <Fade direction="up" duration={700} triggerOnce>
+            <SearchWrapper>
+              {/* 검색창 */}
+              <InputWrapper>
+                <SearchInput type="main" keyword={keyword} setKeyword={setKeyword} onSearch={goToSearchPage} />
+              </InputWrapper>
 
-          <ButtonWrapper>
-            {/* 지역 버튼 */}
-            <StyledButton onClick={() => navigate('/location')}>
-              <ButtonTop>
-                <StyledLocationIcon />
-              </ButtonTop>
-              <ButtonBottom>
-                <ButtonText>
-                  지역별로
-                  <br />
-                  모아보기
-                </ButtonText>
-              </ButtonBottom>
-            </StyledButton>
+              <ButtonWrapper>
+                {/* 지역 버튼 */}
+                <StyledButton onClick={() => navigate('/location')}>
+                  <ButtonTop>
+                    <StyledLocationIcon />
+                  </ButtonTop>
+                  <ButtonBottom>
+                    <ButtonText>
+                      지역별로
+                      <br />
+                      모아보기
+                    </ButtonText>
+                  </ButtonBottom>
+                </StyledButton>
 
-            {/* 숙련도 버튼 */}
-            <StyledButton onClick={() => navigate('/level')}>
-              <ButtonTop>
-                <StyledLevelIcon />
-              </ButtonTop>
-              <ButtonBottom>
-                <ButtonText>
-                  숙련도별로
-                  <br />
-                  모아보기
-                </ButtonText>
-              </ButtonBottom>
-            </StyledButton>
+                {/* 숙련도 버튼 */}
+                <StyledButton onClick={() => navigate('/level')}>
+                  <ButtonTop>
+                    <StyledLevelIcon />
+                  </ButtonTop>
+                  <ButtonBottom>
+                    <ButtonText>
+                      숙련도별로
+                      <br />
+                      모아보기
+                    </ButtonText>
+                  </ButtonBottom>
+                </StyledButton>
 
-            {/* 장르 버튼 */}
-            <StyledButton onClick={() => navigate('/genre')}>
-              <ButtonTop>
-                <StyledGenreIcon />
-              </ButtonTop>
-              <ButtonBottom>
-                <ButtonText>
-                  장르별로
-                  <br />
-                  모아보기
-                </ButtonText>
-              </ButtonBottom>
-            </StyledButton>
-          </ButtonWrapper>
-        </SearchWrapper>
+                {/* 장르 버튼 */}
+                <StyledButton onClick={() => navigate('/genre')}>
+                  <ButtonTop>
+                    <StyledGenreIcon />
+                  </ButtonTop>
+                  <ButtonBottom>
+                    <ButtonText>
+                      장르별로
+                      <br />
+                      모아보기
+                    </ButtonText>
+                  </ButtonBottom>
+                </StyledButton>
+              </ButtonWrapper>
+            </SearchWrapper>
+          </Fade>
 
-        <BottomButtonWrapper>
-          <BottomButton type="primary" onClick={() => navigate('/home')}>
-            <BottomButtonText type="primary">바로 시작하기</BottomButtonText>
-          </BottomButton>
-          <BottomButton type="secondary" onClick={() => window.open('mailto:roominus.official@gmail.com')}>
-            <BottomButtonText type="secondary">비즈니스 컨택</BottomButtonText>
-          </BottomButton>
-        </BottomButtonWrapper>
+          <Fade direction="up" duration={700} triggerOnce>
+            <BottomButtonWrapper>
+              <BottomButton type="primary" onClick={() => navigate('/home')}>
+                <BottomButtonText type="primary">바로 시작하기</BottomButtonText>
+              </BottomButton>
+              <BottomButton type="secondary" onClick={() => window.open('mailto:roominus.official@gmail.com')}>
+                <BottomButtonText type="secondary">비즈니스 컨택</BottomButtonText>
+              </BottomButton>
+            </BottomButtonWrapper>
+          </Fade>
+        </ContentLayer>
       </HearoWrapper>
     </SectionWrapper>
   );
@@ -114,6 +125,7 @@ const HearoWrapper = styled.div`
   position: relative;
   overflow: hidden;
   z-index: 5;
+  isolation: isolate;
 
   background-color: hsla(231, 100%, 89%, 1);
   background-image: radial-gradient(at 0% 49%, hsla(212, 19%, 78%, 1) 0px, transparent 50%),
@@ -128,15 +140,13 @@ const HearoWrapper = styled.div`
   &::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background-image: url(${NoiseFilter});
     background-repeat: repeat;
     background-size: cover;
     opacity: 0.5;
     pointer-events: none;
+    z-index: 0;
   }
   pointer-events: auto;
 
@@ -145,6 +155,15 @@ const HearoWrapper = styled.div`
     border-radius: 1.875rem 1.875rem 0 0;
     gap: 5em;
   }
+`;
+
+const ContentLayer = styled.div`
+  position: relative;
+  z-index: 1; /* 콘텐츠는 항상 위 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5em;
 `;
 
 const BackgroundPiece = styled.div`
@@ -160,7 +179,6 @@ const BackgroundPiece = styled.div`
 const StyledTextLogo = styled(TextLogo)`
   height: 11em;
   flex-shrink: 0;
-  z-index: 100;
 
   @media (max-width: 768px) {
     height: 6.15625em;
@@ -172,7 +190,6 @@ const Text = styled.div`
   font-family: 'Pretendard-Bold';
   font-size: 3em;
   line-height: normal;
-  z-index: 100;
 
   @media (max-width: 768px) {
     font-size: 1.75em;
@@ -185,7 +202,6 @@ const SearchWrapper = styled.div`
   align-items: center;
   justify-content: center;
   gap: 1.875em;
-  z-index: 100;
 
   @media (max-width: 768px) {
     gap: 0.9375em;
@@ -327,7 +343,6 @@ const BottomButtonWrapper = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 2.5em;
-  z-index: 100;
 
   @media (max-width: 768px) {
     flex-direction: column;

@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import Img from '../../shared/assets/images/landing/landingImg2.png';
 
-function InfoListItem({ number, title, description }) {
+function InfoListItem({ number, title, description, isLast }) {
   return (
-    <ItemWrapper>
+    <ItemWrapper isLast={isLast}>
       <StyledImg src={Img} />
       <DescriptionWrapper>
         <Number>{number}</Number>
@@ -28,6 +28,7 @@ export default InfoListItem;
 // CSS
 const ItemWrapper = styled.div`
   border-top: 2px solid var(--RIU_Monochrome-200, #717486);
+  border-bottom: ${({ isLast }) => (isLast ? '2px solid var(--RIU_Monochrome-200, #717486)' : 'none')};
   display: flex;
   padding: 1.875em 3.125em;
   align-items: center;

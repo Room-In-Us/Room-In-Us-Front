@@ -8,6 +8,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import CarouselItem from './CarouselItem';
 import ArrowIcon from '../../shared/assets/icons/common/arrow/rightArrow.svg?react';
+import { Fade } from 'react-awesome-reveal';
 
 const LandingSection2 = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -43,45 +44,49 @@ const LandingSection2 = () => {
   return (
     <SectionWrapper>
       <BackgroundPiece />
-      <TitleWrapper>
-        <StyledTextLogo />
-        <Title>
-          루미너스,
-          <br />
-          이렇게 시작해 보세요
-        </Title>
-      </TitleWrapper>
+      <Fade direction="up" duration={700} triggerOnce>
+        <TitleWrapper>
+          <StyledTextLogo />
+          <Title>
+            루미너스,
+            <br />
+            이렇게 시작해 보세요
+          </Title>
+        </TitleWrapper>
+      </Fade>
 
-      <CarouselWrapper>
+      <Fade direction="up" duration={700} triggerOnce>
         <CarouselWrapper>
-          {/* 좌 화살표 */}
-          <NavArrowLeft className="landing2-prev" $disabled={activeIndex === 0} />
+          <CarouselWrapper>
+            {/* 좌 화살표 */}
+            <NavArrowLeft className="landing2-prev" $disabled={activeIndex === 0} />
 
-          <StyledSwiper
-            loop={false}
-            slidesPerView={1}
-            spaceBetween={30}
-            pagination={{ clickable: true }}
-            navigation={{
-              prevEl: '.landing2-prev',
-              nextEl: '.landing2-next',
-            }}
-            modules={[Pagination, Navigation]}
-            onSlideChange={(swiper) => {
-              setActiveIndex(swiper.activeIndex);
-            }}
-          >
-            {cards.map((c, idx) => (
-              <SwiperSlide key={idx}>
-                <CarouselItem number={c.number} title={c.title} description={c.desc} />
-              </SwiperSlide>
-            ))}
-          </StyledSwiper>
+            <StyledSwiper
+              loop={false}
+              slidesPerView={1}
+              spaceBetween={30}
+              pagination={{ clickable: true }}
+              navigation={{
+                prevEl: '.landing2-prev',
+                nextEl: '.landing2-next',
+              }}
+              modules={[Pagination, Navigation]}
+              onSlideChange={(swiper) => {
+                setActiveIndex(swiper.activeIndex);
+              }}
+            >
+              {cards.map((c, idx) => (
+                <SwiperSlide key={idx}>
+                  <CarouselItem number={c.number} title={c.title} description={c.desc} />
+                </SwiperSlide>
+              ))}
+            </StyledSwiper>
 
-          {/* 우 화살표 */}
-          <NavArrowRight className="landing2-next" $disabled={activeIndex === cards.length - 1} />
+            {/* 우 화살표 */}
+            <NavArrowRight className="landing2-next" $disabled={activeIndex === cards.length - 1} />
+          </CarouselWrapper>
         </CarouselWrapper>
-      </CarouselWrapper>
+      </Fade>
     </SectionWrapper>
   );
 };
