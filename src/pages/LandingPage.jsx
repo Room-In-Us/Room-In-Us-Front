@@ -22,7 +22,7 @@ function LandingPage() {
 
       setDarkOpacity(t * 0.3); // 어두워지는 정도
 
-      const minScale = 0.9; // 히어로 영역 축소 비율
+      const minScale = 0.8; // 히어로 영역 축소 비율
       setHeroScale(1 - (1 - minScale) * t);
     };
 
