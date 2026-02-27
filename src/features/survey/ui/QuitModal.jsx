@@ -1,10 +1,10 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 import CautionIcon from '../../../shared/assets/icons/survey/modalCautionIcon.svg?react';
 import CancelIcon from '../../../shared/assets/icons/survey/modalCancelIcon.svg?react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useResetRecoilState, useSetRecoilState } from 'recoil';
-import { surveySectionState, surveyState, modalState } from "../model/surveyAtom";
-import { patchPreferencesAPI } from "../api/surveyAPI";
+import { surveySectionState, surveyState, modalState } from '../model/surveyAtom';
+import { patchPreferencesAPI } from '../api/surveyAPI';
 
 function QuitModal() {
   // 상태 관리
@@ -29,15 +29,15 @@ function QuitModal() {
         preference: survey.preference,
       };
 
-      console.log("성향조사 제출 결과: ", payload);
+      console.log('성향조사 제출 결과: ', payload);
       const response = await patchPreferencesAPI(payload);
-      console.log("성향조사 제출 결과: ", response);
-      setSurveySection("proficiency");
+      console.log('성향조사 제출 결과: ', response);
+      setSurveySection('proficiency');
       resetSurvey();
       setModal(false);
-      navigate('/');
+      navigate('/home');
     } catch (error) {
-      console.error("성향조사 제출 중 오류 발생:", error);
+      console.error('성향조사 제출 중 오류 발생:', error);
     }
   };
 
@@ -45,26 +45,30 @@ function QuitModal() {
     <ModalWrapper>
       <HeaderWrapper>
         <CautionWrapper>
-          <StyledCautionIcon/>
+          <StyledCautionIcon />
           <CautionText>경고</CautionText>
         </CautionWrapper>
-        <StyeldCancelIcon onClick={() => setModal(false)}/>
+        <StyeldCancelIcon onClick={() => setModal(false)} />
       </HeaderWrapper>
 
       <ContentWrapper>
         <TextWrapper>
           <Title>성향조사를 그만두시겠어요?</Title>
           <Description>
-            지금까지 입력한 성향 정보의<br/>
+            지금까지 입력한 성향 정보의
+            <br />
             저장 여부를 선택하실 수 있습니다.
           </Description>
         </TextWrapper>
         <ButtonWrapper>
-          <StyledButton onClick={() => {
+          <StyledButton
+            onClick={() => {
               resetSurvey();
               setModal(false);
-              navigate('/');
-            }} isCancel={true}>
+              navigate('/home');
+            }}
+            isCancel={true}
+          >
             <ButtonText isCancel={true}>저장하지 않을래요</ButtonText>
           </StyledButton>
           <StyledButton onClick={handleSubmitSurvey} isCancel={false}>
@@ -73,7 +77,7 @@ function QuitModal() {
         </ButtonWrapper>
       </ContentWrapper>
     </ModalWrapper>
-  )
+  );
 }
 
 export default QuitModal;
@@ -85,7 +89,7 @@ const ModalWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: var(--RIU_Monochrome-10, #F9F9FB);
+  background: var(--RIU_Monochrome-10, #f9f9fb);
 
   @media (max-width: 768px) {
     width: 17.875rem;
@@ -93,7 +97,7 @@ const ModalWrapper = styled.div`
 `;
 
 const HeaderWrapper = styled.div`
-  border-bottom: 1px solid var(--RIU_Monochrome-30, #E7E8ED);
+  border-bottom: 1px solid var(--RIU_Monochrome-30, #e7e8ed);
   display: flex;
   padding: 0.625rem;
   justify-content: space-between;
@@ -125,7 +129,7 @@ const StyeldCancelIcon = styled(CancelIcon)`
   width: 1.25rem;
   height: 1.25rem;
   cursor: pointer;
-  color: #718FF2;
+  color: #718ff2;
 `;
 
 const ContentWrapper = styled.div`
@@ -146,7 +150,7 @@ const TextWrapper = styled.div`
 `;
 
 const Title = styled.div`
-  color: var(--RIU_Primary-200, #6680DF);
+  color: var(--RIU_Primary-200, #6680df);
   text-align: center;
   font-family: 'Pretendard-Bold';
   font-size: 1.125rem;
@@ -186,16 +190,16 @@ const StyledButton = styled.button`
   align-items: center;
   gap: 0.625rem;
   background: ${(props) =>
-  (props.isCancel)
-      ? "var(--RIU_Monochrome-40, #DFDFE6)"
-      : "var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%))"};
+    props.isCancel
+      ? 'var(--RIU_Monochrome-40, #DFDFE6)'
+      : 'var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%))'};
   cursor: pointer;
   position: relative;
   overflow: hidden;
   transition: all 0.2s ease-in-out;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -207,7 +211,7 @@ const StyledButton = styled.button`
   }
 
   &:hover::before {
-    opacity: ${(props) => (props.isCancel ? "0.2" : "0.5")};
+    opacity: ${(props) => (props.isCancel ? '0.2' : '0.5')};
   }
 
   @media (max-width: 768px) {
@@ -216,7 +220,7 @@ const StyledButton = styled.button`
 `;
 
 const ButtonText = styled.div`
-  color: ${(props) => (props.isCancel ? "var(--RIU_Monochrome-100, #818496)" : "#F9F9FB")};
+  color: ${(props) => (props.isCancel ? 'var(--RIU_Monochrome-100, #818496)' : '#F9F9FB')};
   font-family: 'Pretendard-Bold';
   font-size: 1rem;
   line-height: 130%;

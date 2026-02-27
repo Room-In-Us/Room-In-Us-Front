@@ -9,15 +9,15 @@ const AuthCallback = () => {
 
   useEffect(() => {
     if (userCode) {
-      localStorage.setItem("userCode", userCode);
+      localStorage.setItem('userCode', userCode);
       // URL 정리
       window.history.replaceState({}, document.title, window.location.pathname);
       navigate('/signup');
     } else if (accessToken) {
-      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem('accessToken', accessToken);
       // URL 정리
       window.history.replaceState({}, document.title, window.location.pathname);
-      navigate('/');
+      navigate('/home');
     }
   }, [userCode, accessToken, navigate]);
 

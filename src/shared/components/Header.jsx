@@ -44,7 +44,6 @@ function Header() {
     navigate('/search', { state: { keyword: value } });
   };
 
-
   // 반응형 함수
   const { isDesktop, isTablet, isMobile } = useDevice();
 
@@ -99,7 +98,7 @@ function Header() {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       setHasScrolled(scrollY > 10);
-      setIsScrolledBeyond(location.pathname === '/' && isMobile && scrollY > 350);  // 히어로 영역 벗어나면 true
+      setIsScrolledBeyond(location.pathname === '/home' && isMobile && scrollY > 350); // 히어로 영역 벗어나면 true
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -114,12 +113,12 @@ function Header() {
       // 서버 로그아웃
       await postLogoutAPI();
     } catch (error) {
-      console.error("로그아웃 API 요청 실패:", error);
+      console.error('로그아웃 API 요청 실패:', error);
     } finally {
       // 프론트 토큰 정리
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("userCode");
-      alert("로그아웃 되었습니다.");
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('userCode');
+      alert('로그아웃 되었습니다.');
       window.location.replace('/login');
     }
   };
@@ -130,32 +129,40 @@ function Header() {
       {(isDesktop || isTablet) && (
         <HeaderWrapper hasScrolled={hasScrolled} isLocation={location.pathname === '/location'}>
           <SectionWrapper>
-            <StyledLogoIcon onClick={() => handleNavigation('/')} location={location}/>
+            <StyledLogoIcon onClick={() => handleNavigation('/')} location={location} />
             <ButtonWrapper isDesktop={isDesktop} isTablet={isTablet}>
               <StyledButton
-                onClick={() => handleNavigation('/')}
-                isActive={location.pathname === '/'}
+                onClick={() => handleNavigation('/home')}
+                isActive={location.pathname === '/home'}
                 isDesktop={isDesktop}
                 isTablet={isTablet}
-              >홈 피드</StyledButton>
+              >
+                홈 피드
+              </StyledButton>
               <StyledButton
                 onClick={() => handleNavigation('/location')}
                 isActive={location.pathname === '/location'}
                 isDesktop={isDesktop}
                 isTablet={isTablet}
-              >지역 검색</StyledButton>
+              >
+                지역 검색
+              </StyledButton>
               <StyledButton
                 onClick={() => handleNavigation('/level')}
                 isActive={location.pathname === '/level'}
                 isDesktop={isDesktop}
                 isTablet={isTablet}
-              >숙련도 검색</StyledButton>
+              >
+                숙련도 검색
+              </StyledButton>
               <StyledButton
                 onClick={() => handleNavigation('/genre')}
                 isActive={location.pathname === '/genre'}
                 isDesktop={isDesktop}
                 isTablet={isTablet}
-              >장르 검색</StyledButton>
+              >
+                장르 검색
+              </StyledButton>
             </ButtonWrapper>
           </SectionWrapper>
           <SectionWrapper>
@@ -174,13 +181,13 @@ function Header() {
             {isLoggedIn ? (
               <ProfileWrapper>
                 <CircleButton onClick={() => setIsVisibleProfile(!isVisibleProfile)}>
-                  <StyledProfileIcon/>
+                  <StyledProfileIcon />
                 </CircleButton>
-                <HeaderProfileModal visible={isVisibleProfile}/>
+                <HeaderProfileModal visible={isVisibleProfile} />
               </ProfileWrapper>
             ) : (
               <CircleButton onClick={() => handleNavigation('/login')}>
-                <StyledLoginIcon/>
+                <StyledLoginIcon />
               </CircleButton>
             )}
           </SectionWrapper>
@@ -190,7 +197,7 @@ function Header() {
       {/* 모바일 버전 */}
       {isMobile && (
         <>
-          <MobileHeaderWrapper  hasScrolled={hasScrolled}>
+          <MobileHeaderWrapper hasScrolled={hasScrolled}>
             {isDetailPage ? (
               <StyledLeftArrowIcon onClick={() => navigate(-1)} />
             ) : (
@@ -209,29 +216,28 @@ function Header() {
             <MenuTopWrapper>
               <MobileSearchInputWrapper>
                 <SearchInput
-                  type="header-mobile" 
+                  type="header-mobile"
                   keyword={headerKeyword}
                   setKeyword={setHeaderKeyword}
                   onSearch={handleHeaderSearch}
                 />
               </MobileSearchInputWrapper>
               <MobileButtonWrapper>
-                <MobileButton
-                  onClick={() => handleNavigation('/')}
-                  isActive={location.pathname === '/'}
-                >홈 피드</MobileButton>
+                <MobileButton onClick={() => handleNavigation('/home')} isActive={location.pathname === '/home'}>
+                  홈 피드
+                </MobileButton>
                 <MobileButton
                   onClick={() => handleNavigation('/location')}
                   isActive={location.pathname === '/location'}
-                >지역 검색</MobileButton>
-                <MobileButton
-                  onClick={() => handleNavigation('/level')}
-                  isActive={location.pathname === '/level'}
-                >숙련도 검색</MobileButton>
-                <MobileButton
-                  onClick={() => handleNavigation('/genre')}
-                  isActive={location.pathname === '/genre'}
-                >장르 검색</MobileButton>
+                >
+                  지역 검색
+                </MobileButton>
+                <MobileButton onClick={() => handleNavigation('/level')} isActive={location.pathname === '/level'}>
+                  숙련도 검색
+                </MobileButton>
+                <MobileButton onClick={() => handleNavigation('/genre')} isActive={location.pathname === '/genre'}>
+                  장르 검색
+                </MobileButton>
               </MobileButtonWrapper>
               <ProfileButtonWrapper>
                 {isLoggedIn ? (
@@ -245,14 +251,25 @@ function Header() {
               </ProfileButtonWrapper>
             </MenuTopWrapper>
             <MenuBottomWrapper>
-              <StyledTextLogo/>
+              <StyledTextLogo />
               <IconWrapper>
-                <StyledInstagramIcon onClick={() => window.open('https://www.instagram.com/room.in.us_official/', '_blank')}/>
-                <StyledEmailIcon onClick={() => window.open('mailto:roominus.official@gmail.com')}/>
+                <StyledInstagramIcon
+                  onClick={() => window.open('https://www.instagram.com/room.in.us_official/', '_blank')}
+                />
+                <StyledEmailIcon onClick={() => window.open('mailto:roominus.official@gmail.com')} />
               </IconWrapper>
-              <LegalNoticesText onClick={() => window.open('/terms', '_blank', 'width=600,height=800')}>이용약관</LegalNoticesText>
-              <LegalNoticesText onClick={() => window.open('/privacy', '_blank', 'width=600,height=800')}>개인정보처리방침</LegalNoticesText>
-              <InquiryButton onClick={() => window.open('https://www.notion.so/2da2f8c6055280bf9b9cee64427d1468?pvs=106', '_blank')}><StyledInquiryIcon/>문의하기</InquiryButton>
+              <LegalNoticesText onClick={() => window.open('/terms', '_blank', 'width=600,height=800')}>
+                이용약관
+              </LegalNoticesText>
+              <LegalNoticesText onClick={() => window.open('/privacy', '_blank', 'width=600,height=800')}>
+                개인정보처리방침
+              </LegalNoticesText>
+              <InquiryButton
+                onClick={() => window.open('https://www.notion.so/2da2f8c6055280bf9b9cee64427d1468?pvs=106', '_blank')}
+              >
+                <StyledInquiryIcon />
+                문의하기
+              </InquiryButton>
             </MenuBottomWrapper>
           </MenuWrapper>
         </>
@@ -276,9 +293,8 @@ const HeaderWrapper = styled.div`
   gap: 1.25rem;
   z-index: 1900;
   background: ${({ isLocation, hasScrolled }) =>
-    isLocation ? '#E7E8ED' : (hasScrolled ? 'rgba(255, 255, 255, 0.3)' : 'transparent')};
-  backdrop-filter: ${({ isLocation, hasScrolled }) =>
-    isLocation ? 'none' : (hasScrolled ? 'blur(15px)' : 'none')};
+    isLocation ? '#E7E8ED' : hasScrolled ? 'rgba(255, 255, 255, 0.3)' : 'transparent'};
+  backdrop-filter: ${({ isLocation, hasScrolled }) => (isLocation ? 'none' : hasScrolled ? 'blur(15px)' : 'none')};
   transition: all 0.3s ease-in-out;
 `;
 
@@ -299,10 +315,12 @@ const StyledLogoIcon = styled(LogoIcon)`
     path#Vector_2 {
       fill: ${({ isScrolledBeyond, location, isAuthPage }) =>
         isAuthPage
-          ? "#E8EAFF"
-          : location.pathname === '/'
-          ? (isScrolledBeyond ? "#718FF2" : "#E8EAFF")
-          : "#718FF2"};
+          ? '#E8EAFF'
+          : location.pathname === '/home'
+            ? isScrolledBeyond
+              ? '#718FF2'
+              : '#E8EAFF'
+            : '#718FF2'};
     }
   }
 `;
@@ -311,17 +329,17 @@ const ButtonWrapper = styled.div`
   border-radius: 1.40625rem;
   padding: 0 0.5625rem;
   box-sizing: border-box;
-  width: ${(props) => (props.isDesktop ? "34.6875rem" : "26.25rem")};
+  width: ${(props) => (props.isDesktop ? '34.6875rem' : '26.25rem')};
   height: 2.8125rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #FFF;
+  background: #fff;
 `;
 
 const StyledButton = styled.div`
   border-radius: 1.40625rem;
-  width: ${(props) => (props.isDesktop ? "7.5rem" : "5.625rem")};
+  width: ${(props) => (props.isDesktop ? '7.5rem' : '5.625rem')};
   height: 1.875rem;
   display: flex;
   justify-content: center;
@@ -332,8 +350,8 @@ const StyledButton = styled.div`
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  &:hover{
-    background-color: #E7E8ED;
+  &:hover {
+    background-color: #e7e8ed;
     font-weight: 700;
   }
 `;
@@ -358,13 +376,13 @@ const CircleButton = styled.div`
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  background-color: #F9F9FB;
+  background-color: #f9f9fb;
   cursor: pointer;
   &:hover {
-    background: linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%);
+    background: linear-gradient(282deg, #5b6acc 0%, #718ff2 100%);
   }
   &:hover svg {
-    fill: #F9F9FB;
+    fill: #f9f9fb;
   }
 `;
 
@@ -413,7 +431,7 @@ const MenuWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: var(--RIU_Primary-Gradient-03, linear-gradient(180deg, #E7E8ED 53.14%, #334EAB 100%));
+  background: var(--RIU_Primary-Gradient-03, linear-gradient(180deg, #e7e8ed 53.14%, #334eab 100%));
   backdrop-filter: blur(15px);
   transform: ${({ isVisible }) => (isVisible ? 'translateX(0)' : 'translateX(-100%)')};
   transition: transform 0.3s ease;
@@ -446,7 +464,7 @@ const MobileButtonWrapper = styled.div`
 `;
 
 const MobileButton = styled.div`
-  border-bottom: 1px solid var(--RIU_Primary-200, #6680DF);
+  border-bottom: 1px solid var(--RIU_Primary-200, #6680df);
   padding: 0.75rem 1.25rem;
   box-sizing: border-box;
   width: 100%;
@@ -475,7 +493,7 @@ const ProfileButtonWrapper = styled.div`
 `;
 
 const ProfileButton = styled.div`
-  color: var(--RIU_Primary-700, #1B1C5C);
+  color: var(--RIU_Primary-700, #1b1c5c);
   text-align: center;
   font-family: 'Pretendard-Bold';
   font-size: 0.75rem;
@@ -497,9 +515,9 @@ const MenuBottomWrapper = styled.div`
 const StyledTextLogo = styled(TextLogo)`
   width: 8.75rem;
   height: 3.78125rem;
-  fill: #4648A7;
+  fill: #4648a7;
   line {
-    stroke: #4648A7;
+    stroke: #4648a7;
   }
 `;
 
@@ -511,19 +529,19 @@ const IconWrapper = styled.div`
 
 const StyledInstagramIcon = styled(InstagramIcon)`
   width: 1.25rem;
-  color: #4648A7;
+  color: #4648a7;
   cursor: pointer;
 `;
 const StyledEmailIcon = styled(EmailIcon)`
   width: 1.25rem;
-  color: #4648A7;
+  color: #4648a7;
   cursor: pointer;
 `;
 
 const LegalNoticesText = styled.p`
   margin: 0 0 0.625rem 0;
   width: fit-content;
-  color: var(--RIU_Primary-0, #E8EAFF);
+  color: var(--RIU_Primary-0, #e8eaff);
   font-family: 'Pretendard-Bold';
   font-size: 0.625rem;
   line-height: 150%;
@@ -534,12 +552,12 @@ const InquiryButton = styled.div`
   border-radius: 0.625rem;
   width: 4.625rem;
   height: 1.6875rem;
-  background: var(--RIU_Primary-80, #8DA3FF);
+  background: var(--RIU_Primary-80, #8da3ff);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  color: var(--RIU_Primary-0, #E8EAFF);
+  color: var(--RIU_Primary-0, #e8eaff);
   font-family: 'Pretendard-Bold';
   font-size: 0.625rem;
   line-height: 150%;
