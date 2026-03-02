@@ -1,7 +1,6 @@
 import styled from 'styled-components';
-import Img from '../../shared/assets/images/landing/landingImg2.png';
 
-function InfoListItem({ number, title, description, isLast }) {
+function InfoListItem({ number, Img, title, description, isLast }) {
   return (
     <ItemWrapper isLast={isLast}>
       <StyledImg src={Img} />
@@ -47,6 +46,7 @@ const StyledImg = styled.img`
 `;
 
 const DescriptionWrapper = styled.div`
+  width: 100%;
   display: flex;
   align-items: flex-start;
   gap: 1.25em;
@@ -98,6 +98,6 @@ const Description = styled.div`
   white-space: pre-line;
 
   @media (max-width: 768px) {
-    font-size: 0.875em;
+    font-size: 1em;
   }
 `;
