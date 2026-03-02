@@ -9,23 +9,20 @@ function NotFoundPage() {
     <PageWrapper>
       <ContentWrapper>
         {/* 이미지 영역 */}
-        <StyledErrorImage src={ErrorImage}/>
+        <StyledErrorImage src={ErrorImage} />
 
         {/* 버튼 영역 */}
         <ButtonWrapper>
           <TextWrapper>
-            <Title>
-              404 Error
-            </Title>
+            <Title>404 Error</Title>
             <Description>
-              이런! 막다른 길인 것 같아요.<br/>
+              이런! 막다른 길인 것 같아요.
+              <br />
               요청하신 페이지의 주소가 변경, 삭제되었을 수 있어요.
             </Description>
           </TextWrapper>
-          <Button onClick={() => navigate('/')}>
-            <ButtonText>
-              홈으로 돌아가기
-            </ButtonText>
+          <Button onClick={() => navigate('/home')}>
+            <ButtonText>홈으로 돌아가기</ButtonText>
           </Button>
         </ButtonWrapper>
       </ContentWrapper>
@@ -37,7 +34,7 @@ export default NotFoundPage;
 
 // CSS
 const PageWrapper = styled.div`
-font-size: 70%;
+  font-size: 70%;
   margin-top: 5.625rem;
   width: 100vw;
   height: calc(100vh - 5.625rem - 2.375rem); // 100vh-헤더-풋터
@@ -66,7 +63,7 @@ const ContentWrapper = styled.div`
 const StyledErrorImage = styled.img`
   height: 21.43669em;
   align-self: stretch;
-  aspect-ratio: 436.00/342.99;
+  aspect-ratio: 436/342.99;
 
   @media (max-width: 768px) {
     width: 16.875em;
@@ -84,7 +81,7 @@ const ButtonWrapper = styled.div`
   align-items: flex-start;
   gap: 1.4375em;
   align-self: stretch;
-  background: var(--RIU_Monochrome-10, #F9F9FB);
+  background: var(--RIU_Monochrome-10, #f9f9fb);
 
   @media (max-width: 768px) {
     padding: 1.875em;
@@ -105,7 +102,7 @@ const TextWrapper = styled.div`
 `;
 
 const Title = styled.div`
-  color: var(--RIU_Primary-100, #718FF2);
+  color: var(--RIU_Primary-100, #718ff2);
   font-family: 'Pretendard-Black';
   font-size: 3em;
   line-height: 100%;
@@ -128,7 +125,7 @@ const Description = styled.div`
 
 const Button = styled.div`
   border-radius: 2.5em;
-  background: var(--RIU_Primary-100, #718FF2);
+  background: var(--RIU_Primary-100, #718ff2);
   padding: 0.875em 0em;
   box-sizing: border-box;
   height: 3.125em;
@@ -145,7 +142,7 @@ const Button = styled.div`
   transition: all 0.2s ease-in-out;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -166,7 +163,7 @@ const Button = styled.div`
 `;
 
 const ButtonText = styled.div`
-  color: var(--RIU_Monochrome-10, #F9F9FB);
+  color: var(--RIU_Monochrome-10, #f9f9fb);
   font-family: 'Pretendard-Bold';
   font-size: 1em;
   line-height: 130%;
