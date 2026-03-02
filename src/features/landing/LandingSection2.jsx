@@ -9,6 +9,11 @@ import 'swiper/css/navigation';
 import CarouselItem from './CarouselItem';
 import ArrowIcon from '../../shared/assets/icons/common/arrow/rightArrow.svg?react';
 import { Fade } from 'react-awesome-reveal';
+import Img1 from '../../shared/assets/images/landing/landingSection2Img1.png';
+import Img2 from '../../shared/assets/images/landing/landingSection2Img2.png';
+import Img3 from '../../shared/assets/images/landing/landingSection2Img3.png';
+import Img4 from '../../shared/assets/images/landing/landingSection2Img4.png';
+import Img5 from '../../shared/assets/images/landing/landingSection2Img5.png';
 
 const LandingSection2 = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -16,26 +21,31 @@ const LandingSection2 = () => {
   const cards = [
     {
       number: '01',
+      Img: Img1,
       title: '취향 입력하기',
       desc: '간단한 질문으로 선호 장르, 숙련도 등 취향 정보를 설정합니다.\n입력한 데이터를 기반으로 개인 취향 프로필이 생성됩니다.\n해당 정보는 추후 추천 결과에 반영됩니다.',
     },
     {
       number: '02',
+      Img: Img2,
       title: '추천 테마 탐색',
       desc: '장르·숙련도·위치 검색을 통해\n취향 기반 맞춤 테마를 확인할 수 있습니다.\n지도 화면에서 주변 방탈출 정보를 한눈에 찾을 수 있습니다.',
     },
     {
       number: '03',
+      Img: Img3,
       title: '테마 상세 정보 확인',
       desc: '스토리 콘셉트, 난이도, 사용자 평가 등 핵심 정보를 제공합니다.\n스포일러 없이 정리된 정보를 통해 선택을 돕습니다.\n예약 전 필요한 정보를 한 화면에서 확인할 수 있습니다.',
     },
     {
       number: '04',
+      Img: Img4,
       title: '예약한 일정 관리하기',
       desc: '예약한 테마와 날짜를 일정 형태로 관리할 수 있습니다.\n다가오는 예약과 작성된 후기를 확인 가능합니다.\n개인 방탈출 이력을 체계적으로 정리할 수 있습니다.',
     },
     {
       number: '05',
+      Img: Img5,
       title: '후기 남기기',
       desc: '템플릿 기반 입력 방식으로 후기를 작성할 수 있습니다.\n난이도·스토리·활동성 등 항목별 평가가 가능합니다.\n스포일러 없이 구조화된 리뷰를 남길 수 있습니다.',
     },
@@ -77,7 +87,7 @@ const LandingSection2 = () => {
             >
               {cards.map((c, idx) => (
                 <SwiperSlide key={idx}>
-                  <CarouselItem number={c.number} title={c.title} description={c.desc} />
+                  <CarouselItem number={c.number} Img={c.Img} title={c.title} description={c.desc} />
                 </SwiperSlide>
               ))}
             </StyledSwiper>

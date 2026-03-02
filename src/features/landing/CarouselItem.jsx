@@ -1,7 +1,6 @@
 import styled from 'styled-components';
-import Img from '../../shared/assets/images/landing/landingImg3.png';
 
-function CarouselItem({ number, title, description }) {
+function CarouselItem({ number, Img, title, description }) {
   return (
     <Card>
       <TitleWrapper>
@@ -61,12 +60,12 @@ const Title = styled.div`
 `;
 
 const StyledImg = styled.img`
-  width: 20.9375em;
+  width: 12.875em;
   height: 23.125em;
 
   @media (max-width: 768px) {
-    width: 16.3125em;
-    height: 18em;
+    width: 7.795rem;
+    height: 14rem;
   }
 `;
 
@@ -78,6 +77,6 @@ const Desc = styled.div`
   white-space: pre-line;
 
   @media (max-width: 768px) {
-    font-size: 0.875em;
+    font-size: 1em;
   }
 `;

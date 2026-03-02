@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 import TextLogo from '../../shared/assets/icons/landing/landingTextLogo2.svg?react';
-import Img1 from '../../shared/assets/images/landing/landingImg1.png';
+import Img1 from '../../shared/assets/images/landing/landingSection1Img1.png';
+import Img2 from '../../shared/assets/images/landing/landingSection1Img2.png';
+import Img3 from '../../shared/assets/images/landing/landingSection1Img3.png';
+import Img4 from '../../shared/assets/images/landing/landingSection1Img4.png';
+import Img5 from '../../shared/assets/images/landing/landingSection1Img5.png';
 import InfoListItem from './InfoListItem';
 import { Fade } from 'react-awesome-reveal';
 
@@ -22,12 +26,13 @@ const LandingSection1 = () => {
             <br />한 번의 클릭이 아니라, 한 편의 여정을 함께합니다.
           </InfoText>
         </InfoWrapper>
-        <StyledImg1 src={Img1} />
+        <StyledImg1 src={Img5} />
       </InfoAndImgWrapper>
       <ListWrapper>
         <Fade direction="up" duration={700} triggerOnce>
           <InfoListItem
             number="01"
+            Img={Img1}
             title="내 취향이 뭘까? 취향 탐색 맞춤 테마 추천"
             description={`공포보다 미스터리, 논리보다 스토리, 장치보다 연출—
               루미너스는 당신의 ‘좋아함’을 읽고, 그에 맞는 방탈출을 제안합니다.
@@ -37,6 +42,7 @@ const LandingSection1 = () => {
         <Fade direction="up" duration={700} triggerOnce>
           <InfoListItem
             number="02"
+            Img={Img2}
             title="이 근처 방탈출? 유명 테마? 지도 하나로 끝"
             description={`도심 속 한켠, 혹은 익숙한 거리의 골목 어딘가.
               지금 당신 근처의 방탈출을 한눈에 보고,
@@ -46,6 +52,7 @@ const LandingSection1 = () => {
         <Fade direction="up" duration={700} triggerOnce>
           <InfoListItem
             number="03"
+            Img={Img3}
             title="NO 스포! 자세하게 남길 수 있는 후기"
             description={`결말은 숨기고, 감정은 또렷하게 남기세요.
               루미너스의 템플릿 기반 후기 시스템으로 난이도·몰입도·연출감 등을 정리하면, 그날의 순간이 자연스럽게 기록됩니다.
@@ -56,6 +63,7 @@ const LandingSection1 = () => {
         <Fade direction="up" duration={700} triggerOnce>
           <InfoListItem
             number="04"
+            Img={Img4}
             title="언제 예약했더라? 예약 일정 남기기"
             description={`처음 도전했던 방, 다시 가고 싶은 테마,
               그리고 함께했던 사람들까지.
@@ -139,7 +147,7 @@ const InfoText = styled.div`
   line-height: 150%;
 
   @media (max-width: 768px) {
-    font-size: 0.875em;
+    font-size: 1em;
   }
 `;
 
