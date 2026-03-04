@@ -51,13 +51,13 @@ export default function CustomPagination({ currentPage, totalPages, onPageChange
       {/* 페이지 숫자 */}
         <PageButtonWrapper>
           {pageNumbers.map((page) => (
-            <PageButton
+            <PageItem
               key={page}
               onClick={() => onPageChange(page)}
               isActive={currentPage === page}
             >
-              {page}
-            </PageButton>
+              <PageButton isActive={currentPage === page}>{page}</PageButton>
+            </PageItem>
           ))}
         </PageButtonWrapper>
       
@@ -96,7 +96,11 @@ const PaginationWrapper = styled.div`
 const PageButtonWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 1.875rem;
+  gap: 0.625rem;
+
+  @media (max-width: 768px) {
+    gap: 0.375rem;
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -105,21 +109,43 @@ const ButtonWrapper = styled.div`
   justify-content: center;
 `;
 
-const PageButton = styled.div`
-  color: ${({ isActive }) => (isActive ? "#5B6ACC" : "#717486")};
+const PageItem = styled.div`
+  display: flex;
+  width: 2rem;
+  height: 2rem;
+  justify-content: center;
+  align-items: center;
+  border-radius: 999px;
+  background: ${({ isActive }) => (isActive ? "#5B6ACC" : "transparent")};
   cursor: pointer;
-  font-family: Pretendard-SemiBold;
-  font-size: 0.875rem;
+  transition: background-color 0.2s ease-in-out;
 
   &:hover {
-    color: #5B6ACC;
+    background: ${({ isActive }) => (isActive ? "#5B6ACC" : "rgba(91, 106, 204, 0.12)")};
+  }
+
+  @media (max-width: 768px) {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+`;
+
+const PageButton = styled.div`
+  color: ${({ isActive }) => (isActive ? "#F9F9FB" : "#717486")};
+  font-family: Pretendard-SemiBold;
+  font-size: 1rem;
+  line-height: 1;
+  user-select: none;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
   }
 `;
 
 const NavLeftButton = styled(NavLeft)`
   display: flex;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.75rem;
+  height: 1.5rem;
   justify-content: center;
   align-items: center;
   cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
@@ -135,8 +161,8 @@ const NavLeftButton = styled(NavLeft)`
 
 const NavRightButton = styled(NavRight)`
   display: flex;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.75rem;
+  height: 1.5rem;
   justify-content: center;
   align-items: center;
   cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
@@ -152,8 +178,8 @@ const NavRightButton = styled(NavRight)`
 
 const NavDoubleRightbtn = styled(NavDoubleRight)`
   display: flex;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.75rem;
+  height: 1.5rem;
   justify-content: center;
   align-items: center;
   padding: 0.125rem;
@@ -172,8 +198,8 @@ const NavDoubleRightbtn = styled(NavDoubleRight)`
 
 const NavDoubleLeftbtn = styled(NavDoubleLeft)`
   display: flex;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.75rem;
+  height: 1.5rem;
   justify-content: center;
   align-items: center;
   padding: 0.125rem;
