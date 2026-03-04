@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import styled from "styled-components";
 import useDevice from "../../shared/hooks/useDevice";
 import NavLeft from '../assets/icons/common/arrow/leftArrow.svg?react';
@@ -5,9 +6,10 @@ import NavRight from '../assets/icons/common/arrow/rightArrow.svg?react';
 import NavDoubleRight from '../assets/icons/common/arrow/doubleRightArrow.svg?react';
 import NavDoubleLeft from '../assets/icons/common/arrow/doubleLeftArrow.svg?react';
 
-export default function CustomPagination({ currentPage, totalPages, onPageChange }) {
+export default function CustomPagination({ currentPage, totalPages, onPageChange, scrollTargetRef }) {
   
   const { isMobile } = useDevice();
+  const previousPageRef = useRef(currentPage);
 
   const pageJumpSize = isMobile ? 5 : 10;
 
@@ -30,6 +32,21 @@ export default function CustomPagination({ currentPage, totalPages, onPageChange
   }
   
   const pageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);  
+
+  useEffect(() => {
+    if (previousPageRef.current !== currentPage) {
+      if (typeof window !== "undefined" && scrollTargetRef?.current) {
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+        const extraOffset = 16;
+        const headerOffset = (isMobile ? 70 : 90) + extraOffset;
+        const targetTop = scrollTargetRef.current.getBoundingClientRect().top + window.scrollY - headerOffset;
+        window.scrollTo({ top: Math.max(targetTop, 0), behavior: "smooth" });
+      } else if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      previousPageRef.current = currentPage;
+    }
+  }, [currentPage, scrollTargetRef]);
 
   return (
     <PaginationWrapper>

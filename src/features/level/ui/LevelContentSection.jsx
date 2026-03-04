@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
 import { useRecoilValue } from 'recoil';
 import { activeLevelState } from '../model/levelAtom.jsx';
@@ -49,6 +49,7 @@ export default function LevelContentSection() {
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = isMobile ? 4 : 16;
+  const sectionTopRef = useRef(null);
 
   // 바텀 시트 상태
   const [isBottomSheetOpen, setBottomSheetOpen] = useState(false);
@@ -226,6 +227,10 @@ export default function LevelContentSection() {
   useEffect(() => {
     setCurrentPage(1);
   }, [activeLevel]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [headCount, selectedSort, regionId, zoneIdList, keyword]);
   
   // 필터 적용 함수 수정
   const handleApplyFilters = ({ people, sort, region, zones }) => {
@@ -292,7 +297,7 @@ export default function LevelContentSection() {
 
 
   return (
-    <Wrapper>
+    <Wrapper ref={sectionTopRef}>
       <TopBar>
         <TextWrapper>
           <MainText>{selectedLevel ? selectedLevel.text : "기본"} 테마</MainText>
@@ -396,6 +401,7 @@ export default function LevelContentSection() {
             currentPage={currentPage}
             totalPages={adjustedTotalPages}
             onPageChange={handlePageChange}
+            scrollTargetRef={sectionTopRef}
           />
         </>
       )}
