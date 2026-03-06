@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import styled from "styled-components";
 import useDevice from "../../shared/hooks/useDevice";
 import NavLeft from '../assets/icons/common/arrow/leftArrow.svg?react';
@@ -5,9 +6,10 @@ import NavRight from '../assets/icons/common/arrow/rightArrow.svg?react';
 import NavDoubleRight from '../assets/icons/common/arrow/doubleRightArrow.svg?react';
 import NavDoubleLeft from '../assets/icons/common/arrow/doubleLeftArrow.svg?react';
 
-export default function CustomPagination({ currentPage, totalPages, onPageChange }) {
+export default function CustomPagination({ currentPage, totalPages, onPageChange, scrollTargetRef }) {
   
   const { isMobile } = useDevice();
+  const previousPageRef = useRef(currentPage);
 
   const pageJumpSize = isMobile ? 5 : 10;
 
@@ -31,6 +33,21 @@ export default function CustomPagination({ currentPage, totalPages, onPageChange
   
   const pageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);  
 
+  useEffect(() => {
+    if (previousPageRef.current !== currentPage) {
+      if (typeof window !== "undefined" && scrollTargetRef?.current) {
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+        const extraOffset = 16;
+        const headerOffset = (isMobile ? 70 : 90) + extraOffset;
+        const targetTop = scrollTargetRef.current.getBoundingClientRect().top + window.scrollY - headerOffset;
+        window.scrollTo({ top: Math.max(targetTop, 0), behavior: "smooth" });
+      } else if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      previousPageRef.current = currentPage;
+    }
+  }, [currentPage, scrollTargetRef]);
+
   return (
     <PaginationWrapper>
 
@@ -51,13 +68,13 @@ export default function CustomPagination({ currentPage, totalPages, onPageChange
       {/* 페이지 숫자 */}
         <PageButtonWrapper>
           {pageNumbers.map((page) => (
-            <PageButton
+            <PageItem
               key={page}
               onClick={() => onPageChange(page)}
               isActive={currentPage === page}
             >
-              {page}
-            </PageButton>
+              <PageButton isActive={currentPage === page}>{page}</PageButton>
+            </PageItem>
           ))}
         </PageButtonWrapper>
       
@@ -96,7 +113,11 @@ const PaginationWrapper = styled.div`
 const PageButtonWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 1.875rem;
+  gap: 0.625rem;
+
+  @media (max-width: 768px) {
+    gap: 0.375rem;
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -105,21 +126,43 @@ const ButtonWrapper = styled.div`
   justify-content: center;
 `;
 
-const PageButton = styled.div`
-  color: ${({ isActive }) => (isActive ? "#5B6ACC" : "#717486")};
+const PageItem = styled.div`
+  display: flex;
+  width: 2rem;
+  height: 2rem;
+  justify-content: center;
+  align-items: center;
+  border-radius: 999px;
+  background: ${({ isActive }) => (isActive ? "#5B6ACC" : "transparent")};
   cursor: pointer;
-  font-family: Pretendard-SemiBold;
-  font-size: 0.875rem;
+  transition: background-color 0.2s ease-in-out;
 
   &:hover {
-    color: #5B6ACC;
+    background: ${({ isActive }) => (isActive ? "#5B6ACC" : "rgba(91, 106, 204, 0.12)")};
+  }
+
+  @media (max-width: 768px) {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+`;
+
+const PageButton = styled.div`
+  color: ${({ isActive }) => (isActive ? "#F9F9FB" : "#717486")};
+  font-family: Pretendard-SemiBold;
+  font-size: 1rem;
+  line-height: 1;
+  user-select: none;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
   }
 `;
 
 const NavLeftButton = styled(NavLeft)`
   display: flex;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.75rem;
+  height: 1.5rem;
   justify-content: center;
   align-items: center;
   cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
@@ -135,8 +178,8 @@ const NavLeftButton = styled(NavLeft)`
 
 const NavRightButton = styled(NavRight)`
   display: flex;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.75rem;
+  height: 1.5rem;
   justify-content: center;
   align-items: center;
   cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
@@ -152,8 +195,8 @@ const NavRightButton = styled(NavRight)`
 
 const NavDoubleRightbtn = styled(NavDoubleRight)`
   display: flex;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.75rem;
+  height: 1.5rem;
   justify-content: center;
   align-items: center;
   padding: 0.125rem;
@@ -172,8 +215,8 @@ const NavDoubleRightbtn = styled(NavDoubleRight)`
 
 const NavDoubleLeftbtn = styled(NavDoubleLeft)`
   display: flex;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.75rem;
+  height: 1.5rem;
   justify-content: center;
   align-items: center;
   padding: 0.125rem;

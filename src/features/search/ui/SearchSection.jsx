@@ -71,6 +71,10 @@ export default function SearchSection() {
       {paginatedThemes.length === 0 ? (
         <NoDataWrapper>
           <img src={NoDataImg} alt="검색 결과 없음" />
+          <NonDataTextWrapper>
+            <NonDataText>검색 결과가 없습니다!</NonDataText>
+            <NonDataText2>다른 키워드로 검색해보세요.</NonDataText2>
+          </NonDataTextWrapper>
         </NoDataWrapper>
       ) : (
         paginatedThemes.map((theme) => (
@@ -84,11 +88,13 @@ export default function SearchSection() {
       )}
       </ListWrapper>
 
-      <CustomPagination
-        currentPage={currentPage}
-        totalPages={adjustedTotalPages}
-        onPageChange={handlePageChange}
-      />
+      {themes.length > 0 && (
+        <CustomPagination
+          currentPage={currentPage}
+          totalPages={adjustedTotalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
 
     </Wrap>
   )
@@ -179,8 +185,38 @@ const NoDataWrapper = styled.div`
   justify-content: center;
   align-items: center;
   padding: 4rem 0;
+  gap: 1.25em;
 
   img {
     width: 16rem;
+  }
+`;
+
+const NonDataTextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+`;
+
+const NonDataText = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  text-align: center;
+  font-family: Pretendard-ExtraBold;
+  font-size: 1.125rem;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
+`;
+
+const NonDataText2 = styled.div`
+  color: var(--RIU_Monochrome-300, #696C7E);
+  text-align: center;
+  font-family: Pretendard-Medium;
+  font-size: 1rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
   }
 `;

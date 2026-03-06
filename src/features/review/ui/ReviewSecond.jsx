@@ -415,7 +415,7 @@ export default function ReviewSecond({themeData}) {
                 disabled={checkedDate}
                 selectedDate={review.playedAt}
                 onChange={(date) => {
-                  setReview(prev => ({...prev, playedAt: date.toISOString().split('T')[0]}));
+                  setReview(prev => ({...prev, playedAt: format(date, "yyyy-MM-dd")}));
                 }}
              />
             </DatePickerWrapper>

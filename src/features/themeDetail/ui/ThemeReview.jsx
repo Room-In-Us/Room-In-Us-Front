@@ -74,7 +74,11 @@ function ThemeReview({ data }) {
             <StyledHintIcon/>
             <SummaryTextWrapper>
               <SummaryTitle>힌트 사용</SummaryTitle>
-              <SummaryText>{data.usedHint}개 사용</SummaryText>
+              <SummaryText>
+                {data.usedHint === null || data.usedHint === undefined
+                  ? '-'
+                  : `${data.usedHint}개 사용`}
+              </SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
           <SummaryCard>

@@ -81,14 +81,18 @@ function ReviewInfoSection({ themeId, reviewId }) {
             <StyledHintIcon/>
             <SummaryTextWrapper>
               <SummaryTitle>힌트 사용</SummaryTitle>
-              <SummaryText>{reviewData.usedHint}개 사용</SummaryText>
+              <SummaryText>
+                {reviewData.usedHint === null || reviewData.usedHint === undefined
+                  ? '-'
+                  : `${reviewData.usedHint}개 사용`}
+              </SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
           <SummaryCard>
             <StyledTimeIcon/>
             <SummaryTextWrapper>
               <SummaryTitle>남긴 시간</SummaryTitle>
-              <SummaryText>{reviewData.isEscaped ? convertTimeToMinutes(reviewData.remainingTime) : '-'}</SummaryText>
+              <SummaryText>{reviewData.isEscaped === true ? convertTimeToMinutes(reviewData.remainingTime) : '-'}</SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
         </SummaryWrapper>
@@ -114,8 +118,8 @@ function ReviewInfoSection({ themeId, reviewId }) {
         <SectionTitle>탈출 여부</SectionTitle>
         <EscapeWrapper>
           <EscapeTextWrapper>
-            <EscapeResult>{reviewData.isEscaped ? '성공' : '실패'}</EscapeResult>
-            {(!reviewData.isEscaped && reviewData.failReason) &&
+            <EscapeResult>{reviewData.isEscaped === true ? '성공' : reviewData.isEscaped === false ? '실패' : '-'}</EscapeResult>
+            {(reviewData.isEscaped === false && reviewData.failReason) &&
               <EscapeFailureReason>(원인: {reviewData.failReason})</EscapeFailureReason>
             }
           </EscapeTextWrapper>
@@ -130,7 +134,7 @@ function ReviewInfoSection({ themeId, reviewId }) {
       {/* 추천 인원 수 */}
       <RowSectionWrapper>
         <SectionTitle>추천 인원 수</SectionTitle>
-        <VisitDate>{reviewData.minRecommendedHeadcount}인</VisitDate>
+        <VisitDate>{`${reviewData.minRecommendedHeadcount ?? '-'}인`}</VisitDate>
       </RowSectionWrapper>
 
       {/* 특이사항 */}
