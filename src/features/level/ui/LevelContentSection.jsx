@@ -378,8 +378,7 @@ export default function LevelContentSection() {
         <NoDataWrapper>
           <img src={isMobile ? NoDataImgSmall : NoDataImgLarge} alt="데이터 없음" />
           <NonDataTextWrapper>
-            <NonDataText>검색 결과가 없습니다!</NonDataText>
-            <NonDataText2>다른 키워드로 검색해보세요.</NonDataText2>
+            <NonDataText>해당하는 테마가 없습니다.</NonDataText>
           </NonDataTextWrapper>
         </NoDataWrapper>
       ) : (
@@ -578,16 +577,5 @@ const NonDataText = styled.div`
 
   @media (max-width: 768px) {
     font-size: 1rem;
-  }
-`;
-
-const NonDataText2 = styled.div`
-  color: var(--RIU_Monochrome-300, #696C7E);
-  text-align: center;
-  font-family: Pretendard-Medium;
-  font-size: 1rem;
-
-  @media (max-width: 768px) {
-    font-size: 0.75rem;
   }
 `;
