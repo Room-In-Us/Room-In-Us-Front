@@ -109,7 +109,7 @@ export const formatDateToDot = (dateString) => {
 
 // 시간 변환 함수 (n분 남김)
 export const convertTimeToMinutes = (timeString) => {
-  if (!timeString) return '탈출 실패';
+  if (!timeString) return '-';
 
   const [hours, minutes] = timeString.split(":").map(Number);
 

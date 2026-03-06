@@ -18,6 +18,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { getGenreListAPI } from "../../genre/api/genreAPI";
 import Loading from "../../../shared/components/Loading";
+import NoDataImg from "../../../shared/assets/images/common/noData/noDataImageLarge.png";
 
 function GenreSection() {
   // state 관리
@@ -104,6 +105,13 @@ function GenreSection() {
         <ListWrapper>
           <Loading />
         </ListWrapper>
+      ) : themeList.length === 0 ? (
+        <NoDataWrapper>
+          <img src={NoDataImg} alt="장르 기반 테마 없음" />
+          <NonDataTextWrapper>
+            <NonDataText>해당하는 테마가 없습니다.</NonDataText>
+          </NonDataTextWrapper>
+        </NoDataWrapper>
       ) : (
         <>
           { isDesktop && (
@@ -475,5 +483,37 @@ const StyledSwiperSlide2 = styled(SwiperSlide)`
 
   @media (max-width: 1024px) {
     gap: 0.75rem;
+  }
+`;
+
+const NoDataWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 0;
+  gap: 1.25em;
+
+  img {
+    width: 16rem;
+  }
+`;
+
+const NonDataTextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+`;
+
+const NonDataText = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  text-align: center;
+  font-family: Pretendard-ExtraBold;
+  font-size: 1.125rem;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
   }
 `;

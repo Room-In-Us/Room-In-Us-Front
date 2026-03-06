@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
 import { useRecoilValue } from 'recoil';
 import { activeLevelState } from '../model/levelAtom.jsx';
@@ -49,6 +49,7 @@ export default function LevelContentSection() {
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = isMobile ? 4 : 16;
+  const sectionTopRef = useRef(null);
 
   // 바텀 시트 상태
   const [isBottomSheetOpen, setBottomSheetOpen] = useState(false);
@@ -226,6 +227,10 @@ export default function LevelContentSection() {
   useEffect(() => {
     setCurrentPage(1);
   }, [activeLevel]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [headCount, selectedSort, regionId, zoneIdList, keyword]);
   
   // 필터 적용 함수 수정
   const handleApplyFilters = ({ people, sort, region, zones }) => {
@@ -292,7 +297,7 @@ export default function LevelContentSection() {
 
 
   return (
-    <Wrapper>
+    <Wrapper ref={sectionTopRef}>
       <TopBar>
         <TextWrapper>
           <MainText>{selectedLevel ? selectedLevel.text : "기본"} 테마</MainText>
@@ -372,6 +377,9 @@ export default function LevelContentSection() {
       {themeList.length === 0 ? (
         <NoDataWrapper>
           <img src={isMobile ? NoDataImgSmall : NoDataImgLarge} alt="데이터 없음" />
+          <NonDataTextWrapper>
+            <NonDataText>해당하는 테마가 없습니다.</NonDataText>
+          </NonDataTextWrapper>
         </NoDataWrapper>
       ) : (
         <>
@@ -392,6 +400,7 @@ export default function LevelContentSection() {
             currentPage={currentPage}
             totalPages={adjustedTotalPages}
             onPageChange={handlePageChange}
+            scrollTargetRef={sectionTopRef}
           />
         </>
       )}
@@ -546,8 +555,27 @@ const NoDataWrapper = styled.div`
   justify-content: center;
   align-items: center;
   padding: 4rem 0;
+  gap: 1.25em;
 
   img {
     width: 16rem;
+  }
+`;
+
+const NonDataTextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+`;
+
+const NonDataText = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  text-align: center;
+  font-family: Pretendard-ExtraBold;
+  font-size: 1.125rem;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
   }
 `;
