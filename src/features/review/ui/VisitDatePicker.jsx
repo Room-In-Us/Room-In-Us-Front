@@ -9,20 +9,63 @@ import { reviewStateFamily } from "../../themeDetail/model/reviewAtom";
 import { ko } from 'date-fns/locale';
 import LeftArrow from '../../../shared/assets/icons/common/arrow/leftArrow.svg?react';
 import RightArrow from '../../../shared/assets/icons/common/arrow/rightArrow.svg?react';
-import { format, parse } from "date-fns";
+import { format, isValid, parse } from "date-fns";
+
+const toSafeDate = (input) => {
+  if (!input) return null;
+
+  if (input instanceof Date) {
+    return isValid(input) ? input : null;
+  }
+
+  // dayjs 객체 대응
+  if (typeof input === "object" && typeof input.toDate === "function") {
+    const converted = input.toDate();
+    return converted instanceof Date && isValid(converted) ? converted : null;
+  }
+
+  if (typeof input === "string") {
+    const dashed = parse(input, "yyyy-MM-dd", new Date());
+    if (isValid(dashed)) return dashed;
+
+    const dotted = parse(input, "yyyy.MM.dd", new Date());
+    if (isValid(dotted)) return dotted;
+
+    const native = new Date(input);
+    return isValid(native) ? native : null;
+  }
+
+  return null;
+};
 
 const CustomDateInput = React.forwardRef(({ disabled, value, onToggle }, ref) => {
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    if (!(date instanceof Date) || isNaN(date.getTime())) return "날짜 선택";
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, "0");
-    const dd = String(date.getDate()).padStart(2, "0");
-    return `${yyyy}.${mm}.${dd}`;
+  const lastToggleAtRef = React.useRef(0);
+
+  const formatDate = (rawValue) => {
+    const date = toSafeDate(rawValue);
+    if (!date) return "날짜 선택";
+    return format(date, "yyyy.MM.dd");
+  };
+
+  const handlePointerDown = (e) => {
+    e.preventDefault();
+    if (disabled) return;
+
+    const now = Date.now();
+    if (now - lastToggleAtRef.current < 250) return;
+    lastToggleAtRef.current = now;
+    onToggle?.();
   };
 
   return(
-  <DateBox $disabled={disabled} onClick={onToggle} ref={ref}>
+  <DateBox
+    type="button"
+    $disabled={disabled}
+    onPointerDown={handlePointerDown}
+    onMouseDown={handlePointerDown}
+    onTouchStart={handlePointerDown}
+    ref={ref}
+  >
     <Wrap>
       <DateIcon src={Calendar} />
       <DateBoxText $disabled={disabled}>{formatDate(value)}</DateBoxText>
@@ -44,10 +87,12 @@ export default function VisitDatePicker({ disabled, themeId, onChange, value }) 
   const handleChange = (date) => {
     if (!date) return;
     const formatted = format(date, 'yyyy-MM-dd'); 
-    setReview((prev) => ({
-      ...prev,
-      playedAt: formatted,
-    }));
+    if (themeId != null) {
+      setReview((prev) => ({
+        ...prev,
+        playedAt: formatted,
+      }));
+    }
 
     if (onChange) {
       onChange(date);
@@ -77,9 +122,9 @@ export default function VisitDatePicker({ disabled, themeId, onChange, value }) 
   };
 
   const selectedDate = value
-    ? new Date(value)   // 일정관리에서 넘겨준 날짜
+    ? toSafeDate(value)   // 일정관리에서 넘겨준 날짜(dayjs/Date/string 대응)
     : review.playedAt
-      ? parse(review.playedAt, 'yyyy-MM-dd', new Date())   // 후기용
+      ? toSafeDate(review.playedAt)   // 후기용
       : null;
 
   return (
@@ -138,7 +183,7 @@ const StyledDatePickerWrapper = styled.div`
 
 const StyledDatePicker = styled(DatePicker)``;
 
-const DateBox = styled.div`
+const DateBox = styled.button`
   width: 100%;
   height: 2.5em;
   display: flex;
@@ -147,9 +192,12 @@ const DateBox = styled.div`
   align-items: center;
   border-radius: 0.3125em;
   border: 1px solid var(--RIU_Monochrome-60, #C4C6D1);
+  background: var(--RIU_Monochrome-10, #F9F9FB);
   box-sizing: border-box;
   cursor: ${({ $disabled }) => $disabled ? 'default' : 'pointer'};
   pointer-events: ${({ $disabled }) => $disabled ? 'none' : 'auto'};
+  appearance: none;
+  -webkit-appearance: none;
 
   @media (max-width: 1024px) {
   }
