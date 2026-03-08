@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from 'react';
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import ThumbnailImg from '../../../shared/assets/images/common/thumbnailImg.png';
 import AwardsIcon from '../../../shared/assets/icons/common/awards.svg?react';
@@ -37,7 +37,7 @@ function LocationContentCard({ data, headCount, type }) {
   const [imageUrl, setImageUrl] = useState(img);
   const [isHeartActive, setIsHeartActive] = useState(isLoggedIn ? isLiked : false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  
+
   // navigate
   const navigate = useNavigate();
 
@@ -54,7 +54,7 @@ function LocationContentCard({ data, headCount, type }) {
   useEffect(() => {
     setIsHeartActive(isLoggedIn ? isLiked : false);
   }, [isLiked, isLoggedIn]);
-  
+
   const handleImageError = () => {
     setImageUrl(ThumbnailImg);
   };
@@ -63,7 +63,12 @@ function LocationContentCard({ data, headCount, type }) {
     <ContentWrapper onClick={() => navigate(`/theme/${themeId}`)}>
       {/* 이미지 영역 */}
       <ImageSection imgUrl={imageUrl}>
-        {awardsYear && <AwardsTag><StyledAwards/>{awardsYear}</AwardsTag>}
+        {awardsYear && (
+          <AwardsTag>
+            <StyledAwards />
+            {awardsYear}
+          </AwardsTag>
+        )}
         {/* 보이지 않는 img 태그 추가 (onError 감지용) */}
         <img src={imageUrl} alt="테마 이미지" onError={handleImageError} />
       </ImageSection>
@@ -87,10 +92,7 @@ function LocationContentCard({ data, headCount, type }) {
 
           {/* 장르 영역 */}
           <GenreSection>
-            {genreList &&
-              genreListConversion(genreList).map((genre, index) => (
-                <Tag key={index}>{genre}</Tag>
-            ))}
+            {genreList && genreListConversion(genreList).map((genre, index) => <Tag key={index}>{genre}</Tag>)}
           </GenreSection>
         </TagAndTitleWrapper>
 
@@ -121,7 +123,9 @@ function LocationContentCard({ data, headCount, type }) {
           ) : (
             <PriceWrapper>
               {type === 'home' && '1인'}
-              <Price>₩ {formatNumberWithCommas(price ?? 0)} {type === 'home' && '~'}</Price>
+              <Price>
+                ₩ {formatNumberWithCommas(price ?? 0)} {type === 'home' && '~'}
+              </Price>
             </PriceWrapper>
           )}
 
@@ -164,7 +168,7 @@ function LocationContentCard({ data, headCount, type }) {
         onCancel={() => setIsLoginModalOpen(false)}
       />
     </ContentWrapper>
-  )
+  );
 }
 
 // PropTypes 정의 (eslint 에러 방지)
@@ -184,14 +188,14 @@ const ContentWrapper = styled.div`
   width: 100%;
   height: 9rem;
   display: flex;
-  justify-content: space-between;
+  gap: 0.625rem;
   align-items: flex-start;
-  background: var(--RIU_Monochrome-10, #F9F9FB);
+  background: var(--RIU_Monochrome-10, #f9f9fb);
   cursor: pointer;
   transition: background 0.2s ease-in-out;
 
   &:hover {
-    background: var(--RIU_Primary-0, #E8EAFF);
+    background: var(--RIU_Primary-0, #e8eaff);
   }
 `;
 
@@ -203,7 +207,7 @@ const ImageSection = styled.div`
   display: flex;
   flex-direction: column;
   align-self: stretch;
-  background-image: url(${props => props.imgUrl});
+  background-image: url(${(props) => props.imgUrl});
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -215,7 +219,7 @@ const ImageSection = styled.div`
 `;
 
 const AwardsTag = styled.div`
-  border: 1px solid var(--RIU_Monochrome-80, #A1A4B5);
+  border: 1px solid var(--RIU_Monochrome-80, #a1a4b5);
   border-radius: 0.9375rem;
   padding: 0 0.6328125rem;
   box-sizing: border-box;
@@ -226,8 +230,8 @@ const AwardsTag = styled.div`
   justify-content: center;
   align-items: center;
   gap: 0.25rem;
-  background: var(--RIU_Monochrome-10, #F9F9FB);
-  color: var(--RIU_Primary-80, #8DA3FF);
+  background: var(--RIU_Monochrome-10, #f9f9fb);
+  color: var(--RIU_Primary-80, #8da3ff);
   font-family: 'Pretendard-Bold';
   font-size: 0.625rem;
 `;
@@ -237,7 +241,8 @@ const StyledAwards = styled(AwardsIcon)`
 `;
 
 const ItemWrapper = styled.div`
-  width: 8rem;
+  width: 100%;
+  min-width: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -246,6 +251,7 @@ const ItemWrapper = styled.div`
 
 const TagAndTitleWrapper = styled.div`
   width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 `;
@@ -265,8 +271,8 @@ const ScoreTag = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: var(--RIU_Primary-100, #718FF2);
-  color: var(--RIU_Monochrome-10, #F9F9FB);
+  background: var(--RIU_Primary-100, #718ff2);
+  color: var(--RIU_Monochrome-10, #f9f9fb);
   font-family: 'Pretendard-Bold';
   font-size: 0.5rem;
 `;
@@ -278,34 +284,38 @@ const Tag = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: var(--RIU_Monochrome-20, #F0F0F4);
-  color: var(--RIU_Monochrome-80, #A1A4B5);
+  background: var(--RIU_Monochrome-20, #f0f0f4);
+  color: var(--RIU_Monochrome-80, #a1a4b5);
   font-family: 'Pretendard-Medium';
   font-size: 0.5rem;
   transition: background 0.2s ease-in-out;
 
   ${ContentWrapper}:hover & {
-    background: var(--RIU_Primary-20, #D0D8FF);
-    color: var(--RIU_Primary-200, #6680DF);
+    background: var(--RIU_Primary-20, #d0d8ff);
+    color: var(--RIU_Primary-200, #6680df);
   }
 `;
 
 const TitleSection = styled.div`
   margin-top: 0.5rem;
   width: 100%;
+  min-width: 0;
   display: flex;
   justify-content: space-between;
 `;
 
 const TitleWrapper = styled.div`
+  width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 0;
 `;
 
 const CafeName = styled.div`
-  width: 8.5rem;
-  color: var(--RIU_Primary-80, #8DA3FF);
+  width: 100%;
+  min-width: 0;
+  color: var(--RIU_Primary-80, #8da3ff);
   font-family: 'Pretendard-Bold';
   font-size: 0.625rem;
 
@@ -313,34 +323,34 @@ const CafeName = styled.div`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  word-break: break-all;
 `;
 
 const Title = styled.div`
-  width: 8.5rem;
+  width: 100%;
+  min-width: 0;
   color: var(--RIU_Primary-600, #303281);
   font-family: 'Pretendard-ExtraBold';
   font-size: 1rem;
 
   // 말줄임 표시
-  text-overflow: ellipsis;
   overflow: hidden;
-  word-break: break-word;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  overflow-wrap: break-word;
+  -webkit-line-clamp: 2;
+  word-break: break-word;
 `;
 
 const HeartWrapper = styled.div`
-  width: 1rem;
-  height: 1rem;
   position: relative;
-  right: 0.5rem;
-  bottom: 0.4rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  flex-shrink: 0;
 
   svg {
     position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     transition: opacity 0.2s ease-in-out;
   }
 
@@ -358,20 +368,20 @@ const HeartWrapper = styled.div`
 
   &:hover .hover {
     opacity: 1;
-  } 
+  }
 `;
 
 const StyledHeartIcon = styled(HeartIcon)`
-  width: 120%;
-  height: 120%;
+  width: 100%;
+  height: 100%;
 `;
 const StyledHeartIcon2 = styled(HeartIcon2)`
-  width: 120%;
-  height: 120%;
+  width: 100%;
+  height: 100%;
 `;
 const StyledHeartIcon3 = styled(HeartIcon3)`
-  width: 120%;
-  height: 120%;
+  width: 100%;
+  height: 100%;
 `;
 
 const GenreSection = styled.div`
@@ -393,23 +403,25 @@ const PriceWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 0.17578125rem;
-  color: var(--RIU_Monochrome-80, #A1A4B5);
+  color: var(--RIU_Monochrome-80, #a1a4b5);
   font-family: 'Pretendard-SemiBold';
   font-size: 0.75rem;
   ${ItemWrapper}:hover & {
-    color: var(--RIU_Primary-80, #8DA3FF);
+    color: var(--RIU_Primary-80, #8da3ff);
   }
 `;
 
 const CautionWrapper = styled.div`
   border-radius: 1.875rem;
-  padding: ${(props) => (props.type === 'headCountCaution') ? '0.125rem 0.5rem' : '0'};
-  width: ${(props) => (props.type === 'headCountCaution') ? '70%' : 'auto'};
+  padding: ${(props) => (props.type === 'headCountCaution' ? '0.125rem 0.5rem' : '0')};
+  width: ${(props) => (props.type === 'headCountCaution' ? '70%' : 'auto')};
   display: flex;
   align-items: center;
   gap: 0.17578125rem;
-  background-color: ${(props) => (props.type === 'headCountCaution') ? 'var(--RIU_Primary-500, #4648A7)' : 'transparent'};
-  color: ${(props) => (props.type === 'headCountCaution') ? 'var(--RIU_Monochrome-10, #F9F9FB)' : 'var(--RIU_Monochrome-60, #C4C6D1)'};
+  background-color: ${(props) =>
+    props.type === 'headCountCaution' ? 'var(--RIU_Primary-500, #4648A7)' : 'transparent'};
+  color: ${(props) =>
+    props.type === 'headCountCaution' ? 'var(--RIU_Monochrome-10, #F9F9FB)' : 'var(--RIU_Monochrome-60, #C4C6D1)'};
   font-family: 'Pretendard-SemiBold';
   font-size: 0.75rem;
   line-height: normal;
@@ -421,7 +433,7 @@ const StyledCautionIcon = styled(CautionIcon)`
 `;
 
 const Price = styled.div`
-  color: var(--RIU_Primary-80, #8DA3FF);
+  color: var(--RIU_Primary-80, #8da3ff);
   font-family: 'Pretendard-ExtraBold';
   font-size: 0.75rem;
 `;
