@@ -15,6 +15,7 @@ import {
   zoneName,
   storeCount,
   themeCount,
+  selectedLocationRegionId,
 } from '../features/location/model/locationAtom';
 import { getLocationZonesAPI } from '../features/location/api/locationAPI';
 import useDevice from '../shared/hooks/useDevice';
@@ -38,6 +39,7 @@ function LocationPage() {
   const [, setThemeCount] = useRecoilState(themeCount); // 구역별 테마 개수
   const [, setIsZoneId] = useRecoilState(zoneId);
   const [, setCurrentPage] = useRecoilState(storePageNumber);
+  const [, setSelectedRegionId] = useRecoilState(selectedLocationRegionId);
 
   // 초기 구역 세팅 관련 상태 관리
   const location = useLocation();
@@ -70,6 +72,8 @@ function LocationPage() {
   const handleStationSelect = (data) => {
     setIsStationCardVisible(true);
     setIsStoreCardVisible(false);
+
+    setSelectedRegionId(regionId); // 현재 탐색 중인 지역을 상세 카드용으로 저장
     setIsZoneId(data.zoneId);
     setZoneName(data.zoneName);
     setStoreCount(data.storeCount);

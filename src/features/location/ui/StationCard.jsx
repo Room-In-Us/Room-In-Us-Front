@@ -12,7 +12,7 @@ import {
   zoneId,
   storePageNumber,
   locationStoreId,
-  locationRegionId,
+  selectedLocationRegionId,
   zoneName,
   storeCount,
   themeCount,
@@ -34,7 +34,7 @@ function StationCard() {
   const [currentPage, setCurrentPage] = useRecoilState(storePageNumber);
   const [totalPages, setTotalPages] = useState('');
   const [, setStoreId] = useRecoilState(locationStoreId);
-  const [regionId] = useRecoilState(locationRegionId); // 지역 아이디 상태
+  const [selectedRegionId] = useRecoilState(selectedLocationRegionId); // 지역 아이디 상태
   const [CapitalZoneName] = useRecoilState(zoneName); // 구역 이름 상태
   const [CapitalStoreCount] = useRecoilState(storeCount); // 구역별 매장 개수
   const [CapitalThemeCount] = useRecoilState(themeCount); // 구역별 테마 개수
@@ -91,7 +91,13 @@ function StationCard() {
           setStoreList(response.storeData.contents); // 매장 리스트
           setZoomLevel(16); // 줌 레벨
         } else {
-          const response = await getZoneStoreListAPI(regionId, isZoneId, currentPage, isMobile ? 6 : 10, sortStatus);
+          const response = await getZoneStoreListAPI(
+            selectedRegionId,
+            isZoneId,
+            currentPage,
+            isMobile ? 6 : 10,
+            sortStatus,
+          );
           console.log('수도권 구역 매장 목록: ', response);
           setTotalPages(response.storeData.totalPages);
           setCenterLatAndLng({
@@ -107,7 +113,7 @@ function StationCard() {
       }
     };
     fetchData();
-  }, [isZoneId, currentPage, regionId, setCenterLatAndLng, setStoreList, setZoomLevel, sortStatus, isMobile]);
+  }, [isZoneId, currentPage, selectedRegionId, setCenterLatAndLng, setStoreList, setZoomLevel, sortStatus, isMobile]);
 
   // 페이지 이동
   const handlePageClick = (page) => {
