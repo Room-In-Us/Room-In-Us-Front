@@ -1,16 +1,25 @@
-import { useState, useEffect, useRef } from "react";
-import styled from "styled-components";
-import GoogleMapComponent from "../features/location/ui/GoogleMapComponent";
-import MarkerIcon from "../shared/assets/icons/location/markerIcon.svg?react";
-import ArrowIcon from "../shared/assets/icons/common/arrow/rightArrow.svg?react";
-import StationCard from "../features/location/ui/StationCard";
-import StoreCard from "../features/location/ui/StoreCard";
-import { useRecoilState } from "recoil";
-import { stationCardVisible, storeCardVisible, zoneId, storePageNumber, locationRegionId, zoneName, storeCount, themeCount } from "../features/location/model/locationAtom";
-import { getLocationZonesAPI } from "../features/location/api/locationAPI";
-import useDevice from "../shared/hooks/useDevice";
-import { Sheet } from "react-modal-sheet";
-import { useLocation } from "react-router-dom";
+import { useState, useEffect, useRef } from 'react';
+import styled from 'styled-components';
+import GoogleMapComponent from '../features/location/ui/GoogleMapComponent';
+import MarkerIcon from '../shared/assets/icons/location/markerIcon.svg?react';
+import ArrowIcon from '../shared/assets/icons/common/arrow/rightArrow.svg?react';
+import StationCard from '../features/location/ui/StationCard';
+import StoreCard from '../features/location/ui/StoreCard';
+import { useRecoilState } from 'recoil';
+import {
+  stationCardVisible,
+  storeCardVisible,
+  zoneId,
+  storePageNumber,
+  locationRegionId,
+  zoneName,
+  storeCount,
+  themeCount,
+} from '../features/location/model/locationAtom';
+import { getLocationZonesAPI } from '../features/location/api/locationAPI';
+import useDevice from '../shared/hooks/useDevice';
+import { Sheet } from 'react-modal-sheet';
+import { useLocation } from 'react-router-dom';
 
 function LocationPage() {
   // 상태 관리
@@ -34,15 +43,16 @@ function LocationPage() {
   const location = useLocation();
   const initialRegionId = location.state?.regionId;
   const initialZoneName = location.state?.zoneName;
-  const [entryZoneName, setEntryZoneName] = useState(initialZoneName); 
+  const [entryZoneName, setEntryZoneName] = useState(initialZoneName);
   const regionIdForFetch = initialRegionId ?? regionId;
 
   const sheetRef = useRef(null);
 
   // 스냅 포인트
   const snapPoints = [0, 26, 0.5, 1];
-  const PEEK_INDEX = 3;
-  const [snapIndex, setSnapIndex] = useState(PEEK_INDEX);
+  const COLLAPSED_INDEX = 1; // 외부 클릭 시 내려가는 피크 위치
+  const OPEN_INDEX = 3; // 처음 열릴 때 위치
+  const [snapIndex, setSnapIndex] = useState(OPEN_INDEX);
 
   // 반응형 함수
   const { isMobile } = useDevice();
@@ -77,7 +87,7 @@ function LocationPage() {
         const response = await getLocationZonesAPI(regionIdForFetch);
         setStationList(response);
       } catch (error) {
-        console.error("구역별 역 목록 데이터를 불러오는 중 오류 발생:", error);
+        console.error('구역별 역 목록 데이터를 불러오는 중 오류 발생:', error);
       }
     };
 
@@ -126,92 +136,81 @@ function LocationPage() {
   }, [regionId]);
 
   return (
-    <PageWrapper>
+    <PageWrapper isMobile={isMobile}>
       {/* 지도 영역 */}
       <GoogleMapComponent />
 
       {!isMobile ? (
-      <OverlayWrapper>
-        {/* 지역 선택 영역 */}
-        <LocationButtonWrapper>
-          <LocationButton
-            isSeoulCheck={isSeoulCheck}
-            onClick={() => handleLocationCheck(1)}
-          >
-            <StyledMarkerIcon isSeoulCheck={isSeoulCheck}/>
-            <LocationText>
-              서울
-            </LocationText>
-          </LocationButton>
-          <LocationButton
-            isSeoulCheck={!isSeoulCheck}
-            onClick={() => handleLocationCheck(2)}
-          >
-            <StyledMarkerIcon isSeoulCheck={!isSeoulCheck}/>
-            <LocationText>
-              경기/인천
-            </LocationText>
-          </LocationButton>
-        </LocationButtonWrapper>
+        <OverlayWrapper>
+          {/* 지역 선택 영역 */}
+          <LocationButtonWrapper>
+            <LocationButton isSeoulCheck={isSeoulCheck} onClick={() => handleLocationCheck(1)}>
+              <StyledMarkerIcon isSeoulCheck={isSeoulCheck} />
+              <LocationText>서울</LocationText>
+            </LocationButton>
+            <LocationButton isSeoulCheck={!isSeoulCheck} onClick={() => handleLocationCheck(2)}>
+              <StyledMarkerIcon isSeoulCheck={!isSeoulCheck} />
+              <LocationText>경기/인천</LocationText>
+            </LocationButton>
+          </LocationButtonWrapper>
 
-        {/* 역 선택 영역 */}
-        <StationListWrapper isVisible={isStationListVisible}>
-          {stationList.map((station, index) => (
-            <StationList
-              key={index}
-              isSelected={selectedStationIndices[regionId] === index}
+          {/* 역 선택 영역 */}
+          <StationListWrapper isVisible={isStationListVisible}>
+            {stationList.map((station, index) => (
+              <StationList
+                key={index}
+                isSelected={selectedStationIndices[regionId] === index}
+                onClick={() => {
+                  handleStationSelect(station);
+                  setSelectedStationIndices({
+                    [regionId]: index,
+                    [regionId === 1 ? 2 : 1]: null,
+                  });
+                }}
+              >
+                <StationTitle>{station.zoneName}</StationTitle>
+                <ListEnterWrapper>
+                  <StoreNumber>{station.storeCount}</StoreNumber>
+                  <StyledArrowIcon />
+                </ListEnterWrapper>
+              </StationList>
+            ))}
+          </StationListWrapper>
+
+          {/* 옆 버튼 */}
+          <SideButtonWrapper>
+            <SideButton
               onClick={() => {
-                handleStationSelect(station);
-                setSelectedStationIndices({
-                  [regionId]: index,
-                  [regionId === 1 ? 2 : 1]: null,
-                });
+                setIsStationListVisible(!isStationListVisible);
               }}
             >
-              <StationTitle>
-                {station.zoneName}
-              </StationTitle>
-              <ListEnterWrapper>
-                <StoreNumber>
-                  {station.storeCount}
-                </StoreNumber>
-                <StyledArrowIcon />
-              </ListEnterWrapper>
-            </StationList>
-          ))}
-        </StationListWrapper>
+              <SideButtonArrow openState={isStationListVisible} />
+            </SideButton>
+          </SideButtonWrapper>
 
-        {/* 옆 버튼 */}
-        <SideButtonWrapper>
-          <SideButton onClick={() => {setIsStationListVisible(!isStationListVisible)}}>
-            <SideButtonArrow openState={isStationListVisible}/>
-          </SideButton>
-        </SideButtonWrapper>
+          {/* 역 카드 영역 */}
+          {isStationCardVisible && <StationCard />}
 
-        {/* 역 카드 영역 */}
-        {isStationCardVisible &&
-          <StationCard />
-        }
-
-        {/* 매장 카드 영역 */}
-        {isStoreCardVisible &&
-          <StoreCard />
-        }
-
-      </OverlayWrapper>
+          {/* 매장 카드 영역 */}
+          {isStoreCardVisible && <StoreCard />}
+        </OverlayWrapper>
       ) : (
-
         <>
           {/* 모바일 바텀시트 */}
           <Sheet
             ref={sheetRef}
             isOpen={true}
-            initialSnap={PEEK_INDEX}
+            initialSnap={OPEN_INDEX}
             snapPoints={snapPoints}
-            onClose={() => sheetRef.current?.snapTo(PEEK_INDEX)}
+            onClose={() => sheetRef.current?.snapTo(COLLAPSED_INDEX)}
             onSnap={(index) => {
               setSnapIndex(index);
-              if (index === 0) sheetRef.current?.snapTo(PEEK_INDEX);
+
+              // 사용자가 아래로 끝까지 내려서 닫히려는 동작을 하면
+              // 실제로 닫지 않고, 외부 클릭과 동일한 피크 위치로 이동
+              if (index === 0) {
+                sheetRef.current?.snapTo(COLLAPSED_INDEX);
+              }
             }}
           >
             <Sheet.Container style={{ fontSize: '0.7rem', maxHeight: '80vh', zIndex: 3000 }}>
@@ -219,78 +218,71 @@ function LocationPage() {
               <Sheet.Header>
                 <HeaderDragHandle />
               </Sheet.Header>
-              
+
               <Sheet.Content>
-              {!(isStationCardVisible || isStoreCardVisible) && (
-                // 역 목록 화면
-                <MobileSheetBody>
+                {!(isStationCardVisible || isStoreCardVisible) && (
+                  // 역 목록 화면
+                  <MobileSheetBody>
+                    {/* 지역 선택 영역 */}
+                    <LocationButtonWrapper>
+                      <LocationButton isSeoulCheck={isSeoulCheck} onClick={() => handleLocationCheck(1)}>
+                        <StyledMarkerIcon isSeoulCheck={isSeoulCheck} />
+                        <LocationText>서울</LocationText>
+                      </LocationButton>
+                      <LocationButton isSeoulCheck={!isSeoulCheck} onClick={() => handleLocationCheck(2)}>
+                        <StyledMarkerIcon isSeoulCheck={!isSeoulCheck} />
+                        <LocationText>경기/인천</LocationText>
+                      </LocationButton>
+                    </LocationButtonWrapper>
 
-                  {/* 지역 선택 영역 */}
-                  <LocationButtonWrapper>
-                    <LocationButton
-                      isSeoulCheck={isSeoulCheck}
-                      onClick={() => handleLocationCheck(1)}
-                    >
-                      <StyledMarkerIcon isSeoulCheck={isSeoulCheck}/>
-                      <LocationText>서울</LocationText>
-                    </LocationButton>
-                    <LocationButton
-                      isSeoulCheck={!isSeoulCheck}
-                      onClick={() => handleLocationCheck(2)}
-                    >
-                      <StyledMarkerIcon isSeoulCheck={!isSeoulCheck}/>
-                      <LocationText>경기/인천</LocationText>
-                    </LocationButton>
-                  </LocationButtonWrapper>
+                    {/* 역 리스트 (폭만 100%로) */}
+                    <MobileStationListWrapper>
+                      {stationList.map((station, index) => (
+                        <StationList
+                          key={index}
+                          isSelected={selectedStationIndices[regionId] === index}
+                          onClick={() => {
+                            handleStationSelect(station);
+                            setSelectedStationIndices({
+                              [regionId]: index,
+                              [regionId === 1 ? 2 : 1]: null,
+                            });
+                            // 필요시 선택 후 피크로 접기: sheetRef.current?.snapTo(0);
+                          }}
+                        >
+                          <StationTitle>{station.zoneName}</StationTitle>
+                          <ListEnterWrapper>
+                            <StoreNumber>{station.storeCount}</StoreNumber>
+                            <StyledArrowIcon />
+                          </ListEnterWrapper>
+                        </StationList>
+                      ))}
+                    </MobileStationListWrapper>
 
-                  {/* 역 리스트 (폭만 100%로) */}
-                  <MobileStationListWrapper>
-                    {stationList.map((station, index) => (
-                      <StationList
-                        key={index}
-                        isSelected={selectedStationIndices[regionId] === index}
-                        onClick={() => {
-                          handleStationSelect(station);
-                          setSelectedStationIndices({
-                            [regionId]: index,
-                            [regionId === 1 ? 2 : 1]: null,
-                          });
-                          // 필요시 선택 후 피크로 접기: sheetRef.current?.snapTo(0);
-                        }}
-                      >
-                        <StationTitle>{station.zoneName}</StationTitle>
-                        <ListEnterWrapper>
-                          <StoreNumber>{station.storeCount}</StoreNumber>
-                          <StyledArrowIcon />
-                        </ListEnterWrapper>
-                      </StationList>
-                    ))}
-                  </MobileStationListWrapper>
-
-                  {/* === 끝 === */}
-                </MobileSheetBody>
+                    {/* === 끝 === */}
+                  </MobileSheetBody>
                 )}
 
                 {/* 매장 목록 화면 */}
                 {isStationCardVisible && (
                   <MobileSheetBody>
                     <StationCard />
-                  </ MobileSheetBody>
+                  </MobileSheetBody>
                 )}
 
                 {/* 테마 목록 화면 */}
                 {isStoreCardVisible && (
                   <MobileSheetBody>
                     <StoreCard />
-                  </ MobileSheetBody>
+                  </MobileSheetBody>
                 )}
               </Sheet.Content>
             </Sheet.Container>
 
-            {/* 바깥(딤) 탭 → 피크로 접힘 */}
-            {snapIndex == PEEK_INDEX && (
+            {/* 바깥(딤) 탭 -> 피크로 접힘 */}
+            {snapIndex === OPEN_INDEX && (
               <Sheet.Backdrop
-                onTap={() => sheetRef.current?.snapTo(1)}
+                onTap={() => sheetRef.current?.snapTo(COLLAPSED_INDEX)}
                 style={{ backgroundColor: 'transparent', zIndex: 2990 }}
               />
             )}
@@ -299,16 +291,16 @@ function LocationPage() {
       )}
     </PageWrapper>
   );
-};
+}
 
 export default LocationPage;
 
 // CSS
 const PageWrapper = styled.div`
-font-size: 0.6rem; // 임의로 지정
-  margin-top: 5.625rem; // 헤더높이
+  font-size: 0.6rem; // 임의로 지정
+  margin-top: ${({ isMobile }) => (isMobile ? '4.375rem' : '5.625rem')}; // 헤더높이
   width: 100vw;
-  height: calc(100vh - 5.625rem - 2.375rem); // 100vh-헤더-풋터
+  height: calc(100vh - ${({ isMobile }) => (isMobile ? '4.375rem' : '5.625rem')} - 2.375rem); // 100vh-헤더-풋터
   position: absolute;
   display: flex;
 `;
@@ -326,23 +318,23 @@ const OverlayWrapper = styled.div`
 `;
 
 const LocationButtonWrapper = styled.div`
-font-size: 1.5em; // 임의로 지정
+  font-size: 1.5em; // 임의로 지정
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   align-self: stretch;
-  background: var(--RIU_Monochrome-10, #F9F9FB);
+  background: var(--RIU_Monochrome-10, #f9f9fb);
   z-index: 300;
   pointer-events: auto;
 
   @media (max-width: 768px) {
-    background: var(--RIU_Monochrome-30, #E7E8ED);
+    background: var(--RIU_Monochrome-30, #e7e8ed);
   }
 `;
 
 const LocationButton = styled.div`
-  border-bottom: 1px solid var(--RIU_Monochrome-50, #D6D6DF);
+  border-bottom: 1px solid var(--RIU_Monochrome-50, #d6d6df);
   width: 4.375em;
   height: 4.375em;
   display: flex;
@@ -350,8 +342,10 @@ const LocationButton = styled.div`
   justify-content: center;
   align-items: center;
   gap: 0.625em;
-  background: ${(props) => (props.isSeoulCheck ? "var(--RIU_Primary-100, #718FF2)" : "var(--RIU_Monochrome-10, #F9F9FB)")};
-  color: ${(props) => (props.isSeoulCheck ? "var(--RIU_Monochrome-10, #F9F9FB)" : "var(--RIU_Monochrome-500, #515467)")};
+  background: ${(props) =>
+    props.isSeoulCheck ? 'var(--RIU_Primary-100, #718FF2)' : 'var(--RIU_Monochrome-10, #F9F9FB)'};
+  color: ${(props) =>
+    props.isSeoulCheck ? 'var(--RIU_Monochrome-10, #F9F9FB)' : 'var(--RIU_Monochrome-500, #515467)'};
   line-height: normal;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -360,7 +354,7 @@ const LocationButton = styled.div`
 const StyledMarkerIcon = styled(MarkerIcon)`
   width: 1.875em;
   height: 1.875em;
-  fill: ${(props) => (props.isSeoulCheck ? "var(--RIU_Monochrome-10, #F9F9FB)" : "var(--RIU_Primary-100, #718FF2)")};
+  fill: ${(props) => (props.isSeoulCheck ? 'var(--RIU_Monochrome-10, #F9F9FB)' : 'var(--RIU_Primary-100, #718FF2)')};
   transition: all 0.2s ease-in-out;
 `;
 
@@ -379,7 +373,7 @@ const SideButtonWrapper = styled.div`
 `;
 
 const SideButton = styled.div`
-font-size: 1.5em; // 임의로 지정
+  font-size: 1.5em; // 임의로 지정
   border-radius: 0em 0.625em 0.625em 0em;
   display: flex;
   width: 1.25em;
@@ -387,19 +381,19 @@ font-size: 1.5em; // 임의로 지정
   justify-content: center;
   align-items: center;
   gap: 0.625em;
-  background: #FFF;
+  background: #fff;
 `;
 
 const SideButtonArrow = styled(ArrowIcon)`
   width: 0.9375em;
   height: 0.9375em;
-  fill: var(--RIU_Primary-80, #8DA3FF);
-  transform: rotate(${(props) => (props.openState ? "-180deg" : "0deg")});
+  fill: var(--RIU_Primary-80, #8da3ff);
+  transform: rotate(${(props) => (props.openState ? '-180deg' : '0deg')});
   transition: all 0.3s ease;
 `;
 
 const StationListWrapper = styled.div`
-font-size: 1.3em; // 임의로 지정
+  font-size: 1.3em; // 임의로 지정
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -409,11 +403,13 @@ font-size: 1.3em; // 임의로 지정
   overflow-y: auto;
   pointer-events: auto;
 
-  transition: width 0.2s ease, transform 0.2s ease-out;
+  transition:
+    width 0.2s ease,
+    transform 0.2s ease-out;
 
-  width: ${(props) => (props.isVisible ? "15em" : "0")};
-  transform: ${(props) => (props.isVisible ? "translateX(0)" : "translateX(-100%)")};
-  pointer-events: ${(props) => (props.isVisible ? "auto" : "none")};
+  width: ${(props) => (props.isVisible ? '15em' : '0')};
+  transform: ${(props) => (props.isVisible ? 'translateX(0)' : 'translateX(-100%)')};
+  pointer-events: ${(props) => (props.isVisible ? 'auto' : 'none')};
 
   &::-webkit-scrollbar {
     width: 0.5em;
@@ -422,7 +418,7 @@ font-size: 1.3em; // 임의로 지정
   }
   &:hover::-webkit-scrollbar-thumb {
     border-radius: 3em;
-    background-color: #8DA3FF;
+    background-color: #8da3ff;
   }
 `;
 
@@ -440,7 +436,7 @@ const ListEnterWrapper = styled.div`
 `;
 
 const StoreNumber = styled.div`
-  color: var(--RIU_Primary-80, #8DA3FF);
+  color: var(--RIU_Primary-80, #8da3ff);
   font-family: 'Pretendard-SemiBold';
   font-size: 0.875em;
 `;
@@ -455,7 +451,7 @@ const StyledArrowIcon = styled(ArrowIcon)`
 `;
 
 const StationList = styled.div`
-  border-bottom: 1px solid var(--RIU_Monochrome-50, #D6D6DF);
+  border-bottom: 1px solid var(--RIU_Monochrome-50, #d6d6df);
   padding: 0em 1.25em 0em 2.5em;
   box-sizing: border-box;
   display: flex;
@@ -465,27 +461,29 @@ const StationList = styled.div`
   align-items: center;
   flex-shrink: 0;
   background: ${(props) =>
-    props.isSelected ? "var(--RIU_Monochrome-10, #F9F9FB)" : "var(--RIU_Monochrome-20, #F0F0F4)"};
+    props.isSelected ? 'var(--RIU_Monochrome-10, #F9F9FB)' : 'var(--RIU_Monochrome-20, #F0F0F4)'};
   line-height: normal;
   transition: background 0.1s ease;
   cursor: pointer;
 
   &:hover {
     background: ${(props) =>
-      props.isSelected ? "var(--RIU_Monochrome-10, #F9F9FB)" : "var(--RIU_Primary-60, #A2ADFF)"};
+      props.isSelected ? 'var(--RIU_Monochrome-10, #F9F9FB)' : 'var(--RIU_Primary-60, #A2ADFF)'};
     ${StationTitle} {
-      color: ${(props) => (props.isSelected ? "var(--RIU_Monochrome-500, #515467)" : "var(--RIU_Monochrome-10, #F9F9FB)")};
+      color: ${(props) =>
+        props.isSelected ? 'var(--RIU_Monochrome-500, #515467)' : 'var(--RIU_Monochrome-10, #F9F9FB)'};
     }
     ${StoreNumber} {
-      color: ${(props) => (props.isSelected ? "var(--RIU_Primary-80, #8DA3FF)" : "var(--RIU_Primary-0, #E8EAFF)")};
+      color: ${(props) => (props.isSelected ? 'var(--RIU_Primary-80, #8DA3FF)' : 'var(--RIU_Primary-0, #E8EAFF)')};
     }
     ${StyledArrowIcon} {
       path {
-        fill: ${(props) => (props.isSelected ? "var(--RIU_Monochrome-200, #717486)" : "var(--RIU_Monochrome-10, #F9F9FB)")};
+        fill: ${(props) =>
+          props.isSelected ? 'var(--RIU_Monochrome-200, #717486)' : 'var(--RIU_Monochrome-10, #F9F9FB)'};
       }
     }
   }
-  
+
   @media (max-width: 768px) {
     width: 100%;
   }
@@ -498,7 +496,7 @@ const HeaderDragHandle = styled.div`
   margin: 0.625em auto;
   width: 6.25em;
   height: 0.375em;
-  background-color: var(--RIU_Monochrome-40, #DFDFE6);
+  background-color: var(--RIU_Monochrome-40, #dfdfe6);
 `;
 
 const MobileSheetBody = styled.div`
@@ -508,7 +506,7 @@ const MobileSheetBody = styled.div`
 `;
 
 const MobileStationListWrapper = styled.div`
-font-size: 1.3em; // 임의로 지정
+  font-size: 1.3em; // 임의로 지정
   width: 100%;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
