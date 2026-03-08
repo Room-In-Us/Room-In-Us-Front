@@ -81,14 +81,14 @@ function LocationPage() {
     setCurrentPage(1);
   };
 
+  // 구역 목록 조회
   useEffect(() => {
     if (!regionIdForFetch) return;
-
-    setStationList([]);
 
     const fetchData = async () => {
       try {
         const response = await getLocationZonesAPI(regionIdForFetch);
+        console.log('구역별 역 목록: ', response);
         setStationList(response);
       } catch (error) {
         console.error('구역별 역 목록 데이터를 불러오는 중 오류 발생:', error);
@@ -124,20 +124,6 @@ function LocationPage() {
 
     setEntryZoneName(null);
   }, [entryZoneName, stationList, regionId]);
-
-  // 구역 목록 조회
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getLocationZonesAPI(regionId);
-        console.log('구역별 역 목록: ', response);
-        setStationList(response);
-      } catch (error) {
-        console.error('구역별 역 목록 데이터를 불러오는 중 오류 발생:', error);
-      }
-    };
-    fetchData();
-  }, [regionId]);
 
   return (
     <PageWrapper isMobile={isMobile}>
