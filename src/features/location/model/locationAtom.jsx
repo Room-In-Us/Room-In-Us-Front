@@ -6,6 +6,12 @@ export const mapsLoadedState = atom({
   default: false,
 });
 
+// 선택된 지역 ID (서울: 1, 경기: 2)
+export const selectedLocationRegionId = atom({
+  key: 'selectedLocationRegionId',
+  default: null,
+});
+
 // 역 상태
 export const stationCardVisible = atom({
   key: 'stationCardVisible',
@@ -18,7 +24,7 @@ export const storeCardVisible = atom({
   default: false,
 });
 
-// 역 아이디
+// 역 ID
 export const zoneId = atom({
   key: 'zoneId',
   default: null,
@@ -30,13 +36,13 @@ export const storePageNumber = atom({
   default: 1,
 });
 
-// 매장 아이디
+// 매장 ID
 export const locationStoreId = atom({
   key: 'locationStoreId',
   default: null,
 });
 
-// 지역 아이디
+// 지역 ID
 export const locationRegionId = atom({
   key: 'locationRegionId',
   default: 1,
