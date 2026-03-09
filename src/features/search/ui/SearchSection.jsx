@@ -188,7 +188,11 @@ const NoDataWrapper = styled.div`
   gap: 1.25em;
 
   img {
-    width: 16rem;
+    width: 25rem;
+    
+    @media (max-width: 768px) {
+      width: 13.73rem;
+    }
   }
 `;
 

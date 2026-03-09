@@ -4,6 +4,7 @@ import ContentCard from "../../../../shared/components/ContentCard";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { headCountState } from "../../model/favoriteAtom";
+import NoDataImg from "../../../../shared/assets/images/common/noData/noDataImageLarge.png";
 
 export default function ContentCardSection() {
 
@@ -39,17 +40,28 @@ export default function ContentCardSection() {
 		fetchData();
 	}, [headCount]);
 
+	const visibleThemeList = themeList.filter((item) => item.isLiked !== false);
+
 	return (
 		<Wrapper>
-		{themeList.map((items) => (
-			<ContentCard
-				key={items.themeId}
-				data={{ ...items, price: items.price != null ? items.price * headCount : null }}
-				headCount={headCount}
-				onUnlike={handleUnlike}
-				backButtonText="내가 찜한 테마 목록으로 돌아가기"
-			/>
-		))}
+			{visibleThemeList.length === 0 ? (
+			<NoDataWrapper>
+			<img src={NoDataImg} alt="찜한 방탈출 없음" />
+			<NonDataTextWrapper>
+				<NonDataText>아직 찜한 방탈출이 없습니다.</NonDataText>
+			</NonDataTextWrapper>
+			</NoDataWrapper>
+			) : (
+				visibleThemeList.map((items) => (
+					<ContentCard
+						key={items.themeId}
+						data={{ ...items, price: items.price != null ? items.price * headCount : null }}
+						headCount={headCount}
+						onUnlike={handleUnlike}
+						backButtonText="내가 찜한 테마 목록으로 돌아가기"
+					/>
+				))
+			)}
 		</Wrapper>
 	)
 }
@@ -65,5 +77,41 @@ const Wrapper = styled.div`
 
   @media (max-width: 768px) {
     justify-content: center;
+  }
+`;
+
+const NoDataWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 0;
+  gap: 1.25em;
+
+  img {
+    width: 16rem;
+    
+    @media (max-width: 768px) {
+      width: 10rem;
+    }
+  }
+`;
+
+const NonDataTextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+`;
+
+const NonDataText = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  text-align: center;
+  font-family: Pretendard-ExtraBold;
+  font-size: 1.125rem;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
   }
 `;

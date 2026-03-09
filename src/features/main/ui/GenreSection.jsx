@@ -497,6 +497,10 @@ const NoDataWrapper = styled.div`
 
   img {
     width: 16rem;
+    
+    @media (max-width: 768px) {
+      width: 10rem;
+    }
   }
 `;
 
