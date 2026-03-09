@@ -1,11 +1,18 @@
 import styled from 'styled-components';
 import { useRecoilValue, useRecoilState } from 'recoil';
-import { storeInfoList, centerLatAndLng, zoomLevel, storeCardVisible, stationCardVisible, locationStoreId } from '../model/locationAtom.jsx';
+import {
+  storeInfoList,
+  centerLatAndLng,
+  zoomLevel,
+  storeCardVisible,
+  stationCardVisible,
+  locationStoreId,
+} from '../model/locationAtom.jsx';
 import { GoogleMap, MarkerF, OverlayView } from '@react-google-maps/api';
 import { googleMapStyles } from '../../../shared/styles/googleMapStyles.js';
 import MarkerIcon from '../../../shared/assets/images/location/marker.png';
 import AwardMarkerIcon from '../../../shared/assets/images/location/awardMarker.png';
-// import useDevice from '../../../shared/hooks/useDevice.js';
+import useDevice from '../../../shared/hooks/useDevice.js';
 
 function GoogleMapComponent() {
   // 중앙 좌표
@@ -47,50 +54,46 @@ function GoogleMapComponent() {
     disableDefaultUI: true, // 기본 설정 초기화
   };
 
+  // 반응형 함수
+  const { isMobile } = useDevice();
+
   return (
-      <MapWrapper>
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={adjustedCenter}
-          zoom={zoomLevelState}
-          options={options}
-        >
-          {
-            storeList.map((store) => (
-              <div key={store.storeId}>
-                <MarkerF
-                  position={{ lat: store.latitude, lng: store.longitude }}
-                  icon={{
-                    url: store.isAwarded ? AwardMarkerIcon : MarkerIcon,
-                    scaledSize: new window.google.maps.Size(22.8, 32.4),
-                    // scaledSize: new window.google.maps.Size(38, 54), // 원래 사이즈
-                  }}
-                  onClick={() => {
-                    handleStoreSelect(store.storeId);
-                    setCenterLatAndLng({ lat: store.latitude, lng: store.longitude });
-                    setZoomLevel(18);
-                  }}
-                />
-                <OverlayView
-                  position={{ lat: store.latitude, lng: store.longitude }}
-                  mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-                >
-                  <CafeNameBox
-                    onClick={() => {
-                      handleStoreSelect(store.storeId);
-                      setCenterLatAndLng({ lat: store.latitude, lng: store.longitude });
-                      setZoomLevel(18);
-                    }}
-                  >
-                    <CafeNameText>{store.storeName}</CafeNameText>
-                  </CafeNameBox>
-                </OverlayView>
-              </div>
-            ))
-          }
-        </GoogleMap>
-      </MapWrapper>
-  )
+    <MapWrapper isMobile={isMobile}>
+      <GoogleMap mapContainerStyle={containerStyle} center={adjustedCenter} zoom={zoomLevelState} options={options}>
+        {storeList.map((store) => (
+          <div key={store.storeId}>
+            <MarkerF
+              position={{ lat: store.latitude, lng: store.longitude }}
+              icon={{
+                url: store.isAwarded ? AwardMarkerIcon : MarkerIcon,
+                scaledSize: new window.google.maps.Size(22.8, 32.4),
+                // scaledSize: new window.google.maps.Size(38, 54), // 원래 사이즈
+              }}
+              onClick={() => {
+                handleStoreSelect(store.storeId);
+                setCenterLatAndLng({ lat: store.latitude, lng: store.longitude });
+                setZoomLevel(18);
+              }}
+            />
+            <OverlayView
+              position={{ lat: store.latitude, lng: store.longitude }}
+              mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+            >
+              <CafeNameBox
+                onClick={() => {
+                  handleStoreSelect(store.storeId);
+                  setCenterLatAndLng({ lat: store.latitude, lng: store.longitude });
+                  setZoomLevel(18);
+                }}
+              >
+                <CafeNameText>{store.storeName}</CafeNameText>
+              </CafeNameBox>
+            </OverlayView>
+          </div>
+        ))}
+      </GoogleMap>
+    </MapWrapper>
+  );
 }
 
 export default GoogleMapComponent;
@@ -98,14 +101,16 @@ export default GoogleMapComponent;
 // CSS
 const MapWrapper = styled.div`
   width: 100vw;
-  height: calc(100vh - 5.625rem - 2.375rem); // 100vh-헤더-풋터
+  height: calc(
+    100vh - ${({ isMobile }) => (isMobile ? '4.375rem - 1.625rem' : '5.625rem - 2.375rem')}
+  ); // 100vh-헤더-풋터
   position: absolute;
 `;
 
 const CafeNameBox = styled.div`
   padding: 0.25em 0.375em;
   width: 5.5em;
-  background: rgba(81, 93, 186, 0.70);
+  background: rgba(81, 93, 186, 0.7);
   position: absolute;
   transform: translate(-50%, 10%);
   display: flex;
@@ -116,7 +121,7 @@ const CafeNameBox = styled.div`
 `;
 
 const CafeNameText = styled.div`
-  color: #FFF;
+  color: #fff;
   font-family: 'Pretendard-Bold';
   font-size: 0.75em;
   line-height: normal;
