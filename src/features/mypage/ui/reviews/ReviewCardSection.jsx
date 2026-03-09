@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { getMyReviewAPI } from '../../api/myReviewAPI';
 import { reviewModalState } from '../../../themeDetail/model/reviewAtom';
 import ReviewWriteModal from '../../../review/ui/ReviewWriteModal';
+import NoDataImg from '../../../../shared/assets/images/common/noData/noDataImageLarge.png';
 
 export default function ReviewCardSection() {
 
@@ -39,14 +40,23 @@ export default function ReviewCardSection() {
   return (
     <>
       <Wrapper>
-        {reviews.map((review) => (
-          <ReviewCard
-            key={review.reviewId} 
-            data={review}
-            onDeleted={handleReviewDeleted}
-            onEdit={handleEditReview}
-          />
-        ))}
+        {reviews.length === 0 ? (
+        <NoDataWrapper>
+          <img src={NoDataImg} alt="작성한 후기 없음" />
+          <NonDataTextWrapper>
+            <NonDataText>아직 작성한 후기가 없습니다.</NonDataText>
+          </NonDataTextWrapper>
+        </NoDataWrapper>
+        ) : (
+          reviews.map((review) => (
+            <ReviewCard
+              key={review.reviewId} 
+              data={review}
+              onDeleted={handleReviewDeleted}
+              onEdit={handleEditReview}
+            />
+          ))
+        )}
       </Wrapper>
 
       {isModalOpen && selectedReview && (
@@ -74,6 +84,42 @@ const Wrapper = styled.div`
   align-items: center;
   gap: 1.25em;
   width: 100%;
+`;
+
+const NoDataWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 0;
+  gap: 1.25em;
+
+  img {
+    width: 16rem;
+    
+    @media (max-width: 768px) {
+      width: 10rem;
+    }
+  }
+`;
+
+const NonDataTextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+`;
+
+const NonDataText = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  text-align: center;
+  font-family: Pretendard-ExtraBold;
+  font-size: 1.125rem;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
 const ModalBackdrop = styled.div`

@@ -15,7 +15,6 @@ import CustomPagination from '../../../shared/components/CustomPagination';
 import BottomSheet from '../../../shared/components/BottomSheet';
 import { sortOptions } from '../../../shared/components/filter/OptionList.js';
 import NoDataImgLarge from '../../../shared/assets/images/common/noData/noDataImageLarge.png'
-import NoDataImgSmall from '../../../shared/assets/images/common/noData/noDataImageSmall.png'
 
 export default function LevelContentSection() {
 
@@ -376,7 +375,7 @@ export default function LevelContentSection() {
       {/* 콘텐츠 카드 영역 */}
       {themeList.length === 0 ? (
         <NoDataWrapper>
-          <img src={isMobile ? NoDataImgSmall : NoDataImgLarge} alt="데이터 없음" />
+          <img src={NoDataImgLarge} alt="데이터 없음" />
           <NonDataTextWrapper>
             <NonDataText>해당하는 테마가 없습니다.</NonDataText>
           </NonDataTextWrapper>
@@ -558,7 +557,11 @@ const NoDataWrapper = styled.div`
   gap: 1.25em;
 
   img {
-    width: 16rem;
+    width: 25rem;
+    
+    @media (max-width: 768px) {
+      width: 13.75rem;
+    }
   }
 `;
 
