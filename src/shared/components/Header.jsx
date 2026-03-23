@@ -15,6 +15,7 @@ import InquiryIcon from '../assets/icons/common/inquiryIcon.svg?react';
 import LeftArrowIcon from '../assets/icons/common/arrow/leftArrow.svg?react';
 import { postLogoutAPI } from '../../features/auth/api/authAPI';
 import useAuthSession from '../hooks/useAuthSession';
+import { clearTrackedUserId } from '../utils/analytics';
 
 function Header() {
   // navigate, location
@@ -120,6 +121,7 @@ function Header() {
       // 프론트 토큰 정리
       localStorage.removeItem('accessToken');
       localStorage.removeItem('userCode');
+      clearTrackedUserId();
       alert('로그아웃 되었습니다.');
       window.location.replace('/login');
     }

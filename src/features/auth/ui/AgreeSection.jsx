@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { useRecoilState } from 'recoil';
 import { signupSectionState, nicknameBackupState } from "../model/authAtom";
 import { postSignupAPI } from "../api/authAPI";
+import { getMemberInfoAPI } from "../api/memberAPI";
+import { pushLoginSuccessUserId } from "../../../shared/utils/analytics";
 
 function AgreeSection() {
   // state 관리
@@ -50,6 +52,9 @@ function AgreeSection() {
       const response = await postSignupAPI(payload);
       console.log('회원가입 API 응답:', response);
       localStorage.setItem("accessToken", response.accessToken);
+
+      const memberInfo = await getMemberInfoAPI();
+      pushLoginSuccessUserId(memberInfo.memberId);
 
       setSignupSection("complete");
     } catch (error) {
