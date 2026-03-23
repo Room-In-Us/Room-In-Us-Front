@@ -7,6 +7,7 @@ import LogoutIcon from "../assets/icons/common/logoutIcon.svg?react";
 import { useNavigate } from "react-router-dom";
 import { getMemberInfoAPI } from "../../features/auth/api/memberAPI";
 import { postLogoutAPI } from "../../features/auth/api/authAPI";
+import { clearTrackedUserId } from "../utils/analytics";
 
 function HeaderProfileModal({ visible }) {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ function HeaderProfileModal({ visible }) {
       // 프론트 토큰 정리
       localStorage.removeItem("accessToken");
       localStorage.removeItem("userCode");
+      clearTrackedUserId();
       alert("로그아웃 되었습니다.");
       window.location.replace('/login');
     }

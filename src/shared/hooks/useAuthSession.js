@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../app/API';
+import { pushLoginSuccessUserId } from '../utils/analytics';
 
 // 로그인 상태 관리 훅
 export default function useAuthSession() {
@@ -16,6 +17,7 @@ export default function useAuthSession() {
   
     try {
       const res = await api.get('members');
+      pushLoginSuccessUserId(res.data?.memberId);
       setIsLoggedIn(res.status === 200);
     } catch {
       setIsLoggedIn(false);
