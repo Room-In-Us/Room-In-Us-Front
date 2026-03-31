@@ -19,9 +19,16 @@ function HeroSection() {
   };
 
   return (
-    <HeroWrapper>
+    <HeroWrapper aria-labelledby="home-hero-title">
+      <HeroTextBlock>
+        <HeroTitle id="home-hero-title">방탈출 테마와 후기를 한곳에서 찾는 Room-In-Us</HeroTitle>
+        <HeroDescription>
+          지역, 장르, 숙련도별로 방탈출 테마를 탐색하고 실제 이용 후기와 예약 정보를 확인해보세요.
+        </HeroDescription>
+      </HeroTextBlock>
+
       {/* 로고 영역 */}
-      <StyledTextLogo/>
+      <StyledTextLogo aria-hidden="true" focusable="false" />
 
       <SearchWrapper>
         {/* 검색창 */}
@@ -73,7 +80,7 @@ function HeroSection() {
 export default HeroSection;
 
 // CSS
-const HeroWrapper = styled.div`
+const HeroWrapper = styled.section`
   width: 100vw;
   height: 31.25rem;
   display: flex;
@@ -122,6 +129,26 @@ const HeroWrapper = styled.div`
     justify-content: end;
     gap: 1.875rem;
   }
+`;
+
+const HeroTextBlock = styled.div`
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+`;
+
+const HeroTitle = styled.h1`
+  margin: 0;
+`;
+
+const HeroDescription = styled.p`
+  margin: 0;
 `;
 
 const StyledTextLogo = styled(TextLogo)`

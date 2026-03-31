@@ -8,18 +8,18 @@ function AwardsSection() {
   const navigate = useNavigate();
 
   return (
-    <SectionWrapper>
+    <SectionWrapper aria-labelledby="home-awards-title">
       {/* 제목 영역 */}
       <TitleWrapper>
         <StyledLightbulbIcon />
-        <Title>루미너스 힌트!</Title>
+        <Title id="home-awards-title">루미너스 힌트!</Title>
       </TitleWrapper>
 
       {/* 콘텐츠 영역 */}
       <ContainerWrapper>
         {/* 설명 */}
         <DescriptionWrapper>
-          <StyledAwardsImage src={AwardsImage} />
+          <StyledAwardsImage src={AwardsImage} alt="루미너스 어워즈 안내 일러스트" />
           <TextWrapper>
             <Text1>퀄리티 보장 테마를 플레이하고 싶다면?</Text1>
             <Text2>루미너스에서 왕관 모양을 찾아보세요!</Text2>
@@ -42,7 +42,7 @@ function AwardsSection() {
 export default AwardsSection;
 
 // CSS
-const SectionWrapper = styled.div`
+const SectionWrapper = styled.section`
   width: 70rem;
   display: flex;
   flex-direction: column;
@@ -68,7 +68,8 @@ const StyledLightbulbIcon = styled(LightbulbIcon)`
   height: 1.6875rem;
 `;
 
-const Title = styled.p`
+const Title = styled.h2`
+  margin: 0;
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Bold';
   font-size: 1.40625rem;
