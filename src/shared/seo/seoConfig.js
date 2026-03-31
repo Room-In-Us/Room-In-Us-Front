@@ -4,8 +4,8 @@ export const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://roominus.kr';
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 export const DEFAULT_SEO = {
-  title: 'Room-In-Us',
-  description: '방탈출의 모든 정보를 한 곳에',
+  title: 'Room-In-Us | 방탈출의 모든 정보를 한 곳에',
+  description: '방탈출 테마 검색부터 후기 확인, 일정 관리까지 한 곳에서 해결해보세요.',
   canonicalPath: '/',
   robots: 'index, follow',
   ogType: 'website',
@@ -17,16 +17,16 @@ const ROUTE_SEO_CONFIG = [
     pattern: '/',
     seo: {
       title: 'Room-In-Us | 방탈출의 모든 정보를 한 곳에',
-      description: '지역, 장르, 숙련도별로 방탈출 테마를 찾고 후기와 정보를 한눈에 확인해보세요.',
+      description: '방탈출 취향 탐색부터 추천 테마 확인까지, Room-In-Us에서 나에게 맞는 방탈출을 찾아보세요.',
       canonicalPath: '/',
     },
   },
   {
-    pattern: '/landing',
+    pattern: '/home',
     seo: {
-      title: 'Room-In-Us 소개',
-      description: 'Room-In-Us 서비스와 주요 기능을 소개합니다.',
-      canonicalPath: '/landing',
+      title: 'Room-In-Us | 방탈출 테마·후기·일정 관리',
+      description: '지역, 장르, 숙련도별로 방탈출 테마를 찾고 후기와 정보를 한눈에 확인해보세요.',
+      canonicalPath: '/home',
     },
   },
   {
@@ -168,9 +168,7 @@ const ROUTE_SEO_CONFIG = [
 ];
 
 export function getSeoForPath(pathname) {
-  const matchedRoute = ROUTE_SEO_CONFIG.find(({ pattern }) =>
-    matchPath({ path: pattern, end: true }, pathname),
-  );
+  const matchedRoute = ROUTE_SEO_CONFIG.find(({ pattern }) => matchPath({ path: pattern, end: true }, pathname));
 
   const routeSeo = matchedRoute?.seo || {};
   const canonicalPath = routeSeo.canonicalPath || pathname || '/';
