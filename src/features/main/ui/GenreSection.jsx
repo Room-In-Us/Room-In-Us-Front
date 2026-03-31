@@ -58,10 +58,10 @@ function GenreSection() {
   }, [activeGenre]);
 
   return (
-    <SectionWrapper>
+    <SectionWrapper aria-labelledby="home-genre-title">
       {/* 제목 영역 */}
       <TitleWrapper>
-        <Title>장르 기반 추천</Title>
+        <Title id="home-genre-title">장르 기반 추천</Title>
         <LocationSearchButton
           onClick={() =>
             navigate('/genre', {
@@ -154,7 +154,7 @@ function GenreSection() {
 export default GenreSection;
 
 // CSS
-const SectionWrapper = styled.div`
+const SectionWrapper = styled.section`
   width: 70rem;
   display: flex;
   flex-direction: column;
@@ -183,7 +183,8 @@ const TitleWrapper = styled.div`
   }
 `;
 
-const Title = styled.p`
+const Title = styled.h2`
+  margin: 0;
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Bold';
   font-size: 1.40625rem;

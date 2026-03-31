@@ -7,7 +7,7 @@ import GenreSection from '../features/main/ui/GenreSection';
 
 function MainPage() {
   return (
-    <PageWrapper>
+    <PageWrapper as="main">
       {/* 히어로 영역 */}
       <HeroSection />
 

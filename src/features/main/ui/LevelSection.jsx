@@ -54,10 +54,10 @@ function LevelSection() {
   }, [activeLevel]);
 
   return (
-    <SectionWrapper>
+    <SectionWrapper aria-labelledby="home-level-title">
       {/* 제목 영역 */}
       <TitleWrapper>
-        <Title>숙련도 기반 추천</Title>
+        <Title id="home-level-title">숙련도 기반 추천</Title>
         <LocationSearchButton
           onClick={() =>
             navigate('/level', {
@@ -146,7 +146,7 @@ function LevelSection() {
 export default LevelSection;
 
 // CSS
-const SectionWrapper = styled.div`
+const SectionWrapper = styled.section`
   width: 70rem;
   display: flex;
   flex-direction: column;
@@ -175,7 +175,8 @@ const TitleWrapper = styled.div`
   }
 `;
 
-const Title = styled.p`
+const Title = styled.h2`
+  margin: 0;
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Bold';
   font-size: 1.40625rem;
