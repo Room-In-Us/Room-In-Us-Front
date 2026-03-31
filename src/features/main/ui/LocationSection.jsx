@@ -6,10 +6,10 @@ function LocationSection() {
   const navigate = useNavigate();
 
   return (
-    <SectionWrapper>
+    <SectionWrapper aria-labelledby="home-location-title">
       {/* 제목 영역 */}
       <TitleWrapper>
-        <Title>어디로 가시나요?</Title>
+        <Title id="home-location-title">어디로 가시나요?</Title>
         <LocationSearchButton onClick={() => navigate('/location')}>
           그외 지역 검색하기
           <StyledRightArrow/>
@@ -50,7 +50,7 @@ function LocationSection() {
 export default LocationSection;
 
 // CSS
-const SectionWrapper = styled.div`
+const SectionWrapper = styled.section`
   width: 70rem;
   display: flex;
   flex-direction: column;
@@ -71,7 +71,8 @@ const TitleWrapper = styled.div`
   align-items: center;
 `;
 
-const Title = styled.p`
+const Title = styled.h2`
+  margin: 0;
   color: var(--RIU_Monochrome-500, #515467);
   font-family: 'Pretendard-Bold';
   font-size: 1.40625rem;

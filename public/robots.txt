@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Disallow: /login
+Disallow: /signup
+Disallow: /survey
+Disallow: /mypage
+Disallow: /mypage/
+
+Sitemap: https://roominus.kr/sitemap.xml
