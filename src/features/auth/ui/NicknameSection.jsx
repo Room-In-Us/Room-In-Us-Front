@@ -53,10 +53,11 @@ function NicknameSection() {
           <InputText>닉네임</InputText>
           <InputWrapper>
             <StyledInput
+              maxLength={10}
               placeholder="닉네임을 입력하세요."
               value={nickname}
               onChange={(e) => {
-                const value = e.target.value;
+                const value = e.target.value.slice(0, 10);
                 setNickname(value);
                 // 닉네임 백업값이 존재하고, 현재 입력값이 백업값과 다르면 초기화
                 if (nicknameBackup && value !== nicknameBackup) {

@@ -160,7 +160,7 @@ function StationCard() {
               총 {CapitalStoreCount}개의 매장, {CapitalThemeCount}개의 테마가 있습니다
             </StationDescription>
           </StationTitleWrapper>
-          <StationListWrapper>
+          <StationListWrapper isSmallSize={CapitalZoneName === '잠실'}>
             {isZoneId > 0 && isZoneId < 17
               ? stationList.map((station, index) => (
                   <StationList key={index}>
@@ -168,14 +168,16 @@ function StationCard() {
                     {station.stationLineList.map((line, lineIndex) => {
                       const LineIcon = stationLineConversion(line);
                       return LineIcon ? (
-                        <StationLineIconWrapper key={lineIndex}>
+                        <StationLineIconWrapper key={lineIndex} isSmallSize={CapitalZoneName === '잠실'}>
                           <LineIcon />
                         </StationLineIconWrapper>
                       ) : null;
                     })}
 
                     {/* 역 이름 */}
-                    <StationListName>{formatStationName(station.stationName, CapitalZoneName)}</StationListName>
+                    <StationListName isSmallSize={CapitalZoneName === '잠실'}>
+                      {formatStationName(station.stationName, CapitalZoneName)}
+                    </StationListName>
                   </StationList>
                 ))
               : null}
@@ -361,7 +363,7 @@ const StationListWrapper = styled.div`
   width: 29em;
   height: 1.8125em;
   align-items: center;
-  gap: 1.875em;
+  gap: ${({ isSmallSize }) => (isSmallSize ? '1.625em' : '1.875em')};
 `;
 
 const StationList = styled.div`
@@ -372,8 +374,8 @@ const StationList = styled.div`
 `;
 
 const StationLineIconWrapper = styled.div`
-  width: 1.25em;
-  height: 1.25em;
+  width: ${({ isSmallSize }) => (isSmallSize ? '1em' : '1.25em')};
+  height: ${({ isSmallSize }) => (isSmallSize ? '1em' : '1.25em')};
   svg {
     width: 100%;
     height: 100%;
@@ -384,7 +386,7 @@ const StationListName = styled.div`
   color: var(--RIU_Monochrome-500, #515467);
   text-align: center;
   font-family: 'Pretendard-Medium';
-  font-size: 0.875em;
+  font-size: ${({ isSmallSize }) => (isSmallSize ? '0.75em' : '0.875em')};
 `;
 
 const ListWrapper = styled.div`

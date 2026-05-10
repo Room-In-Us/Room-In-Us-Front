@@ -66,8 +66,9 @@ function MyPage() {
           <EmailWrapper>
             { editState ?
               <NicknameInput
+                maxLength={10}
                 value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
+                onChange={(e) => setNickname(e.target.value.slice(0, 10))}
               />
               :
               <Nickname>
