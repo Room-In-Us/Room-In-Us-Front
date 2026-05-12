@@ -43,6 +43,7 @@ function StationCard() {
   const [, setZoomLevel] = useRecoilState(zoomLevel); // 줌 레벨
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [sortStatus, setSortStatus] = useState('RECOMMEND');
+  const [stationDisplayZoneName, setStationDisplayZoneName] = useState('');
 
   // 반응형 함수
   const { isMobile } = useDevice();
@@ -62,18 +63,32 @@ function StationCard() {
 
   // 서울 구역 상세정보 조회
   useEffect(() => {
+    if (!(isZoneId > 0 && isZoneId < 17)) {
+      setStationList([]);
+      setStationDisplayZoneName('');
+      return;
+    }
+
+    let isActive = true;
+
     const fetchData = async () => {
       try {
         const response = await getSeoulZonesInfoAPI(isZoneId);
+        if (!isActive) return;
         console.log('서울 구역 상세정보: ', response);
         setZoneInfo(response);
         setStationList(response.stationList);
+        setStationDisplayZoneName(CapitalZoneName);
       } catch (error) {
         console.error('서울 구역 상세정보 데이터를 불러오는 중 오류 발생:', error);
       }
     };
     fetchData();
-  }, [isZoneId]);
+
+    return () => {
+      isActive = false;
+    };
+  }, [isZoneId, CapitalZoneName]);
 
   // 서울 구역 매장 목록 조회
   useEffect(() => {
@@ -141,6 +156,8 @@ function StationCard() {
     return stationName;
   };
 
+  const isSmallStationSize = stationDisplayZoneName === '잠실';
+
   return (
     <ComponentWrapper>
       <ContentWrapper>
@@ -160,7 +177,7 @@ function StationCard() {
               총 {CapitalStoreCount}개의 매장, {CapitalThemeCount}개의 테마가 있습니다
             </StationDescription>
           </StationTitleWrapper>
-          <StationListWrapper>
+          <StationListWrapper isSmallSize={isSmallStationSize}>
             {isZoneId > 0 && isZoneId < 17
               ? stationList.map((station, index) => (
                   <StationList key={index}>
@@ -168,14 +185,16 @@ function StationCard() {
                     {station.stationLineList.map((line, lineIndex) => {
                       const LineIcon = stationLineConversion(line);
                       return LineIcon ? (
-                        <StationLineIconWrapper key={lineIndex}>
+                        <StationLineIconWrapper key={lineIndex} isSmallSize={isSmallStationSize}>
                           <LineIcon />
                         </StationLineIconWrapper>
                       ) : null;
                     })}
 
                     {/* 역 이름 */}
-                    <StationListName>{formatStationName(station.stationName, CapitalZoneName)}</StationListName>
+                    <StationListName isSmallSize={isSmallStationSize}>
+                      {formatStationName(station.stationName, stationDisplayZoneName)}
+                    </StationListName>
                   </StationList>
                 ))
               : null}
@@ -361,7 +380,7 @@ const StationListWrapper = styled.div`
   width: 29em;
   height: 1.8125em;
   align-items: center;
-  gap: 1.875em;
+  gap: ${({ isSmallSize }) => (isSmallSize ? '1.625em' : '1.875em')};
 `;
 
 const StationList = styled.div`
@@ -372,8 +391,8 @@ const StationList = styled.div`
 `;
 
 const StationLineIconWrapper = styled.div`
-  width: 1.25em;
-  height: 1.25em;
+  width: ${({ isSmallSize }) => (isSmallSize ? '1em' : '1.25em')};
+  height: ${({ isSmallSize }) => (isSmallSize ? '1em' : '1.25em')};
   svg {
     width: 100%;
     height: 100%;
@@ -384,7 +403,7 @@ const StationListName = styled.div`
   color: var(--RIU_Monochrome-500, #515467);
   text-align: center;
   font-family: 'Pretendard-Medium';
-  font-size: 0.875em;
+  font-size: ${({ isSmallSize }) => (isSmallSize ? '0.75em' : '0.875em')};
 `;
 
 const ListWrapper = styled.div`
