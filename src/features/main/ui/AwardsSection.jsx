@@ -1,8 +1,8 @@
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
-import LightbulbIcon from "../../../shared/assets/icons/main/lightblubIcon.svg?react";
-import AwardsImage from "../../../shared/assets/images/main/awardsCloud.png";
-import RightArrowIcon from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import LightbulbIcon from '../../../shared/assets/icons/main/lightblubIcon.svg?react';
+import AwardsImage from '../../../shared/assets/images/main/awardsCloud.png';
+import RightArrowIcon from '../../../shared/assets/icons/common/arrow/rightArrow.svg?react';
 
 function AwardsSection() {
   const navigate = useNavigate();
@@ -29,14 +29,12 @@ function AwardsSection() {
 
         {/* 버튼 */}
         <Button onClick={() => navigate('/location')}>
-          <ButtonText>
-            더 많은 테마 둘러보기
-          </ButtonText>
+          <ButtonText>더 많은 테마 둘러보기</ButtonText>
           <StyledRightArrowIcon />
         </Button>
       </ContainerWrapper>
     </SectionWrapper>
-  )
+  );
 }
 
 export default AwardsSection;
@@ -47,12 +45,14 @@ const SectionWrapper = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 1.875rem;
 
   @media (max-width: 1024px) {
     width: 43.3125rem;
   }
   @media (max-width: 768px) {
     width: 20.9375rem;
+    gap: 1.25rem;
   }
 `;
 
@@ -89,7 +89,7 @@ const ContainerWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   align-self: stretch;
-  background: var(--RIU_Monochrome-10, #F9F9FB);
+  background: var(--RIU_Monochrome-10, #f9f9fb);
 
   @media (max-width: 1024px) {
     padding: 1.25rem 1.5rem;
@@ -134,7 +134,7 @@ const TextWrapper = styled.div`
 
 const Text1 = styled.div`
   margin-bottom: 0.375rem;
-  color: var(--RIU_Primary-100, #718FF2);
+  color: var(--RIU_Primary-100, #718ff2);
   font-family: 'Pretendard-Bold';
   font-size: 1rem;
   line-height: normal;
@@ -146,14 +146,14 @@ const Text1 = styled.div`
 
 const Text2 = styled.div`
   margin-bottom: 0.625rem;
-  color: var(--RIU_Primary-100, #718FF2);
+  color: var(--RIU_Primary-100, #718ff2);
   font-family: 'Pretendard-Bold';
   font-size: 1.25rem;
   line-height: normal;
 
   @media (max-width: 1024px) {
     font-size: 1.125rem;
-  } 
+  }
 `;
 
 const Text3 = styled.div`
@@ -165,7 +165,7 @@ const Text3 = styled.div`
 
   @media (max-width: 1024px) {
     font-size: 0.75rem;
-  } 
+  }
 `;
 
 const Button = styled.div`
@@ -174,7 +174,7 @@ const Button = styled.div`
   padding: 1rem 2.5rem;
   align-items: center;
   gap: 0.46875rem;
-  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5B6ACC 0%, #718FF2 100%));
+  background: var(--RIU_Primary-Gradient-02, linear-gradient(282deg, #5b6acc 0%, #718ff2 100%));
   cursor: pointer;
 
   @media (max-width: 768px) {
@@ -183,7 +183,7 @@ const Button = styled.div`
 `;
 
 const ButtonText = styled.div`
-  color: var(--RIU_Monochrome-10, #F9F9FB);
+  color: var(--RIU_Monochrome-10, #f9f9fb);
   font-family: 'Pretendard-Bold';
   font-size: 0.9375rem;
   line-height: normal;
@@ -195,7 +195,7 @@ const ButtonText = styled.div`
 
 const StyledRightArrowIcon = styled(RightArrowIcon)`
   width: 0.75rem;
-  fill: var(--RIU_Monochrome-10, #F9F9FB);
+  fill: var(--RIU_Monochrome-10, #f9f9fb);
 
   @media (max-width: 768px) {
     width: 0.9375rem;
