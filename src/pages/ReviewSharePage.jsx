@@ -523,9 +523,10 @@ function createShareFileName(themeName, templateName) {
 
 async function exportReviewImage(node) {
   await waitForPreviewStabilization(node);
+  const shouldCacheBust = shouldEnableCacheBust(node);
 
   const blob = await toBlob(node, {
-    cacheBust: true,
+    cacheBust: shouldCacheBust,
     includeQueryParams: true,
     canvasWidth: SHARE_IMAGE_SIZE,
     canvasHeight: SHARE_IMAGE_SIZE,
@@ -537,6 +538,15 @@ async function exportReviewImage(node) {
   }
 
   return blob;
+}
+
+function shouldEnableCacheBust(node) {
+  const images = Array.from(node.querySelectorAll('img'));
+  return !images.some((image) => isLocalObjectUrl(image.currentSrc || image.src));
+}
+
+function isLocalObjectUrl(url) {
+  return typeof url === 'string' && (url.startsWith('blob:') || url.startsWith('data:'));
 }
 
 async function waitForPreviewStabilization(node) {
