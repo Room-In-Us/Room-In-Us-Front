@@ -33,6 +33,12 @@ export default defineConfig(({ mode }) => {
           secure: true,
           rewrite: (path) => path.replace(/^\/pstatic-proxy/, ''),
         },
+        '/jigubyeol-proxy': {
+          target: 'https://xn--2e0b040a4xj.com',
+          changeOrigin: true,
+          secure: true,
+          rewrite: (path) => path.replace(/^\/jigubyeol-proxy/, ''),
+        },
       },
       cors: {
         origin: 'https://localhost:5173',

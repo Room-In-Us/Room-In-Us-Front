@@ -81,6 +81,8 @@ function toProxyImageUrl(imageUrl) {
       'firebasestorage.googleapis.com': '/storage-proxy',
       'storage.googleapis.com': '/storage-proxy',
       'naverbooking-phinf.pstatic.net': '/pstatic-proxy',
+      'xn--2e0b040a4xj.com': '/jigubyeol-proxy',
+      '지구별.com': '/jigubyeol-proxy',
     };
     const proxyPrefix = proxyPrefixByHost[parsedUrl.hostname];
 
