@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { toBlob } from 'html-to-image';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import ThumbnailImg from '../shared/assets/images/common/thumbnailImg.png';
@@ -6,6 +7,8 @@ import ShareIcon from '../shared/assets/icons/themeDetail/shareIcon.svg?react';
 import CopyIcon from '../shared/assets/icons/location/copyIcon.svg?react';
 import CloseIcon from '../shared/assets/icons/common/cancelIcon.svg?react';
 import { formatDateToDot, mapRecommendedHeadcount, reviewEnumConversion } from '../shared/utils/dataUtils';
+
+const SHARE_IMAGE_SIZE = 1080;
 
 const fallbackReview = {
   themeName: '비밀의 화원',
@@ -67,8 +70,37 @@ const templates = [
   },
 ];
 
+function toProxyImageUrl(imageUrl) {
+  if (!imageUrl || imageUrl.startsWith('blob:') || imageUrl.startsWith('data:') || imageUrl.startsWith('/')) {
+    return imageUrl;
+  }
+
+  try {
+    const parsedUrl = new URL(imageUrl);
+    const proxyPrefixByHost = {
+      'firebasestorage.googleapis.com': '/storage-proxy',
+      'storage.googleapis.com': '/storage-proxy',
+      'naverbooking-phinf.pstatic.net': '/pstatic-proxy',
+    };
+    const proxyPrefix = proxyPrefixByHost[parsedUrl.hostname];
+
+    if (!proxyPrefix) {
+      return imageUrl;
+    }
+
+    return `${proxyPrefix}${parsedUrl.pathname}${parsedUrl.search}`;
+  } catch {
+    return imageUrl;
+  }
+}
+
+function getReviewThemeImageUrl(reviewData) {
+  return toProxyImageUrl(reviewData?.thumbnailUrl || reviewData?.img || reviewData?.themeImg || ThumbnailImg);
+}
+
 function ReviewSharePage() {
   const { state } = useLocation();
+  const previewRef = useRef(null);
   const [selectedTemplate, setSelectedTemplate] = useState(templates[0].id);
   const [uploadedImage, setUploadedImage] = useState('');
   const [backgroundMode, setBackgroundMode] = useState('theme');
@@ -79,7 +111,7 @@ function ReviewSharePage() {
 
   const selected = templates.find((template) => template.id === selectedTemplate) ?? templates[0];
   const reviewData = state?.reviewData ?? fallbackReview;
-  const [themeImageUrl, setThemeImageUrl] = useState(reviewData.thumbnailUrl || ThumbnailImg);
+  const [themeImageUrl, setThemeImageUrl] = useState(getReviewThemeImageUrl(reviewData));
   const backgroundImage = backgroundMode === 'upload' && uploadedImage ? uploadedImage : themeImageUrl;
 
   const displayData = useMemo(() => {
@@ -111,13 +143,8 @@ function ReviewSharePage() {
   }, [reviewData]);
 
   useEffect(() => {
-    if (!reviewData.thumbnailUrl) {
-      setThemeImageUrl(ThumbnailImg);
-      return;
-    }
-
-    setThemeImageUrl(reviewData.thumbnailUrl);
-  }, [reviewData.thumbnailUrl]);
+    setThemeImageUrl(getReviewThemeImageUrl(reviewData));
+  }, [reviewData]);
 
   useEffect(() => {
     return () => {
@@ -157,16 +184,20 @@ function ReviewSharePage() {
     updateShareMessage('');
   };
 
+  const exportCurrentPreview = async () => {
+    if (!previewRef.current) {
+      throw new Error('공유할 미리보기를 찾을 수 없습니다.');
+    }
+
+    return exportReviewImage(previewRef.current);
+  };
+
   const handleImageDownload = async () => {
     setIsSharePending(true);
     updateShareMessage('이미지를 만드는 중이에요.', 'default');
 
     try {
-      const blob = await exportReviewImage({
-        templateId: selectedTemplate,
-        data: displayData,
-        backgroundImage,
-      });
+      const blob = await exportCurrentPreview();
       downloadBlob(blob, createShareFileName(displayData.themeName, selectedTemplate));
       updateShareMessage('이미지를 다운로드했어요.', 'success');
     } catch (error) {
@@ -182,11 +213,7 @@ function ReviewSharePage() {
     updateShareMessage('공유를 준비하고 있어요.', 'default');
 
     try {
-      const blob = await exportReviewImage({
-        templateId: selectedTemplate,
-        data: displayData,
-        backgroundImage,
-      });
+      const blob = await exportCurrentPreview();
       const shareFile = new File([blob], createShareFileName(displayData.themeName, selectedTemplate), {
         type: 'image/png',
       });
@@ -253,12 +280,14 @@ function ReviewSharePage() {
             <PanelLabel>미리보기</PanelLabel>
             <TemplateName>{selected.name}</TemplateName>
           </PreviewHeader>
-          <RecordCanvas $backgroundImage={backgroundImage}>
-            <HiddenImage
+          <RecordCanvas ref={previewRef}>
+            <CanvasBackgroundImage
               src={backgroundImage}
               alt=""
+              draggable="false"
               onError={backgroundMode === 'theme' ? handleThemeImageError : undefined}
             />
+            <CanvasShade />
             <Overlay $template={selectedTemplate}>
               <TemplateContent templateId={selectedTemplate} data={displayData} />
             </Overlay>
@@ -275,12 +304,14 @@ function ReviewSharePage() {
                 $active={selectedTemplate === template.id}
                 onClick={() => setSelectedTemplate(template.id)}
               >
-                <TemplateThumb $backgroundImage={backgroundImage}>
-                  <HiddenImage
+                <TemplateThumb>
+                  <CanvasBackgroundImage
                     src={backgroundImage}
                     alt=""
+                    draggable="false"
                     onError={backgroundMode === 'theme' ? handleThemeImageError : undefined}
                   />
+                  <CanvasShade $gradient="linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.52))" />
                   <MiniOverlay $template={template.id}>
                     <TemplateContent templateId={template.id} data={displayData} compact />
                   </MiniOverlay>
@@ -490,485 +521,82 @@ function createShareFileName(themeName, templateName) {
   return `${safeThemeName || 'review-share'}-${templateName}.png`;
 }
 
-async function exportReviewImage({ templateId, data, backgroundImage }) {
-  const size = 1080;
-  const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
+async function exportReviewImage(node) {
+  await waitForPreviewStabilization(node);
+  const shouldCacheBust = shouldEnableCacheBust(node);
 
-  const context = canvas.getContext('2d');
-  if (!context) {
-    throw new Error('canvas context를 만들 수 없습니다.');
-  }
-
-  await drawReviewBackground(context, backgroundImage, size);
-  drawTemplateOnCanvas(context, templateId, data, size);
-
-  const blob = await new Promise((resolve, reject) => {
-    canvas.toBlob((file) => {
-      if (!file) {
-        reject(new Error('이미지 변환에 실패했습니다.'));
-        return;
-      }
-      resolve(file);
-    }, 'image/png');
+  const blob = await toBlob(node, {
+    cacheBust: shouldCacheBust,
+    includeQueryParams: true,
+    canvasWidth: SHARE_IMAGE_SIZE,
+    canvasHeight: SHARE_IMAGE_SIZE,
+    pixelRatio: 1,
   });
+
+  if (!blob) {
+    throw new Error('이미지 변환에 실패했습니다.');
+  }
 
   return blob;
 }
 
-async function drawReviewBackground(context, backgroundImage, size) {
-  const imageSource = backgroundImage || ThumbnailImg;
-  let image;
+function shouldEnableCacheBust(node) {
+  const images = Array.from(node.querySelectorAll('img'));
+  return !images.some((image) => isLocalObjectUrl(image.currentSrc || image.src));
+}
 
-  try {
-    image = await loadImage(imageSource);
-  } catch (error) {
-    if (imageSource !== ThumbnailImg) {
-      image = await loadImage(ThumbnailImg);
-    } else {
-      throw error;
+function isLocalObjectUrl(url) {
+  return typeof url === 'string' && (url.startsWith('blob:') || url.startsWith('data:'));
+}
+
+async function waitForPreviewStabilization(node) {
+  if (document.fonts?.ready) {
+    await document.fonts.ready;
+  }
+
+  await waitForNodeImages(node);
+  await waitForNextFrame();
+  await waitForNodeImages(node);
+  await waitForNextFrame();
+}
+
+async function waitForNodeImages(node) {
+  const images = Array.from(node.querySelectorAll('img'));
+  await Promise.all(images.map(waitForImageElement));
+}
+
+async function waitForImageElement(image) {
+  if (image.complete) {
+    if (image.decode) {
+      await image.decode().catch(() => {});
     }
+    return;
   }
 
-  drawCoverImage(context, image, size, size);
+  await new Promise((resolve) => {
+    const timer = window.setTimeout(resolve, 3000);
 
-  const overlay = context.createLinearGradient(0, 0, 0, size);
-  overlay.addColorStop(0, 'rgba(0, 0, 0, 0.10)');
-  overlay.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
-  context.fillStyle = overlay;
-  context.fillRect(0, 0, size, size);
-}
+    const finish = () => {
+      window.clearTimeout(timer);
+      image.removeEventListener('load', finish);
+      image.removeEventListener('error', finish);
+      resolve();
+    };
 
-function drawTemplateOnCanvas(context, templateId, data, size) {
-  switch (templateId) {
-    case 'center-badge':
-      drawCenterBadgeTemplate(context, data, size);
-      return;
-    case 'bottom-record':
-      drawBottomRecordTemplate(context, data, size);
-      return;
-    case 'poster':
-      drawPosterTemplate(context, data, size);
-      return;
-    case 'corner-stamp':
-      drawCornerStampTemplate(context, data, size);
-      return;
-    case 'date-card':
-      drawDateCardTemplate(context, data, size);
-      return;
-    case 'minimal':
-      drawMinimalTemplate(context, data, size);
-      return;
-    case 'score-grid':
-      drawScoreGridTemplate(context, data, size);
-      return;
-    default:
-      drawFilmTemplate(context, data, size);
+    image.addEventListener('load', finish, { once: true });
+    image.addEventListener('error', finish, { once: true });
+  });
+
+  if (image.decode) {
+    await image.decode().catch(() => {});
   }
 }
 
-function drawCenterBadgeTemplate(context, data, size) {
-  drawRoundedRect(
-    context,
-    size * 0.16,
-    size * 0.28,
-    size * 0.68,
-    size * 0.44,
-    160,
-    'rgba(10, 12, 18, 0.42)',
-    'rgba(249, 249, 251, 0.5)',
-  );
-  drawCanvasText(context, 'ROOM IN US', size / 2, size * 0.4, {
-    font: '700 30px Pretendard',
-    color: 'rgba(249, 249, 251, 0.82)',
-    align: 'center',
-  });
-  drawWrappedCanvasText(context, data.themeName, size / 2, size * 0.49, size * 0.5, {
-    font: '900 84px Pretendard',
-    color: '#F9F9FB',
-    align: 'center',
-    lineHeight: 88,
-    maxLines: 2,
-  });
-  drawRoundedRect(context, size * 0.36, size * 0.58, size * 0.28, size * 0.07, 999, '#F9F9FB');
-  drawCanvasText(context, data.review, size / 2, size * 0.625, {
-    font: '700 28px Pretendard',
-    color: '#35384A',
-    align: 'center',
-  });
-  drawCanvasText(context, `${data.playedAt} · ${data.remainingTime}`, size / 2, size * 0.69, {
-    font: '700 28px Pretendard',
-    color: '#F9F9FB',
-    align: 'center',
-  });
-}
-
-function drawBottomRecordTemplate(context, data, size) {
-  const gradient = context.createLinearGradient(0, size * 0.45, 0, size);
-  gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-  gradient.addColorStop(1, 'rgba(0, 0, 0, 0.78)');
-  context.fillStyle = gradient;
-  context.fillRect(0, size * 0.45, size, size * 0.55);
-
-  drawWrappedCanvasText(context, data.themeName, 76, size * 0.72, size - 152, {
-    font: '900 76px Pretendard',
-    color: '#F9F9FB',
-    lineHeight: 82,
-    maxLines: 2,
-  });
-
-  const stats = [
-    ['DATE', data.playedAt],
-    ['TIME', data.remainingTime],
-    ['HINT', data.usedHint],
-  ];
-
-  stats.forEach(([label, value], index) => {
-    const width = 286;
-    const gap = 24;
-    const x = 76 + (width + gap) * index;
-    const y = size * 0.83;
-    drawCanvasText(context, label, x, y, {
-      font: '700 24px Pretendard',
-      color: 'rgba(249, 249, 251, 0.68)',
+function waitForNextFrame() {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(resolve);
     });
-    drawWrappedCanvasText(context, value, x, y + 42, width, {
-      font: '900 34px Pretendard',
-      color: '#F9F9FB',
-      lineHeight: 38,
-      maxLines: 2,
-    });
-  });
-}
-
-function drawPosterTemplate(context, data, size) {
-  const gradient = context.createLinearGradient(0, 0, size * 0.72, 0);
-  gradient.addColorStop(0, 'rgba(6, 9, 20, 0.72)');
-  gradient.addColorStop(1, 'rgba(6, 9, 20, 0)');
-  context.fillStyle = gradient;
-  context.fillRect(0, 0, size, size);
-
-  drawCanvasText(context, data.playedAt, 72, 94, {
-    font: '700 32px Pretendard',
-    color: '#F9F9FB',
-  });
-  drawWrappedCanvasText(context, data.themeName, 72, 350, size * 0.62, {
-    font: '900 116px Pretendard',
-    color: '#F9F9FB',
-    lineHeight: 112,
-    maxLines: 3,
-  });
-  drawRoundedRect(context, 72, size * 0.72, 290, 64, 12, 'rgba(0, 0, 0, 0.18)', 'rgba(249, 249, 251, 0.6)');
-  drawCanvasText(context, data.review, 104, size * 0.764, {
-    font: '700 30px Pretendard',
-    color: '#F9F9FB',
-  });
-  drawCanvasText(context, `${data.result} · ${data.satisfaction}`, 72, size * 0.9, {
-    font: '700 32px Pretendard',
-    color: '#F9F9FB',
-  });
-}
-
-function drawCornerStampTemplate(context, data, size) {
-  context.save();
-  context.translate(size * 0.74, size * 0.74);
-  context.rotate((-2 * Math.PI) / 180);
-  drawRoundedRect(context, -250, -170, 360, 260, 20, 'rgba(249, 249, 251, 0.92)', 'rgba(53, 56, 74, 0.18)');
-  drawCanvasText(context, 'POST CARD', -214, -120, {
-    font: '900 24px Pretendard',
-    color: '#718FF2',
-  });
-  drawRoundedRect(context, 38, -145, 62, 54, 6, 'rgba(249, 249, 251, 0.72)', 'rgba(53, 56, 74, 0.45)', [6, 6]);
-  drawCanvasText(context, data.satisfaction, 69, -110, {
-    font: '900 22px Pretendard',
-    color: '#515467',
-    align: 'center',
-  });
-  drawWrappedCanvasText(context, data.themeName, -214, -48, 250, {
-    font: '900 42px Pretendard',
-    color: '#35384A',
-    lineHeight: 46,
-    maxLines: 2,
-  });
-  context.strokeStyle = 'rgba(53, 56, 74, 0.28)';
-  context.setLineDash([10, 6]);
-  context.beginPath();
-  context.moveTo(-214, 26);
-  context.lineTo(82, 26);
-  context.stroke();
-  context.setLineDash([]);
-  drawCanvasText(context, data.review, -214, 70, {
-    font: '700 26px Pretendard',
-    color: '#515467',
-  });
-  drawCanvasText(context, `${data.playedAt} · ${data.remainingTime}`, -214, 112, {
-    font: '700 22px Pretendard',
-    color: '#818496',
-  });
-  context.restore();
-}
-
-function drawDateCardTemplate(context, data) {
-  drawRoundedRect(context, 56, 56, 360, 250, 24, 'rgba(249, 249, 251, 0.90)');
-  drawCanvasText(context, data.playedAt, 92, 128, {
-    font: '900 42px Pretendard',
-    color: '#718FF2',
-  });
-  drawWrappedCanvasText(context, data.themeName, 92, 192, 288, {
-    font: '900 54px Pretendard',
-    color: '#35384A',
-    lineHeight: 58,
-    maxLines: 2,
-  });
-  drawCanvasText(context, data.result, 92, 274, {
-    font: '700 30px Pretendard',
-    color: '#515467',
-  });
-}
-
-function drawMinimalTemplate(context, data, size) {
-  context.strokeStyle = 'rgba(249, 249, 251, 0.72)';
-  context.lineWidth = 2;
-  context.beginPath();
-  context.moveTo(56, size - 150);
-  context.lineTo(size - 56, size - 150);
-  context.moveTo(56, size - 56);
-  context.lineTo(size - 56, size - 56);
-  context.stroke();
-
-  drawCanvasText(context, data.themeName, 56, size - 112, {
-    font: '900 52px Pretendard',
-    color: '#F9F9FB',
-  });
-  drawCanvasText(context, `${data.review} / ${data.remainingTime}`, 56, size - 72, {
-    font: '700 28px Pretendard',
-    color: 'rgba(249, 249, 251, 0.82)',
-  });
-}
-
-function drawScoreGridTemplate(context, data, size) {
-  drawRoundedRect(context, size * 0.15, size * 0.24, size * 0.7, size * 0.52, 24, 'rgba(10, 12, 18, 0.58)');
-  drawWrappedCanvasText(context, data.themeName, size / 2, size * 0.34, size * 0.54, {
-    font: '900 62px Pretendard',
-    color: '#F9F9FB',
-    align: 'center',
-    lineHeight: 68,
-    maxLines: 2,
-  });
-
-  const items = [
-    ['평점', data.satisfaction],
-    ['인원', data.participantCount],
-    ['추천', data.recommendedHeadcount],
-    ['힌트', data.usedHint],
-  ];
-
-  items.forEach(([label, value], index) => {
-    const col = index % 2;
-    const row = Math.floor(index / 2);
-    const x = 210 + col * 252;
-    const y = 430 + row * 154;
-    drawRoundedRect(context, x, y, 208, 118, 12, 'transparent', 'rgba(249, 249, 251, 0.24)');
-    drawCanvasText(context, label, x + 104, y + 36, {
-      font: '700 24px Pretendard',
-      color: 'rgba(249, 249, 251, 0.68)',
-      align: 'center',
-    });
-    drawWrappedCanvasText(context, value, x + 104, y + 76, 168, {
-      font: '900 32px Pretendard',
-      color: '#F9F9FB',
-      align: 'center',
-      lineHeight: 36,
-      maxLines: 2,
-    });
-  });
-}
-
-function drawFilmTemplate(context, data, size) {
-  context.fillStyle = 'rgba(0, 0, 0, 0.80)';
-  context.fillRect(0, 0, size, 170);
-  context.fillRect(0, size - 170, size, 170);
-
-  drawCanvasText(context, data.storeName, 56, 92, {
-    font: '700 34px Pretendard',
-    color: '#F9F9FB',
-  });
-  drawWrappedCanvasText(context, data.themeName, size / 2, size * 0.54, size * 0.72, {
-    font: '900 86px Pretendard',
-    color: '#F9F9FB',
-    align: 'center',
-    lineHeight: 92,
-    maxLines: 2,
-  });
-  drawCanvasText(context, `${data.playedAt} · ${data.review} · ${data.remainingTime}`, size / 2, size - 90, {
-    font: '700 30px Pretendard',
-    color: '#F9F9FB',
-    align: 'center',
-  });
-}
-
-function drawCoverImage(context, image, width, height) {
-  const imageRatio = image.width / image.height;
-  const boxRatio = width / height;
-  let drawWidth = width;
-  let drawHeight = height;
-  let offsetX = 0;
-  let offsetY = 0;
-
-  if (imageRatio > boxRatio) {
-    drawHeight = height;
-    drawWidth = height * imageRatio;
-    offsetX = (width - drawWidth) / 2;
-  } else {
-    drawWidth = width;
-    drawHeight = width / imageRatio;
-    offsetY = (height - drawHeight) / 2;
-  }
-
-  context.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
-}
-
-function drawRoundedRect(context, x, y, width, height, radius, fillStyle, strokeStyle = null, lineDash = []) {
-  context.save();
-  context.beginPath();
-  context.moveTo(x + radius, y);
-  context.arcTo(x + width, y, x + width, y + height, radius);
-  context.arcTo(x + width, y + height, x, y + height, radius);
-  context.arcTo(x, y + height, x, y, radius);
-  context.arcTo(x, y, x + width, y, radius);
-  context.closePath();
-
-  if (fillStyle) {
-    context.fillStyle = fillStyle;
-    context.fill();
-  }
-
-  if (strokeStyle) {
-    context.strokeStyle = strokeStyle;
-    context.lineWidth = 2;
-    context.setLineDash(lineDash);
-    context.stroke();
-  }
-  context.restore();
-}
-
-function drawCanvasText(context, text, x, y, options = {}) {
-  const { font = '700 32px Pretendard', color = '#F9F9FB', align = 'left', baseline = 'middle' } = options;
-
-  context.save();
-  context.font = font;
-  context.fillStyle = color;
-  context.textAlign = align;
-  context.textBaseline = baseline;
-  context.fillText(text || '-', x, y);
-  context.restore();
-}
-
-function drawWrappedCanvasText(context, text, x, y, maxWidth, options = {}) {
-  const {
-    font = '700 32px Pretendard',
-    color = '#F9F9FB',
-    align = 'left',
-    baseline = 'top',
-    lineHeight = 36,
-    maxLines = 2,
-  } = options;
-
-  context.save();
-  context.font = font;
-  context.fillStyle = color;
-  context.textAlign = align;
-  context.textBaseline = baseline;
-
-  const lines = wrapCanvasText(context, text || '-', maxWidth, maxLines);
-  lines.forEach((line, index) => {
-    context.fillText(line, x, y + lineHeight * index);
-  });
-  context.restore();
-}
-
-function wrapCanvasText(context, text, maxWidth, maxLines) {
-  const words = tokenizeCanvasText(String(text || '-'));
-  const lines = [];
-  let current = '';
-
-  words.forEach((word) => {
-    const spacer = current && !isPunctuationToken(word) && !current.endsWith(' ') ? ' ' : '';
-    const next = `${current}${spacer}${word}`;
-    if (context.measureText(next).width <= maxWidth) {
-      current = next;
-      return;
-    }
-
-    if (current) {
-      lines.push(current);
-    } else {
-      const slicedWord = trimCanvasLine(sliceCanvasTextByWidth(context, word, maxWidth));
-      lines.push(slicedWord);
-      current = word.slice(slicedWord.length).trimStart();
-      return;
-    }
-    current = word;
-  });
-
-  if (current) {
-    lines.push(current);
-  }
-
-  if (lines.length <= maxLines) {
-    return lines;
-  }
-
-  const truncated = lines.slice(0, maxLines);
-  const lastIndex = maxLines - 1;
-  let lastLine = truncated[lastIndex];
-
-  while (context.measureText(`${lastLine}...`).width > maxWidth && lastLine.length > 0) {
-    lastLine = lastLine.slice(0, -1);
-  }
-
-  truncated[lastIndex] = `${lastLine}...`;
-  return truncated;
-}
-
-function tokenizeCanvasText(text) {
-  if (text.includes(' ')) {
-    return text.split(/\s+/);
-  }
-
-  return Array.from(text);
-}
-
-function isPunctuationToken(token) {
-  return /^[.,!?/:;)]$/.test(token);
-}
-
-function sliceCanvasTextByWidth(context, text, maxWidth) {
-  let result = '';
-
-  for (const char of Array.from(text)) {
-    const next = `${result}${char}`;
-    if (context.measureText(next).width > maxWidth) {
-      return result || char;
-    }
-    result = next;
-  }
-
-  return result;
-}
-
-function trimCanvasLine(text) {
-  return text.replace(/\s+$/g, '');
-}
-
-function loadImage(src) {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.crossOrigin = 'anonymous';
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error('이미지 로드에 실패했습니다.'));
-    image.src = src;
   });
 }
 
@@ -1151,21 +779,30 @@ const RecordCanvas = styled.div`
   aspect-ratio: 1 / 1;
   width: 100%;
   position: relative;
+  isolation: isolate;
   overflow: hidden;
   border-radius: 0.5rem;
-  background-image: ${({ $backgroundImage }) =>
-    `linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.45)), url(${$backgroundImage})`};
-  background-size: cover;
-  background-position: center;
+  background: #171a24;
   box-shadow: 0 1rem 2.5rem rgba(53, 56, 74, 0.18);
 `;
 
-const HiddenImage = styled.img`
+const CanvasBackgroundImage = styled.img`
   position: absolute;
-  width: 0;
-  height: 0;
-  opacity: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   pointer-events: none;
+  user-select: none;
+  z-index: 0;
+`;
+
+const CanvasShade = styled.div`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: ${({ $gradient = 'linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.45))' }) => $gradient};
+  z-index: 1;
 `;
 
 const TemplatePanel = styled.div`
@@ -1369,12 +1006,10 @@ const ShareStatus = styled.div`
 const TemplateThumb = styled.div`
   aspect-ratio: 1 / 1;
   position: relative;
+  isolation: isolate;
   overflow: hidden;
   border-radius: 0.375rem;
-  background-image: ${({ $backgroundImage }) =>
-    `linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.52)), url(${$backgroundImage})`};
-  background-size: cover;
-  background-position: center;
+  background: #171a24;
 `;
 
 const TemplateMeta = styled.div`
@@ -1400,6 +1035,7 @@ const TemplateDescription = styled.div`
 const Overlay = styled.div`
   position: absolute;
   inset: 0;
+  z-index: 2;
   display: flex;
   color: #f9f9fb;
   text-shadow: 0 0.125rem 0.875rem rgba(0, 0, 0, 0.45);

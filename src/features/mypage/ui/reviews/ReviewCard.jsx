@@ -22,7 +22,6 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
 
   const { isMobile } = useDevice();
   const navigate = useNavigate();
-  const [thumbnailUrl, setThumbnailUrl] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleteSuccess, setIsDeleteSuccess] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -43,6 +42,8 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
     participantCnt,
     review
   } = data;
+  const initialThumbnailUrl = data?.thumbnailUrl || data?.img || data?.themeImg || null;
+  const [thumbnailUrl, setThumbnailUrl] = useState(initialThumbnailUrl);
 
   const infoItems = createReviewInfoItems({
     review,
@@ -59,13 +60,29 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
 
     getThemeDetailAPI(themeId)
       .then((themeData) => {
-        setThumbnailUrl(themeData.img);
+        setThumbnailUrl(themeData?.img || themeData?.themeImg || initialThumbnailUrl);
       })
       .catch((error) => {
         console.error('썸네일 로딩 실패:', error);
-        setThumbnailUrl(null);
+        setThumbnailUrl(initialThumbnailUrl);
       });
-  }, [themeId]);
+  }, [themeId, initialThumbnailUrl]);
+
+  const getShareThumbnailUrl = async () => {
+    if (thumbnailUrl) return thumbnailUrl;
+    if (initialThumbnailUrl) return initialThumbnailUrl;
+    if (!themeId) return DefaultThumbnail;
+
+    try {
+      const themeData = await getThemeDetailAPI(themeId);
+      const nextThumbnailUrl = themeData?.img || themeData?.themeImg || DefaultThumbnail;
+      setThumbnailUrl(nextThumbnailUrl);
+      return nextThumbnailUrl;
+    } catch (error) {
+      console.error('[ReviewCard] 공유용 썸네일 로딩 실패:', error);
+      return DefaultThumbnail;
+    }
+  };
 
   const handleDelete = async () => {
     setIsOpen(false);
@@ -113,8 +130,10 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
     }
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     setIsOpen(false);
+    const shareThumbnailUrl = await getShareThumbnailUrl();
+
     navigate('/review/share', {
       state: {
         backButtonText: '내 후기 목록으로 돌아가기',
@@ -122,7 +141,8 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
           ...data,
           storeName,
           themeName,
-          thumbnailUrl: thumbnailUrl || DefaultThumbnail,
+          thumbnailUrl: shareThumbnailUrl,
+          img: shareThumbnailUrl,
         },
       },
     });
