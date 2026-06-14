@@ -2,10 +2,12 @@ import { useEffect, useRef } from "react";
 import styled from "styled-components";
 import Write from '../../../../shared/assets/icons/myPage/write.svg?react';
 import Trash from '../../../../shared/assets/icons/myPage/trash.svg?react';
+import Share from '../../../../shared/assets/icons/themeDetail/shareIcon.svg?react';
 
 export default function ReviewActionDropDown({
   isOpen,
   anchorRef,
+  onShare,
   onEdit,
   onDelete,
   onClose,
@@ -31,6 +33,10 @@ export default function ReviewActionDropDown({
 
   return (
     <DropDownMenu ref={dropdownRef}>
+      <DropDownItem onClick={onShare}>
+        <ShareIcon />
+        <DropDownText>후기 공유</DropDownText>
+      </DropDownItem>
       <DropDownItem onClick={onEdit}>
         <WriteIcon />
         <DropDownText>후기 수정</DropDownText>
@@ -78,6 +84,14 @@ const DropDownText = styled.div`
 `;
 
 const WriteIcon = styled(Write)`
+  display: flex;
+  width: 0.875rem;
+  height: 0.875rem;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ShareIcon = styled(Share)`
   display: flex;
   width: 0.875rem;
   height: 0.875rem;

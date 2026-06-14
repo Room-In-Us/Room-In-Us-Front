@@ -21,7 +21,7 @@ import FavoritesPage from '../pages/myPage/FavoritesPage';
 import ReviewsPage from '../pages/myPage/ReviewsPage';
 import SerachPage from '../pages/SerachPage';
 import ReviewDetailPage from '../pages/ReviewDetailPage';
-import ReviewPage from '../pages/ReviewPage';
+import ReviewSharePage from '../pages/ReviewSharePage';
 import NotFoundPage from '../pages/NotFoundPage';
 import DatePickerGlobalStyle from '../shared/styles/DatePickerGlobalStyle';
 import useAuthSession from '../shared/hooks/useAuthSession';
@@ -75,8 +75,8 @@ function App() {
           {/* 후기 상세 페이지 */}
           <Route path="/theme/:themeId/review/:reviewId" element={<ReviewDetailPage />} />
 
-          {/* 후기 기록 템플릿 페이지 */}
-          <Route path="/review" element={<ReviewPage />} />
+          {/* 후기 공유 페이지 */}
+          <Route path="/review/share" element={<ReviewSharePage />} />
 
           {/* 마이 페이지 */}
           <Route
