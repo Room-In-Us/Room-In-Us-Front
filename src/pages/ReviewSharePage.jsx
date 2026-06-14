@@ -1,5 +1,5 @@
 import { toBlob } from 'html-to-image';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import ThumbnailImg from '../shared/assets/images/common/thumbnailImg.png';
@@ -9,6 +9,7 @@ import CloseIcon from '../shared/assets/icons/common/cancelIcon.svg?react';
 import { formatDateToDot, mapRecommendedHeadcount, reviewEnumConversion } from '../shared/utils/dataUtils';
 
 const SHARE_IMAGE_SIZE = 1080;
+const TEMPLATE_THUMB_SIZE = 96;
 
 const fallbackReview = {
   themeName: '비밀의 화원',
@@ -77,6 +78,16 @@ function toProxyImageUrl(imageUrl) {
 
   try {
     const parsedUrl = new URL(imageUrl);
+    const isSameOrigin = typeof window !== 'undefined' && parsedUrl.origin === window.location.origin;
+
+    if (isSameOrigin) {
+      return imageUrl;
+    }
+
+    if (!import.meta.env.DEV) {
+      return `/api/image-proxy?url=${encodeURIComponent(imageUrl)}`;
+    }
+
     const proxyPrefixByHost = {
       'firebasestorage.googleapis.com': '/storage-proxy',
       'storage.googleapis.com': '/storage-proxy',
@@ -110,11 +121,14 @@ function ReviewSharePage() {
   const [isSharePending, setIsSharePending] = useState(false);
   const [shareMessage, setShareMessage] = useState('');
   const [shareMessageTone, setShareMessageTone] = useState('default');
+  const [previewSceneSize, setPreviewSceneSize] = useState(0);
 
   const selected = templates.find((template) => template.id === selectedTemplate) ?? templates[0];
   const reviewData = state?.reviewData ?? fallbackReview;
   const [themeImageUrl, setThemeImageUrl] = useState(getReviewThemeImageUrl(reviewData));
   const backgroundImage = backgroundMode === 'upload' && uploadedImage ? uploadedImage : themeImageUrl;
+  const templatePreviewSize = previewSceneSize || 1;
+  const templatePreviewScale = TEMPLATE_THUMB_SIZE / templatePreviewSize;
 
   const displayData = useMemo(() => {
     const memberCount = Array.isArray(reviewData.participantList)
@@ -147,6 +161,41 @@ function ReviewSharePage() {
   useEffect(() => {
     setThemeImageUrl(getReviewThemeImageUrl(reviewData));
   }, [reviewData]);
+
+  useLayoutEffect(() => {
+    const previewNode = previewRef.current;
+
+    if (!previewNode) {
+      return undefined;
+    }
+
+    const updatePreviewSceneSize = () => {
+      const nextSize = previewNode.getBoundingClientRect().width;
+
+      if (!nextSize) {
+        return;
+      }
+
+      setPreviewSceneSize((prevSize) => (Math.abs(prevSize - nextSize) < 0.5 ? prevSize : nextSize));
+    };
+
+    updatePreviewSceneSize();
+
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', updatePreviewSceneSize);
+
+      return () => {
+        window.removeEventListener('resize', updatePreviewSceneSize);
+      };
+    }
+
+    const resizeObserver = new ResizeObserver(updatePreviewSceneSize);
+    resizeObserver.observe(previewNode);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -291,7 +340,7 @@ function ReviewSharePage() {
             />
             <CanvasShade />
             <Overlay $template={selectedTemplate}>
-              <TemplateContent templateId={selectedTemplate} data={displayData} />
+              <TemplateContent templateId={selectedTemplate} data={displayData} backgroundImage={backgroundImage} />
             </Overlay>
           </RecordCanvas>
         </PreviewPanel>
@@ -307,16 +356,18 @@ function ReviewSharePage() {
                 onClick={() => setSelectedTemplate(template.id)}
               >
                 <TemplateThumb>
-                  <CanvasBackgroundImage
-                    src={backgroundImage}
-                    alt=""
-                    draggable="false"
-                    onError={backgroundMode === 'theme' ? handleThemeImageError : undefined}
-                  />
-                  <CanvasShade $gradient="linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.52))" />
-                  <MiniOverlay $template={template.id}>
-                    <TemplateContent templateId={template.id} data={displayData} compact />
-                  </MiniOverlay>
+                  <TemplateThumbScene $sceneSize={templatePreviewSize} $scale={templatePreviewScale}>
+                    <CanvasBackgroundImage
+                      src={backgroundImage}
+                      alt=""
+                      draggable="false"
+                      onError={backgroundMode === 'theme' ? handleThemeImageError : undefined}
+                    />
+                    <CanvasShade />
+                    <Overlay $template={template.id}>
+                      <TemplateContent templateId={template.id} data={displayData} backgroundImage={backgroundImage} />
+                    </Overlay>
+                  </TemplateThumbScene>
                 </TemplateThumb>
                 <TemplateMeta>
                   <TemplateTitle>{template.name}</TemplateTitle>
@@ -381,7 +432,7 @@ function ReviewSharePage() {
   );
 }
 
-function TemplateContent({ templateId, data, compact = false }) {
+function TemplateContent({ templateId, data, backgroundImage, compact = false }) {
   const statItems = [
     { label: 'DATE', value: data.playedAt },
     { label: 'TIME', value: data.remainingTime },
@@ -391,12 +442,16 @@ function TemplateContent({ templateId, data, compact = false }) {
   if (templateId === 'center-badge') {
     return (
       <CenterBadge $compact={compact}>
-        <SmallLabel>ROOM IN US</SmallLabel>
-        <ThemeName>{data.themeName}</ThemeName>
-        <ReviewChip>{data.review}</ReviewChip>
-        <MetaLine>
-          {data.playedAt} · {data.remainingTime}
-        </MetaLine>
+        <CenterBadgeBlurImage src={backgroundImage} alt="" draggable="false" />
+        <CenterBadgeShade />
+        <CenterBadgeContent>
+          <SmallLabel>ROOM IN US</SmallLabel>
+          <ThemeName>{data.themeName}</ThemeName>
+          <ReviewChip>{data.review}</ReviewChip>
+          <MetaLine>
+            {data.playedAt} · {data.remainingTime}
+          </MetaLine>
+        </CenterBadgeContent>
       </CenterBadge>
     );
   }
@@ -473,25 +528,29 @@ function TemplateContent({ templateId, data, compact = false }) {
   if (templateId === 'score-grid') {
     return (
       <ScoreGrid $compact={compact}>
-        <ScoreTitle>{data.themeName}</ScoreTitle>
-        <ScoreRows>
-          <ScoreItem>
-            <span>평점</span>
-            <strong>{data.satisfaction}</strong>
-          </ScoreItem>
-          <ScoreItem>
-            <span>인원</span>
-            <strong>{data.participantCount}</strong>
-          </ScoreItem>
-          <ScoreItem>
-            <span>추천</span>
-            <strong>{data.recommendedHeadcount}</strong>
-          </ScoreItem>
-          <ScoreItem>
-            <span>힌트</span>
-            <strong>{data.usedHint}</strong>
-          </ScoreItem>
-        </ScoreRows>
+        <ScoreGridBlurImage src={backgroundImage} alt="" draggable="false" />
+        <ScoreGridShade />
+        <ScoreGridContent>
+          <ScoreTitle>{data.themeName}</ScoreTitle>
+          <ScoreRows>
+            <ScoreItem>
+              <span>평점</span>
+              <strong>{data.satisfaction}</strong>
+            </ScoreItem>
+            <ScoreItem>
+              <span>인원</span>
+              <strong>{data.participantCount}</strong>
+            </ScoreItem>
+            <ScoreItem>
+              <span>추천</span>
+              <strong>{data.recommendedHeadcount}</strong>
+            </ScoreItem>
+            <ScoreItem>
+              <span>힌트</span>
+              <strong>{data.usedHint}</strong>
+            </ScoreItem>
+          </ScoreRows>
+        </ScoreGridContent>
       </ScoreGrid>
     );
   }
@@ -825,7 +884,7 @@ const TemplateGrid = styled.div`
 
 const TemplateButton = styled.button`
   display: grid;
-  grid-template-columns: 6rem 1fr;
+  grid-template-columns: ${TEMPLATE_THUMB_SIZE}px 1fr;
   gap: 0.75rem;
   align-items: center;
   border: 1px solid ${({ $active }) => ($active ? '#718ff2' : '#d6d6df')};
@@ -1014,6 +1073,20 @@ const TemplateThumb = styled.div`
   background: #171a24;
 `;
 
+const TemplateThumbScene = styled.div`
+  width: ${({ $sceneSize }) => `${$sceneSize}px`};
+  height: ${({ $sceneSize }) => `${$sceneSize}px`};
+  position: absolute;
+  top: 0;
+  left: 0;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: #171a24;
+  transform-origin: top left;
+  transform: ${({ $scale }) => `scale(${$scale})`};
+`;
+
 const TemplateMeta = styled.div`
   min-width: 0;
   display: flex;
@@ -1042,12 +1115,6 @@ const Overlay = styled.div`
   color: #f9f9fb;
   text-shadow: 0 0.125rem 0.875rem rgba(0, 0, 0, 0.45);
   ${({ $template }) => getTemplatePlacement($template)}
-`;
-
-const MiniOverlay = styled(Overlay)`
-  transform: scale(0.38);
-  transform-origin: center;
-  inset: -80%;
 `;
 
 function getTemplatePlacement(template) {
@@ -1100,6 +1167,9 @@ const compactScale = css`
 const CenterBadge = styled.div`
   width: 68%;
   min-height: 42%;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1107,9 +1177,44 @@ const CenterBadge = styled.div`
   gap: 0.65rem;
   border: 1px solid rgba(249, 249, 251, 0.5);
   border-radius: 999rem;
-  background: rgba(10, 12, 18, 0.42);
-  backdrop-filter: blur(10px);
+  background: rgba(10, 12, 18, 0.24);
   ${compactScale}
+`;
+
+const CenterBadgeBlurImage = styled.img`
+  position: absolute;
+  inset: -14%;
+  width: 128%;
+  height: 128%;
+  object-fit: cover;
+  filter: blur(28px) brightness(0.52);
+  transform: scale(1.08);
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+`;
+
+const CenterBadgeShade = styled.div`
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.12), transparent 34%),
+    rgba(10, 12, 18, 0.52);
+  pointer-events: none;
+`;
+
+const CenterBadgeContent = styled.div`
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 2.1rem 1.75rem;
+  box-sizing: border-box;
 `;
 
 const SmallLabel = styled.div`
@@ -1349,14 +1454,48 @@ const MinimalMeta = styled.div`
 
 const ScoreGrid = styled.div`
   width: 70%;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0.5rem;
+  background: rgba(10, 12, 18, 0.34);
+  ${compactScale}
+`;
+
+const ScoreGridBlurImage = styled.img`
+  position: absolute;
+  inset: -14%;
+  width: 128%;
+  height: 128%;
+  object-fit: cover;
+  filter: blur(28px) brightness(0.48);
+  transform: scale(1.08);
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+`;
+
+const ScoreGridShade = styled.div`
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.1), transparent 36%),
+    rgba(10, 12, 18, 0.58);
+  pointer-events: none;
+`;
+
+const ScoreGridContent = styled.div`
+  position: relative;
+  z-index: 2;
+  width: 100%;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  border-radius: 0.5rem;
-  background: rgba(10, 12, 18, 0.58);
-  backdrop-filter: blur(8px);
-  ${compactScale}
+  box-sizing: border-box;
 `;
 
 const ScoreTitle = styled.div`
