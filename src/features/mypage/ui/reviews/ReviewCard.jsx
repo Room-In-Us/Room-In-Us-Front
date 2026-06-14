@@ -15,6 +15,7 @@ import { useSetRecoilState } from "recoil";
 import { reviewStateFamily } from "../../../themeDetail/model/reviewAtom";
 import { getReviewDetailAPI } from "../../../reviewDetail/api/reviewDetailAPI";
 import More from './../../../../shared/assets/icons/common/more.svg?react';
+import Share from './../../../../shared/assets/icons/themeDetail/shareIcon.svg?react';
 import ReviewActionDropDown from "./ReviewActionDropDown";
 
 export default function ReviewCard({ data, onDeleted, onEdit }) {
@@ -112,6 +113,21 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
     }
   };
 
+  const handleShare = () => {
+    setIsOpen(false);
+    navigate('/review/share', {
+      state: {
+        backButtonText: '내 후기 목록으로 돌아가기',
+        reviewData: {
+          ...data,
+          storeName,
+          themeName,
+          thumbnailUrl: thumbnailUrl || DefaultThumbnail,
+        },
+      },
+    });
+  };
+
   return (
     <Wrapper>
       <Img src={thumbnailUrl || DefaultThumbnail} />
@@ -123,6 +139,7 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
           <ReviewActionDropDown
             isOpen={isOpen}
             anchorRef={moreRef}
+            onShare={handleShare}
             onEdit={handleEdit}
             onDelete={() => {
               setIsOpen(false);          
@@ -180,14 +197,20 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
         </DateBox>
         { !isMobile && (
           <BtnWrapper>
-            <Btn
-              onClick={() =>
-                navigate(`/theme/${themeId}/review/${reviewId}`,
-                  { state: { backButtonText: '내 후기 목록으로 돌아가기' } })
-              }
-            >
-              <BtnText>후기 상세보기</BtnText>
-            </Btn>
+            <PrimaryBtnGroup>
+              <Btn
+                onClick={() =>
+                  navigate(`/theme/${themeId}/review/${reviewId}`,
+                    { state: { backButtonText: '내 후기 목록으로 돌아가기' } })
+                }
+              >
+                <BtnText>후기 상세보기</BtnText>
+              </Btn>
+              <Btn onClick={handleShare}>
+                <ShareIcon />
+                <BtnText>후기 공유하기</BtnText>
+              </Btn>
+            </PrimaryBtnGroup>
             <ModifyBtn onClick={handleEdit}><PenIcon /></ModifyBtn>
             <ModifyBtn onClick={() => setIsDeleteModalOpen(true)}><TrashIcon /></ModifyBtn>
           </BtnWrapper>
@@ -404,6 +427,12 @@ const BtnWrapper = styled.div`
   align-self: stretch;
 `;
 
+const PrimaryBtnGroup = styled.div`
+  display: flex;
+  flex: 1;
+  gap: 0.625rem;
+`;
+
 const Btn = styled.div`
   display: flex;
   flex: 1;
@@ -422,6 +451,14 @@ const BtnText = styled.div`
   color: var(--RIU_Primary-100, #718FF2);
   font-family: Pretendard-Bold;
   font-size: 0.875em;
+`;
+
+const ShareIcon = styled(Share)`
+  display: flex;
+  width: 1rem;
+  height: 1rem;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ModifyBtn = styled.div`

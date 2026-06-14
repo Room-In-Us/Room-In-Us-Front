@@ -1,13 +1,13 @@
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
-import LeftArrow from "../../shared/assets/icons/common/arrow/leftArrow.svg?react";
-import ReviewDropDown from "../../features/mypage/ui/reviews/ReviewDropDown";
-import ReviewCardSection from "../../features/mypage/ui/reviews/ReviewCardSection";
-import useDevice from "../../shared/hooks/useDevice";
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import LeftArrow from '../../shared/assets/icons/common/arrow/leftArrow.svg?react';
+import ReviewDropDown from '../../features/mypage/ui/reviews/ReviewDropDown';
+import ReviewCardSection from '../../features/mypage/ui/reviews/ReviewCardSection';
+import useDevice from '../../shared/hooks/useDevice';
 
 function ReviewsPage() {
   const navigate = useNavigate();
-  
+
   const { isMobile } = useDevice();
 
   return (
@@ -15,12 +15,10 @@ function ReviewsPage() {
       <ContentWrapper>
         {/* 뒤로가기 버튼 */}
         {!isMobile && (
-        <BackButtonWrapper onClick={() => navigate('/mypage')}>
-          <StyledLeftArrow/>
-          <BackButtonText>
-            마이페이지로 돌아가기
-          </BackButtonText>
-        </BackButtonWrapper>
+          <BackButtonWrapper onClick={() => navigate('/mypage')}>
+            <StyledLeftArrow />
+            <BackButtonText>마이페이지로 돌아가기</BackButtonText>
+          </BackButtonWrapper>
         )}
 
         {/* 타이틀 영역 */}
@@ -34,10 +32,9 @@ function ReviewsPage() {
 
         {/* 후기 조회 영역 */}
         <ReviewCardSection />
-
       </ContentWrapper>
     </PageWrapper>
-  )
+  );
 }
 
 export default ReviewsPage;
@@ -96,10 +93,10 @@ const TitleWrapper = styled.div`
 `;
 
 const Title = styled.div`
-  color: var(--RIU_Primary-100, #718FF2);
+  color: var(--RIU_Primary-100, #718ff2);
   font-family: Pretendard-Bold;
   font-size: 1.5em;
-  
+
   @media (max-width: 768px) {
     font-size: 1.125em;
   }

@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from 'recoil';
 import { reviewModalState, reviewSectionState, reviewStateFamily } from "../../themeDetail/model/reviewAtom.jsx";
 import ReviewFirst from "./ReviewFirst.jsx";
@@ -13,6 +14,7 @@ import { putMyReviewAPI } from "../../mypage/api/myReviewAPI.js";
 import PopUpModal from "../../../shared/components/PopUpModal.jsx";
 
 function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
+  const navigate = useNavigate();
 
   // 상태 관리
   const setReviewModalOpen = useSetRecoilState(reviewModalState);
@@ -23,13 +25,23 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
   const [, setIsSubmitting] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessages, setErrorMessages] = useState([]);
+  const [completedReviewData, setCompletedReviewData] = useState(null);
 
   // 모달 닫기 핸들러
   const handleClose = () => {
-    if (reviewSection === "last" && onUpdated) {
-      onUpdated(); //후기 목록 재조회
-    }
     setReviewModalOpen(false);
+  };
+
+  const handleShare = () => {
+    if (!completedReviewData) return;
+
+    setReviewModalOpen(false);
+    navigate('/review/share', {
+      state: {
+        backButtonText: isEditMode ? '후기 수정으로 돌아가기' : '후기 작성으로 돌아가기',
+        reviewData: completedReviewData,
+      },
+    });
   };
 
   // 초기화 효과
@@ -39,6 +51,7 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
         resetReview();
       }
       setReviewSection("first");
+      setCompletedReviewData(null);
     }
   }, [isModalOpen, isEditMode, resetReview, setReviewSection]);
 
@@ -158,6 +171,23 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
     return messages;
   };
 
+  const buildShareReviewData = (submittedReviewData, submittedReviewId) => {
+    const storeName = themeData?.storeName || themeData?.storeInfo?.storeName || '';
+    const thumbnailUrl = themeData?.img || themeData?.themeImg || '';
+
+    return {
+      ...submittedReviewData,
+      reviewId: submittedReviewId ?? reviewId ?? submittedReviewData.reviewId ?? null,
+      themeId: themeData?.themeId,
+      themeName: themeData?.themeName || '',
+      storeName,
+      thumbnailUrl,
+      participantCnt: Array.isArray(submittedReviewData.participantList)
+        ? submittedReviewData.participantList.length
+        : submittedReviewData.participantCnt,
+    };
+  };
+
 
   const handleSubmit = async () => {
     
@@ -176,15 +206,21 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
 
     const { uiState, ...serverData } = reviewData;
     void uiState;
+    const sharePayload = buildShareReviewData(serverData);
   
     setIsSubmitting(true);
   
     try {
       // 수정 모드
       if (isEditMode) {
-        await putMyReviewAPI(themeData.themeId, reviewId, serverData);
+        const updateResponse = await putMyReviewAPI(themeData.themeId, reviewId, serverData);
         console.log("[ReviewWriteModal] 후기 수정 요청 데이터:", serverData);
   
+        const updatedReviewId =
+          updateResponse?.reviewId ??
+          updateResponse?.id ??
+          reviewId;
+        setCompletedReviewData(buildShareReviewData(serverData, updatedReviewId));
         if (onUpdated) onUpdated();
         resetReview();
         setReviewSection("last");
@@ -211,6 +247,16 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
       }
   
       console.log("[ReviewWriteModal] 후기 작성 요청 데이터:", serverData);
+      const createdReviewId =
+        response?.data?.reviewId ??
+        response?.data?.id ??
+        response?.data?.contents?.reviewId ??
+        null;
+      setCompletedReviewData({
+        ...sharePayload,
+        reviewId: createdReviewId,
+      });
+      if (onUpdated) onUpdated();
       resetReview();
       setReviewSection("last");
   
@@ -267,9 +313,14 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
         )}
 
         {reviewSection === "last" && (
-          <NextBtn onClick={handleClose} $isFirstLast>
-            <NextBtnText>닫기</NextBtnText>
-          </NextBtn>
+          <BtnSection>
+            <PrevBtn onClick={handleClose}>
+              <PrevBtnText>닫기</PrevBtnText>
+            </PrevBtn>
+            <NextBtn onClick={handleShare} $isCompact>
+              <NextBtnText>공유하기</NextBtnText>
+            </NextBtn>
+          </BtnSection>
         )}
       </Wrapper>
 
