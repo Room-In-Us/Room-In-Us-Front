@@ -1,24 +1,17 @@
 {
-  "rewrites": {
-    "afterFiles": [
-      {
-        "source": "/storage-proxy/:match*",
-        "destination": "https://firebasestorage.googleapis.com/:match*"
-      },
-      {
-        "source": "/pstatic-proxy/:match*",
-        "destination": "https://naverbooking-phinf.pstatic.net/:match*"
-      },
-      {
-        "source": "/jigubyeol-proxy/:match*",
-        "destination": "https://xn--2e0b040a4xj.com/:match*"
-      }
-    ],
-    "fallback": [
-      {
-        "source": "/:path*",
-        "destination": "/index.html"
-      }
-    ]
-  }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/storage-proxy/:match*",
+      "destination": "https://firebasestorage.googleapis.com/:match*"
+    },
+    {
+      "source": "/pstatic-proxy/:match*",
+      "destination": "https://naverbooking-phinf.pstatic.net/:match*"
+    },
+    {
+      "source": "/jigubyeol-proxy/:match*",
+      "destination": "https://xn--2e0b040a4xj.com/:match*"
+    }
+  ]
 }
