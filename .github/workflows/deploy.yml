@@ -5,21 +5,28 @@ on:
     branches:
       - main
 
+# 같은 브랜치에서 새 push가 오면 진행 중인 배포를 취소
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: prod
+    timeout-minutes: 15
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build
         env:
@@ -27,23 +34,8 @@ jobs:
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
         run: npm run build
 
-      # 임시 디버그 스텝
-      - name: Debug SSH key
-        env:
-          KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          IP: ${{ secrets.INSTANCE_IP }}
-        run: |
-          printf '%s\n' "$KEY" > /tmp/key
-          chmod 600 /tmp/key
-          echo "=== 줄 수 (정상 ed25519면 6~8줄, 1이면 줄바꿈 깨짐) ==="
-          wc -l < /tmp/key
-          echo "=== 키 지문 (parsing 테스트) ==="
-          ssh-keygen -l -f /tmp/key || echo "키 파싱 실패 - secret 값이 깨짐"
-          echo "=== IP 글자수 (값은 마스킹, 168.107.41.93 이면 12) ==="
-          printf '%s' "$IP" | wc -c
-
       - name: Deploy to Instance
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.INSTANCE_IP }}
           username: ubuntu
@@ -53,15 +45,16 @@ jobs:
           strip_components: 1
 
       - name: Update Frontend Container
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.INSTANCE_IP }}
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            set -e
             echo "=== Deploying to frontend container ==="
             docker exec frontend sh -c "rm -rf /usr/share/nginx/html/*"
             docker cp /tmp/deploy/. frontend:/usr/share/nginx/html/
             docker exec frontend nginx -s reload
             rm -rf /tmp/deploy
-            echo "✓ Deployment complete!"
+            echo "Deployment complete!"
