@@ -1,4 +1,22 @@
 [[redirects]]
+  from = "/storage-proxy/*"
+  to = "https://firebasestorage.googleapis.com/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/pstatic-proxy/*"
+  to = "https://naverbooking-phinf.pstatic.net/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/jigubyeol-proxy/*"
+  to = "https://xn--2e0b040a4xj.com/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200

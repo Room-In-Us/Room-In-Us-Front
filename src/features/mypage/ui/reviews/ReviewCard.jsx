@@ -15,13 +15,13 @@ import { useSetRecoilState } from "recoil";
 import { reviewStateFamily } from "../../../themeDetail/model/reviewAtom";
 import { getReviewDetailAPI } from "../../../reviewDetail/api/reviewDetailAPI";
 import More from './../../../../shared/assets/icons/common/more.svg?react';
+import Share from './../../../../shared/assets/icons/themeDetail/shareIcon.svg?react';
 import ReviewActionDropDown from "./ReviewActionDropDown";
 
 export default function ReviewCard({ data, onDeleted, onEdit }) {
 
   const { isMobile } = useDevice();
   const navigate = useNavigate();
-  const [thumbnailUrl, setThumbnailUrl] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleteSuccess, setIsDeleteSuccess] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -42,6 +42,8 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
     participantCnt,
     review
   } = data;
+  const initialThumbnailUrl = data?.thumbnailUrl || data?.img || data?.themeImg || null;
+  const [thumbnailUrl, setThumbnailUrl] = useState(initialThumbnailUrl);
 
   const infoItems = createReviewInfoItems({
     review,
@@ -58,13 +60,29 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
 
     getThemeDetailAPI(themeId)
       .then((themeData) => {
-        setThumbnailUrl(themeData.img);
+        setThumbnailUrl(themeData?.img || themeData?.themeImg || initialThumbnailUrl);
       })
       .catch((error) => {
         console.error('썸네일 로딩 실패:', error);
-        setThumbnailUrl(null);
+        setThumbnailUrl(initialThumbnailUrl);
       });
-  }, [themeId]);
+  }, [themeId, initialThumbnailUrl]);
+
+  const getShareThumbnailUrl = async () => {
+    if (thumbnailUrl) return thumbnailUrl;
+    if (initialThumbnailUrl) return initialThumbnailUrl;
+    if (!themeId) return DefaultThumbnail;
+
+    try {
+      const themeData = await getThemeDetailAPI(themeId);
+      const nextThumbnailUrl = themeData?.img || themeData?.themeImg || DefaultThumbnail;
+      setThumbnailUrl(nextThumbnailUrl);
+      return nextThumbnailUrl;
+    } catch (error) {
+      console.error('[ReviewCard] 공유용 썸네일 로딩 실패:', error);
+      return DefaultThumbnail;
+    }
+  };
 
   const handleDelete = async () => {
     setIsOpen(false);
@@ -112,6 +130,24 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
     }
   };
 
+  const handleShare = async () => {
+    setIsOpen(false);
+    const shareThumbnailUrl = await getShareThumbnailUrl();
+
+    navigate('/review/share', {
+      state: {
+        backButtonText: '내 후기 목록으로 돌아가기',
+        reviewData: {
+          ...data,
+          storeName,
+          themeName,
+          thumbnailUrl: shareThumbnailUrl,
+          img: shareThumbnailUrl,
+        },
+      },
+    });
+  };
+
   return (
     <Wrapper>
       <Img src={thumbnailUrl || DefaultThumbnail} />
@@ -123,6 +159,7 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
           <ReviewActionDropDown
             isOpen={isOpen}
             anchorRef={moreRef}
+            onShare={handleShare}
             onEdit={handleEdit}
             onDelete={() => {
               setIsOpen(false);          
@@ -180,14 +217,20 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
         </DateBox>
         { !isMobile && (
           <BtnWrapper>
-            <Btn
-              onClick={() =>
-                navigate(`/theme/${themeId}/review/${reviewId}`,
-                  { state: { backButtonText: '내 후기 목록으로 돌아가기' } })
-              }
-            >
-              <BtnText>후기 상세보기</BtnText>
-            </Btn>
+            <PrimaryBtnGroup>
+              <Btn
+                onClick={() =>
+                  navigate(`/theme/${themeId}/review/${reviewId}`,
+                    { state: { backButtonText: '내 후기 목록으로 돌아가기' } })
+                }
+              >
+                <BtnText>후기 상세보기</BtnText>
+              </Btn>
+              <Btn onClick={handleShare}>
+                <ShareIcon />
+                <BtnText>후기 공유하기</BtnText>
+              </Btn>
+            </PrimaryBtnGroup>
             <ModifyBtn onClick={handleEdit}><PenIcon /></ModifyBtn>
             <ModifyBtn onClick={() => setIsDeleteModalOpen(true)}><TrashIcon /></ModifyBtn>
           </BtnWrapper>
@@ -404,6 +447,12 @@ const BtnWrapper = styled.div`
   align-self: stretch;
 `;
 
+const PrimaryBtnGroup = styled.div`
+  display: flex;
+  flex: 1;
+  gap: 0.625rem;
+`;
+
 const Btn = styled.div`
   display: flex;
   flex: 1;
@@ -422,6 +471,14 @@ const BtnText = styled.div`
   color: var(--RIU_Primary-100, #718FF2);
   font-family: Pretendard-Bold;
   font-size: 0.875em;
+`;
+
+const ShareIcon = styled(Share)`
+  display: flex;
+  width: 1rem;
+  height: 1rem;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ModifyBtn = styled.div`

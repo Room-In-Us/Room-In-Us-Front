@@ -21,6 +21,24 @@ export default defineConfig(({ mode }) => {
           secure: false,
           rewrite: (path) => path.replace(/^\/api/, ''),
         },
+        '/storage-proxy': {
+          target: 'https://firebasestorage.googleapis.com',
+          changeOrigin: true,
+          secure: true,
+          rewrite: (path) => path.replace(/^\/storage-proxy/, ''),
+        },
+        '/pstatic-proxy': {
+          target: 'https://naverbooking-phinf.pstatic.net',
+          changeOrigin: true,
+          secure: true,
+          rewrite: (path) => path.replace(/^\/pstatic-proxy/, ''),
+        },
+        '/jigubyeol-proxy': {
+          target: 'https://xn--2e0b040a4xj.com',
+          changeOrigin: true,
+          secure: true,
+          rewrite: (path) => path.replace(/^\/jigubyeol-proxy/, ''),
+        },
       },
       cors: {
         origin: 'https://localhost:5173',

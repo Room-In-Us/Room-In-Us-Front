@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "start": "node server/app.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write ."
@@ -22,6 +23,7 @@
     "axios": "^1.7.5",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.18",
+    "html-to-image": "^1.11.13",
     "mkcert": "^3.2.0",
     "prop-types": "^15.8.1",
     "props-type": "^1.0.1",
