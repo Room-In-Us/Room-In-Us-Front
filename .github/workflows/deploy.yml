@@ -5,48 +5,119 @@ on:
     branches:
       - main
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: room-in-us/room-in-us-front
+  PROD_IMAGE_TAG: prod-latest
+
 jobs:
-  build-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
     environment: prod
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
-          node-version: '18'
-      
-      - name: Install dependencies
-        run: npm install
-      
-      - name: Build
-        env:
-          VITE_SERVER_URL_API: ${{ secrets.VITE_SERVER_URL_API }}
-          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
-        run: npm run build
-      
-      - name: Deploy to Instance
-        uses: appleboy/scp-action@master
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
         with:
-          host: ${{ secrets.INSTANCE_IP }}
-          username: ubuntu
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "dist/*"
-          target: "/tmp/deploy"
-          strip_components: 1
-      
-      - name: Update Frontend Container
-        uses: appleboy/ssh-action@master
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ env.PROD_IMAGE_TAG }}
+            type=sha,format=short,prefix=prod-
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VITE_SERVER_URL_API=${{ secrets.VITE_SERVER_URL_API }}
+            VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment: prod
+    permissions:
+      packages: read
+    steps:
+      - name: Redeploy frontend container
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.INSTANCE_IP }}
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "=== Deploying to frontend container ==="
-            docker exec frontend sh -c "rm -rf /usr/share/nginx/html/*"
-            docker cp /tmp/deploy/. frontend:/usr/share/nginx/html/
-            docker exec frontend nginx -s reload
-            rm -rf /tmp/deploy
+            set -eu
+
+            CONTAINER_NAME="frontend"
+            IMAGE_URI="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.PROD_IMAGE_TAG }}"
+
+            echo "=== Logging into GHCR ==="
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u "${{ github.actor }}" --password-stdin
+
+            if ! docker ps -a --format '{{.Names}}' | grep -qx "$CONTAINER_NAME"; then
+              echo "Container '$CONTAINER_NAME' not found."
+              exit 1
+            fi
+
+            echo "=== Capturing current frontend container settings ==="
+            PORT_FLAGS=$(docker inspect -f '{{range $port, $bindings := .HostConfig.PortBindings}}{{range $bindings}}{{if ne .HostIp "::"}}{{if .HostIp}}{{printf "-p %s:%s:%s " .HostIp .HostPort $port}}{{else}}{{printf "-p %s:%s " .HostPort $port}}{{end}}{{end}}{{end}}{{end}}' "$CONTAINER_NAME")
+            NETWORK_LIST=$(docker inspect -f '{{range $name, $_ := .NetworkSettings.Networks}}{{printf "%s\n" $name}}{{end}}' "$CONTAINER_NAME")
+            PRIMARY_NETWORK=$(printf "%s\n" "$NETWORK_LIST" | head -n 1)
+            EXTRA_NETWORKS=$(printf "%s\n" "$NETWORK_LIST" | tail -n +2)
+            RESTART_POLICY=$(docker inspect -f '{{.HostConfig.RestartPolicy.Name}}' "$CONTAINER_NAME")
+
+            RESTART_FLAG=""
+            if [ -n "$RESTART_POLICY" ] && [ "$RESTART_POLICY" != "no" ]; then
+              RESTART_FLAG="--restart $RESTART_POLICY"
+            fi
+
+            NETWORK_FLAG=""
+            if [ -n "$PRIMARY_NETWORK" ]; then
+              NETWORK_FLAG="--network $PRIMARY_NETWORK"
+            fi
+
+            echo "=== Pulling new frontend image ==="
+            docker pull "$IMAGE_URI"
+
+            echo "=== Replacing frontend container ==="
+            docker rm -f "$CONTAINER_NAME"
+            docker run -d \
+              --name "$CONTAINER_NAME" \
+              $RESTART_FLAG \
+              $NETWORK_FLAG \
+              $PORT_FLAGS \
+              -e PORT=80 \
+              "$IMAGE_URI"
+
+            if [ -n "$EXTRA_NETWORKS" ]; then
+              echo "$EXTRA_NETWORKS" | while IFS= read -r network; do
+                if [ -n "$network" ]; then
+                  docker network connect "$network" "$CONTAINER_NAME"
+                fi
+              done
+            fi
+
+            echo "=== Frontend container status ==="
+            docker ps --filter "name=$CONTAINER_NAME"
+            docker image prune -f
             echo "✓ Deployment complete!"
