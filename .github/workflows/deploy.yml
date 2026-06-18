@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+# 같은 브랜치에서 새 push가 오면 진행 중인 배포를 취소
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: room-in-us/room-in-us-front
