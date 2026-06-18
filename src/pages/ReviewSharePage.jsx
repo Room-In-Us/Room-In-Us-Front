@@ -107,8 +107,30 @@ function toProxyImageUrl(imageUrl) {
   }
 }
 
+function getRawReviewThemeImageUrl(reviewData) {
+  return reviewData?.thumbnailUrl || reviewData?.img || reviewData?.themeImg || ThumbnailImg;
+}
+
 function getReviewThemeImageUrl(reviewData) {
-  return toProxyImageUrl(reviewData?.thumbnailUrl || reviewData?.img || reviewData?.themeImg || ThumbnailImg);
+  return toProxyImageUrl(getRawReviewThemeImageUrl(reviewData));
+}
+
+function isCrossOriginImageUrl(imageUrl) {
+  if (!imageUrl || imageUrl.startsWith('blob:') || imageUrl.startsWith('data:') || imageUrl.startsWith('/')) {
+    return false;
+  }
+
+  try {
+    const parsedUrl = new URL(imageUrl);
+
+    if (typeof window === 'undefined') {
+      return true;
+    }
+
+    return parsedUrl.origin !== window.location.origin;
+  } catch {
+    return false;
+  }
 }
 
 function ReviewSharePage() {
@@ -122,13 +144,18 @@ function ReviewSharePage() {
   const [shareMessage, setShareMessage] = useState('');
   const [shareMessageTone, setShareMessageTone] = useState('default');
   const [previewSceneSize, setPreviewSceneSize] = useState(0);
+  const [isThemeImageUsingDirectUrl, setIsThemeImageUsingDirectUrl] = useState(false);
 
   const selected = templates.find((template) => template.id === selectedTemplate) ?? templates[0];
   const reviewData = state?.reviewData ?? fallbackReview;
-  const [themeImageUrl, setThemeImageUrl] = useState(getReviewThemeImageUrl(reviewData));
+  const rawThemeImageUrl = getRawReviewThemeImageUrl(reviewData);
+  const proxiedThemeImageUrl = getReviewThemeImageUrl(reviewData);
+  const [themeImageUrl, setThemeImageUrl] = useState(proxiedThemeImageUrl);
   const backgroundImage = backgroundMode === 'upload' && uploadedImage ? uploadedImage : themeImageUrl;
   const templatePreviewSize = previewSceneSize || 1;
   const templatePreviewScale = TEMPLATE_THUMB_SIZE / templatePreviewSize;
+  const isThemeImageExportRestricted =
+    backgroundMode === 'theme' && isThemeImageUsingDirectUrl && isCrossOriginImageUrl(rawThemeImageUrl);
 
   const displayData = useMemo(() => {
     const memberCount = Array.isArray(reviewData.participantList)
@@ -159,8 +186,9 @@ function ReviewSharePage() {
   }, [reviewData]);
 
   useEffect(() => {
-    setThemeImageUrl(getReviewThemeImageUrl(reviewData));
-  }, [reviewData]);
+    setThemeImageUrl(proxiedThemeImageUrl);
+    setIsThemeImageUsingDirectUrl(false);
+  }, [proxiedThemeImageUrl]);
 
   useLayoutEffect(() => {
     const previewNode = previewRef.current;
@@ -204,7 +232,14 @@ function ReviewSharePage() {
   }, [uploadedImage]);
 
   const handleThemeImageError = () => {
+    if (themeImageUrl !== rawThemeImageUrl && rawThemeImageUrl && rawThemeImageUrl !== ThumbnailImg) {
+      setThemeImageUrl(rawThemeImageUrl);
+      setIsThemeImageUsingDirectUrl(true);
+      return;
+    }
+
     setThemeImageUrl(ThumbnailImg);
+    setIsThemeImageUsingDirectUrl(false);
   };
 
   const handleUpload = (event) => {
@@ -225,6 +260,12 @@ function ReviewSharePage() {
   };
 
   const handleOpenShareModal = () => {
+    if (isThemeImageExportRestricted) {
+      updateShareMessage('테마 사진은 미리보기로는 보이지만 서버 설정 때문에 다운로드/공유에는 사진 업로드를 이용해 주세요.');
+      setIsShareModalOpen(true);
+      return;
+    }
+
     updateShareMessage('지원 기기에서는 바로 공유할 수 있고, 그렇지 않으면 다운로드로 이어져요.');
     setIsShareModalOpen(true);
   };
@@ -240,6 +281,10 @@ function ReviewSharePage() {
       throw new Error('공유할 미리보기를 찾을 수 없습니다.');
     }
 
+    if (isThemeImageExportRestricted) {
+      throw new Error('THEME_IMAGE_PROXY_REQUIRED');
+    }
+
     return exportReviewImage(previewRef.current);
   };
 
@@ -253,7 +298,12 @@ function ReviewSharePage() {
       updateShareMessage('이미지를 다운로드했어요.', 'success');
     } catch (error) {
       console.error('[ReviewSharePage] 이미지 다운로드 실패:', error);
-      updateShareMessage('이미지 다운로드에 실패했어요. 잠시 후 다시 시도해 주세요.', 'error');
+      updateShareMessage(
+        error?.message === 'THEME_IMAGE_PROXY_REQUIRED'
+          ? '테마 사진은 현재 서버 설정 때문에 저장할 수 없어요. 사진 업로드 이미지를 사용해 주세요.'
+          : '이미지 다운로드에 실패했어요. 잠시 후 다시 시도해 주세요.',
+        'error',
+      );
     } finally {
       setIsSharePending(false);
     }
@@ -284,6 +334,8 @@ function ReviewSharePage() {
     } catch (error) {
       if (error?.name === 'AbortError') {
         updateShareMessage('공유가 취소되었어요.', 'default');
+      } else if (error?.message === 'THEME_IMAGE_PROXY_REQUIRED') {
+        updateShareMessage('테마 사진은 현재 서버 설정 때문에 공유할 수 없어요. 사진 업로드 이미지를 사용해 주세요.', 'error');
       } else {
         console.error('[ReviewSharePage] 인스타 공유 실패:', error);
         updateShareMessage('공유를 준비하지 못했어요. 이미지 다운로드를 이용해 주세요.', 'error');
