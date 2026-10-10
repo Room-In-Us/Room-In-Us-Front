@@ -32,6 +32,8 @@ function ThemeReviewSection({ themeId, reviewRefetchKey }) {
   const pageSize = 3;
 
   useEffect(() => {
+    if (themeId == null) return;
+
     const fetchData = async () => {
       const res = await getThemeReviewsListAPI(themeId, currentPage, pageSize);
       if (res) {
