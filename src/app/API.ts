@@ -1,6 +1,14 @@
+import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
+
 import { postRefreshTokenAPI } from '../features/auth/api/authAPI';
+import type { ApiErrorResponse } from '../shared/types/api';
 
 import axios from 'axios';
+
+type RefreshQueueCallback = (newToken: string | null) => void;
+type RefreshableAxiosError = AxiosError<ApiErrorResponse> & {
+  config: InternalAxiosRequestConfig;
+};
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL_API,
@@ -21,14 +29,14 @@ api.interceptors.request.use((config) => {
 
 // 재발급 큐/락
 let isRefreshing = false;
-let queue = [];
+let queue: RefreshQueueCallback[] = [];
 
 const isRefreshOrLogout = (url = '') =>
   url.startsWith('access-token') || url.startsWith('members/logout');
 
 api.interceptors.response.use(
   (res) => res,
-  async (error) => {
+  async (error: RefreshableAxiosError) => {
     const { response, config } = error;
     if (!response) return Promise.reject(error);
 
@@ -39,9 +47,9 @@ api.interceptors.response.use(
 
     // 재발급 금지 조건들
     const skip =
-      onLoginPage() ||                      // 로그인 화면에서는 절대 재발급 금지
-      config.__skipRefresh === true ||      // 명시적 스킵
-      isRefreshOrLogout(url);               // 재발급/로그아웃 API는 재발급 시도하지 않음
+      onLoginPage() || // 로그인 화면에서는 절대 재발급 금지
+      config.__skipRefresh === true || // 명시적 스킵
+      isRefreshOrLogout(url); // 재발급/로그아웃 API는 재발급 시도하지 않음
 
     if (skip) {
       return Promise.reject(error);
