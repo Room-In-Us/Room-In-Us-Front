@@ -11,7 +11,8 @@ import { stationCardVisible, storeCardVisible, locationStoreId } from "../../../
 import LocationPeopleFilter from "./filter/LocationPeopleFilter";
 import LocationSortFilter from "./filter/LocationSortFilter";
 import LocationContentCard from "./LocationContentCard";
-import { getLocationListAPI, getLocationStoreInfoAPI } from "../api/locationAPI";
+import { getLocationStoreInfoAPI } from "../api/locationAPI";
+import { getLocationListAPI } from "../api/locationThemeAPI";
 import BottomSheet from "../../../shared/components/BottomSheet";
 import { sortOptions } from '../../../shared/components/filter/OptionList.js';
 import useDevice from "../../../shared/hooks/useDevice";
