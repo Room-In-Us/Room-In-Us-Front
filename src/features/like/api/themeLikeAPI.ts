@@ -1,9 +1,10 @@
 import { api } from '../../../app/API';
+import type { ThemeLikeResponse, ThemeLikeThemeId } from './types';
 
 // 방탈출 테마 좋아요 api
-export const postThemeLikeAPI = async (themeId) => {
+export const postThemeLikeAPI = async (themeId: ThemeLikeThemeId): Promise<ThemeLikeResponse> => {
   try {
-    const response = await api.post(`themes/${themeId}/like`);
+    const response = await api.post<ThemeLikeResponse>(`themes/${themeId}/like`);
     console.log('방탈출 테마 좋아요 api 요청 성공: ', response);
 
     return response.data;
@@ -14,9 +15,9 @@ export const postThemeLikeAPI = async (themeId) => {
 };
 
 // 방탈출 테마 좋아요 취소 api
-export const deleteThemeLikeAPI = async (themeId) => {
+export const deleteThemeLikeAPI = async (themeId: ThemeLikeThemeId): Promise<ThemeLikeResponse> => {
   try {
-    const response = await api.delete(`themes/${themeId}/like`);
+    const response = await api.delete<ThemeLikeResponse>(`themes/${themeId}/like`);
     console.log('방탈출 테마 좋아요 취소 api 요청 성공: ', response);
 
     return response.data;
