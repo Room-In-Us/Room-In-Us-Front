@@ -5,7 +5,7 @@ import { activeLevelState } from '../model/levelAtom.jsx';
 import useDevice from "../../../shared/hooks/useDevice.js";
 import ContentCard from "../../../shared/components/ContentCard.jsx";
 import { levels } from '../model/levelData.js';
-import { getLevelListAPI } from "../api/levelAPI.js";
+import { getLevelListAPI } from "../api/levelAPI";
 import { getRegionAPI, getZoneAPI } from "../../../features/location/api/locationAPI";
 import FilterImg from '../../../shared/assets/icons/genre/filter.svg';
 import PeopleFilter from '../../../shared/components/filter/PeopleFilter';

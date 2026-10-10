@@ -1,9 +1,21 @@
 import { api } from '../../../app/API';
+import type { PageResponse } from '../../../shared/types/api';
+import type { ThemeProficiency, ThemeResponse, ThemeSortOption } from '../../../shared/types/theme';
+import type { LevelThemeListQuery, ZoneIdListInput } from './types';
 
 // 숙련도 기반 방탈출 카페 테마 목록 조회
-export const getLevelListAPI = async (proficiency, headcount, page, size, sortOption, keyword, regionId, zoneIdList) => {
+export const getLevelListAPI = async (
+  proficiency: ThemeProficiency,
+  headcount: number,
+  page: number,
+  size: number,
+  sortOption?: ThemeSortOption,
+  keyword?: string,
+  regionId?: number | null,
+  zoneIdList?: ZoneIdListInput
+): Promise<PageResponse<ThemeResponse>> => {
   try {
-    const params = {
+    const params: LevelThemeListQuery = {
       proficiency, // 숙련도
       headcount, // 가격 기준 인원
       page, // 페이지 번호
@@ -19,8 +31,8 @@ export const getLevelListAPI = async (proficiency, headcount, page, size, sortOp
     } else if (typeof zoneIdList === 'number') {
       params.zoneIdList = zoneIdList.toString();
     }
-    
-    const response = await api.get(`themes/proficiency`, { params });
+
+    const response = await api.get<PageResponse<ThemeResponse>>(`themes/proficiency`, { params });
     console.log('숙련도 기반 방탈출 카페 테마 목록 조회 api 요청 성공:', response);
     return response.data;
   } catch (error) {
