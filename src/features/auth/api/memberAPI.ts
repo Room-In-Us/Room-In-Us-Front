@@ -1,9 +1,11 @@
 import { api } from "../../../app/API";
+import type { MemberPreferenceResponse } from "../../../shared/types/preference";
+import type { MemberIdPathParam, MemberInfoResponse } from "./types";
 
 // 내 정보 조회 api
-export const getMemberInfoAPI = async () => {
+export const getMemberInfoAPI = async (): Promise<MemberInfoResponse> => {
   try {
-    const response = await api.get('members');
+    const response = await api.get<MemberInfoResponse>('members');
     console.log('내 정보 조회 api 요청 성공:', response);
 
     return response.data;
@@ -14,9 +16,11 @@ export const getMemberInfoAPI = async () => {
 };
 
 // 유저 정보 조회 api
-export const getUserInfoAPI = async (memberId) => {
+export const getUserInfoAPI = async (
+  memberId: MemberIdPathParam,
+): Promise<MemberPreferenceResponse> => {
   try {
-    const response = await api.get(`members/${memberId}/preferences`);
+    const response = await api.get<MemberPreferenceResponse>(`members/${memberId}/preferences`);
     console.log('유저 정보 조회 api 요청 성공:', response);
 
     return response.data;

@@ -4,7 +4,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import CloseIcon from "../../../shared/assets/icons/reviewWrite/closeicon.svg";
 import UserIcon from "../../../shared/assets/icons/userInfo/userIcon.svg";
 import { userInfoModalState, userInfoIdState, userInfoNameState } from "../model/authAtom.jsx";
-import { getUserInfoAPI } from "../api/memberAPI.js";
+import { getUserInfoAPI } from "../api/memberAPI";
 import ProficiencySection from "./preferences/ProficiencySection";
 import GenreSection from "./preferences/GenreSection";
 import HeadcountSection from "./preferences/HeadcountSection";

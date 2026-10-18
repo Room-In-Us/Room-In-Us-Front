@@ -26,3 +26,12 @@ export interface RefreshTokenResponse {
   accessToken?: string;
   refreshToken?: string;
 }
+
+export type MemberIdPathParam = number | string;
+
+export interface MemberInfoResponse {
+  memberId: number;
+  nickname: string;
+  email: string;
+  profileImg?: string | null;
+}
