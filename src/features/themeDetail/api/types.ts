@@ -1,3 +1,7 @@
+import type {
+  ThemeReviewEvaluation,
+  ThemeReviewHorrorPosition as SharedThemeReviewHorrorPosition,
+} from '../../../shared/types/review';
 import type { ThemeGenre, ThemeProficiency } from '../../../shared/types/theme';
 
 export type ThemeIdPathParam = number | string;
@@ -32,29 +36,16 @@ export interface ThemePriceResponse {
   price: number;
 }
 
-export type ThemeReviewHorrorPosition =
-  | 'FEARLESS'
-  | 'FEARFUL_TANK'
-  | 'RELUCTANT_TANK'
-  | 'NERVOUS'
-  | 'SCARED'
-  | 'EXTREME_SCARED';
+export type ThemeReviewHorrorPosition = SharedThemeReviewHorrorPosition;
 
-export type ThemeReviewEnum =
-  | 'SOIL'
-  | 'SOIL_GRASS'
-  | 'GRASS'
-  | 'GRASS_FLOWER'
-  | 'FLOWER'
-  | 'FLOWER_GARDEN'
-  | 'FAVORITE';
+export type ThemeReviewEnum = ThemeReviewEvaluation;
 
 export interface ThemeReviewDto {
   reviewId?: number;
   memberId?: number;
   memberNickname?: string;
-  memberProficiency?: ThemeProficiency;
-  memberHorrorPos?: ThemeReviewHorrorPosition;
+  memberProficiency?: ThemeProficiency | null;
+  memberHorrorPos?: ThemeReviewHorrorPosition | null;
   satisfactionLevel?: number;
   reviewEnum?: ThemeReviewEnum;
   headcount?: number;
