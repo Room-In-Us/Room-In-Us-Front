@@ -1,4 +1,5 @@
 import type { ThemeGenre } from '../../../shared/types/theme';
+import type { ThemeReviewEvaluation } from '../../../shared/types/review';
 
 export interface FavoriteThemesQuery {
   headcount: number;
@@ -75,3 +76,38 @@ export interface PatchThemeReservationInput {
 }
 
 export type ReservationMutationResponse = string;
+
+export type MyReviewPathParam = number | string;
+
+export type MyReviewPaginationValue = number | string;
+
+export type MyReviewSortOption =
+  | 'PLAYED_AT_ASC'
+  | 'PLAYED_AT_DESC'
+  | 'CREATED_AT_ASC'
+  | 'CREATED_AT_DESC';
+
+export interface GetMyReviewQuery {
+  page: MyReviewPaginationValue;
+  size: MyReviewPaginationValue;
+  sortOption?: MyReviewSortOption;
+}
+
+export interface MyReviewListItem {
+  reviewId: number;
+  storeId?: number | null;
+  storeName?: string | null;
+  themeId: number;
+  themeName?: string | null;
+  satisfactionLevel?: number | null;
+  review?: ThemeReviewEvaluation | null;
+  participantCnt?: number | null;
+  isEscaped?: boolean | null;
+  usedHint?: number | null;
+  remainingTime?: string | null;
+  reviewComment?: string | null;
+  playedAt?: string | null;
+  createdAt?: string | null;
+}
+
+export type ReviewMutationResponse = string;

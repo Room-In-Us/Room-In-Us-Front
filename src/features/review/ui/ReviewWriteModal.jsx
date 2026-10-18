@@ -10,7 +10,7 @@ import CloseIcon from "../../../shared/assets/icons/reviewWrite/closeicon.svg";
 import LikeIcon from "../../../shared/assets/icons/reviewWrite/likeIcon.svg";
 import ReviewLast from "./ReviewLast.jsx";
 import { postReviewAPI } from "../api/postReviewAPI";
-import { putMyReviewAPI } from "../../mypage/api/myReviewAPI.js";
+import { putMyReviewAPI } from "../../mypage/api/myReviewAPI";
 import PopUpModal from "../../../shared/components/PopUpModal.jsx";
 
 function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
