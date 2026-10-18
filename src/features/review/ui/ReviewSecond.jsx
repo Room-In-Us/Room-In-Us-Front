@@ -17,7 +17,7 @@ import InfoBox from '../../../shared/components/InfoBox.jsx';
 import { useRecoilState } from 'recoil';
 import { reviewStateFamily } from '../../themeDetail/model/reviewAtom.jsx';
 import { format } from "date-fns";
-import { getPreferencesAPI } from '../../mypage/api/surveyAPI.js';
+import { getPreferencesAPI } from '../../mypage/api/surveyAPI';
 
 export default function ReviewSecond({themeData}) {
 

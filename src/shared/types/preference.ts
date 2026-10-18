@@ -31,3 +31,16 @@ export interface MemberPreferenceResponse {
   horrorPos?: PreferenceHorrorPosition | null;
   preference?: string | null;
 }
+
+export interface PatchMemberPreferenceRequest {
+  proficiency: ThemeProficiency | null;
+  preferredGenreList: ThemeGenre[];
+  preferredHeadcount: number | null;
+  preferredElementList: PreferenceElement[];
+  preferredActivity: PreferenceActivity | null;
+  preferredDevice: PreferenceDevice | null;
+  horrorPos: PreferenceHorrorPosition | null;
+  preference: string | null;
+}
+
+export type PatchMemberPreferenceResponse = string;
