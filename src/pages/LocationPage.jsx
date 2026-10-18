@@ -23,8 +23,12 @@ import { Sheet } from 'react-modal-sheet';
 import { useLocation } from 'react-router-dom';
 
 function LocationPage() {
+  // 초기 구역 세팅 관련 상태 관리
+  const location = useLocation();
+  const [entryRegionId, setEntryRegionId] = useState(location.state?.regionId);
+  const [entryZoneName, setEntryZoneName] = useState(location.state?.zoneName);
+
   // 상태 관리
-  const [isSeoulCheck, setIsSeoulCheck] = useState(true);
   const [selectedStationIndices, setSelectedStationIndices] = useState({
     1: null, // 서울
     2: null, // 경기/인천
@@ -41,12 +45,8 @@ function LocationPage() {
   const [, setCurrentPage] = useRecoilState(storePageNumber);
   const [, setSelectedRegionId] = useRecoilState(selectedLocationRegionId);
 
-  // 초기 구역 세팅 관련 상태 관리
-  const location = useLocation();
-  const initialRegionId = location.state?.regionId;
-  const initialZoneName = location.state?.zoneName;
-  const [entryZoneName, setEntryZoneName] = useState(initialZoneName);
-  const regionIdForFetch = initialRegionId ?? regionId;
+  const activeRegionId = entryRegionId ?? regionId;
+  const isSeoulCheck = activeRegionId === 1;
 
   const sheetRef = useRef(null);
 
@@ -61,8 +61,8 @@ function LocationPage() {
 
   // 지역 선택 핸들러
   const handleLocationCheck = (id) => {
+    setEntryRegionId(null);
     setEntryZoneName(null);
-    setIsSeoulCheck(id === 1);
     setIsStationListVisible(true);
     setRegionId(id);
     setCurrentPage(1);
@@ -73,7 +73,7 @@ function LocationPage() {
     setIsStationCardVisible(true);
     setIsStoreCardVisible(false);
 
-    setSelectedRegionId(regionId); // 현재 탐색 중인 지역을 상세 카드용으로 저장
+    setSelectedRegionId(activeRegionId); // 현재 탐색 중인 지역을 상세 카드용으로 저장
     setIsZoneId(data.zoneId);
     setZoneName(data.zoneName);
     setStoreCount(data.storeCount);
@@ -83,11 +83,11 @@ function LocationPage() {
 
   // 구역 목록 조회
   useEffect(() => {
-    if (!regionIdForFetch) return;
+    if (!activeRegionId) return;
 
     const fetchData = async () => {
       try {
-        const response = await getLocationZonesAPI(regionIdForFetch);
+        const response = await getLocationZonesAPI(activeRegionId);
         console.log('구역별 역 목록: ', response);
         setStationList(response);
       } catch (error) {
@@ -96,15 +96,15 @@ function LocationPage() {
     };
 
     fetchData();
-  }, [regionIdForFetch]);
+  }, [activeRegionId]);
 
   useEffect(() => {
-    if (initialRegionId) {
-      setIsSeoulCheck(initialRegionId === 1);
-      setRegionId(initialRegionId);
+    if (entryRegionId != null) {
+      setRegionId(entryRegionId);
       setCurrentPage(1);
+      setEntryRegionId(null);
     }
-  }, [initialRegionId]);
+  }, [entryRegionId, setCurrentPage, setRegionId]);
 
   useEffect(() => {
     if (!entryZoneName) return;
@@ -118,12 +118,12 @@ function LocationPage() {
 
     setSelectedStationIndices((prev) => ({
       ...prev,
-      [regionId]: targetIndex,
-      [regionId === 1 ? 2 : 1]: null,
+      [activeRegionId]: targetIndex,
+      [activeRegionId === 1 ? 2 : 1]: null,
     }));
 
     setEntryZoneName(null);
-  }, [entryZoneName, stationList, regionId]);
+  }, [entryZoneName, stationList, activeRegionId]);
 
   return (
     <PageWrapper isMobile={isMobile}>
@@ -149,12 +149,12 @@ function LocationPage() {
             {stationList.map((station, index) => (
               <StationList
                 key={index}
-                isSelected={selectedStationIndices[regionId] === index}
+                isSelected={selectedStationIndices[activeRegionId] === index}
                 onClick={() => {
                   handleStationSelect(station);
                   setSelectedStationIndices({
-                    [regionId]: index,
-                    [regionId === 1 ? 2 : 1]: null,
+                    [activeRegionId]: index,
+                    [activeRegionId === 1 ? 2 : 1]: null,
                   });
                 }}
               >
@@ -230,12 +230,12 @@ function LocationPage() {
                       {stationList.map((station, index) => (
                         <StationList
                           key={index}
-                          isSelected={selectedStationIndices[regionId] === index}
+                          isSelected={selectedStationIndices[activeRegionId] === index}
                           onClick={() => {
                             handleStationSelect(station);
                             setSelectedStationIndices({
-                              [regionId]: index,
-                              [regionId === 1 ? 2 : 1]: null,
+                              [activeRegionId]: index,
+                              [activeRegionId === 1 ? 2 : 1]: null,
                             });
                             // 필요시 선택 후 피크로 접기: sheetRef.current?.snapTo(0);
                           }}
