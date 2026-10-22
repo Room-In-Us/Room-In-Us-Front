@@ -7,7 +7,7 @@ import {
   storeCardVisible,
   stationCardVisible,
   locationStoreId,
-} from '../model/locationAtom.jsx';
+} from '../model/locationAtom';
 import { GoogleMap, MarkerF, OverlayView } from '@react-google-maps/api';
 import { googleMapStyles } from '../../../shared/styles/googleMapStyles.js';
 import MarkerIcon from '../../../shared/assets/images/location/marker.png';
