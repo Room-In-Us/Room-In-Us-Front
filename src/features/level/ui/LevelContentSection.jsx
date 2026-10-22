@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
 import { useRecoilValue } from 'recoil';
-import { activeLevelState } from '../model/levelAtom.jsx';
+import { activeLevelState } from '../model/levelAtom';
 import useDevice from "../../../shared/hooks/useDevice.js";
 import ContentCard from "../../../shared/components/ContentCard.jsx";
 import { levels } from '../model/levelData.js';

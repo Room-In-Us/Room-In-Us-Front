@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { activeLevelState } from '../model/levelAtom.jsx';
+import { activeLevelState } from '../model/levelAtom';
 import useDevice from "../../../shared/hooks/useDevice";
 import MainIcon from '../../../shared/assets/icons/genre/movieIcon.svg';
 import CircleInfoIcon from '../../../shared/assets/icons/common/circleinfo.svg';

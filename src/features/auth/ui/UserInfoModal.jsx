@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import CloseIcon from "../../../shared/assets/icons/reviewWrite/closeicon.svg";
 import UserIcon from "../../../shared/assets/icons/userInfo/userIcon.svg";
-import { userInfoModalState, userInfoIdState, userInfoNameState } from "../model/authAtom.jsx";
+import { userInfoModalState, userInfoIdState, userInfoNameState } from "../model/authAtom";
 import { getUserInfoAPI } from "../api/memberAPI";
 import ProficiencySection from "./preferences/ProficiencySection";
 import GenreSection from "./preferences/GenreSection";
