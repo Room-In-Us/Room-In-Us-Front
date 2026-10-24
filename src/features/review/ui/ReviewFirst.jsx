@@ -5,7 +5,7 @@ import { overallOptions } from "../modal/reviewDataList";
 import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3 } from "../../../shared/styles/ReviewStyles.js";
 import useDevice from '../../../shared/hooks/useDevice.js';
 import { useRecoilState } from "recoil";
-import { reviewStateFamily } from "../../themeDetail/model/reviewAtom.jsx";
+import { reviewStateFamily } from "../../themeDetail/model/reviewAtom";
 
 export default function ReviewFirst({themeData}) {
 

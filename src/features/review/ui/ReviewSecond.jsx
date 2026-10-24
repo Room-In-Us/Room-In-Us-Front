@@ -15,7 +15,7 @@ import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubT
 import useDevice from '../../../shared/hooks/useDevice.js';
 import InfoBox from '../../../shared/components/InfoBox.jsx';
 import { useRecoilState } from 'recoil';
-import { reviewStateFamily } from '../../themeDetail/model/reviewAtom.jsx';
+import { reviewStateFamily } from '../../themeDetail/model/reviewAtom';
 import { format } from "date-fns";
 import { getPreferencesAPI } from '../../mypage/api/surveyAPI';
 

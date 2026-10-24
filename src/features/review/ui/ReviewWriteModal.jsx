@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from 'recoil';
-import { reviewModalState, reviewSectionState, reviewStateFamily } from "../../themeDetail/model/reviewAtom.jsx";
+import { reviewModalState, reviewSectionState, reviewStateFamily } from "../../themeDetail/model/reviewAtom";
 import ReviewFirst from "./ReviewFirst.jsx";
 import ReviewSecond from "./ReviewSecond.jsx";
 import ReviewThird from "./ReviewThird.jsx";

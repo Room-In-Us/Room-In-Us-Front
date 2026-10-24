@@ -4,7 +4,7 @@ import { GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, Theme
 import InputBox from "./InputBox.jsx";
 import useDevice from "../../../shared/hooks/useDevice.js";
 import { useRecoilState } from 'recoil';
-import { reviewStateFamily } from '../../themeDetail/model/reviewAtom.jsx';
+import { reviewStateFamily } from '../../themeDetail/model/reviewAtom';
 
 export default function ReviewThird({themeData}) {
 

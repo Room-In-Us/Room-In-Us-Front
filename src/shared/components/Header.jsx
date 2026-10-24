@@ -16,6 +16,8 @@ import LeftArrowIcon from '../assets/icons/common/arrow/leftArrow.svg?react';
 import { postLogoutAPI } from '../../features/auth/api/authAPI';
 import useAuthSession from '../hooks/useAuthSession';
 import { clearTrackedUserId } from '../utils/analytics';
+import { clearAuthSession } from '../auth/authSession';
+import { getAuthSessionGeneration, invalidateAuthSession, isAuthSessionCurrent } from '../auth/sessionState';
 
 function Header() {
   // navigate, location
@@ -112,18 +114,21 @@ function Header() {
 
   // 로그아웃 함수
   const handleLogout = async () => {
+    invalidateAuthSession();
+    const generation = getAuthSessionGeneration();
     try {
       // 서버 로그아웃
       await postLogoutAPI();
     } catch (error) {
       console.error('로그아웃 API 요청 실패:', error);
     } finally {
-      // 프론트 토큰 정리
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('userCode');
-      clearTrackedUserId();
-      alert('로그아웃 되었습니다.');
-      window.location.replace('/login');
+      if (isAuthSessionCurrent(generation)) {
+        // 프론트 토큰 정리
+        clearAuthSession();
+        clearTrackedUserId();
+        alert('로그아웃 되었습니다.');
+        window.location.replace('/login');
+      }
     }
   };
 

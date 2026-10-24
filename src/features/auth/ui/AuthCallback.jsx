@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { getMemberInfoAPI } from '../api/memberAPI';
-import { pushLoginSuccessUserId } from '../../../shared/utils/analytics';
+import { checkAuthSession } from '../../../shared/auth/authSession';
 
 const AuthCallback = () => {
   const navigate = useNavigate();
@@ -23,8 +22,8 @@ const AuthCallback = () => {
         localStorage.setItem('accessToken', accessToken);
 
         try {
-          const memberInfo = await getMemberInfoAPI();
-          pushLoginSuccessUserId(memberInfo.memberId);
+          const memberInfo = await checkAuthSession({ force: true });
+          if (!memberInfo) return;
         } catch (error) {
           console.error('로그인 사용자 정보 조회 실패:', error);
         }
