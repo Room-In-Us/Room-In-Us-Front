@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import { useState, useEffect, useRef } from 'react';
+import type { ReactElement } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import type { Location } from 'react-router-dom';
 import useDevice from '../../shared/hooks/useDevice';
 import MenuIcon from '../../shared/assets/icons/common/menuIcon.svg?react';
 import LogoIcon from '../../shared/assets/icons/common/logo.svg?react';
@@ -19,6 +21,11 @@ import { clearTrackedUserId } from '../utils/analytics';
 import { clearAuthSession } from '../auth/authSession';
 import { getAuthSessionGeneration, invalidateAuthSession, isAuthSessionCurrent } from '../auth/sessionState';
 
+type HeaderProps = Record<string, never>;
+type DeviceProps = { isDesktop: boolean; isTablet: boolean };
+type ActiveProps = { isActive: boolean };
+
+function Header(props: HeaderProps): ReactElement;
 function Header() {
   // navigate, location
   const navigate = useNavigate();
@@ -35,13 +42,13 @@ function Header() {
   const isLoggedIn = useAuthSession();
 
   // 페이지 이동
-  const handleNavigation = (path) => {
+  const handleNavigation = (path: string) => {
     navigate(path);
     setIsVisibleMenu(false);
   };
 
   // 검색 함수
-  const handleHeaderSearch = (value) => {
+  const handleHeaderSearch = (value: string) => {
     console.log('[검색 실행]', value);
     if (!value) return;
     navigate('/search', { state: { keyword: value } });
@@ -70,12 +77,12 @@ function Header() {
   }, [isMobile, isTablet, isDesktop]);
 
   // 메뉴바 참조를 위한 ref
-  const menuRef = useRef(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   // 메뉴바 외부 클릭 시 메뉴를 닫기
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node | null)) {
         setIsVisibleMenu(false);
       }
     };
@@ -290,7 +297,7 @@ function Header() {
 export default Header;
 
 // CSS
-const HeaderWrapper = styled.div`
+const HeaderWrapper = styled.div<{ hasScrolled: boolean; isLocation: boolean }>`
   padding: 0 3.75rem;
   box-sizing: border-box;
   width: 100%;
@@ -313,7 +320,7 @@ const SectionWrapper = styled.div`
   align-items: center;
 `;
 
-const StyledLogoIcon = styled(LogoIcon)`
+const StyledLogoIcon = styled(LogoIcon)<{ location: Location; isScrolledBeyond?: boolean; isAuthPage?: boolean }>`
   margin-right: 0.9375rem;
   width: 3.75rem;
   cursor: pointer;
@@ -334,7 +341,7 @@ const StyledLogoIcon = styled(LogoIcon)`
   }
 `;
 
-const ButtonWrapper = styled.div`
+const ButtonWrapper = styled.div<DeviceProps>`
   border-radius: 1.40625rem;
   padding: 0 0.5625rem;
   box-sizing: border-box;
@@ -346,7 +353,7 @@ const ButtonWrapper = styled.div`
   background: #fff;
 `;
 
-const StyledButton = styled.div`
+const StyledButton = styled.div<DeviceProps & ActiveProps>`
   border-radius: 1.40625rem;
   width: ${(props) => (props.isDesktop ? '7.5rem' : '5.625rem')};
   height: 1.875rem;
@@ -403,7 +410,7 @@ const StyledProfileIcon = styled(ProfileIcon)`
 `;
 
 // 모바일 반응형
-const MobileHeaderWrapper = styled.div`
+const MobileHeaderWrapper = styled.div<{ hasScrolled: boolean }>`
   padding: 0 1.25rem;
   box-sizing: border-box;
   width: 100%;
@@ -428,7 +435,7 @@ const StyledLeftArrowIcon = styled(LeftArrowIcon)`
   width: 1.5625rem;
 `;
 
-const MenuWrapper = styled.div`
+const MenuWrapper = styled.div<{ isVisible: boolean }>`
   padding: 1.25rem;
   box-sizing: border-box;
   width: 15rem;
@@ -472,7 +479,7 @@ const MobileButtonWrapper = styled.div`
   gap: 0.625rem;
 `;
 
-const MobileButton = styled.div`
+const MobileButton = styled.div<ActiveProps>`
   border-bottom: 1px solid var(--RIU_Primary-200, #6680df);
   padding: 0.75rem 1.25rem;
   box-sizing: border-box;

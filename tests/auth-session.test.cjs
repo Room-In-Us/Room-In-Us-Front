@@ -592,7 +592,7 @@ for (const component of ['Header', 'HeaderProfileModal']) {
     const alerts = [];
     const redirects = [];
     harness.window.location.replace = (location) => redirects.push(location);
-    const handleLogout = loadComponentHandler(`src/shared/components/${component}.jsx`, 'handleLogout', {
+    const handleLogout = loadComponentHandler(`src/shared/components/${component}.tsx`, 'handleLogout', {
       ...state,
       clearAuthSession: session.clearAuthSession,
       postLogoutAPI: () => {

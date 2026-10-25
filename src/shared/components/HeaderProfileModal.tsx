@@ -6,14 +6,17 @@ import MypageIcon from "../assets/icons/common/myPageIcon.svg?react"
 import LogoutIcon from "../assets/icons/common/logoutIcon.svg?react";
 import { useNavigate } from "react-router-dom";
 import { getMemberInfoAPI } from "../../features/auth/api/memberAPI";
+import type { MemberInfoResponse } from "../../features/auth/api/types";
 import { postLogoutAPI } from "../../features/auth/api/authAPI";
 import { clearTrackedUserId } from "../utils/analytics";
 import { clearAuthSession } from "../auth/authSession";
 import { getAuthSessionGeneration, invalidateAuthSession, isAuthSessionCurrent } from "../auth/sessionState";
 
-function HeaderProfileModal({ visible }) {
+type HeaderProfileModalProps = { visible: boolean };
+
+function HeaderProfileModal({ visible }: HeaderProfileModalProps) {
   const navigate = useNavigate();
-  const [nickname, setNickname] = useState('');
+  const [nickname, setNickname] = useState<MemberInfoResponse['nickname']>('');
 
   useEffect(() => {
     if (!visible) return;
@@ -74,7 +77,7 @@ HeaderProfileModal.propTypes = {
 export default HeaderProfileModal;
 
 // CSS
-const ModalWrapper = styled.div`
+const ModalWrapper = styled.div<HeaderProfileModalProps>`
   border-radius: 0.46875rem;
   padding: 0.9375rem 0;
   width: 16.125rem;
