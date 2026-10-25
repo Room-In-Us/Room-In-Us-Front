@@ -17,7 +17,7 @@ import SelectedIcon from '../../../../shared/assets/icons/common/filterIcon/sele
 import Icon1 from '../../../../shared/assets/icons/genre/camera.svg';
 import useDevice from "../../../../shared/hooks/useDevice";
 import useDropdown from "../../../../shared/hooks/useDropDown";
-import { peopleOptions } from "../../../../shared/components/filter/OptionList.js";
+import { peopleOptions } from "../../../../shared/components/filter/OptionList";
 import PropTypes from 'prop-types';
 
 const LocationPeopleFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) => {

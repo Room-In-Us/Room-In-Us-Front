@@ -162,7 +162,7 @@ function ReviewSharePage() {
       ? reviewData.participantList.length
       : reviewData.participantCnt;
     const remainingTime = formatRemainingTime(reviewData.remainingTime);
-    const result = reviewData.isEscaped == null ? '기록 없음' : reviewData.isEscaped ? '탈출 성공' : '탈출 실패';
+    const result = reviewData.isEscaped == null ? '-' : reviewData.isEscaped ? '탈출 성공' : '탈출 실패';
     const satisfaction =
       typeof reviewData.satisfactionLevel === 'number' && !Number.isNaN(reviewData.satisfactionLevel)
         ? reviewData.satisfactionLevel.toFixed(1)
@@ -261,7 +261,9 @@ function ReviewSharePage() {
 
   const handleOpenShareModal = () => {
     if (isThemeImageExportRestricted) {
-      updateShareMessage('테마 사진은 미리보기로는 보이지만 서버 설정 때문에 다운로드/공유에는 사진 업로드를 이용해 주세요.');
+      updateShareMessage(
+        '테마 사진은 미리보기로는 보이지만 서버 설정 때문에 다운로드/공유에는 사진 업로드를 이용해 주세요.',
+      );
       setIsShareModalOpen(true);
       return;
     }
@@ -335,7 +337,10 @@ function ReviewSharePage() {
       if (error?.name === 'AbortError') {
         updateShareMessage('공유가 취소되었어요.', 'default');
       } else if (error?.message === 'THEME_IMAGE_PROXY_REQUIRED') {
-        updateShareMessage('테마 사진은 현재 서버 설정 때문에 공유할 수 없어요. 사진 업로드 이미지를 사용해 주세요.', 'error');
+        updateShareMessage(
+          '테마 사진은 현재 서버 설정 때문에 공유할 수 없어요. 사진 업로드 이미지를 사용해 주세요.',
+          'error',
+        );
       } else {
         console.error('[ReviewSharePage] 인스타 공유 실패:', error);
         updateShareMessage('공유를 준비하지 못했어요. 이미지 다운로드를 이용해 주세요.', 'error');
@@ -1250,9 +1255,7 @@ const CenterBadgeShade = styled.div`
   position: absolute;
   inset: 0;
   z-index: 1;
-  background:
-    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.12), transparent 34%),
-    rgba(10, 12, 18, 0.52);
+  background: radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.12), transparent 34%), rgba(10, 12, 18, 0.52);
   pointer-events: none;
 `;
 
@@ -1533,9 +1536,7 @@ const ScoreGridShade = styled.div`
   position: absolute;
   inset: 0;
   z-index: 1;
-  background:
-    radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.1), transparent 36%),
-    rgba(10, 12, 18, 0.58);
+  background: radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.1), transparent 36%), rgba(10, 12, 18, 0.58);
   pointer-events: none;
 `;
 

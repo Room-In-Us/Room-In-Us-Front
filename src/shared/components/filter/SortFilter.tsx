@@ -16,7 +16,7 @@ import DropDownImg from '../../assets/icons/common/arrow/downArrow.svg';
 import Check from '../../assets/icons/common/filterIcon/check.svg';
 import useDevice from "../../hooks/useDevice";
 import useDropdown from "../../hooks/useDropDown";
-import { sortOptions } from "./OptionList.js";
+import { sortOptions } from "./OptionList";
 import type { ThemeSortOption } from '../../types/theme';
 import type { FilterSelectionHandle } from './filterTypes';
 

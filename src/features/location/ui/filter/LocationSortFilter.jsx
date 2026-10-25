@@ -16,7 +16,7 @@ import DropDownImg from "../../../../shared/assets/icons/common/arrow/downArrow.
 import Check from '../../../../shared/assets/icons/common/filterIcon/check.svg';
 import useDevice from "../../../../shared/hooks/useDevice";
 import useDropdown from "../../../../shared/hooks/useDropDown";
-import { sortOptions } from "../../../../shared/components/filter/OptionList.js";
+import { sortOptions } from "../../../../shared/components/filter/OptionList";
 import PropTypes from 'prop-types';
 
 const LocationSortFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) => {

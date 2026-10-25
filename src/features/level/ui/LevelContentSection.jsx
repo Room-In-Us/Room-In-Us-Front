@@ -13,7 +13,7 @@ import SortFilter from '../../../shared/components/filter/SortFilter';
 import RegionFilter from '../../../shared/components/filter/RegionFilter';
 import CustomPagination from '../../../shared/components/CustomPagination';
 import BottomSheet from '../../../shared/components/BottomSheet';
-import { sortOptions } from '../../../shared/components/filter/OptionList.js';
+import { sortOptions } from '../../../shared/components/filter/OptionList';
 import NoDataImgLarge from '../../../shared/assets/images/common/noData/noDataImageLarge.png'
 
 export default function LevelContentSection() {

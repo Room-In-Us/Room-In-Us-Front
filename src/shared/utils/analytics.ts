@@ -1,6 +1,6 @@
 const LAST_TRACKED_USER_ID_KEY = 'ga:lastTrackedUserId';
 
-export const pushLoginSuccessUserId = (memberId) => {
+export const pushLoginSuccessUserId = (memberId: number | null | undefined): void => {
   if (memberId === null || memberId === undefined) return;
 
   const normalizedUserId = String(memberId);
@@ -17,7 +17,7 @@ export const pushLoginSuccessUserId = (memberId) => {
   sessionStorage.setItem(LAST_TRACKED_USER_ID_KEY, normalizedUserId);
 };
 
-export const clearTrackedUserId = () => {
+export const clearTrackedUserId = (): void => {
   sessionStorage.removeItem(LAST_TRACKED_USER_ID_KEY);
 
   window.dataLayer = window.dataLayer || [];

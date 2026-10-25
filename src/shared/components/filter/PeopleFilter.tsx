@@ -17,7 +17,7 @@ import SelectedIcon from '../../assets/icons/common/filterIcon/selected.svg';
 import Icon1 from '../../assets/icons/genre/camera.svg';
 import useDevice from "../../hooks/useDevice";
 import useDropdown from "../../hooks/useDropDown";
-import { peopleOptions } from "./OptionList.js";
+import { peopleOptions } from "./OptionList";
 import type { FilterSelectionHandle } from './filterTypes';
 
 type PeopleFilterProps = {

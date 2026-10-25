@@ -1,26 +1,23 @@
-import { useState, useEffect } from "react";
-import styled from "styled-components";
-import RatingStar from "../../../shared/assets/icons/themeDetail/ratingStar.svg?react";
-import EvalutionIcon from "../../../shared/assets/icons/themeDetail/reviewEvalutionIcon.svg?react";
-import MemberIcon from "../../../shared/assets/icons/themeDetail/reviewMemberIcon.svg?react";
-import EscapeIcon from "../../../shared/assets/icons/themeDetail/reviewEscapeIcon.svg?react";
-import HintIcon from "../../../shared/assets/icons/themeDetail/reviewHintIcon.svg?react";
-import TimeIcon from "../../../shared/assets/icons/themeDetail/reviewTimeIcon.svg?react";
-import { reviewEnumConversion, convertTimeToMinutes, formatDateToDot } from "../../../shared/utils/dataUtils";
-import PlayMemberSection from "./PlayMemberSection";
-import SignificantSection from "./SignificantSection";
-import StarRatingSection from "./StarRatingSection";
-import RangeItem from "../../review/ui/RangeItem";
-import PropTypes from "prop-types";
-import { getReviewDetailAPI } from "../api/reviewDetailAPI";
+import { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import RatingStar from '../../../shared/assets/icons/themeDetail/ratingStar.svg?react';
+import EvalutionIcon from '../../../shared/assets/icons/themeDetail/reviewEvalutionIcon.svg?react';
+import MemberIcon from '../../../shared/assets/icons/themeDetail/reviewMemberIcon.svg?react';
+import EscapeIcon from '../../../shared/assets/icons/themeDetail/reviewEscapeIcon.svg?react';
+import HintIcon from '../../../shared/assets/icons/themeDetail/reviewHintIcon.svg?react';
+import TimeIcon from '../../../shared/assets/icons/themeDetail/reviewTimeIcon.svg?react';
+import { reviewEnumConversion, convertTimeToMinutes, formatDateToDot } from '../../../shared/utils/dataUtils';
+import PlayMemberSection from './PlayMemberSection';
+import SignificantSection from './SignificantSection';
+import StarRatingSection from './StarRatingSection';
+import RangeItem from '../../review/ui/RangeItem';
+import PropTypes from 'prop-types';
+import { getReviewDetailAPI } from '../api/reviewDetailAPI';
 
 function ReviewInfoSection({ themeId, reviewId }) {
   const [reviewData, setReviewData] = useState({});
-  const escapeState = reviewData?.isEscaped === true
-  ? '탈출 성공'
-  : reviewData?.isEscaped === false
-    ? '탈출 실패'
-    : '-';
+  const escapeState =
+    reviewData?.isEscaped === true ? '탈출 성공' : reviewData?.isEscaped === false ? '탈출 실패' : '-';
 
   // 후기 상세 api 호출
   useEffect(() => {
@@ -40,45 +37,45 @@ function ReviewInfoSection({ themeId, reviewId }) {
       {/* 리뷰 총평 */}
       <SectionWrapper>
         <SectionTitle>리뷰 총평</SectionTitle>
-        <Divider/>
+        <Divider />
         <RatingWrapper>
           <StyledRatingStar />
           <Rating>
             {typeof reviewData.satisfactionLevel === 'number' && !isNaN(reviewData.satisfactionLevel)
-              ? `${Number.isInteger(reviewData.satisfactionLevel)
-                  ? reviewData.satisfactionLevel
-                  : reviewData.satisfactionLevel.toFixed(1)}/5`
+              ? `${
+                  Number.isInteger(reviewData.satisfactionLevel)
+                    ? reviewData.satisfactionLevel
+                    : reviewData.satisfactionLevel.toFixed(1)
+                }/5`
               : '-'}
           </Rating>
         </RatingWrapper>
         <SummaryWrapper>
           <SummaryCard>
-            <StyledEvautionIcon/>
+            <StyledEvautionIcon />
             <SummaryTextWrapper>
               <SummaryTitle>총평</SummaryTitle>
               <SummaryText>{reviewEnumConversion(reviewData.review)}</SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
           <SummaryCard>
-            <StyledMemberIcon/>
+            <StyledMemberIcon />
             <SummaryTextWrapper>
               <SummaryTitle>플레이 인원</SummaryTitle>
               <SummaryText>
-                {Array.isArray(reviewData.participantList)
-                  ? `${reviewData.participantList.length}인`
-                  : '-'}
+                {Array.isArray(reviewData.participantList) ? `${reviewData.participantList.length}인` : '-'}
               </SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
           <SummaryCard>
-            <StyledEscapeIcon/>
+            <StyledEscapeIcon />
             <SummaryTextWrapper>
               <SummaryTitle>탈출 여부</SummaryTitle>
               <SummaryText>{escapeState}</SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
           <SummaryCard>
-            <StyledHintIcon/>
+            <StyledHintIcon />
             <SummaryTextWrapper>
               <SummaryTitle>힌트 사용</SummaryTitle>
               <SummaryText>
@@ -89,16 +86,16 @@ function ReviewInfoSection({ themeId, reviewId }) {
             </SummaryTextWrapper>
           </SummaryCard>
           <SummaryCard>
-            <StyledTimeIcon/>
+            <StyledTimeIcon />
             <SummaryTextWrapper>
               <SummaryTitle>남긴 시간</SummaryTitle>
-              <SummaryText>{reviewData.isEscaped === true ? convertTimeToMinutes(reviewData.remainingTime) : '-'}</SummaryText>
+              <SummaryText>
+                {reviewData.isEscaped === true ? convertTimeToMinutes(reviewData.remainingTime) : '-'}
+              </SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
         </SummaryWrapper>
-        <ReviewDescription>
-          {reviewData.reviewComment}
-        </ReviewDescription>
+        <ReviewDescription>{reviewData.reviewComment}</ReviewDescription>
         <ReviewPostDate>{formatDateToDot(reviewData.createdAt)}</ReviewPostDate>
       </SectionWrapper>
 
@@ -109,25 +106,25 @@ function ReviewInfoSection({ themeId, reviewId }) {
       </RowSectionWrapper>
 
       {/* 플레이 인원 */}
-      {reviewData.participantList && (
-        <PlayMemberSection participantList={reviewData.participantList} />
-      )}
+      {reviewData.participantList && <PlayMemberSection participantList={reviewData.participantList} />}
 
       {/* 탈출 여부 */}
       <RowSectionWrapper>
         <SectionTitle>탈출 여부</SectionTitle>
         <EscapeWrapper>
           <EscapeTextWrapper>
-            <EscapeResult>{reviewData.isEscaped === true ? '성공' : reviewData.isEscaped === false ? '실패' : '-'}</EscapeResult>
-            {(reviewData.isEscaped === false && reviewData.failReason) &&
+            <EscapeResult>
+              {reviewData.isEscaped === true ? '성공' : reviewData.isEscaped === false ? '실패' : '-'}
+            </EscapeResult>
+            {reviewData.isEscaped === false && reviewData.failReason && (
               <EscapeFailureReason>(원인: {reviewData.failReason})</EscapeFailureReason>
-            }
+            )}
           </EscapeTextWrapper>
-          {reviewData.hasViewedEnding &&
+          {reviewData.hasViewedEnding && (
             <EscapeEndingTag>
               <EscapeTagText>엔딩 열람</EscapeTagText>
             </EscapeEndingTag>
-          }
+          )}
         </EscapeWrapper>
       </RowSectionWrapper>
 
@@ -138,39 +135,27 @@ function ReviewInfoSection({ themeId, reviewId }) {
       </RowSectionWrapper>
 
       {/* 특이사항 */}
-      {reviewData.reviewTagList && (
-        <SignificantSection tagList={reviewData.reviewTagList} />
-      )}
+      {reviewData.reviewTagList && <SignificantSection tagList={reviewData.reviewTagList} />}
 
       {/* 장치/자물쇠 비율 */}
       <SectionWrapper>
         <TitleWrapper>
           <SectionTitle>장치/자물쇠 비율</SectionTitle>
-          <RatioText>{Number(reviewData.lockRatio)}:{10-Number(reviewData.lockRatio)}</RatioText>
+          <RatioText>
+            {Number(reviewData.lockRatio)}:{10 - Number(reviewData.lockRatio)}
+          </RatioText>
         </TitleWrapper>
-        <Divider/>
+        <Divider />
         <RangeWrapper>
-          <RangeItem
-            disabled={false}
-            onChange={() => {}}
-            value={reviewData.lockRatio*10}
-          />
+          <RangeItem disabled={false} onChange={() => {}} value={reviewData.lockRatio * 10} />
         </RangeWrapper>
       </SectionWrapper>
-      
+
       {/* 난이도 */}
-      <StarRatingSection
-        type="난이도"
-        rating={reviewData.level}
-        comment={reviewData.levelComment}
-      />
+      <StarRatingSection type="난이도" rating={reviewData.level} comment={reviewData.levelComment} />
 
       {/* 공포도 */}
-      <StarRatingSection
-        type="공포도"
-        rating={reviewData.horrorLevel}
-        comment={reviewData.horrorComment}
-      />
+      <StarRatingSection type="공포도" rating={reviewData.horrorLevel} comment={reviewData.horrorComment} />
 
       {/* 활동성 */}
       <StarRatingSection
@@ -181,18 +166,10 @@ function ReviewInfoSection({ themeId, reviewId }) {
       />
 
       {/* 스토리 */}
-      <StarRatingSection
-        type="스토리"
-        rating={reviewData.storyLevel}
-        comment={reviewData.storyComment}
-      />
+      <StarRatingSection type="스토리" rating={reviewData.storyLevel} comment={reviewData.storyComment} />
 
       {/* 인테리어 */}
-      <StarRatingSection
-        type="인테리어"
-        rating={reviewData.interiorLevel}
-        comment={reviewData.interiorComment}
-      />
+      <StarRatingSection type="인테리어" rating={reviewData.interiorLevel} comment={reviewData.interiorComment} />
 
       {/* 신고 영역 */}
       {/* <ReportWrapper>
@@ -200,7 +177,7 @@ function ReviewInfoSection({ themeId, reviewId }) {
         <ReportButton>후기 신고하기</ReportButton>
       </ReportWrapper> */}
     </ComponentWrapper>
-  )
+  );
 }
 
 // PropTypes 정의 (eslint 에러 방지)
@@ -229,7 +206,7 @@ const ComponentWrapper = styled.div`
   }
   &:hover::-webkit-scrollbar-thumb {
     border-radius: 30px;
-    background-color: #8DA3FF;
+    background-color: #8da3ff;
   }
 
   @media (max-width: 768px) {
@@ -248,7 +225,7 @@ const SectionWrapper = styled.div`
   align-items: flex-start;
   gap: 1rem;
   align-self: stretch;
-  background: var(--RIU_Monochrome-10, #F9F9FB);
+  background: var(--RIU_Monochrome-10, #f9f9fb);
 
   @media (max-width: 768px) {
     padding: 1rem;
@@ -257,7 +234,7 @@ const SectionWrapper = styled.div`
 `;
 
 const SectionTitle = styled.div`
-  color: var(--RIU_Primary-100, #718FF2);
+  color: var(--RIU_Primary-100, #718ff2);
   text-align: center;
   font-family: 'Pretendard-Bold';
   font-size: 1rem;
@@ -273,7 +250,7 @@ const Divider = styled.hr`
   margin: 0;
   width: 100%;
   height: 0.0625rem;
-  background: #C4C6D1;
+  background: #c4c6d1;
 `;
 
 const RatingWrapper = styled.div`
@@ -285,7 +262,7 @@ const RatingWrapper = styled.div`
 
   @media (max-width: 768px) {
     gap: 0.25rem;
-  } 
+  }
 `;
 
 const StyledRatingStar = styled(RatingStar)`
@@ -318,12 +295,12 @@ const SummaryWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   align-self: stretch;
-  background: var(--RIU_Monochrome-30, #E7E8ED);
+  background: var(--RIU_Monochrome-30, #e7e8ed);
 `;
 
 const SummaryCard = styled.div`
   border-radius: 0.25rem;
-  background: var(--RIU_Monochrome-10, #F9F9FB);
+  background: var(--RIU_Monochrome-10, #f9f9fb);
   padding: 0.25rem 0.75rem;
   box-sizing: border-box;
   width: 7.1875rem;
@@ -437,7 +414,7 @@ const ReviewDescription = styled.div`
 `;
 
 const ReviewPostDate = styled.div`
-  color: var(--RIU_Monochrome-90, #9192A5);
+  color: var(--RIU_Monochrome-90, #9192a5);
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: 140%;
@@ -455,7 +432,7 @@ const RowSectionWrapper = styled.div`
   align-items: center;
   gap: 1rem;
   align-self: stretch;
-  background: var(--RIU_Monochrome-10, #F9F9FB);
+  background: var(--RIU_Monochrome-10, #f9f9fb);
 `;
 
 const VisitDate = styled.div`
@@ -504,7 +481,7 @@ const EscapeFailureReason = styled.div`
 `;
 
 const EscapeEndingTag = styled.div`
-  border: 1px solid var(--RIU_Primary-100, #718FF2);
+  border: 1px solid var(--RIU_Primary-100, #718ff2);
   border-radius: 0.25rem;
   padding: 0.25rem 0.5rem;
   display: flex;
@@ -514,7 +491,7 @@ const EscapeEndingTag = styled.div`
 `;
 
 const EscapeTagText = styled.div`
-  color: var(--RIU_Primary-100, #718FF2);
+  color: var(--RIU_Primary-100, #718ff2);
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: 150%;

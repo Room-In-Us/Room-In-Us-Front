@@ -1,16 +1,22 @@
-import styled from "styled-components";
-import BlueStar from "../../../shared/assets/icons/themeDetail/blueStar.svg?react";
-import EvalutionIcon from "../../../shared/assets/icons/themeDetail/reviewEvalutionIcon.svg?react";
-import MemberIcon from "../../../shared/assets/icons/themeDetail/reviewMemberIcon.svg?react";
-import EscapeIcon from "../../../shared/assets/icons/themeDetail/reviewEscapeIcon.svg?react";
-import HintIcon from "../../../shared/assets/icons/themeDetail/reviewHintIcon.svg?react";
-import TimeIcon from "../../../shared/assets/icons/themeDetail/reviewTimeIcon.svg?react";
-import RightArrowIcon from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
+import styled from 'styled-components';
+import BlueStar from '../../../shared/assets/icons/themeDetail/blueStar.svg?react';
+import EvalutionIcon from '../../../shared/assets/icons/themeDetail/reviewEvalutionIcon.svg?react';
+import MemberIcon from '../../../shared/assets/icons/themeDetail/reviewMemberIcon.svg?react';
+import EscapeIcon from '../../../shared/assets/icons/themeDetail/reviewEscapeIcon.svg?react';
+import HintIcon from '../../../shared/assets/icons/themeDetail/reviewHintIcon.svg?react';
+import TimeIcon from '../../../shared/assets/icons/themeDetail/reviewTimeIcon.svg?react';
+import RightArrowIcon from '../../../shared/assets/icons/common/arrow/rightArrow.svg?react';
 import PropTypes from 'prop-types';
-import { reviewEnumConversion, proficiencyConversion, horrorPositionConversion, formatDateToDot, convertTimeToMinutes } from "../../../shared/utils/dataUtils";
-import { useNavigate, useParams } from "react-router-dom";
+import {
+  reviewEnumConversion,
+  proficiencyConversion,
+  horrorPositionConversion,
+  formatDateToDot,
+  convertTimeToMinutes,
+} from '../../../shared/utils/dataUtils';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
-import { userInfoModalState, userInfoIdState, userInfoNameState } from "../../auth/model/authAtom";
+import { userInfoModalState, userInfoIdState, userInfoNameState } from '../../auth/model/authAtom';
 
 function ThemeReview({ data }) {
   // 상태 관리
@@ -18,7 +24,7 @@ function ThemeReview({ data }) {
   const setUserId = useSetRecoilState(userInfoIdState);
   const setUserName = useSetRecoilState(userInfoNameState);
 
-  const escapeState = data.isEscaped ? '탈출 성공' : '탈출 실패';
+  const escapeState = data.isEscaped == true ? '탈출 성공' : data.isEscaped == false ? '탈출 실패' : '-';
   const navigate = useNavigate();
   const { themeId } = useParams();
 
@@ -27,8 +33,8 @@ function ThemeReview({ data }) {
     setUserId(data.memberId);
     setUserName(data.memberNickname);
     setModal(true);
-  }
-  
+  };
+
   return (
     <ComponentWrapper>
       <ContentWrapper>
@@ -42,7 +48,7 @@ function ThemeReview({ data }) {
             <TitleText>{horrorPositionConversion(data.memberHorrorPos)}</TitleText>
           </TitleLeftWrapper>
           <TitleRightWrapper>
-            <StarIcon/>
+            <StarIcon />
             <Rating>{data.satisfactionLevel}</Rating>
           </TitleRightWrapper>
         </TitleWrapper>
@@ -50,61 +56,52 @@ function ThemeReview({ data }) {
         {/* 요약 파트 */}
         <SummaryWrapper>
           <SummaryCard>
-            <StyledEvautionIcon/>
+            <StyledEvautionIcon />
             <SummaryTextWrapper>
               <SummaryTitle>총평</SummaryTitle>
               <SummaryText>{reviewEnumConversion(data.reviewEnum)}</SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
           <SummaryCard>
-            <StyledMemberIcon/>
+            <StyledMemberIcon />
             <SummaryTextWrapper>
               <SummaryTitle>플레이 인원</SummaryTitle>
               <SummaryText>{data.headcount}인</SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
           <SummaryCard>
-            <StyledEscapeIcon/>
+            <StyledEscapeIcon />
             <SummaryTextWrapper>
               <SummaryTitle>탈출 여부</SummaryTitle>
               <SummaryText>{escapeState}</SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
           <SummaryCard>
-            <StyledHintIcon/>
+            <StyledHintIcon />
             <SummaryTextWrapper>
               <SummaryTitle>힌트 사용</SummaryTitle>
               <SummaryText>
-                {data.usedHint === null || data.usedHint === undefined
-                  ? '-'
-                  : `${data.usedHint}개 사용`}
+                {data.usedHint === null || data.usedHint === undefined ? '-' : `${data.usedHint}개 사용`}
               </SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
           <SummaryCard>
-            <StyledTimeIcon/>
+            <StyledTimeIcon />
             <SummaryTextWrapper>
               <SummaryTitle>남긴 시간</SummaryTitle>
-              <SummaryText>{convertTimeToMinutes(data.remainingTime)}</SummaryText>
+              <SummaryText>{data.isEscaped === true ? convertTimeToMinutes(data.remainingTime) : '-'}</SummaryText>
             </SummaryTextWrapper>
           </SummaryCard>
         </SummaryWrapper>
 
         {/* 설명 파트 */}
-        <Description>
-          {data.reviewComment}
-        </Description>
+        <Description>{data.reviewComment}</Description>
 
         {/* 날짜 파트 */}
         <DateWrapper>
-          <Date>
-            방문일자 : {formatDateToDot(data.playedAt)}
-          </Date>
-          <Date>
-            작성일자 : {formatDateToDot(data.createdAt)}
-          </Date>
+          <Date>방문일자 : {formatDateToDot(data.playedAt)}</Date>
+          <Date>작성일자 : {formatDateToDot(data.createdAt)}</Date>
         </DateWrapper>
-
       </ContentWrapper>
 
       {/* 상세 버튼 */}
@@ -113,7 +110,7 @@ function ThemeReview({ data }) {
         <RightArrowIcon className="arrow-icon" />
       </DetailButton>
     </ComponentWrapper>
-  )
+  );
 }
 
 // eslint 에러 방지
@@ -141,7 +138,7 @@ export default ThemeReview;
 // CSS
 const ComponentWrapper = styled.div`
   border-radius: 0.625rem;
-  border: 1px solid var(--RIU_Primary-20, #D0D8FF);
+  border: 1px solid var(--RIU_Primary-20, #d0d8ff);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -176,7 +173,7 @@ const TitleLeftWrapper = styled.div`
 `;
 
 const NickName = styled.div`
-  color: var(--RIU_Primary-100, #718FF2);
+  color: var(--RIU_Primary-100, #718ff2);
   font-family: 'Pretendard-Bold';
   font-size: 0.875rem;
   line-height: 140%;
@@ -188,7 +185,7 @@ const NickName = styled.div`
 `;
 
 const Divider = styled.div`
-  color: var(--RIU_Monochrome-50, #D6D6DF);
+  color: var(--RIU_Monochrome-50, #d6d6df);
 `;
 
 const TitleText = styled.div`
@@ -241,12 +238,12 @@ const SummaryWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   align-self: stretch;
-  background: var(--RIU_Monochrome-30, #E7E8ED);
+  background: var(--RIU_Monochrome-30, #e7e8ed);
 `;
 
 const SummaryCard = styled.div`
   border-radius: 0.25rem;
-  background: var(--RIU_Monochrome-10, #F9F9FB);
+  background: var(--RIU_Monochrome-10, #f9f9fb);
   padding: 0.25rem 0.75rem;
   box-sizing: border-box;
   width: 7.1875rem;
@@ -372,7 +369,7 @@ const DateWrapper = styled.div`
 `;
 
 const Date = styled.div`
-  color: var(--RIU_Monochrome-90, #9192A5);
+  color: var(--RIU_Monochrome-90, #9192a5);
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;
   line-height: 140%;
@@ -392,12 +389,12 @@ const DetailButton = styled.div`
   align-items: center;
   gap: 0.625rem;
   align-self: stretch;
-  background: var(--RIU_Primary-0, #E8EAFF);
+  background: var(--RIU_Primary-0, #e8eaff);
   cursor: pointer;
   transition: all 0.1s ease-in-out;
 
   .button-text {
-    color: var(--RIU_Primary-100, #718FF2);
+    color: var(--RIU_Primary-100, #718ff2);
     font-family: 'Pretendard-Bold';
     font-size: 0.875rem;
     line-height: 130%;
@@ -406,18 +403,18 @@ const DetailButton = styled.div`
   .arrow-icon {
     width: 1.25rem;
     height: 1.25rem;
-    fill: var(--RIU_Primary-100, #718FF2);
+    fill: var(--RIU_Primary-100, #718ff2);
   }
 
   &:hover {
-    background: var(--RIU_Primary-60, #A2ADFF);
+    background: var(--RIU_Primary-60, #a2adff);
 
     .button-text {
-      color: var(--RIU_Monochrome-10, #F9F9FB);
+      color: var(--RIU_Monochrome-10, #f9f9fb);
     }
 
     .arrow-icon {
-      fill: var(--RIU_Monochrome-10, #F9F9FB);
+      fill: var(--RIU_Monochrome-10, #f9f9fb);
     }
   }
 

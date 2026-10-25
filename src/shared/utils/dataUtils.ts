@@ -1,5 +1,10 @@
+import type { ThemeGenre, ThemeProficiency } from '../types/theme';
+import type { ThemeReviewEvaluation, ThemeReviewTag } from '../types/review';
+import type { PreferenceHorrorPosition } from '../types/preference';
+
 // 난이도 변환 함수 (double => String)
-export const levelTextConversion = (level) => {
+export const levelTextConversion = (level: number | null | undefined): string => {
+  if (level === null || level === undefined) return "-";
   if (level >= 0 && level <= 1) return "매우 쉬움";
   if (level > 1 && level <= 2) return "쉬움";
   if (level > 2 && level <= 3) return "보통";
@@ -9,8 +14,8 @@ export const levelTextConversion = (level) => {
 };
 
 // 장르 리스트 변환 함수 (영어 => 한글)
-export const genreListConversion = (genreList) => {
-  const genreMap = {
+export const genreListConversion = (genreList: ThemeGenre[]): string[] => {
+  const genreMap: Record<ThemeGenre, string> = {
     SENTIMENTAL: "감성",
     HORROR: "공포",
     THRILLER: "스릴러",
@@ -37,7 +42,7 @@ export const genreListConversion = (genreList) => {
 };
 
 // 별점 변환 함수 (null일 때 -)
-export const satisfactionConversion = (satisfaction) => {
+export const satisfactionConversion = (satisfaction: number | null | undefined): string => {
   if (typeof satisfaction === 'number' && !isNaN(satisfaction)) {
     return satisfaction.toFixed(2);
   } else {
@@ -46,7 +51,7 @@ export const satisfactionConversion = (satisfaction) => {
 };
 
 // 추천 인원 수 변환 함수
-export const mapRecommendedHeadcount = (min, max) => {
+export const mapRecommendedHeadcount = (min: number | null | undefined, max: number | null | undefined): string => {
   // 둘 다 null이면
   if (min == null && max == null) return "-";
   // min만 있고 max는 null이면
@@ -60,8 +65,9 @@ export const mapRecommendedHeadcount = (min, max) => {
 };
 
 // 총평 변환 함수 (영어 => 한글)
-export const reviewEnumConversion = (reviewEnum) => {
-  const enumMap = {
+export const reviewEnumConversion = (reviewEnum: ThemeReviewEvaluation | null | undefined): string => {
+  if (reviewEnum === null || reviewEnum === undefined) return "-";
+  const enumMap: Record<ThemeReviewEvaluation, string> = {
     SOIL: "흙길",
     SOIL_GRASS: "흙풀길",
     GRASS: "풀길",
@@ -74,8 +80,9 @@ export const reviewEnumConversion = (reviewEnum) => {
 };
 
 // 숙련도 변환 함수 (영어 => 한글)
-export const proficiencyConversion = (proficiency) => {
-  const proficiencyMap = {
+export const proficiencyConversion = (proficiency: ThemeProficiency | null | undefined): string => {
+  if (proficiency === null || proficiency === undefined) return "-";
+  const proficiencyMap: Record<ThemeProficiency, string> = {
     BEGINNER: "방세포",
     JUNIOR: "방초보",
     SENIOR: "방중수",
@@ -85,8 +92,9 @@ export const proficiencyConversion = (proficiency) => {
 };
 
 // 공포 포지션 변환 함수 (영어 => 한글)
-export const horrorPositionConversion = (position) => {
-  const positionMap = {
+export const horrorPositionConversion = (position: PreferenceHorrorPosition | null | undefined): string => {
+  if (position === null || position === undefined) return "-";
+  const positionMap: Record<PreferenceHorrorPosition, string> = {
     FEARLESS: "탱",
     FEARFUL_TANK: "쫄탱",
     RELUCTANT_TANK: "마지모탱",
@@ -98,7 +106,7 @@ export const horrorPositionConversion = (position) => {
 };
 
 // 날짜 변환 함수 (yyyy.MM.dd)
-export const formatDateToDot = (dateString) => {
+export const formatDateToDot = (dateString: string | null | undefined): string => {
   if (!dateString) return "날짜 없음";
 
   const [datePart] = dateString.split(" "); // "yyyy-MM-dd"
@@ -108,7 +116,7 @@ export const formatDateToDot = (dateString) => {
 };
 
 // 시간 변환 함수 (n분 남김)
-export const convertTimeToMinutes = (timeString) => {
+export const convertTimeToMinutes = (timeString: string | null | undefined): string => {
   if (!timeString) return '-';
 
   const [hours, minutes] = timeString.split(":").map(Number);
@@ -117,8 +125,8 @@ export const convertTimeToMinutes = (timeString) => {
 };
 
 // 리뷰 태그 변환 함수 (영어 => 한글)
-export const reviewTagConversion = (tag) => {
-  const tagMap = {
+export const reviewTagConversion = (tag: ThemeReviewTag): string => {
+  const tagMap: Record<ThemeReviewTag, string> = {
     AGING: "노후화",
     DEVICE_ERROR: "장치 오류",
     ENTRY_DELAY: "당일 예약",

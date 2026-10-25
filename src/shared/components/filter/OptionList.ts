@@ -4,8 +4,12 @@ import FilterIcon3 from '../../assets/icons/common/filterIcon/price.svg?react';
 import FilterIcon4 from '../../assets/icons/common/filterIcon/level.svg?react';
 import FilterIcon5 from '../../assets/icons/common/filterIcon/fearlevel.svg?react';
 import FilterIcon6 from '../../assets/icons/common/filterIcon/activelevel.svg?react';
+import type { ThemeSortOption } from '../../types/theme';
 
-export const peopleOptions = [
+type PeopleOption = { value: number; label: string };
+type SortOption = { value: ThemeSortOption; label: string; icon: typeof FilterIcon1 };
+
+export const peopleOptions: PeopleOption[] = [
   { value: 1, label: "1인" },
   { value: 2, label: "2인" },
   { value: 3, label: "3인" },
@@ -14,7 +18,7 @@ export const peopleOptions = [
   { value: 6, label: "6인" }
 ];
 
-export const sortOptions = [
+export const sortOptions: SortOption[] = [
   {value: "HIGH_SATISFACTION_LEVEL", label: "만족도 높은 순", icon: FilterIcon1 },
   {value: "MANY_REVIEW", label: "후기 많은 순", icon: FilterIcon2 },
   {value: "LOW_PRICE", label: "가격 낮은 순", icon: FilterIcon3 },

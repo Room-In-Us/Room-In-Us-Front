@@ -14,7 +14,7 @@ import LocationContentCard from "./LocationContentCard";
 import { getLocationStoreInfoAPI } from "../api/locationAPI";
 import { getLocationListAPI } from "../api/locationThemeAPI";
 import BottomSheet from "../../../shared/components/BottomSheet";
-import { sortOptions } from '../../../shared/components/filter/OptionList.js';
+import { sortOptions } from '../../../shared/components/filter/OptionList';
 import useDevice from "../../../shared/hooks/useDevice";
 
 function StoreCard() {

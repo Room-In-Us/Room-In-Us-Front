@@ -24,7 +24,7 @@ import Line23 from "../assets/icons/location/stationLine/line23.svg?react";
 import Line24 from "../assets/icons/location/stationLine/line24.svg?react";
 
 // 매핑
-const lineIconMap = {
+const lineIconMap: Partial<Record<number, typeof Line1>> = {
   1: Line1,
   2: Line2,
   3: Line3,
@@ -52,6 +52,6 @@ const lineIconMap = {
 };
 
 // 호선 변환 함수
-export const stationLineConversion = (line) => {
+export const stationLineConversion = (line: number): typeof Line1 | null => {
   return lineIconMap[line] || null;
 };
