@@ -66,7 +66,7 @@ export const FilterIcon = styled.img`
 `;
 
 // 드롭다운 아이콘 스타일
-export const DropDownIcon = styled.img`
+export const DropDownIcon = styled.img<{ $isRotated?: boolean; $isSelected?: boolean }>`
   display: flex;
   width: 0.9375em;
   height: 0.9375em;
@@ -86,7 +86,7 @@ export const DropDownIcon = styled.img`
 `;
 
 // 드롭다운 메뉴 스타일
-export const DropdownMenu = styled.div`
+export const DropdownMenu = styled.div<{ $isVisible?: boolean; top?: number; left?: number }>`
   position: absolute;
   z-index: 10;
   box-sizing: border-box;
@@ -129,7 +129,7 @@ export const DropdownHeader = styled.div`
 `;
 
 // 드롭다운 아이템 스타일
-export const DropdownItem = styled.div`
+export const DropdownItem = styled.div<{ $isSelected?: boolean }>`
   font-size: 0.875em;
   color: var(--RIU_Monochrome-200, #717486);
   cursor: pointer;

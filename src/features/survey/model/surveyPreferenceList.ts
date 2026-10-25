@@ -1,4 +1,8 @@
-export const preferredElementList = [
+import type { PreferenceActivity, PreferenceDevice, PreferenceElement } from '../../../shared/types/preference';
+
+type PreferenceOption<Value> = { id: number; value: string; enum: Value };
+
+export const preferredElementList: PreferenceOption<PreferenceElement>[] = [
   {
     "id": 1,
     "value": "스토리",
@@ -31,7 +35,7 @@ export const preferredElementList = [
   },
 ];
 
-export const preferredDeviceList = [
+export const preferredDeviceList: PreferenceOption<PreferenceDevice>[] = [
   {
     "id": 1,
     "value": "장치",
@@ -49,7 +53,7 @@ export const preferredDeviceList = [
   },
 ];
 
-export const preferredActivityList = [
+export const preferredActivityList: PreferenceOption<PreferenceActivity>[] = [
   {
     "id": 1,
     "value": "활동성 높음",

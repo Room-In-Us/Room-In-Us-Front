@@ -1,3 +1,6 @@
+import type { MyReviewListItem } from '../api/types';
+import type { ReviewSortOption } from './reviewSortAtom';
+
 import EvalutionIcon from '../../../shared/assets/icons/themeDetail/reviewEvalutionIcon.svg?react';
 import MemberIcon from '../../../shared/assets/icons/themeDetail/reviewMemberIcon.svg?react';
 import EscapeIcon from '../../../shared/assets/icons/themeDetail/reviewEscapeIcon.svg?react';
@@ -5,12 +8,14 @@ import HintIcon from '../../../shared/assets/icons/themeDetail/reviewHintIcon.sv
 import TimeIcon from '../../../shared/assets/icons/themeDetail/reviewTimeIcon.svg?react';
 import { convertTimeToMinutes, reviewEnumConversion } from '../../../shared/utils/dataUtils';
 
-export const reviewSortOption = [
+type ReviewInfoInput = Pick<MyReviewListItem, 'review' | 'participantCnt' | 'usedHint' | 'remainingTime' | 'isEscaped'>;
+
+export const reviewSortOption: { label: string; value: ReviewSortOption }[] = [
   { label: '최근 방문 순', value: 'PLAYED_AT_DESC' },
   { label: '최신 작성 순', value: 'CREATED_AT_DESC' },
 ];
 
-export const createReviewInfoItems = ({ review, participantCnt, usedHint, remainingTime, isEscaped }) => [
+export const createReviewInfoItems = ({ review, participantCnt, usedHint, remainingTime, isEscaped }: ReviewInfoInput) => [
   { label: '총평', value: reviewEnumConversion(review) || review, icon: EvalutionIcon },
   { label: '플레이 인원', value: participantCnt != null ? `${participantCnt}인` : '-', icon: MemberIcon },
   {

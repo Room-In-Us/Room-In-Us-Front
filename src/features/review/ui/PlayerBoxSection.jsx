@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import ReviewDropdown from "./ReviewDropdown.jsx";
 import Trash from "../../../shared/assets/icons/reviewWrite/trashicon.svg";
-import { skillOptions } from '../modal/reviewDataList.js';
+import { skillOptions } from '../modal/reviewDataList';
 
 export default function PlayerBoxSection({
   skill,

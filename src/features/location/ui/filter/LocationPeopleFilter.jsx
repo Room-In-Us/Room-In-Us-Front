@@ -10,7 +10,7 @@ import {
   DropdownMenu, 
   DropdownHeader, 
   DropdownItem,
-  MenuWrapper } from "../../../../shared/styles/LocationFilterStyles.js";
+  MenuWrapper } from "../../../../shared/styles/LocationFilterStyles";
 import DropDownImg from "../../../../shared/assets/icons/common/arrow/downArrow.svg";
 import UnselectedIcon from '../../../../shared/assets/icons/common/filterIcon/unselected.svg';
 import SelectedIcon from '../../../../shared/assets/icons/common/filterIcon/selected.svg';

@@ -4,7 +4,7 @@ import { useRecoilValue } from 'recoil';
 import { activeLevelState } from '../model/levelAtom';
 import useDevice from "../../../shared/hooks/useDevice";
 import ContentCard from "../../../shared/components/ContentCard";
-import { levels } from '../model/levelData.js';
+import { levels } from '../model/levelData';
 import { getLevelListAPI } from "../api/levelAPI";
 import { getRegionAPI, getZoneAPI } from "../../../features/location/api/locationAPI";
 import FilterImg from '../../../shared/assets/icons/genre/filter.svg';

@@ -2,7 +2,7 @@ import styled from "styled-components";
 import StarRating from "./StarRating";
 import ReviewDropdown from "./ReviewDropdown";
 import { overallOptions } from "../modal/reviewDataList";
-import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3 } from "../../../shared/styles/ReviewStyles.js";
+import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3 } from "../../../shared/styles/ReviewStyles";
 import useDevice from '../../../shared/hooks/useDevice';
 import { useRecoilState } from "recoil";
 import { reviewStateFamily } from "../../themeDetail/model/reviewAtom";

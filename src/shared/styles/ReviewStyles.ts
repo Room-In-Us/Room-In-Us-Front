@@ -11,7 +11,7 @@ export const Wrap1 = styled.div`
   min-height: 0;
 `;
 
-export const Wrap2 = styled.div`
+export const Wrap2 = styled.div<{ $isLast?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: ${({ $isLast }) => ($isLast ? 'center' : 'flex-start')};
@@ -74,7 +74,7 @@ export const Wrap3 = styled.div`
   }
 `;
 
-export const Scroll = styled.div`
+export const Scroll = styled.div<{ $isSecond?: boolean }>`
   box-sizing: content-box;
   padding-bottom: 1.25em;
 

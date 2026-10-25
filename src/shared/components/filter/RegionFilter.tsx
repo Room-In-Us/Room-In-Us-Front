@@ -6,7 +6,7 @@ import {
   FilterTextWrapper,
   DropdownHeader,
   DropDownIcon,
-  MenuWrapper } from "../../styles/FilterStyles.js";
+  MenuWrapper } from "../../styles/FilterStyles";
 import Location from '../../assets/icons/genre/location.svg?react';
 import DropDownImg from '../../assets/icons/common/arrow/downArrow.svg';
 import useDevice from "../../hooks/useDevice";

@@ -1,3 +1,5 @@
+import type { ThemeGenre } from '../../../shared/types/theme';
+
 import Emotional from "../../../shared/assets/icons/common/genreIcon/emotional.svg?react";
 import Horror from "../../../shared/assets/icons/common/genreIcon/horror.svg?react";
 import Thriller from '../../../shared/assets/icons/common/genreIcon/thriller.svg?react';
@@ -20,7 +22,9 @@ import AgeLimit from '../../../shared/assets/icons/common/genreIcon/19+.svg?reac
 import Outdoor from '../../../shared/assets/icons/common/genreIcon/outdoor.svg?react';
 import Others from '../../../shared/assets/icons/common/genreIcon/others.svg?react';
 
-export const genres = [
+type GenreOption = { icon: typeof Emotional; text: string; genre: ThemeGenre };
+
+export const genres: GenreOption[] = [
     { icon: Emotional, text: "감성", genre: "SENTIMENTAL" },
     { icon: Horror, text: "공포", genre: "HORROR" },
     { icon: Thriller, text: "스릴러", genre: "THRILLER" },

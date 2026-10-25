@@ -10,7 +10,7 @@ import {
   DropdownMenu, 
   DropdownHeader, 
   DropdownItem,
-  MenuWrapper } from "../../styles/FilterStyles.js";
+  MenuWrapper } from "../../styles/FilterStyles";
 import DropDownImg from "../../assets/icons/common/arrow/downArrow.svg";
 import UnselectedIcon from '../../assets/icons/common/filterIcon/unselected.svg';
 import SelectedIcon from '../../assets/icons/common/filterIcon/selected.svg';

@@ -10,7 +10,7 @@ import {
   DropdownMenu, 
   DropdownHeader, 
   DropdownItem,
-  MenuWrapper } from "../../styles/FilterStyles.js";
+  MenuWrapper } from "../../styles/FilterStyles";
 import Satisfaction from '../../assets/icons/genre/satisfaction.svg';
 import DropDownImg from '../../assets/icons/common/arrow/downArrow.svg';
 import Check from '../../assets/icons/common/filterIcon/check.svg';

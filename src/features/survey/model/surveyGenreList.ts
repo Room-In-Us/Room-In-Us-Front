@@ -1,4 +1,8 @@
-export const surveyGenreList = [
+import type { ThemeGenre } from '../../../shared/types/theme';
+
+type SurveyGenreOption = { id: number; genre: string; enum: ThemeGenre };
+
+export const surveyGenreList: SurveyGenreOption[] = [
   {
     "id": 1,
     "genre": "감성",

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import StarRating from './StarRating.jsx';
-import { clothOptions, FEEDBACK_TEXT_MAP } from '../modal/reviewDataList.js';
+import { clothOptions, FEEDBACK_TEXT_MAP } from '../modal/reviewDataList';
 import UnselectedIcon from '../../../shared/assets/icons/common/filterIcon/unselected.svg';
 import SelectedIcon from '../../../shared/assets/icons/common/filterIcon/selected.svg';
 

@@ -1,23 +1,28 @@
+import type { ThemeProficiency } from '../../../shared/types/theme';
+import type { ThemeReviewEvaluation, ThemeReviewFailReason, ThemeReviewRecommendedCloth, ThemeReviewTag } from '../../../shared/types/review';
+
 import Old from "../../../shared/assets/icons/reviewWrite/old.svg";
 import Malfunction from "../../../shared/assets/icons/reviewWrite/malfunction.svg";
 import Delay from "../../../shared/assets/icons/reviewWrite/delay.svg";
 import NowDay from "../../../shared/assets/icons/reviewWrite/nowday.svg";
 import GiveUp from "../../../shared/assets/icons/reviewWrite/giveup.svg";
 
-export const clothOptions = [
+type ReviewOption<Value> = { value: Value; label: string };
+
+export const clothOptions: ReviewOption<ThemeReviewRecommendedCloth | null>[] = [
     { value: 'PANTS', label: "바지 추천" },
     { value: 'LONG_SKIRT', label: "긴 치마 가능" },
     { value: 'SHORT_SKIRT', label: "짧은 치마 가능" },
     { value: null, label: "입력 안 함" },
   ];
 
-export const finishOption = [
+export const finishOption: ReviewOption<boolean | null>[] = [
     { value: true, label: "성공" },
     { value: false, label: "실패" },
     { value: null, label: "기재 안 함" },
   ];
 
-export const specialIssues = [
+export const specialIssues: (ReviewOption<ThemeReviewTag> & { icon: string })[] = [
   { icon: Old, value: 'AGING', label: "노후화" },
   { icon: Malfunction, value: 'DEVICE_ERROR', label: "장치 오류" },
   { icon: Delay, value: 'ENTRY_DELAY', label: "입장 지연" },
@@ -25,7 +30,7 @@ export const specialIssues = [
   { icon: GiveUp, value: 'EARLY_EXIT', label: "중도 포기" },
 ];
 
-export const skillOptions = [
+export const skillOptions: ReviewOption<ThemeProficiency | null>[] = [
   { value: null, label: "미선택" },
   { value: 'BEGINNER', label: "방세포" },
   { value: 'JUNIOR', label: "방초보" },
@@ -33,14 +38,14 @@ export const skillOptions = [
   { value: 'MASTER', label: "방고수" },
 ];
 
-export const failOptions = [
+export const failOptions: ReviewOption<ThemeReviewFailReason | null>[] = [
   { value: null, label: "미선택" },
   { value: 'HINT', label: "힌트 개수 초과" },
   { value: 'TIME', label: "시간 부족" },
   { value: 'ETC', label: "기타" },
 ];
 
-export const overallOptions = [
+export const overallOptions: ReviewOption<ThemeReviewEvaluation>[] = [
   {value: 'FAVORITE', label: '인생테마'},
   {value: 'FLOWER_GARDEN', label: '꽃밭길'},
   {value: 'FLOWER', label: '꽃길'},
@@ -50,7 +55,7 @@ export const overallOptions = [
   {value: 'SOIL', label: '흙길'},
 ];
 
-export const FEEDBACK_TEXT = [
+export const FEEDBACK_TEXT: string[] = [
   "최악이에요",
   "싫어요", 
   "재미없어요",
@@ -84,4 +89,4 @@ export const FEEDBACK_TEXT_MAP = {
     "너무 허전했어요","꾸밈이 부족했어요","공간이 단순했어요","무난한 구성이에요","디테일이 약했어요",
     "적당해요","제법 잘 꾸몄어요","분위기 좋았어요","디테일에 감탄했어요","현실보다 더 몰입돼요!"
   ],
-};
+} satisfies Record<string, string[]>;
