@@ -11,7 +11,7 @@ import LikeIcon from "../../../shared/assets/icons/reviewWrite/likeIcon.svg";
 import ReviewLast from "./ReviewLast.jsx";
 import { postReviewAPI } from "../api/postReviewAPI";
 import { putMyReviewAPI } from "../../mypage/api/myReviewAPI";
-import PopUpModal from "../../../shared/components/PopUpModal.jsx";
+import PopUpModal from "../../../shared/components/PopUpModal";
 
 function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
   const navigate = useNavigate();

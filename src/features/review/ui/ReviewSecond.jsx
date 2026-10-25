@@ -13,7 +13,7 @@ import FlexibleRangeSelector from './FlexibleRangeSelector.jsx';
 import HintCounter from "./HintCounter.jsx";
 import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3 } from '../../../shared/styles/ReviewStyles.js';
 import useDevice from '../../../shared/hooks/useDevice';
-import InfoBox from '../../../shared/components/InfoBox.jsx';
+import InfoBox from '../../../shared/components/InfoBox';
 import { useRecoilState } from 'recoil';
 import { reviewStateFamily } from '../../themeDetail/model/reviewAtom';
 import { format } from "date-fns";

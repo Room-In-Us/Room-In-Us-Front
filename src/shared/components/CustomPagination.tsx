@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import type { RefObject } from "react";
 import styled from "styled-components";
 import useDevice from "../../shared/hooks/useDevice";
 import NavLeft from '../assets/icons/common/arrow/leftArrow.svg?react';
@@ -6,7 +7,17 @@ import NavRight from '../assets/icons/common/arrow/rightArrow.svg?react';
 import NavDoubleRight from '../assets/icons/common/arrow/doubleRightArrow.svg?react';
 import NavDoubleLeft from '../assets/icons/common/arrow/doubleLeftArrow.svg?react';
 
-export default function CustomPagination({ currentPage, totalPages, onPageChange, scrollTargetRef }) {
+type CustomPaginationProps = {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  scrollTargetRef?: RefObject<HTMLElement> | null;
+};
+
+type ActivePageProps = { isActive: boolean };
+type NavigationProps = { disabled: boolean };
+
+export default function CustomPagination({ currentPage, totalPages, onPageChange, scrollTargetRef }: CustomPaginationProps) {
   
   const { isMobile } = useDevice();
   const previousPageRef = useRef(currentPage);
@@ -15,7 +26,7 @@ export default function CustomPagination({ currentPage, totalPages, onPageChange
 
   const showDoubleIcons = isMobile ? totalPages > 5 : totalPages > 10;
 
-  let startPage, endPage;
+  let startPage: number, endPage: number;
 
   if (isMobile && totalPages <= 5) {
     startPage = 1;
@@ -126,7 +137,7 @@ const ButtonWrapper = styled.div`
   justify-content: center;
 `;
 
-const PageItem = styled.div`
+const PageItem = styled.div<ActivePageProps>`
   display: flex;
   width: 2rem;
   height: 2rem;
@@ -147,7 +158,7 @@ const PageItem = styled.div`
   }
 `;
 
-const PageButton = styled.div`
+const PageButton = styled.div<ActivePageProps>`
   color: ${({ isActive }) => (isActive ? "#F9F9FB" : "#717486")};
   font-family: Pretendard-SemiBold;
   font-size: 1rem;
@@ -159,7 +170,7 @@ const PageButton = styled.div`
   }
 `;
 
-const NavLeftButton = styled(NavLeft)`
+const NavLeftButton = styled(NavLeft)<NavigationProps>`
   display: flex;
   width: 1.75rem;
   height: 1.5rem;
@@ -176,7 +187,7 @@ const NavLeftButton = styled(NavLeft)`
   }
 `;
 
-const NavRightButton = styled(NavRight)`
+const NavRightButton = styled(NavRight)<NavigationProps>`
   display: flex;
   width: 1.75rem;
   height: 1.5rem;
@@ -193,7 +204,7 @@ const NavRightButton = styled(NavRight)`
   }
 `;
 
-const NavDoubleRightbtn = styled(NavDoubleRight)`
+const NavDoubleRightbtn = styled(NavDoubleRight)<NavigationProps>`
   display: flex;
   width: 1.75rem;
   height: 1.5rem;
@@ -213,7 +224,7 @@ const NavDoubleRightbtn = styled(NavDoubleRight)`
   }
 `;
 
-const NavDoubleLeftbtn = styled(NavDoubleLeft)`
+const NavDoubleLeftbtn = styled(NavDoubleLeft)<NavigationProps>`
   display: flex;
   width: 1.75rem;
   height: 1.5rem;

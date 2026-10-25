@@ -1,7 +1,10 @@
 import { MoonLoader } from 'react-spinners';
 import styled from 'styled-components';
+import type { FC } from 'react';
 
-const Loading = () => {
+type LoadingProps = Record<string, never>;
+
+const Loading: FC<LoadingProps> = () => {
   return (
     <LoadingWrapper>
       <MoonLoader color="#6680DF" loading={true} size={30} speedMultiplier={1} />

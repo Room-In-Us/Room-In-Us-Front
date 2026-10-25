@@ -1,6 +1,9 @@
 import styled from 'styled-components'
+import type { FC } from 'react';
 
-export default function InfoBox() {
+type InfoBoxProps = Record<string, never>;
+
+const InfoBox: FC<InfoBoxProps> = () => {
   return (
     <Wrapper>
       <InfoTitle>루미너스 숙련도 방 수 기준</InfoTitle>
@@ -12,7 +15,9 @@ export default function InfoBox() {
       </InfoDetail>
     </Wrapper>
   )
-}
+};
+
+export default InfoBox;
 
 const Wrapper = styled.div`
   display: flex;

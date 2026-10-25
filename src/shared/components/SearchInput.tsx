@@ -1,15 +1,25 @@
 import PropTypes from "prop-types";
 import styled from 'styled-components';
 import { useState } from 'react';
+import type { ChangeEvent, Dispatch, KeyboardEvent, MouseEvent, SetStateAction } from 'react';
 import SearchIcon from '../assets/icons/common/searchIcon.svg?react';
 import CancelIcon from '../assets/icons/common/cancelIcon.svg?react';
 
-function SearchInput({ type, keyword, setKeyword, onSearch }) {
+type SearchInputProps = {
+  type: string;
+  keyword: string;
+  setKeyword: Dispatch<SetStateAction<string>>;
+  onSearch: (keyword: string) => void;
+};
+
+type ExpandedProps = { expanded: boolean };
+
+function SearchInput({ type, keyword, setKeyword, onSearch }: SearchInputProps) {
 
   const [expanded, setExpanded] = useState(type !== 'header');
 
   // 검색 버튼 클릭
-  const handleSearchClick = (e) => {
+  const handleSearchClick = (e: MouseEvent<SVGSVGElement>) => {
     e.stopPropagation();
     if (!expanded) {
       setExpanded(true);
@@ -29,11 +39,11 @@ function SearchInput({ type, keyword, setKeyword, onSearch }) {
       />
       <StyledInput
         value={keyword}
-        onChange={(e) => setKeyword(e.target.value)}
-        onKeyDown={(e) => {
+        onChange={(e: ChangeEvent<HTMLInputElement>) => setKeyword(e.target.value)}
+        onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
           if (e.key === 'Enter') {
             e.preventDefault();
-            onSearch(e.target.value);
+            onSearch((e.target as HTMLInputElement).value);
           }
         }}
         expanded={expanded}
@@ -64,7 +74,7 @@ SearchInput.propTypes = {
 export default SearchInput;
 
 // CSS
-const InputWrapper = styled.div`
+const InputWrapper = styled.div<ExpandedProps & { isHeader: boolean }>`
   border-radius: 30px;
   padding: 0 0.703125rem;
   box-sizing: border-box;
@@ -90,7 +100,7 @@ const InputWrapper = styled.div`
   `}
 `;
 
-const StyledSearchIcon = styled(SearchIcon)`
+const StyledSearchIcon = styled(SearchIcon)<{ expanded?: boolean }>`
   width: 1.40625rem;
   flex-shrink: 0; /* 아이콘 크기 줄어드는 것 방지 */
   transition: opacity 0.2s ease-in-out;
@@ -98,7 +108,7 @@ const StyledSearchIcon = styled(SearchIcon)`
   cursor: pointer;
 `;
 
-const StyledInput = styled.input`
+const StyledInput = styled.input<ExpandedProps>`
   border: none;
   margin: 0 0.4375rem;
   outline: none;
@@ -124,7 +134,7 @@ const StyledInput = styled.input`
   }
 `;
 
-const StyledCancelIcon = styled(CancelIcon)`
+const StyledCancelIcon = styled(CancelIcon)<ExpandedProps>`
   width: 0.625rem;
   flex-shrink: 0;
   cursor: pointer;

@@ -12,7 +12,7 @@ import PreferenceSection from "./preferences/PreferenceSection";
 import PositionSection from "./preferences/PositionSection";
 import InfoSection from "./preferences/InfoSection.jsx";
 import NoDataIcon from "../../../shared/assets/images/common/noData/noDataImageLarge.png";
-import Loading from "../../../shared/components/Loading.jsx";
+import Loading from "../../../shared/components/Loading";
 
 function UserInfoModal() {
   // 상태 관리

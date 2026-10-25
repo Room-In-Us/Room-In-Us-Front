@@ -1,9 +1,12 @@
 import styled from "styled-components";
+import type { FC } from "react";
 import InstagramIcon from "../assets/icons/common/instagramIcon.svg?react";
 import EmailIcon from "../assets/icons/common/emailIcon.svg?react";
 // import KakaoTalkIcon from "../assets/icons/common/kakaoTalkIcon.svg?react";
 
-function Footer() {
+type FooterProps = Record<string, never>;
+
+const Footer: FC<FooterProps> = () => {
 
   return (
     <FooterWrapper>
@@ -21,7 +24,7 @@ function Footer() {
       </RightWrapper>
     </FooterWrapper>
   )
-}
+};
 
 export default Footer;
 

@@ -3,6 +3,22 @@ import Caution from '../assets/icons/common/cautionIcon.svg?react';
 import CautionTriangle from '../assets/icons/common/cautionTriangleIcon.svg?react';
 import Cancel from '../assets/icons/common/cancelIconColor.svg?react';
 import { createPortal } from "react-dom";
+import type { MouseEventHandler, ReactNode } from "react";
+
+type PopUpModalProps = {
+  isOpen: boolean;
+  title?: ReactNode;
+  message?: ReactNode;
+  subMessage?: string | null;
+  messageList?: ReactNode[] | null;
+  onConfirm?: MouseEventHandler<HTMLDivElement>;
+  onCancel?: MouseEventHandler<HTMLDivElement | SVGSVGElement>;
+  confirmText?: ReactNode;
+  cancelText?: ReactNode;
+  showCancel?: boolean;
+};
+
+type ButtonModeProps = { mode: 'cancel' | 'confirm' };
 
 export default function PopUpModal({
   isOpen,
@@ -15,7 +31,7 @@ export default function PopUpModal({
   confirmText = "확인",
   cancelText = "취소",
   showCancel = true,
-}) {
+}: PopUpModalProps) {
   if (!isOpen) return null;
 
   // subMessage가 줄바꿈으로 구분된 문자열인 경우 배열로 변환
@@ -81,7 +97,7 @@ const Backdrop = styled.div`
   cursor: default;
 `;
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ $hasList: boolean }>`
   width: 25rem;
   height: ${({ $hasList }) => $hasList ? 'auto' : '16.44rem'};
   min-height: 16.44rem;
@@ -223,7 +239,7 @@ const PopUpBtnWrapper = styled.div`
   align-self: stretch;
 `;
 
-const PopUpBtn = styled.div`
+const PopUpBtn = styled.div<ButtonModeProps>`
   display: flex;
   height: 3.125rem;
   padding: 0.875rem 0;
@@ -251,7 +267,7 @@ const PopUpBtn = styled.div`
   }
 `;
 
-const BtnText = styled.div`
+const BtnText = styled.div<ButtonModeProps>`
   font-family: Pretendard-Bold;
   font-size: 1rem;
 

@@ -6,7 +6,7 @@ import useDevice from "../../../shared/hooks/useDevice";
 import MainIcon from '../../../shared/assets/icons/genre/movieIcon.svg';
 import CircleInfoIcon from '../../../shared/assets/icons/common/circleinfo.svg';
 import { levels } from '../model/levelData';
-import InfoBox from '../../../shared/components/InfoBox.jsx';
+import InfoBox from '../../../shared/components/InfoBox';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function LevelTabSection() {
