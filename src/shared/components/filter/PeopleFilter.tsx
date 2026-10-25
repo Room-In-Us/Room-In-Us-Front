@@ -18,8 +18,15 @@ import Icon1 from '../../assets/icons/genre/camera.svg';
 import useDevice from "../../hooks/useDevice";
 import useDropdown from "../../hooks/useDropDown";
 import { peopleOptions } from "./OptionList.js";
+import type { FilterSelectionHandle } from './filterTypes';
 
-const PeopleFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) => {
+type PeopleFilterProps = {
+  selected?: number | null;
+  onSelect?: (value: number) => void;
+  isMobile?: boolean;
+};
+
+const PeopleFilter = forwardRef<FilterSelectionHandle<number> | undefined, PeopleFilterProps>(({ onSelect, selected: externalSelected }, ref) => {
   
   const { isMobile } = useDevice();
   
@@ -102,7 +109,7 @@ export const RadioIcon = styled.img`
   }
 `;
 
-export const RadioLabel = styled.div`
+export const RadioLabel = styled.div<{ $isSelected: boolean }>`
   font-size: 0.875rem;
   font-family: ${({ $isSelected }) => ($isSelected ? "Pretendard-Bold" : "Pretendard-Medium")};
   color: ${({ $isSelected }) => ($isSelected ? "var(--RIU_Primary-300, #5B6ACC)" : "var(--RIU_Monochrome-200, #717486)")};

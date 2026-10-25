@@ -17,8 +17,16 @@ import Check from '../../assets/icons/common/filterIcon/check.svg';
 import useDevice from "../../hooks/useDevice";
 import useDropdown from "../../hooks/useDropDown";
 import { sortOptions } from "./OptionList.js";
+import type { ThemeSortOption } from '../../types/theme';
+import type { FilterSelectionHandle } from './filterTypes';
 
-const SortFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) => {
+type SortFilterProps = {
+  selected?: ThemeSortOption | null;
+  onSelect?: (value: ThemeSortOption) => void;
+  isMobile?: boolean;
+};
+
+const SortFilter = forwardRef<FilterSelectionHandle<ThemeSortOption> | undefined, SortFilterProps>(({ onSelect, selected: externalSelected }, ref) => {
   const { isMobile } = useDevice();
   const {
     isOpen,
@@ -107,7 +115,7 @@ const StyledIcon = styled.div`
   }
 `;
 
-const RadioLabel = styled.div`
+const RadioLabel = styled.div<{ $isSelected: boolean }>`
   font-size: 0.875rem;
   font-family: ${({ $isSelected }) => ($isSelected ? "Pretendard-Bold" : "Pretendard-Medium")};
   color: ${({ $isSelected }) => ($isSelected ? "var(--RIU_Primary-300, #5B6ACC)" : "var(--RIU_Monochrome-200, #717486)")};

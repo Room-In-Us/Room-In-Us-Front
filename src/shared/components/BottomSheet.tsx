@@ -5,6 +5,28 @@ import PeopleFilter from "./filter/PeopleFilter";
 import SortFilter from "./filter/SortFilter";
 import useDevice from "../../shared/hooks/useDevice";
 import ResetIcon from '../assets/icons/common/filterIcon/reset.svg';
+import type { ThemeSortOption } from '../types/theme';
+import type { FilterSelectionRef, FilterValues, FilterZoneListItem, RegionFilterHandle, RegionSelectionProps } from './filter/filterTypes';
+
+type RegionSheetProps = RegionSelectionProps & {
+  selectedZone?: string | null;
+  zoneList: FilterZoneListItem[];
+  setSelectedRegion: (value: string) => void;
+};
+
+type BottomSheetProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  onApply: (values: FilterValues) => void;
+  onReset: (values: FilterValues) => void;
+  selectedPeople: number;
+  selectedSort: ThemeSortOption;
+  setHeadCount: (value: number) => void;
+  setSelectedSort: (value: ThemeSortOption) => void;
+} & (
+  | ({ isLocationPage?: false } & RegionSheetProps)
+  | ({ isLocationPage: true } & Partial<RegionSheetProps>)
+);
 
 export default function BottomSheet({
   isOpen,
@@ -30,13 +52,13 @@ export default function BottomSheet({
   setSelectedSort,
   setSelectedRegion,
   isLocationPage,
-  }) {
+  }: BottomSheetProps) {
   const { isMobile } = useDevice();
   const [activeTab, setActiveTab] = useState("people");
 
-  const peopleRef = useRef();
-  const sortRef = useRef();
-  const regionRef = useRef();
+  const peopleRef: FilterSelectionRef<number> = useRef();
+  const sortRef: FilterSelectionRef<ThemeSortOption> = useRef();
+  const regionRef = useRef<RegionFilterHandle | null>();
 
   // 탭 리스트
   const tabs = [
@@ -65,7 +87,7 @@ export default function BottomSheet({
 
     setHeadCount(2);
     setSelectedSort("HIGH_SATISFACTION_LEVEL");
-    !isLocationPage && setSelectedRegion("지역 전체");
+    void (!isLocationPage && setSelectedRegion("지역 전체"));
 
     if (peopleRef.current) {
       peopleRef.current.reset();
@@ -88,7 +110,7 @@ export default function BottomSheet({
   // 필터 적용 함수
   const applyFilters = () => {
     let regionValue = "지역 전체";
-    let zoneValues = [];
+    let zoneValues: string[] = [];
 
     // 서울 전체 또는 경기/인천 전체를 선택한 경우
     if (!isLocationPage) {
@@ -96,12 +118,12 @@ export default function BottomSheet({
       regionValue = "서울 전체";
       zoneValues = zoneList
         .filter((zone) => zone?.zoneName) 
-        .map((zone) => zone.zoneName); 
+        .map((zone) => zone.zoneName!);
     } else if (activeRegionId === 2 && selectedRegion === "경기/인천 전체") {
       regionValue = "경기/인천 전체";
       zoneValues = zoneList
         .filter((zone) => zone?.zoneName) 
-        .map((zone) => zone.zoneName); 
+        .map((zone) => zone.zoneName!);
     } 
     // 특정 구역이 선택된 경우
     else if (selectedZones.length > 0) {
@@ -175,21 +197,21 @@ export default function BottomSheet({
                 onClose={onClose}
                 onApply={onApply}
                 onReset={onReset}
-                selectedRegion={selectedRegion}
+                selectedRegion={selectedRegion!}
                 selectedZone={selectedZone}
                 selectedPeople={selectedPeople}
                 selectedSort={selectedSort}
-                regions={regions}  
-                zones={zones}     
+                regions={regions!}
+                zones={zones!}
                 zoneList={zoneList}
-                activeRegionId={activeRegionId}
-                selectedZones={selectedZones}
-                onTabClick={onTabClick}
-                onRegionSelect={onRegionSelect}
-                onRegionAllClick={onRegionAllClick}
-                onTabAllClick={onTabAllClick}
-                onZoneSelect={onZoneSelect}
-                isAllZoneSelected={isAllZoneSelected}
+                activeRegionId={activeRegionId!}
+                selectedZones={selectedZones!}
+                onTabClick={onTabClick!}
+                onRegionSelect={onRegionSelect!}
+                onRegionAllClick={onRegionAllClick!}
+                onTabAllClick={onTabAllClick!}
+                onZoneSelect={onZoneSelect!}
+                isAllZoneSelected={isAllZoneSelected!}
                 setSelectedRegion={setSelectedRegion}
               />
             }
@@ -281,7 +303,7 @@ const FilterWrapper = styled.div`
   gap: 1.25rem;
 `;
 
-const TabButton = styled.div`
+const TabButton = styled.div<{ isActive: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;

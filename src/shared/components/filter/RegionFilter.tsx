@@ -11,8 +11,12 @@ import Location from '../../assets/icons/genre/location.svg?react';
 import DropDownImg from '../../assets/icons/common/arrow/downArrow.svg';
 import useDevice from "../../hooks/useDevice";
 import useDropdown from "../../hooks/useDropDown";
+import type { RegionFilterCompatibilityProps, RegionFilterHandle, RegionFilterRef, RegionSelectionProps } from './filterTypes';
 
-const RegionFilter = forwardRef(({ 
+type RegionFilterProps = RegionSelectionProps & RegionFilterCompatibilityProps;
+type SelectedProps = { selected: boolean };
+
+const RegionFilter = forwardRef<RegionFilterHandle | undefined, RegionFilterProps>(({
   regions,
   zones,
   selectedRegion,
@@ -105,7 +109,7 @@ const RegionFilter = forwardRef(({
                   key={zone.zoneId}
                   onClick={() => {
                     onZoneSelect(zone.zoneName);
-                    ref.currentValue = zone.zoneName; 
+                    (ref as RegionFilterRef).currentValue = zone.zoneName;
                   }}
                   selected={selectedZones.includes(zone.zoneName)}
                 >
@@ -187,7 +191,7 @@ const RegionFilter = forwardRef(({
 RegionFilter.displayName = "RegionFilter";
 
 // CSS
-const FilterIcon = styled(Location)`
+const FilterIcon = styled(Location)<{ disabled: boolean }>`
   display: flex;
   width: 0.9375rem;
   height: 0.9375rem;
@@ -204,7 +208,7 @@ const FilterIcon = styled(Location)`
   }
 `;
 
-const FilterText = styled.div`
+const FilterText = styled.div<{ disabled: boolean }>`
   color: ${({ disabled }) => (disabled ? "#717486" : "#5B6ACC")};
   font-family: Pretendard-Bold;
   font-size: 0.875rem;
@@ -214,7 +218,7 @@ const FilterText = styled.div`
   }
 `;
 
-const DropdownMenu = styled.div`
+const DropdownMenu = styled.div<{ $isVisible: boolean; top?: number; left?: number }>`
   position: absolute;
   z-index: 10;
   box-sizing: border-box;
@@ -274,7 +278,7 @@ const Tabs = styled.div`
   }
 `;
 
-const RegionAllButton = styled.div`
+const RegionAllButton = styled.div<SelectedProps>`
   display: flex;
   width: 27.5rem;
   height: 2.5rem;
@@ -309,7 +313,7 @@ const RegionAllButton = styled.div`
   }
 `;
 
-const TabButton = styled.div`
+const TabButton = styled.div<SelectedProps>`
   display: flex;
   width: 5rem;
   height: 2.5rem;
@@ -358,7 +362,7 @@ const Grid = styled.div`
   }
 `;
 
-const TabAllButton = styled.div`
+const TabAllButton = styled.div<SelectedProps>`
   display: flex;
   width: 100%;
   height: 2.5rem;
@@ -395,7 +399,7 @@ const Divider = styled.div`
   background: #818496;
 `;
 
-const RegionButton = styled.div`
+const RegionButton = styled.div<SelectedProps>`
   display: flex;
   width: 10.9375rem;
   height: 2.5rem;

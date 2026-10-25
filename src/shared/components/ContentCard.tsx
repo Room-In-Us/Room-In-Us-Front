@@ -16,8 +16,17 @@ import PopUpModal from './PopUpModal';
 import useAuthSession from '../hooks/useAuthSession';
 import { scheduleModalState } from '../../features/schedule/modal/scheduleAtom';
 import { useSetRecoilState } from 'recoil';
+import type { ThemeResponse } from '../types/theme';
 
-function ContentCard({ data, headCount, type, onUnlike, backButtonText }) {
+type ContentCardProps = {
+  data: ThemeResponse;
+  headCount: number;
+  type?: string;
+  onUnlike?: (themeId: ThemeResponse['themeId']) => void;
+  backButtonText?: string;
+};
+
+function ContentCard({ data, headCount, type, onUnlike, backButtonText }: ContentCardProps) {
   const {
     themeId,
     locationName,
@@ -142,7 +151,7 @@ function ContentCard({ data, headCount, type, onUnlike, backButtonText }) {
           {/* 장르 영역 */}
           <GenreSection>
             {genreList &&
-              genreListConversion(genreList).map((genre, index) => (
+              genreListConversion(genreList).map((genre: string, index: number) => (
                 <Tag key={index}>{genre}</Tag>
             ))}
           </GenreSection>
@@ -269,7 +278,7 @@ const ContentWrapper = styled.div`
   }
 `;
 
-const ImageSection = styled.div`
+const ImageSection = styled.div<{ imgUrl: ThemeResponse['img'] }>`
   display: flex;
   border-radius: 0.5625rem;
   width: 100%;
@@ -628,7 +637,7 @@ const PriceWrapper = styled.div`
   }
 `;
 
-const CautionWrapper = styled.div`
+const CautionWrapper = styled.div<{ type: 'priceCaution' | 'headCountCaution' }>`
   border-radius: 1.875rem;
   padding: ${(props) => (props.type === 'headCountCaution') ? '0.25rem 0.625rem' : '0'};
   width: ${(props) => (props.type === 'headCountCaution') ? '100%' : 'auto'};
