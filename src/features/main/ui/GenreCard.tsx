@@ -2,7 +2,9 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
 
-function GenreCard({ name }) {
+type GenreCardProps = { name: string };
+
+function GenreCard({ name }: GenreCardProps) {
   const navigate = useNavigate();
 
   return (

@@ -107,6 +107,8 @@ function LandingSection3() {
 
 export default LandingSection3;
 
+type BottomButtonProps = { type: 'primary' | 'secondary' };
+
 // CSS
 const SectionWrapper = styled.section`
   position: relative;
@@ -350,7 +352,7 @@ const BottomButtonWrapper = styled.div`
   }
 `;
 
-const BottomButton = styled.div`
+const BottomButton = styled.div<BottomButtonProps>`
   padding: 0.875em 0;
   border-radius: 2.5em;
   display: flex;
@@ -371,7 +373,7 @@ const BottomButton = styled.div`
   }
 `;
 
-const BottomButtonText = styled.div`
+const BottomButtonText = styled.div<BottomButtonProps>`
   color: ${({ type }) => (type === 'primary' ? '#fff' : 'var(--RIU_Primary-200, #6680DF)')};
   font-family: 'Pretendard-Bold';
   font-size: 1.125em;

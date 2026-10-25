@@ -1,9 +1,20 @@
 import { matchPath } from 'react-router-dom';
 
+type SeoConfig = {
+  title: string;
+  description: string;
+  canonicalPath: string;
+  robots: 'index, follow' | 'noindex, nofollow';
+  ogType: 'website' | 'article';
+  image: string;
+};
+
+type ResolvedSeo = SeoConfig & { canonicalUrl: string; url: string };
+
 export const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://roominus.kr';
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
 
-export const DEFAULT_SEO = {
+export const DEFAULT_SEO: SeoConfig = {
   title: 'Room-In-Us | 방탈출의 모든 정보를 한 곳에',
   description: '방탈출 테마 검색부터 후기 확인, 일정 관리까지 한 곳에서 해결해보세요.',
   canonicalPath: '/',
@@ -12,7 +23,7 @@ export const DEFAULT_SEO = {
   image: DEFAULT_OG_IMAGE,
 };
 
-const ROUTE_SEO_CONFIG = [
+const ROUTE_SEO_CONFIG: { pattern: string; seo: Partial<SeoConfig> }[] = [
   {
     pattern: '/',
     seo: {
@@ -167,7 +178,7 @@ const ROUTE_SEO_CONFIG = [
   },
 ];
 
-export function getSeoForPath(pathname) {
+export function getSeoForPath(pathname: string): ResolvedSeo {
   const matchedRoute = ROUTE_SEO_CONFIG.find(({ pattern }) => matchPath({ path: pattern, end: true }, pathname));
 
   const routeSeo = matchedRoute?.seo || {};

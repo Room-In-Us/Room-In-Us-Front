@@ -1,6 +1,14 @@
 import styled from 'styled-components';
 
-function InfoListItem({ number, Img, title, description, isLast }) {
+type InfoListItemProps = {
+  number: string;
+  Img: string;
+  title: string;
+  description: string;
+  isLast?: boolean;
+};
+
+function InfoListItem({ number, Img, title, description, isLast }: InfoListItemProps) {
   return (
     <ItemWrapper isLast={isLast}>
       <StyledImg src={Img} />
@@ -25,7 +33,7 @@ function InfoListItem({ number, Img, title, description, isLast }) {
 export default InfoListItem;
 
 // CSS
-const ItemWrapper = styled.div`
+const ItemWrapper = styled.div<{ isLast?: boolean }>`
   border-top: 2px solid var(--RIU_Monochrome-200, #717486);
   border-bottom: ${({ isLast }) => (isLast ? '2px solid var(--RIU_Monochrome-200, #717486)' : 'none')};
   display: flex;

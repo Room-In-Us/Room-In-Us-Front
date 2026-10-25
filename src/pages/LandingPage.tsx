@@ -72,7 +72,7 @@ const Root = styled.div`
   width: 100%;
 `;
 
-const HeroFixed = styled.div`
+const HeroFixed = styled.div<{ $darkOpacity: number }>`
   font-size: 0.75rem;
   position: fixed;
   inset: 0;
@@ -127,7 +127,7 @@ const HeroFixed = styled.div`
   }
 `;
 
-const HeroContentLayer = styled.div`
+const HeroContentLayer = styled.div<{ $scale: number }>`
   position: relative;
   z-index: 2;
 

@@ -1,3 +1,5 @@
+import type { ThemeGenre, ThemeResponse } from '../../../shared/types/theme';
+
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -20,10 +22,12 @@ import { getGenreListAPI } from "../../genre/api/genreAPI";
 import Loading from "../../../shared/components/Loading";
 import NoDataImg from "../../../shared/assets/images/common/noData/noDataImageLarge.png";
 
+type GenreOption = { icon: typeof StyledEmotional; text: string; genre: ThemeGenre };
+
 function GenreSection() {
   // state 관리
-  const [activeGenre, setActiveGenre] = useState('SENTIMENTAL');
-  const [themeList, setThemeList] = useState([]);
+  const [activeGenre, setActiveGenre] = useState<ThemeGenre>('SENTIMENTAL');
+  const [themeList, setThemeList] = useState<ThemeResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   // navigate
@@ -33,7 +37,7 @@ function GenreSection() {
   const { isDesktop, isMobile } = useDevice();
 
   // 버튼 활성화 함수
-  const handleGenreClick = (genre) => {
+  const handleGenreClick = (genre: ThemeGenre): void => {
     setActiveGenre(genre);
   };
 
@@ -76,7 +80,7 @@ function GenreSection() {
 
       {/* 레벨 버튼 영역 */}
       <LevelWrapper>
-        {[
+        {([
           { icon: StyledEmotional, text: "감성", genre: "SENTIMENTAL" },
           { icon: StyledHorror, text: "공포/스릴러", genre: "HORROR" },
           { icon: StyledDetective, text: "추리", genre: "DETECTIVE" },
@@ -85,7 +89,7 @@ function GenreSection() {
           { icon: StyledFantasy, text: "판타지", genre: "FANTASY" },
           { icon: StyledAdventure, text: "탐험/모험", genre: "ADVENTURE" },
           { icon: StyledDrama, text: "드라마", genre: "DRAMA" },
-        ].map(({ icon: Icon, text, genre }) => (
+        ] satisfies GenreOption[]).map(({ icon: Icon, text, genre }) => (
           <LevelButton 
             key={genre} 
             onClick={() => handleGenreClick(genre)}
@@ -117,7 +121,7 @@ function GenreSection() {
           { isDesktop && (
             <ListWrapper>
               {themeList.map((items) => (
-                <ContentCard key={items.id} data={items} headCount={headCount} type="home"/>
+                <ContentCard key={items.themeId} data={items} headCount={headCount} type="home"/>
               ))}
             </ListWrapper>
           )}
@@ -132,14 +136,14 @@ function GenreSection() {
               <StyledSwiperSlide1>
                 <ListWrapper>
                   {themeList.slice(0, 4).map((items) => (
-                    <ContentCard key={items.id} data={items} headCount={headCount} type="home"/>
+                    <ContentCard key={items.themeId} data={items} headCount={headCount} type="home"/>
                   ))}
                 </ListWrapper>
               </StyledSwiperSlide1>
               <StyledSwiperSlide2>
                 <ListWrapper>
                   {themeList.slice(4, 8).map((items) => (
-                    <ContentCard key={items.id} data={items} headCount={headCount} type="home"/>
+                    <ContentCard key={items.themeId} data={items} headCount={headCount} type="home"/>
                   ))}
                 </ListWrapper>
               </StyledSwiperSlide2>
@@ -241,7 +245,7 @@ const LevelWrapper = styled.div`
   }
 `;
 
-const ButtonText = styled.div`
+const ButtonText = styled.div<{ isActive: boolean }>`
   display: flex;
   align-items: center;
   color: ${props => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "var(--RIU_Monochrome-100, #818496)")};
@@ -257,7 +261,7 @@ const ButtonText = styled.div`
   }
 `;
 
-const ButtonLine = styled.div`
+const ButtonLine = styled.div<{ isActive: boolean }>`
   border-radius: 1.875rem;
   width: 6.625rem;
   height: 0.25rem;
@@ -275,7 +279,7 @@ const ButtonLine = styled.div`
   }
 `;
 
-const StyledEmotional = styled(Emotional)`
+const StyledEmotional = styled(Emotional)<{ isActive: boolean }>`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
@@ -290,7 +294,7 @@ const StyledEmotional = styled(Emotional)`
     height: 1.2rem;
   }
 `;
-const StyledHorror = styled(Horror)`
+const StyledHorror = styled(Horror)<{ isActive: boolean }>`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
@@ -305,7 +309,7 @@ const StyledHorror = styled(Horror)`
     height: 1.2rem;
   }
 `;
-const StyledDetective = styled(Detective)`
+const StyledDetective = styled(Detective)<{ isActive: boolean }>`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
@@ -320,7 +324,7 @@ const StyledDetective = styled(Detective)`
     height: 1.2rem;
   }
 `;
-const StyledMystery = styled(Mystery)`
+const StyledMystery = styled(Mystery)<{ isActive: boolean }>`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
@@ -335,7 +339,7 @@ const StyledMystery = styled(Mystery)`
     height: 1.2rem;
   }
 `;
-const StyledComic = styled(Comic)`
+const StyledComic = styled(Comic)<{ isActive: boolean }>`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
@@ -350,7 +354,7 @@ const StyledComic = styled(Comic)`
     height: 1.2rem;
   }
 `;
-const StyledFantasy = styled(Fantasy)`
+const StyledFantasy = styled(Fantasy)<{ isActive: boolean }>`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
@@ -365,7 +369,7 @@ const StyledFantasy = styled(Fantasy)`
     height: 1.2rem;
   }
 `;
-const StyledAdventure = styled(Adventure)`
+const StyledAdventure = styled(Adventure)<{ isActive: boolean }>`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
@@ -380,7 +384,7 @@ const StyledAdventure = styled(Adventure)`
     height: 1.2rem;
   }
 `;
-const StyledDrama = styled(Drama)`
+const StyledDrama = styled(Drama)<{ isActive: boolean }>`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
@@ -396,7 +400,7 @@ const StyledDrama = styled(Drama)`
   }
 `;
 
-const LevelButton = styled.div`
+const LevelButton = styled.div<{ isActive: boolean }>`
   width: 8.125rem;
   height: 2.25rem;
   display: flex;
@@ -446,7 +450,7 @@ const ListWrapper = styled.div`
   }
 `;
 
-const StyledSwiper = styled(Swiper)`
+const StyledSwiper = styled(Swiper)<{ isMobile: boolean }>`
   width: 100%;
   height: auto;
   padding-bottom: ${({ isMobile }) => (isMobile ? "2.3rem" : "4rem")};

@@ -1,6 +1,13 @@
 import styled from 'styled-components';
 
-function CarouselItem({ number, Img, title, description }) {
+type CarouselItemProps = {
+  number: string;
+  Img: string;
+  title: string;
+  description: string;
+};
+
+function CarouselItem({ number, Img, title, description }: CarouselItemProps) {
   return (
     <Card>
       <TitleWrapper>

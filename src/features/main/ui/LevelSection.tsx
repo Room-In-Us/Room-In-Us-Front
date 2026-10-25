@@ -1,3 +1,5 @@
+import type { ThemeProficiency, ThemeResponse } from '../../../shared/types/theme';
+
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -16,10 +18,12 @@ import { getLevelListAPI } from "../../level/api/levelAPI";
 import Loading from "../../../shared/components/Loading";
 import NoDataImg from "../../../shared/assets/images/common/noData/noDataImageLarge.png";
 
+type LevelOption = { icon: typeof StyledLevel1Icon; text: string; level: ThemeProficiency };
+
 function LevelSection() {
   // state 관리
-  const [activeLevel, setActiveLevel] = useState('BEGINNER');
-  const [themeList, setThemeList] = useState([]);
+  const [activeLevel, setActiveLevel] = useState<ThemeProficiency>('BEGINNER');
+  const [themeList, setThemeList] = useState<ThemeResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   // navigate
@@ -29,7 +33,7 @@ function LevelSection() {
   const { isDesktop, isMobile } = useDevice();
 
   // 버튼 활성화 함수
-  const handleLevelClick = (level) => {
+  const handleLevelClick = (level: ThemeProficiency): void => {
     setActiveLevel(level);
   };
 
@@ -72,12 +76,12 @@ function LevelSection() {
 
       {/* 레벨 버튼 영역 */}
       <LevelWrapper>
-        {[
+        {([
           { icon: StyledLevel1Icon, text: "방세포", level: "BEGINNER" },
           { icon: StyledLevel2Icon, text: "방초보", level: "JUNIOR" },
           { icon: StyledLevel3Icon, text: "방중수", level: "SENIOR" },
           { icon: StyledLevel4Icon, text: "방고수", level: "MASTER" },
-        ].map(({ icon: Icon, text, level }) => (
+        ] satisfies LevelOption[]).map(({ icon: Icon, text, level }) => (
           <LevelButton 
             key={level} 
             onClick={() => handleLevelClick(level)}
@@ -109,7 +113,7 @@ function LevelSection() {
           { isDesktop && (
             <ListWrapper>
               {themeList.map((items) => (
-                <ContentCard key={items.id} data={items} headCount={headCount} type="home"/>
+                <ContentCard key={items.themeId} data={items} headCount={headCount} type="home"/>
               ))}
             </ListWrapper>
           )}
@@ -124,14 +128,14 @@ function LevelSection() {
               <StyledSwiperSlide1>
                 <ListWrapper>
                   {themeList.slice(0, 4).map((items) => (
-                    <ContentCard key={items.id} data={items} headCount={headCount} type="home"/>
+                    <ContentCard key={items.themeId} data={items} headCount={headCount} type="home"/>
                   ))}
                 </ListWrapper>
               </StyledSwiperSlide1>
               <StyledSwiperSlide2>
                 <ListWrapper>
                   {themeList.slice(4, 8).map((items) => (
-                    <ContentCard key={items.id} data={items} headCount={headCount} type="home"/>
+                    <ContentCard key={items.themeId} data={items} headCount={headCount} type="home"/>
                   ))}
                 </ListWrapper>
               </StyledSwiperSlide2>
@@ -233,7 +237,7 @@ const LevelWrapper = styled.div`
   }
 `;
 
-const ButtonText = styled.div`
+const ButtonText = styled.div<{ isActive: boolean }>`
   display: flex;
   align-items: center;
   color: ${props => (props.isActive ? "var(--RIU_Primary-100, #718FF2)" : "var(--RIU_Monochrome-100, #818496)")};
@@ -249,7 +253,7 @@ const ButtonText = styled.div`
   }
 `;
 
-const ButtonLine = styled.div`
+const ButtonLine = styled.div<{ isActive: boolean }>`
   border-radius: 1.875rem;
   width: 15.0625rem;
   height: 0.25rem;
@@ -266,7 +270,7 @@ const ButtonLine = styled.div`
   }
 `;
 
-const StyledLevel1Icon = styled(Level1Icon)`
+const StyledLevel1Icon = styled(Level1Icon)<{ isActive: boolean }>`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
@@ -281,7 +285,7 @@ const StyledLevel1Icon = styled(Level1Icon)`
     height: 1.2rem;
   }
 `;
-const StyledLevel2Icon = styled(Level2Icon)`
+const StyledLevel2Icon = styled(Level2Icon)<{ isActive: boolean }>`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
@@ -296,7 +300,7 @@ const StyledLevel2Icon = styled(Level2Icon)`
     height: 1.2rem;
   }
 `;
-const StyledLevel3Icon = styled(Level3Icon)`
+const StyledLevel3Icon = styled(Level3Icon)<{ isActive: boolean }>`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
@@ -311,7 +315,7 @@ const StyledLevel3Icon = styled(Level3Icon)`
     height: 1.2rem;
   }
 `;
-const StyledLevel4Icon = styled(Level4Icon)`
+const StyledLevel4Icon = styled(Level4Icon)<{ isActive: boolean }>`
   margin-right: 0.46875rem;
   width: 1.6875rem;
   transition: all 0.1s ease-in-out;
@@ -327,7 +331,7 @@ const StyledLevel4Icon = styled(Level4Icon)`
   }
 `;
 
-const LevelButton = styled.div`
+const LevelButton = styled.div<{ isActive: boolean }>`
   width: 16.5625rem;
   height: 2.25rem;
   display: flex;
@@ -377,7 +381,7 @@ const ListWrapper = styled.div`
   }
 `;
 
-const StyledSwiper = styled(Swiper)`
+const StyledSwiper = styled(Swiper)<{ isMobile: boolean }>`
   width: 100%;
   height: auto;
   padding-bottom: ${({ isMobile }) => (isMobile ? "2.3rem" : "4rem")};

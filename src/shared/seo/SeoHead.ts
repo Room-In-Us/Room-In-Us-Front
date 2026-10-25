@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { DEFAULT_SEO, getSeoForPath } from './seoConfig';
 
-function upsertMeta(selector, attributes) {
+function upsertMeta(selector: string, attributes: Record<string, string>): void {
   let element = document.head.querySelector(selector);
 
   if (!element) {
@@ -17,7 +17,7 @@ function upsertMeta(selector, attributes) {
   });
 }
 
-function upsertLink(selector, attributes) {
+function upsertLink(selector: string, attributes: Record<string, string>): void {
   let element = document.head.querySelector(selector);
 
   if (!element) {
@@ -32,7 +32,7 @@ function upsertLink(selector, attributes) {
   });
 }
 
-function SeoHead() {
+function SeoHead(): null {
   const location = useLocation();
 
   useEffect(() => {

@@ -189,7 +189,7 @@ const StyledSwiper = styled(Swiper)`
   }
 `;
 
-const NavArrowRight = styled(ArrowIcon)`
+const NavArrowRight = styled(ArrowIcon)<{ $disabled: boolean }>`
   width: 2.5em;
   height: 2.5em;
   cursor: ${({ $disabled }) => ($disabled ? 'default' : 'pointer')};
@@ -204,7 +204,7 @@ const NavArrowRight = styled(ArrowIcon)`
   }
 `;
 
-const NavArrowLeft = styled(ArrowIcon)`
+const NavArrowLeft = styled(ArrowIcon)<{ $disabled: boolean }>`
   width: 2.5em;
   height: 2.5em;
   transform: rotate(180deg);

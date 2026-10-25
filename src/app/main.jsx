@@ -5,7 +5,7 @@ import './index.css';
 import { BrowserRouter } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 import ScrollToTop from '../shared/utils/scrollToTopFunc';
-import SeoHead from '../shared/seo/SeoHead.jsx';
+import SeoHead from '../shared/seo/SeoHead';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
