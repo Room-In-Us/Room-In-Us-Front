@@ -15,8 +15,8 @@ import DropDownImg from "../../assets/icons/common/arrow/downArrow.svg";
 import UnselectedIcon from '../../assets/icons/common/filterIcon/unselected.svg';
 import SelectedIcon from '../../assets/icons/common/filterIcon/selected.svg';
 import Icon1 from '../../assets/icons/genre/camera.svg';
-import useDevice from "../../hooks/useDevice.js";
-import useDropdown from "../../hooks/useDropDown.js";
+import useDevice from "../../hooks/useDevice";
+import useDropdown from "../../hooks/useDropDown";
 import { peopleOptions } from "./OptionList.js";
 
 const PeopleFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) => {

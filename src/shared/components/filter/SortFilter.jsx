@@ -14,8 +14,8 @@ import {
 import Satisfaction from '../../assets/icons/genre/satisfaction.svg';
 import DropDownImg from '../../assets/icons/common/arrow/downArrow.svg';
 import Check from '../../assets/icons/common/filterIcon/check.svg';
-import useDevice from "../../hooks/useDevice.js";
-import useDropdown from "../../hooks/useDropDown.js"; 
+import useDevice from "../../hooks/useDevice";
+import useDropdown from "../../hooks/useDropDown";
 import { sortOptions } from "./OptionList.js";
 
 const SortFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) => {

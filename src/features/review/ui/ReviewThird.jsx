@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import RangeItem from './RangeItem.jsx';
 import { GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3 } from "../../../shared/styles/ReviewStyles.js";
 import InputBox from "./InputBox.jsx";
-import useDevice from "../../../shared/hooks/useDevice.js";
+import useDevice from "../../../shared/hooks/useDevice";
 import { useRecoilState } from 'recoil';
 import { reviewStateFamily } from '../../themeDetail/model/reviewAtom';
 

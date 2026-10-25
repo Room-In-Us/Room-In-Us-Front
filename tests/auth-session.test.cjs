@@ -202,7 +202,7 @@ function createHarness(respond = () => ({ status: 200, data: member() })) {
     memberRequests: () => requests.filter(({ url }) => url === 'members'),
     refreshRequests: () => requests.filter(({ url }) => url === 'access-token'),
     mountHooks(count) {
-      const useAuthSession = loadSource('src/shared/hooks/useAuthSession.js').default;
+      const useAuthSession = loadSource('src/shared/hooks/useAuthSession').default;
       return Array.from({ length: count }, () => useAuthSession());
     },
     replayStrictModeSubscriptions() {

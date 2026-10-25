@@ -12,7 +12,7 @@ import { GoogleMap, MarkerF, OverlayView } from '@react-google-maps/api';
 import { googleMapStyles } from '../../../shared/styles/googleMapStyles.js';
 import MarkerIcon from '../../../shared/assets/images/location/marker.png';
 import AwardMarkerIcon from '../../../shared/assets/images/location/awardMarker.png';
-import useDevice from '../../../shared/hooks/useDevice.js';
+import useDevice from '../../../shared/hooks/useDevice';
 
 function GoogleMapComponent() {
   // 중앙 좌표

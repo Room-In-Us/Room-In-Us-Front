@@ -9,8 +9,8 @@ import {
   MenuWrapper } from "../../styles/FilterStyles.js";
 import Location from '../../assets/icons/genre/location.svg?react';
 import DropDownImg from '../../assets/icons/common/arrow/downArrow.svg';
-import useDevice from "../../hooks/useDevice.js";
-import useDropdown from "../../hooks/useDropDown.js";
+import useDevice from "../../hooks/useDevice";
+import useDropdown from "../../hooks/useDropDown";
 
 const RegionFilter = forwardRef(({ 
   regions,

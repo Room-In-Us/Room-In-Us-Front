@@ -1,17 +1,43 @@
 import { useEffect, useRef, useState } from "react";
+import type { Dispatch, RefObject, SetStateAction } from "react";
 
-export default function useDropdown({
+type DropdownOptions<T> = {
+  initialWidth?: number;
+  responsive?: boolean;
+  defaultValue?: T | null;
+  onSelect?: (value: T) => void;
+};
+
+type DropdownPosition = {
+  top: number;
+  left: number;
+};
+
+type DropdownState<T> = {
+  isOpen: boolean;
+  toggleDropdown: () => void;
+  handleSelect: (value: T) => void;
+  position: DropdownPosition;
+  dropdownWidth: number;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  triggerRef: RefObject<HTMLDivElement>;
+  dropdownRef: RefObject<HTMLDivElement>;
+  selected: T | null;
+  reset: () => void;
+};
+
+export default function useDropdown<T = string | number>({
     initialWidth = 190,
     responsive = true,
     defaultValue = null,
     onSelect: externalOnSelect = () => {},
-}) {
-  const [selected, setSelected] = useState(defaultValue);
+}: DropdownOptions<T>): DropdownState<T> {
+  const [selected, setSelected] = useState<T | null>(defaultValue);
   const [isOpen, setIsOpen] = useState(false);
-  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [position, setPosition] = useState<DropdownPosition>({ top: 0, left: 0 });
   const [dropdownWidth, setDropdownWidth] = useState(initialWidth);
-  const triggerRef = useRef(null);
-  const dropdownRef = useRef(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = () => setIsOpen(prev => !prev);
 
@@ -28,12 +54,13 @@ export default function useDropdown({
 
   // 외부 클릭 감지
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target) &&
+        // document의 mousedown 대상은 DOM Node 또는 null이다.
+        !dropdownRef.current.contains(event.target as Node | null) &&
         triggerRef.current &&
-        !triggerRef.current.contains(event.target)
+        !triggerRef.current.contains(event.target as Node | null)
       ) {
         setIsOpen(false);
       }
@@ -62,22 +89,22 @@ export default function useDropdown({
     return () => window.removeEventListener("resize", updateDropdownWidth);
   }, [initialWidth, responsive]);
 
-  const handleSelect = (value) => {
+  const handleSelect = (value: T) => {
     console.log("선택된 값:", value);
     setSelected(value);
-    externalOnSelect(value); 
+    externalOnSelect(value);
     setIsOpen(false);
   };
 
   const reset = () => {
-    setSelected(defaultValue); 
+    setSelected(defaultValue);
     setIsOpen(false);
   };
 
   useEffect(() => {
     setSelected(defaultValue);
   }, [defaultValue]);
-  
+
   return {
     isOpen,
     toggleDropdown,
