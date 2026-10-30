@@ -7,17 +7,21 @@ import CustomPagination from '../../../shared/components/CustomPagination';
 import useDevice from '../../../shared/hooks/useDevice';
 import { useLocation } from 'react-router-dom';
 import NoDataImg from '../../../shared/assets/images/common/noData/noDataImageLarge.png';
+import type { Location } from 'react-router-dom';
+import type { ThemeResponse } from '../../../shared/types/theme';
+
+type SearchNavigationState = { keyword?: string };
 
 export default function SearchSection() {
 
   const { isMobile } = useDevice();
 
-  const location = useLocation();
+  const location: Location<SearchNavigationState | null> = useLocation();
 
   const keywordFromState = location.state?.keyword ?? '';
   const [keyword, setKeyword] = useState(keywordFromState);
   
-  const [themes, setThemes] = useState([]);
+  const [themes, setThemes] = useState<ThemeResponse[]>([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = isMobile ? 4 : 16;
@@ -27,7 +31,7 @@ export default function SearchSection() {
   const endIndex = startIndex + itemsPerPage;
   const paginatedThemes = themes.slice(startIndex, endIndex);
 
-  const handlePageChange = (page) => {
+  const handlePageChange = (page: number) => {
     if (page < 1 || page > adjustedTotalPages) return;
     setCurrentPage(page);
   };

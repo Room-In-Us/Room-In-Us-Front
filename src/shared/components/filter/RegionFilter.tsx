@@ -11,7 +11,7 @@ import Location from '../../assets/icons/genre/location.svg?react';
 import DropDownImg from '../../assets/icons/common/arrow/downArrow.svg';
 import useDevice from "../../hooks/useDevice";
 import useDropdown from "../../hooks/useDropDown";
-import type { RegionFilterCompatibilityProps, RegionFilterHandle, RegionFilterRef, RegionSelectionProps } from './filterTypes';
+import type { RegionFilterCompatibilityProps, RegionFilterHandle, RegionSelectionProps } from './filterTypes';
 
 type RegionFilterProps = RegionSelectionProps & RegionFilterCompatibilityProps;
 type SelectedProps = { selected: boolean };
@@ -107,10 +107,7 @@ const RegionFilter = forwardRef<RegionFilterHandle | undefined, RegionFilterProp
                 {zones.map((zone) => (
                 <RegionButton
                   key={zone.zoneId}
-                  onClick={() => {
-                    onZoneSelect(zone.zoneName);
-                    (ref as RegionFilterRef).currentValue = zone.zoneName;
-                  }}
+                  onClick={() => onZoneSelect(zone.zoneName)}
                   selected={selectedZones.includes(zone.zoneName)}
                 >
                   {zone.zoneName}

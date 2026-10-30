@@ -1,149 +1,166 @@
-import { useState, useEffect, useRef } from "react";
-import styled from "styled-components";
-import RegionFilter from "./filter/RegionFilter";
-import PeopleFilter from "./filter/PeopleFilter";
-import SortFilter from "./filter/SortFilter";
-import useDevice from "../../shared/hooks/useDevice";
+import { useState, useEffect, useRef } from 'react';
+import styled from 'styled-components';
+import RegionFilter from './filter/RegionFilter';
+import PeopleFilter from './filter/PeopleFilter';
+import SortFilter from './filter/SortFilter';
+import useDevice from '../../shared/hooks/useDevice';
 import ResetIcon from '../assets/icons/common/filterIcon/reset.svg';
+import type { RegionId } from '../../features/location/api/types';
 import type { ThemeSortOption } from '../types/theme';
-import type { FilterSelectionRef, FilterValues, FilterZoneListItem, RegionFilterHandle, RegionSelectionProps } from './filter/filterTypes';
+import type { FilterValues, FilterZone, RegionFilterDraft, RegionFilterValues, RegionSelectionProps } from './filter/filterTypes';
 
-type RegionSheetProps = RegionSelectionProps & {
-  selectedZone?: string | null;
-  zoneList: FilterZoneListItem[];
-  setSelectedRegion: (value: string) => void;
+type RegionSheetProps = Pick<RegionSelectionProps,
+  'regions' | 'zones' | 'selectedRegion' | 'selectedZones' | 'activeRegionId' | 'isAllZoneSelected'
+> & {
+  loadZones: (regionId: RegionId) => Promise<FilterZone[]>;
 };
 
 type BottomSheetProps = {
   isOpen: boolean;
   onClose: () => void;
-  onApply: (values: FilterValues) => void;
-  onReset: (values: FilterValues) => void;
   selectedPeople: number;
   selectedSort: ThemeSortOption;
-  setHeadCount: (value: number) => void;
-  setSelectedSort: (value: ThemeSortOption) => void;
 } & (
-  | ({ isLocationPage?: false } & RegionSheetProps)
-  | ({ isLocationPage: true } & Partial<RegionSheetProps>)
+  | ({ isLocationPage?: false; onApply: (values: RegionFilterValues) => void } & RegionSheetProps)
+  | {
+    isLocationPage: true;
+    onApply: (values: FilterValues) => void;
+    onReset: (values: FilterValues) => void;
+    setHeadCount: (value: number) => void;
+    setSelectedSort: (value: ThemeSortOption) => void;
+  }
 );
 
-export default function BottomSheet({
-  isOpen,
-  onClose,
-  onApply,
-  onReset,
-  selectedRegion,
-  selectedZone,
-  selectedPeople,
-  selectedSort,
-  regions,
-  zones,   
-  zoneList,
-  activeRegionId,
-  selectedZones,
-  onTabClick,
-  onRegionSelect,
-  onRegionAllClick,
-  onTabAllClick,
-  onZoneSelect,
-  isAllZoneSelected,
-  setHeadCount,
-  setSelectedSort,
-  setSelectedRegion,
-  isLocationPage,
-  }: BottomSheetProps) {
+function createRegionDraft(props: BottomSheetProps): RegionFilterDraft {
+  if (props.isLocationPage) {
+    return { activeRegionId: 1, zones: [], selectedRegion: '지역 전체', selectedZones: [], isAllZoneSelected: false };
+  }
+  return {
+    activeRegionId: props.activeRegionId,
+    zones: [...props.zones],
+    selectedRegion: props.selectedRegion,
+    selectedZones: [...props.selectedZones],
+    isAllZoneSelected: props.isAllZoneSelected,
+  };
+}
+
+const regionAllLabel = (regionId: RegionId) => regionId === 1 ? '서울 전체' : '경기/인천 전체';
+
+export default function BottomSheet(props: BottomSheetProps) {
+  const { isOpen, onClose, selectedPeople, selectedSort, isLocationPage } = props;
   const { isMobile } = useDevice();
-  const [activeTab, setActiveTab] = useState("people");
+  const [activeTab, setActiveTab] = useState('people');
+  const [draftPeople, setDraftPeople] = useState(selectedPeople);
+  const [draftSort, setDraftSort] = useState(selectedSort);
+  const [draftRegion, setDraftRegion] = useState(() => createRegionDraft(props));
+  const wasOpen = useRef(false);
+  const regionRequest = useRef(0);
 
-  const peopleRef: FilterSelectionRef<number> = useRef();
-  const sortRef: FilterSelectionRef<ThemeSortOption> = useRef();
-  const regionRef = useRef<RegionFilterHandle | null>();
+  // 적용된 값은 열 때만 복사한다. 부모의 재렌더로 작성 중인 선택을 덮어쓰지 않는다.
+  useEffect(() => {
+    if (isOpen && !wasOpen.current) {
+      setDraftPeople(selectedPeople);
+      setDraftSort(selectedSort);
+      setDraftRegion(createRegionDraft(props));
+    }
+    if (wasOpen.current !== isOpen) regionRequest.current += 1;
+    wasOpen.current = isOpen;
+  }, [isOpen, selectedPeople, selectedSort, props]);
 
-  // 탭 리스트
+  useEffect(() => () => { regionRequest.current += 1; }, []);
+
   const tabs = [
-    { id: "people", label: "가격" },
-    { id: "sort", label: "정렬" },
-    ...(isLocationPage ? [] : [{ id: "region", label: "지역" }]),
+    { id: 'people', label: '가격' },
+    { id: 'sort', label: '정렬' },
+    ...(isLocationPage ? [] : [{ id: 'region', label: '지역' }]),
   ];
 
   useEffect(() => {
     if (isOpen && isMobile) {
-      document.body.style.overflowY = "hidden";  
-      document.body.style.overflowX = "hidden"; 
-      document.body.style.overflowY = "auto";
-      document.body.style.overflowX = "hidden";  
+      document.body.style.overflowY = 'hidden';
+      document.body.style.overflowX = 'hidden';
+      document.body.style.overflowY = 'auto';
+      document.body.style.overflowX = 'hidden';
     }
-  
     return () => {
-      document.body.style.overflowY = "auto";
-      document.body.style.overflowX = "hidden";
+      document.body.style.overflowY = 'auto';
+      document.body.style.overflowX = 'hidden';
     };
   }, [isOpen, isMobile]);
 
-  if (!isOpen) return null;
-  
-  const handleReset = () => {
-
-    setHeadCount(2);
-    setSelectedSort("HIGH_SATISFACTION_LEVEL");
-    void (!isLocationPage && setSelectedRegion("지역 전체"));
-
-    if (peopleRef.current) {
-      peopleRef.current.reset();
-      peopleRef.current.currentValue = 2;
+  const loadDraftZones = async (regionId: RegionId) => {
+    if (props.isLocationPage) return;
+    const request = ++regionRequest.current;
+    try {
+      const zones = await props.loadZones(regionId);
+      if (request !== regionRequest.current) return;
+      setDraftRegion(previous => previous.activeRegionId === regionId ? { ...previous, zones } : previous);
+    } catch (error) {
+      if (request === regionRequest.current) console.error('구역 목록 불러오기 실패:', error);
     }
-  
-    if (sortRef.current) {
-      sortRef.current.reset();
-      sortRef.current.currentValue = "HIGH_SATISFACTION_LEVEL";
-    }
-  
-    onReset({
-      people: 2,
-      sort: "HIGH_SATISFACTION_LEVEL",
-      region: "지역 전체",
-      zones: []
+  };
+
+  const handleRegionAllClick = () => {
+    setDraftRegion(previous => ({
+      ...previous, activeRegionId: 1, selectedRegion: '지역 전체', selectedZones: [],
+      isAllZoneSelected: false, zones: previous.activeRegionId === 1 ? previous.zones : [],
+    }));
+    void loadDraftZones(1);
+  };
+
+  const handleTabClick = (regionId: RegionId) => {
+    setDraftRegion(previous => ({
+      ...previous, activeRegionId: regionId, selectedRegion: regionAllLabel(regionId),
+      selectedZones: [], isAllZoneSelected: true, zones: [],
+    }));
+    void loadDraftZones(regionId);
+  };
+
+  const handleTabAllClick = (regionId: RegionId, label: string) => {
+    setDraftRegion(previous => ({
+      ...previous, activeRegionId: regionId, selectedRegion: label,
+      selectedZones: [], isAllZoneSelected: true,
+    }));
+  };
+
+  const handleZoneSelect = (zoneName: string) => {
+    setDraftRegion(previous => {
+      const selectedZones = previous.selectedZones.includes(zoneName)
+        ? previous.selectedZones.filter(name => name !== zoneName)
+        : [...previous.selectedZones, zoneName];
+      const selectedRegion = selectedZones.length === 0 ? '지역 전체'
+        : selectedZones.length === 1 ? selectedZones[0]
+        : selectedZones[0] + ' 외 ' + (selectedZones.length - 1) + '개';
+      return { ...previous, selectedZones, selectedRegion, isAllZoneSelected: false };
     });
   };
 
-  // 필터 적용 함수
-  const applyFilters = () => {
-    let regionValue = "지역 전체";
-    let zoneValues: string[] = [];
+  if (!isOpen) return null;
 
-    // 서울 전체 또는 경기/인천 전체를 선택한 경우
-    if (!isLocationPage) {
-    if (activeRegionId === 1 && selectedRegion === "서울 전체") {
-      regionValue = "서울 전체";
-      zoneValues = zoneList
-        .filter((zone) => zone?.zoneName) 
-        .map((zone) => zone.zoneName!);
-    } else if (activeRegionId === 2 && selectedRegion === "경기/인천 전체") {
-      regionValue = "경기/인천 전체";
-      zoneValues = zoneList
-        .filter((zone) => zone?.zoneName) 
-        .map((zone) => zone.zoneName!);
-    } 
-    // 특정 구역이 선택된 경우
-    else if (selectedZones.length > 0) {
-      regionValue = "지역 선택됨";
-      zoneValues = selectedZones;
-    } 
-    // 지역 전체를 선택한 경우
-    else {
-      regionValue = "지역 전체";
-      zoneValues = [];
+  const handleReset = () => {
+    setDraftPeople(2);
+    setDraftSort('HIGH_SATISFACTION_LEVEL');
+    if (props.isLocationPage) {
+      // 지역 필터가 없는 매장 화면의 기존 초기화 callback은 유지한다.
+      props.setHeadCount(2);
+      props.setSelectedSort('HIGH_SATISFACTION_LEVEL');
+      props.onReset({ people: 2, sort: 'HIGH_SATISFACTION_LEVEL', region: '지역 전체', zones: [] });
+    } else {
+      handleRegionAllClick();
     }
-  }
+  };
 
-    onApply({
-      people: peopleRef.current?.getValue?.() ?? selectedPeople,
-      sort: sortRef.current?.getValue?.() ?? selectedSort,
-      region: regionValue,
-      zones: zoneValues
-    });
-
+  const applyFilters = () => {
+    if (props.isLocationPage) {
+      props.onApply({ people: draftPeople, sort: draftSort, region: '지역 전체', zones: [] });
+    } else {
+      props.onApply({
+        people: draftPeople, sort: draftSort,
+        region: draftRegion.selectedZones.length > 0 ? '지역 선택됨' : draftRegion.selectedRegion ?? '지역 전체',
+        zones: [...draftRegion.selectedZones],
+        regionSelection: { ...draftRegion, selectedZones: [...draftRegion.selectedZones], zones: [...draftRegion.zones] },
+      });
+    }
     onClose();
   };
 
@@ -151,17 +168,12 @@ export default function BottomSheet({
     <Overlay onClick={onClose}>
       <Sheet onClick={(e) => e.stopPropagation()}>
         <Container>
-
-          <TopWrapper >
+          <TopWrapper>
             <SheetBar />
             <TabContainer>
               <FilterWrapper>
                 {tabs.map(({ id, label }) => (
-                  <TabButton
-                    key={id}
-                    isActive={activeTab === id}
-                    onClick={() => setActiveTab(id)}
-                  >
+                  <TabButton key={id} isActive={activeTab === id} onClick={() => setActiveTab(id)}>
                     {label}
                   </TabButton>
                 ))}
@@ -171,60 +183,47 @@ export default function BottomSheet({
           </TopWrapper>
 
           <Content>
-            {activeTab === "people" && 
-              <PeopleFilter   
-              key={selectedPeople}
-              ref={peopleRef} 
-              onSelect={(val) => (peopleRef.currentValue = val)} 
-              isMobile={isMobile} selected={selectedPeople} 
+            {activeTab === 'people' &&
+              <PeopleFilter
+                key={selectedPeople}
+                onSelect={setDraftPeople}
+                isMobile={isMobile}
+                selected={draftPeople}
               />
             }
-
-            {activeTab === "sort" && 
-              <SortFilter key={selectedSort} 
-                ref={sortRef} 
-                onSelect={(val) => (sortRef.currentValue = val)} 
-                isMobile={isMobile} 
-                selected={selectedSort} 
+            {activeTab === 'sort' &&
+              <SortFilter
+                key={selectedSort}
+                onSelect={setDraftSort}
+                isMobile={isMobile}
+                selected={draftSort}
               />
             }
-
-            {activeTab === "region" && 
-              <RegionFilter 
-                key={selectedRegion}
-                ref={regionRef}
-                isOpen={isOpen}
-                onClose={onClose}
-                onApply={onApply}
-                onReset={onReset}
-                selectedRegion={selectedRegion!}
-                selectedZone={selectedZone}
-                selectedPeople={selectedPeople}
-                selectedSort={selectedSort}
-                regions={regions!}
-                zones={zones!}
-                zoneList={zoneList}
-                activeRegionId={activeRegionId!}
-                selectedZones={selectedZones!}
-                onTabClick={onTabClick!}
-                onRegionSelect={onRegionSelect!}
-                onRegionAllClick={onRegionAllClick!}
-                onTabAllClick={onTabAllClick!}
-                onZoneSelect={onZoneSelect!}
-                isAllZoneSelected={isAllZoneSelected!}
-                setSelectedRegion={setSelectedRegion}
+            {activeTab === 'region' && !props.isLocationPage &&
+              <RegionFilter
+                key={draftRegion.selectedRegion}
+                regions={props.regions}
+                zones={draftRegion.zones}
+                selectedRegion={draftRegion.selectedRegion}
+                selectedZones={draftRegion.selectedZones}
+                activeRegionId={draftRegion.activeRegionId}
+                onTabClick={handleTabClick}
+                onRegionSelect={(selectedRegion) => setDraftRegion(previous => ({ ...previous, selectedRegion }))}
+                onRegionAllClick={handleRegionAllClick}
+                onTabAllClick={handleTabAllClick}
+                onZoneSelect={handleZoneSelect}
+                isAllZoneSelected={draftRegion.isAllZoneSelected}
               />
             }
           </Content>
-
         </Container>
 
         <ApplyButton onClick={applyFilters}>필터 적용하기</ApplyButton>
-
       </Sheet>
     </Overlay>
   );
 }
+
 
 const Overlay = styled.div`
   position: fixed;

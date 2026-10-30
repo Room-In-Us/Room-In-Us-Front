@@ -8,10 +8,15 @@ import CircleInfoIcon from '../../../shared/assets/icons/common/circleinfo.svg';
 import { levels } from '../model/levelData';
 import InfoBox from '../../../shared/components/InfoBox';
 import { useLocation, useNavigate } from 'react-router-dom';
+import type { Location } from 'react-router-dom';
+import type { ThemeProficiency } from '../../../shared/types/theme';
+
+type LevelNavigationState = { level?: ThemeProficiency };
+type ActiveStyleProps = { isActive: boolean };
 
 export default function LevelTabSection() {
 
-  const location = useLocation();
+  const location: Location<LevelNavigationState | null> = useLocation();
   const navigate = useNavigate();
     
   // 반응형 함수
@@ -20,11 +25,11 @@ export default function LevelTabSection() {
   // state 관리
   const [activeLevel] = useRecoilState(activeLevelState);
   const setActiveLevel = useSetRecoilState(activeLevelState);
-  const initLevelRef = useRef(location.state?.level);
+  const initLevelRef = useRef<ThemeProficiency | null | undefined>(location.state?.level);
 
   // info 팝업 상태
   const [isInfoOpen, setIsInfoOpen] = useState(false);
-  const infoRef = useRef(null);
+  const infoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (initLevelRef.current) {
@@ -39,8 +44,9 @@ export default function LevelTabSection() {
   }, [navigate, setActiveLevel]);
 
   useEffect(() => {
-    function handleClickOutside(e) {
-      if (infoRef.current && !infoRef.current.contains(e.target)) {
+    function handleClickOutside(e: MouseEvent) {
+      // document에 전달되는 mousedown의 대상은 DOM Node 또는 null이다.
+      if (infoRef.current && !infoRef.current.contains(e.target as Node | null)) {
         setIsInfoOpen(false);
       }
     }
@@ -217,7 +223,7 @@ const IconWrapper = styled.div`
   display: inline-block;
 `;
 
-const InfoPopup = styled.div`
+const InfoPopup = styled.div<{ isInfoOpen?: boolean }>`
   visibility: ${({ isInfoOpen }) => (isInfoOpen ? 'visible' : 'hidden')};
   opacity: ${({ isInfoOpen }) => (isInfoOpen ? '1' : '0')};
   transition: all 0.2s ease-in-out;
@@ -279,7 +285,7 @@ const ContentsWrapper = styled.div`
   }
 `;
 
-const ButtonText = styled.div`
+const ButtonText = styled.div<ActiveStyleProps>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -296,7 +302,7 @@ const ButtonText = styled.div`
   }
 `;
 
-const ButtonLine = styled.div`
+const ButtonLine = styled.div<ActiveStyleProps>`
   border-radius: 1.875rem;
   width: 6.625rem;
   height: 0.25rem;
@@ -311,7 +317,7 @@ const ButtonLine = styled.div`
   }
 `;
 
-const StyledLevelIcon = styled.div`
+const StyledLevelIcon = styled.div<ActiveStyleProps>`
   display: flex;
   width: 3.375rem;
   height: 3.375rem;
@@ -343,7 +349,7 @@ const StyledLevelIcon = styled.div`
   }
 `;
 
-const LevelButton = styled.div`
+const LevelButton = styled.div<ActiveStyleProps>`
   display: flex;
   width: 8.125rem;
   height: 6.25rem;

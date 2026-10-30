@@ -1,4 +1,4 @@
-import type { Dispatch, ForwardedRef, MutableRefObject, SetStateAction } from 'react';
+import type { MutableRefObject } from 'react';
 import type { RegionId, RegionResponse, ZoneId, ZoneResponse } from '../../../features/location/api/types';
 import type { ThemeSortOption } from '../../types/theme';
 
@@ -24,12 +24,7 @@ export interface RegionFilterHandle {
   reset: () => void;
 }
 
-export type RegionFilterRef = ForwardedRef<RegionFilterHandle | undefined> & { currentValue?: string };
-
 export type FilterZone = ZoneResponse & { regionId?: RegionId };
-
-// 적용 callback은 구역 이름을 저장하지만 시트는 기존 zoneName 접근을 유지한다.
-export type FilterZoneListItem = FilterZone | (string & { readonly zoneName?: undefined });
 
 export interface RegionSelectionProps {
   regions: RegionResponse[];
@@ -42,15 +37,22 @@ export interface RegionSelectionProps {
   onRegionAllClick: () => void;
   onTabAllClick: (regionId: RegionId, label: string) => void;
   onZoneSelect: (zoneName: string) => void;
-  // 기존 데스크톱 소비처는 boolean 대신 setter를 전달하기도 한다.
-  isAllZoneSelected: boolean | Dispatch<SetStateAction<boolean>>;
+  isAllZoneSelected: boolean;
+}
+
+export type RegionFilterDraft = Pick<RegionSelectionProps,
+  'activeRegionId' | 'zones' | 'selectedRegion' | 'selectedZones' | 'isAllZoneSelected'
+>;
+
+export interface RegionFilterValues extends FilterValues {
+  regionSelection: RegionFilterDraft;
 }
 
 export interface RegionFilterCompatibilityProps {
   selectedZone?: string | null;
   selectedPeople?: number;
   selectedSort?: ThemeSortOption;
-  zoneList?: FilterZoneListItem[];
+  zoneList?: string[];
   regionId?: RegionId | null;
   zoneIdList?: ZoneId[] | null;
   isOpen?: boolean;

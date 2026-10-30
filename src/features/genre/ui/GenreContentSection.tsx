@@ -1,46 +1,54 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
 import { useRecoilValue } from 'recoil';
-import { activeLevelState } from '../model/levelAtom';
+import { activeGenreState } from '../model/genreAtom';
 import useDevice from "../../../shared/hooks/useDevice";
 import ContentCard from "../../../shared/components/ContentCard";
-import { levels } from '../model/levelData';
-import { getLevelListAPI } from "../api/levelAPI";
+import { getGenreListAPI } from "../../genre/api/genreAPI";
 import { getRegionAPI, getZoneAPI } from "../../../features/location/api/locationAPI";
 import FilterImg from '../../../shared/assets/icons/genre/filter.svg';
 import PeopleFilter from '../../../shared/components/filter/PeopleFilter';
 import SortFilter from '../../../shared/components/filter/SortFilter';
 import RegionFilter from '../../../shared/components/filter/RegionFilter';
+import { genres } from '../model/genreData';
 import CustomPagination from '../../../shared/components/CustomPagination';
 import BottomSheet from '../../../shared/components/BottomSheet';
 import { sortOptions } from '../../../shared/components/filter/OptionList';
 import NoDataImgLarge from '../../../shared/assets/images/common/noData/noDataImageLarge.png'
 
-export default function LevelContentSection() {
+import type { RegionId, RegionResponse, ZoneId } from '../../location/api/types';
+import type { ThemeResponse, ThemeSortOption } from '../../../shared/types/theme';
+import type { FilterZone, RegionFilterValues } from '../../../shared/components/filter/filterTypes';
 
+// 구역 조회는 적용된 필터 상태를 변경하지 않는다.
+const loadZones = async (regionId: RegionId): Promise<FilterZone[]> => {
+  const response = await getZoneAPI(regionId);
+  return response.data.map((zone) => ({ ...zone, regionId }));
+};
+
+export default function GenreContentSection() {
   // 반응형 함수
   const { isMobile } = useDevice();
 
   // state 관리
-  const activeLevel = useRecoilValue(activeLevelState);
+  const activeGenre = useRecoilValue(activeGenreState);
 
   // 필터링 상태
-  const [themeList, setThemeList] = useState([]);
-  
+  const [themeList, setThemeList] = useState<ThemeResponse[]>([]);
+
   // 지역 필터 관련 상태
-  const [regions, setRegions] = useState([]);
-  const [zones, setZones] = useState([]);
-  const [zoneList, setZoneList] = useState([]);
+  const [regions, setRegions] = useState<RegionResponse[]>([]);
+  const [zones, setZones] = useState<FilterZone[]>([]);
   const [selectedRegion, setSelectedRegion] = useState("지역 전체");
-  const [selectedZone, setSelectedZone] = useState(null);
-  const [activeRegionId, setActiveRegionId] = useState(1);
-  const [selectedZones, setSelectedZones] = useState([]);
+  const [selectedZone, setSelectedZone] = useState<null>(null);
+  const [activeRegionId, setActiveRegionId] = useState<RegionId>(1);
+  const [selectedZones, setSelectedZones] = useState<string[]>([]);
   const [isAllZoneSelected, setIsAllZoneSelected] = useState(false);
-  const [regionId, setRegionId] = useState();
-  const [zoneIdList, setZoneIdList] = useState();
+  const [regionId, setRegionId] = useState<RegionId | null>();
+  const [zoneIdList, setZoneIdList] = useState<ZoneId[] | null>();
 
   // 정렬 필터 상태
-  const [selectedSort, setSelectedSort] = useState("HIGH_SATISFACTION_LEVEL");
+  const [selectedSort, setSelectedSort] = useState<ThemeSortOption>("HIGH_SATISFACTION_LEVEL");
 
   // 인원수 필터 상태
   const [headCount, setHeadCount] = useState(2);
@@ -48,7 +56,7 @@ export default function LevelContentSection() {
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = isMobile ? 4 : 16;
-  const sectionTopRef = useRef(null);
+  const sectionTopRef = useRef<HTMLDivElement>(null);
 
   // 바텀 시트 상태
   const [isBottomSheetOpen, setBottomSheetOpen] = useState(false);
@@ -59,36 +67,36 @@ export default function LevelContentSection() {
   // 검색어 상태
   const [keyword,] = useState('');
 
-  // 숙련도 목록 조회
+  // 장르 목록 조회
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getLevelListAPI(
-          activeLevel, 
+        const response = await getGenreListAPI(
+          activeGenre, 
           headCount, 
           1, 
           1000, 
-          selectedSort,
+          selectedSort, 
           keyword, 
           regionId, 
           zoneIdList
         );
         setThemeList(response.contents);
       } catch (error) {
-        console.error('숙련도 기반 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
+        console.error('장르 기반 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
       }
     };
     fetchData();
-  }, [activeLevel, headCount, selectedSort, keyword, regionId, zoneIdList]);
+  }, [activeGenre,headCount, selectedSort, keyword, regionId, zoneIdList]);
 
   // 인원수 필터링
-  const handlePeopleFilterChange = (count) => {
+  const handlePeopleFilterChange = (count: number) => {
     setHeadCount(count); 
   };
-
-  // 선택된 숙련도 찾기
-  const selectedLevel = levels.find((l) => l.level === activeLevel);
   
+  // 선택된 장르 찾기
+  const selectedGenre = genres.find((g) => g.genre === activeGenre);
+
   // 지역 목록 가져오기
   useEffect(() => {
     const fetchRegions = async () => {
@@ -110,27 +118,21 @@ export default function LevelContentSection() {
     };
     fetchRegions();
   }, []);
-    
-  // 선택된 지역의 구역 목록 가져오기
-  const fetchZones = async (regionId) => {
+
+  // 데스크톱 지역 탭의 구역 목록 가져오기
+  const fetchZones = async (regionId: RegionId) => {
     try {
-        const response = await getZoneAPI(regionId);
-        if (response.data) {
-            const zonesWithRegion = response.data.map((zone) => ({
-                ...zone,
-                regionId,
-            }));
-            setZones(zonesWithRegion);
-        }
+      setZones(await loadZones(regionId));
     } catch (error) {
-        console.error("구역 목록 불러오기 실패:", error);
+      console.error("구역 목록 불러오기 실패:", error);
     }
-};
-    
+  };
+
   // 전체 지역 버튼 클릭 핸들러
   const handleRegionAllClick = () => {
     setActiveRegionId(1);
     setSelectedRegion("지역 전체");
+    setIsAllZoneSelected(false);
     setSelectedZones([]);
     fetchZones(1);
     setRegionId(null); 
@@ -138,33 +140,33 @@ export default function LevelContentSection() {
   };
 
   // 지역 버튼 클릭 핸들러 (구역 렌더링)
-  const handleTabClick = (regionId) => {
+  const handleTabClick = (regionId: RegionId) => {
     setActiveRegionId(regionId); 
     setSelectedZones([]);     
     setSelectedZone(null);  
     fetchZones(regionId);    
   };
-    
-  const handleTabAllClick = async (regionId, buttonText) => {
+
+  const handleTabAllClick = async (regionId: RegionId, buttonText: string) => {
     setActiveRegionId(regionId);
     setIsAllZoneSelected(true);
     setSelectedZones([]);
-    setZoneList([]);
     setSelectedRegion(buttonText);
 
     await getZoneAPI(regionId);
     setZoneIdList(null); 
     setRegionId(regionId);
   };
-    
+  
+
   // 지역 선택 핸들러
-  const handleRegionSelect = (regionName) => {
+  const handleRegionSelect = (regionName: string) => {
     setSelectedRegion(regionName);
     setSelectedZone(null);
   };
-    
+
   // 구역 선택 핸들러
-  const handleZoneSelect = async (zoneName) => {
+  const handleZoneSelect = async (zoneName: string) => {
     setIsAllZoneSelected(false);
   
     setSelectedZones((prevZones) => {
@@ -180,7 +182,7 @@ export default function LevelContentSection() {
   
       // 선택 텍스트 표시용
       if (updatedZones.length === 0) {
-        setSelectedRegion("지역 선택");
+        setSelectedRegion("지역 전체");
       } else if (updatedZones.length === 1) {
         setSelectedRegion(updatedZones[0]);
       } else {
@@ -192,8 +194,8 @@ export default function LevelContentSection() {
         .filter((zone) => updatedZones.includes(zone.zoneName))
         .map((zone) => zone.zoneId);
   
-      setZoneIdList(selectedIds);  
-      setRegionId(activeRegionId);   
+      setZoneIdList(updatedZones.length === 0 ? null : selectedIds);
+      setRegionId(updatedZones.length === 0 ? null : activeRegionId);
   
       return updatedZones;
     });
@@ -205,17 +207,17 @@ export default function LevelContentSection() {
     setSelectedRegion(selectedRegion);
     setSelectedZone(selectedZone);
   };
-  
+
+
+
+  const adjustedTotalPages = Math.ceil(themeList.length / itemsPerPage);
 
   
-  const adjustedTotalPages = Math.ceil(themeList.length / itemsPerPage);
-  
-    
-  const handlePageChange = (page) => {
+  const handlePageChange = (page: number) => {
     if (page < 1 || page > adjustedTotalPages) return;
     setCurrentPage(page);
   };
-  
+
   useEffect(() => {
     const adjustedTotalPages = Math.ceil(themeList.length / itemsPerPage);
     if (currentPage > adjustedTotalPages) {
@@ -225,57 +227,27 @@ export default function LevelContentSection() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeLevel]);
+  }, [activeGenre]);
 
   useEffect(() => {
     setCurrentPage(1);
   }, [headCount, selectedSort, regionId, zoneIdList, keyword]);
   
-  // 필터 적용 함수 수정
-  const handleApplyFilters = ({ people, sort, region, zones }) => {
+  // 모바일의 임시 선택을 적용 버튼에서 한 번에 확정한다.
+  const handleApplyFilters = ({ people, sort, region, regionSelection }: RegionFilterValues) => {
     setHeadCount(people);
     setSelectedSort(sort);
     setIsFilterActive(true);
-
-    if (region === "지역 전체") {
-      setSelectedRegion("지역 전체");
-      setSelectedZones([]);
-      setZoneList([]);
-    } 
-    // "서울 전체" 선택 시 서울의 모든 구역 설정
-    else if (region === "서울 전체") {
-      setSelectedRegion("서울 전체");
-      setZoneList(zones);
-    } 
-    // "경기/인천 전체" 선택 시 경기/인천의 모든 구역 설정
-    else if (region === "경기/인천 전체") {
-      setSelectedRegion("경기/인천 전체");
-      setZoneList(zones);
-    } 
-    // 특정 구역 선택 시 해당 구역만 설정
-    else if (zones && zones.length > 0) {
-      setSelectedRegion(region);
-      setSelectedZones(zones);
-      setZoneList([]);
-    } 
-    // 초기화 상태
-    else {
-      setSelectedRegion(region);
-      setSelectedZones([]);
-      setZoneList([]);
-    }
-  };
-
-
-  // 리셋 처리 함수
-  const handleResetFilters = ({ people, sort, region }) => {
-    setHeadCount(people);  
-    setSelectedSort(sort);
-    setSelectedRegion(region); 
-    setSelectedZones([]); 
-    setZoneList([]);  
-    setIsAllZoneSelected(false); 
-    setIsFilterActive(true);
+    setActiveRegionId(regionSelection.activeRegionId);
+    setZones(regionSelection.zones);
+    setSelectedRegion(regionSelection.selectedRegion ?? region);
+    setSelectedZones(regionSelection.selectedZones);
+    setSelectedZone(null);
+    setIsAllZoneSelected(regionSelection.isAllZoneSelected);
+    setRegionId(region === "지역 전체" ? null : regionSelection.activeRegionId);
+    setZoneIdList(regionSelection.selectedZones.length === 0 ? null : regionSelection.zones
+      .filter((zone) => regionSelection.selectedZones.includes(zone.zoneName))
+      .map((zone) => zone.zoneId));
   };
 
   const getMobileFilterText = () => {
@@ -293,13 +265,13 @@ export default function LevelContentSection() {
   
     return `${peopleText}, ${sortText}, ${regionText}`;
   };
-
-
+  
+  
   return (
     <Wrapper ref={sectionTopRef}>
       <TopBar>
         <TextWrapper>
-          <MainText>{selectedLevel ? selectedLevel.text : "기본"} 테마</MainText>
+          <MainText>{selectedGenre ? selectedGenre.text : "기본"} 테마</MainText>
           <SubText>	&#40;{themeList.length}&#41;</SubText>
         </TextWrapper>
 
@@ -324,7 +296,7 @@ export default function LevelContentSection() {
               onRegionAllClick={handleRegionAllClick}
               onTabAllClick={handleTabAllClick}
               onZoneSelect={handleZoneSelect}
-              isAllZoneSelected={setIsAllZoneSelected}
+              isAllZoneSelected={isAllZoneSelected}
               setHeadCount={setHeadCount}
               setSelectedSort={setSelectedSort}
               setSelectedRegion={setSelectedRegion}
@@ -349,25 +321,15 @@ export default function LevelContentSection() {
           isOpen={isBottomSheetOpen}
           onClose={() => setBottomSheetOpen(false)}
           onApply={handleApplyFilters}
-          onReset={handleResetFilters}
           selectedRegion={selectedRegion}
-          selectedZone={selectedZone}
           selectedPeople={headCount}
           selectedSort={selectedSort}
           regions={regions}
           zones={zones}
-          zoneList={zoneList}
+          loadZones={loadZones}
           activeRegionId={activeRegionId}
           selectedZones={selectedZones}
-          onTabClick={handleTabClick}
-          onRegionSelect={handleRegionSelect}
-          onRegionAllClick={handleRegionAllClick}
-          onTabAllClick={handleTabAllClick}
-          onZoneSelect={handleZoneSelect}
           isAllZoneSelected={isAllZoneSelected}
-          setHeadCount={setHeadCount}
-          setSelectedSort={setSelectedSort}
-          setSelectedRegion={setSelectedRegion}
           isLocationPage={false}
         />
       )}
@@ -377,7 +339,7 @@ export default function LevelContentSection() {
         <NoDataWrapper>
           <img src={NoDataImgLarge} alt="데이터 없음" />
           <NonDataTextWrapper>
-            <NonDataText>해당하는 테마가 없습니다.</NonDataText>
+            <NonDataText>해당하는 테마가 없습니다</NonDataText>
           </NonDataTextWrapper>
         </NoDataWrapper>
       ) : (
@@ -387,7 +349,7 @@ export default function LevelContentSection() {
               .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
               .map((items) => (
                 <ContentCard
-                  key={items.id}
+                  key={items.themeId}
                   data={{ ...items, price: items.price != null ? items.price * headCount : null }}
                   headCount={headCount}
                 />
@@ -504,7 +466,7 @@ const Filter = styled.div`
   }
 `;
 
-const FilterIcon = styled.img`
+const FilterIcon = styled.img<{ $isSelected: boolean }>`
   display: flex;
   width: 0.9375rem;
   height: 0.9375rem;
@@ -521,7 +483,7 @@ const FilterIcon = styled.img`
       : "none"};
 `;
 
-const LocationFilterText = styled.div`
+const LocationFilterText = styled.div<{ $isSelected: boolean }>`
   font-family: ${({ $isSelected }) => $isSelected ? 'Pretendard-Bold' : 'Pretendard-Medium'};
   font-size: 0.875rem;
   color: ${({ $isSelected }) => $isSelected ? "var(--RIU_Primary-300, #5B6ACC)" : "var(--RIU_Monochrome-200, #717486)"};

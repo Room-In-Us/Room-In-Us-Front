@@ -8,10 +8,15 @@ import MainIcon from '../../../shared/assets/icons/genre/movieIcon.svg';
 import {genres} from '../model/genreData'
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
+import type { Location } from 'react-router-dom';
+import type { ThemeGenre } from '../../../shared/types/theme';
+
+type GenreNavigationState = { genre?: ThemeGenre };
+type ActiveStyleProps = { isActive: boolean };
 
 export default function GenreTabSection() {
 
-  const location = useLocation();
+  const location: Location<GenreNavigationState | null> = useLocation();
   const navigate = useNavigate();
     
   // 반응형 함수
@@ -20,7 +25,7 @@ export default function GenreTabSection() {
   // state 관리
   const [activeGenre] = useRecoilState(activeGenreState);
   const setActiveGenre = useSetRecoilState(activeGenreState);
-  const initGenreRef = useRef(location.state?.genre);
+  const initGenreRef = useRef<ThemeGenre | null | undefined>(location.state?.genre);
   
   useEffect(() => {
     if (initGenreRef.current) {
@@ -35,7 +40,7 @@ export default function GenreTabSection() {
   }, [navigate, setActiveGenre]);
 
   // 장르를 7개씩 나누는 함수
-  const chunkArray = (array, size) => {
+  const chunkArray = (array: typeof genres, size: number): (typeof genres)[] => {
     return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
       array.slice(index * size, index * size + size)
     );
@@ -217,7 +222,7 @@ const ContentsWrapper = styled.div`
   }
 `;
 
-const ButtonText = styled.div`
+const ButtonText = styled.div<ActiveStyleProps>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -234,7 +239,7 @@ const ButtonText = styled.div`
   }
 `;
 
-const ButtonLine = styled.div`
+const ButtonLine = styled.div<ActiveStyleProps>`
   border-radius: 1.875rem;
   width: 6.625rem;
   height: 0.25rem;
@@ -249,7 +254,7 @@ const ButtonLine = styled.div`
   }
 `;
 
-const StyledGenreIcon = styled.div`
+const StyledGenreIcon = styled.div<ActiveStyleProps>`
   display: flex;
   width: 3.375rem;
   height: 3.375rem;
@@ -281,7 +286,7 @@ const StyledGenreIcon = styled.div`
   }
 `;
 
-const GenreButton = styled.div`
+const GenreButton = styled.div<ActiveStyleProps>`
   display: flex;
   width: 8.125rem;
   height: 6.25rem;
@@ -325,7 +330,7 @@ const GenreButton = styled.div`
   }
 `;
 
-const StyledSwiper = styled(Swiper)`
+const StyledSwiper = styled(Swiper)<{ isMobile: boolean }>`
   width: 100%;
   height: auto;
 
