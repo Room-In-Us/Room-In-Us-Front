@@ -1,7 +1,15 @@
 import styled from "styled-components";
 import PropTypes from 'prop-types';
+import type { MouseEventHandler } from 'react';
 
-function SurveyTag({ item, selected, onClick, disabled }) {
+type SurveyTagProps = {
+  item: string;
+  selected?: boolean;
+  onClick?: MouseEventHandler<HTMLDivElement>;
+  disabled?: boolean;
+};
+
+function SurveyTag({ item, selected, onClick, disabled }: SurveyTagProps) {
   return (
     <TagWrapper onClick={!disabled ? onClick : undefined} selected={selected}>
       <Label selected={selected}>
@@ -22,7 +30,7 @@ SurveyTag.propTypes = {
 export default SurveyTag;
 
 // CSS
-const TagWrapper = styled.div`
+const TagWrapper = styled.div<{ selected?: boolean; disabled?: boolean }>`
   border: 1px solid var(--RIU_Primary-100, #718FF2);
   border-radius: 1.5em;
   padding: 0.875em 1em;
@@ -43,7 +51,7 @@ const TagWrapper = styled.div`
   }
 `;
 
-const Label = styled.div`
+const Label = styled.div<{ selected?: boolean }>`
   color: ${({ selected }) => selected ? '#F9F9FB' : '#718FF2'};
   font-family: 'Pretendard-Regular';
   font-size: 0.875em;

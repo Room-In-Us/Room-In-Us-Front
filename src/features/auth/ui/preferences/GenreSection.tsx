@@ -1,8 +1,11 @@
 import styled from "styled-components";
 import { surveyGenreList } from "../../../survey/model/surveyGenreList";
 import SurveyTag from "./SurveyTag";
+import type { MemberPreferenceResponse } from "../../../../shared/types/preference";
 
-function GenreSection({userInfo}) {
+type GenreSectionProps = { userInfo?: MemberPreferenceResponse['preferredGenreList'] };
+
+function GenreSection({userInfo}: GenreSectionProps) {
   // 장르 선택 상태
   const selectedGenres = userInfo ?? [];
 

@@ -3,70 +3,85 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { surveySectionState, surveyState, modalState } from "../model/surveyAtom";
 import RightArrow from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
 import LeftArrow from "../../../shared/assets/icons/common/arrow/leftArrow.svg?react";
-import SurveyImage from "../../../shared/assets/images/survey/surveyImage5.png";
+import SurveyImage from "../../../shared/assets/images/survey/surveyImage2.png";
+import { surveyGenreList } from "../model/surveyGenreList";
+import SurveyTag from "./SurveyTag";
+import type { ThemeGenre } from "../../../shared/types/theme";
 
-function SurveyPositionSection() {
+function SurveyGenreSection() {
   // state 관리
   const [survey, setSurvey] = useRecoilState(surveyState);
   const [, setSurveySection] = useRecoilState(surveySectionState);
   const setModal = useSetRecoilState(modalState);
 
-  // 포지션 선택 상태
-  const selected = survey.horrorPos;
+  // 장르 선택 상태
+  const selectedGenres = survey.preferredGenreList;
 
-  // 포지션 선택 함수
-  const handleSelect = (value) => {
-    setSurvey(prev => ({
-      ...prev,
-      horrorPos: prev.horrorPos === value ? null : value
-    }));
+  // 태그 선택 핸들러
+  const handleTagClick = (enumValue: ThemeGenre) => {
+    const isSelected = selectedGenres.includes(enumValue);
+
+    if (isSelected) {
+      setSurvey(prev => ({
+        ...prev,
+        preferredGenreList: prev.preferredGenreList.filter(tag => tag !== enumValue)
+      }));
+    } else if (selectedGenres.length < 4) {
+      setSurvey(prev => ({
+        ...prev,
+        preferredGenreList: [...prev.preferredGenreList, enumValue]
+      }));
+    }
   };
 
   return (
     <SectionWrapper>
       <ContentWrapper>
         <ArrowWrapper>
-          <StyledLeftArrow onClick={() => setSurveySection("preference")}/>
+          <StyledLeftArrow onClick={() => setSurveySection("proficiency")}/>
           <PageNumber>
-            5/6
+            2/6
           </PageNumber>
-          <StyledRightArrow onClick={() => setSurveySection("info")}/>
+          <StyledRightArrow onClick={() => setSurveySection("headcount")}/>
         </ArrowWrapper>
         <StyeldSurveyImage src={SurveyImage}/>
         <TitleWrapper>
           <Title>
-            나의 공포테마 포지션은?
+            내가 선호하는 장르는?
           </Title>
           <Description>
-            <div>공포 테마에서 나는?</div>
-            <div>선두에서 이끄는 용자 vs. 뒤에서 숨어있는 생존자</div>
+            <div>나는 감성적인 이야기파? 아니면 짜릿한 스릴러 마니아?</div>
+            <div>취향을 골라보세요.</div>
           </Description>
         </TitleWrapper>
 
         {/* 선택 영역 */}
-        <ListWrapper>
-          {[
-            { label: '탱', value: 'FEARLESS', description: '공포 구간도 주저 없이! 웬만한 공포 연출엔 안 놀라요.' },
-            { label: '쫄탱', value: 'FEARFUL_TANK', description: '떨면서도 탱 역할을 수행할 순 있어요.' },
-            { label: '마지모탱', value: 'RELUCTANT_TANK', description: '나서기는 무섭지만 떠밀려서 어쩔 수 없이 가요.' },
-            { label: '변쫄', value: 'NERVOUS', description: '공포 테마가 무섭지만 계속 하고 싶어요.' },
-            { label: '쫄', value: 'SCARED', description: '공포 테마는 무서워서 잘 못해요.' },
-            { label: '극쫄', value: 'EXTREME_SCARED', description: '공포가 아니어도 웬만한 테마는 무서워요.' },
-          ].map((item) => (
-            <List key={item.value}>
-              <RadioButton
-                selected={selected === item.value}
-                onClick={() => handleSelect(item.value)}
+        <CheckWrapper>
+          <ListWrapper>
+            {surveyGenreList.map((item) => (
+              <SurveyTag
+                key={item.id}
+                item={item.genre}
+                selected={selectedGenres.includes(item.enum)}
+                onClick={() => handleTagClick(item.enum)}
+                disabled={
+                  !selectedGenres.includes(item.enum) &&
+                  selectedGenres.length >= 4
+                }
               />
-              {item.label} : {item.description}
-            </List>
-          ))}
-        </ListWrapper>
+            ))}
+          </ListWrapper>
+          <CheckDescription>
+            최대 4개까지 선택 가능합니다
+          </CheckDescription>
+        </CheckWrapper>
       </ContentWrapper>
 
       <ButtonWrapper>
-        <StyledButton onClick={() => setSurveySection("info")} isPass={!selected}>
-          <ButtonText isPass={!selected}>{selected ? '다음으로' : '질문 넘기기'}</ButtonText>
+        <StyledButton onClick={() => setSurveySection("headcount")} isPass={selectedGenres.length === 0}>
+          <ButtonText isPass={selectedGenres.length === 0}>
+            {selectedGenres.length > 0 ? '다음으로' : '질문 넘기기'}
+          </ButtonText>
         </StyledButton>
         <MainButton onClick={() => setModal(true)}>
           루미너스 메인으로 이동하기
@@ -76,7 +91,7 @@ function SurveyPositionSection() {
   )
 }
 
-export default SurveyPositionSection;
+export default SurveyGenreSection;
 
 // CSS
 const SectionWrapper = styled.div`
@@ -176,59 +191,33 @@ const Description = styled.div`
   }
 `;
 
-const ListWrapper = styled.div`
+const CheckWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 1.25em;
+  justify-content: center;
+  align-items: center;
+  gap: 0.875em;
   align-self: stretch;
+`;
 
-  @media(max-width: 768px) {
-    gap: 1em;
+const ListWrapper = styled.div`
+  display: flex;
+  flex-flow: wrap;
+  gap: 0.875em;
+
+  @media (max-width: 768px) {
+    gap: 0.875em 0.3em;
   }
 `;
 
-const List = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.625em;
-  align-self: stretch;
-  color: var(--RIU_Monochrome-300, #696C7E);
+const CheckDescription = styled.div`
+  color: var(--RIU_Monochrome-70, #B3B6C3);
   font-family: 'Pretendard-Medium';
-  font-size: 0.875em;
+  font-size: 0.75em;
   line-height: 130%;
 
-  @media(max-width: 768px) {
-    font-size: 0.65em;
-    line-height: 100%;
-  }
-`;
-
-const RadioButton = styled.button`
-  all: unset;
-  border: 1.5px solid var(--RIU_Primary-100, #718FF2);
-  border-radius: 1.875em;
-  width: 1em;
-  height: 1em;
-  position: relative;
-  cursor: pointer;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0.5em;
-    height: 0.5em;
-    background-color: var(--RIU_Primary-100, #718FF2);
-    border-radius: 1.875em;
-    transform: translate(-50%, -50%);
-    opacity: ${props => (props.selected ? 1 : 0)};
-    transition: opacity 0.2s ease-in-out;
-  }
-
-  @media(max-width: 768px) {
-    border-width: 1px;
+  @media (max-width: 768px) {
+    font-size: 0.625em;
   }
 `;
 
@@ -244,7 +233,7 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const StyledButton = styled.button`
+const StyledButton = styled.button<{ isPass: boolean }>`
   all: unset;
   border: none;
   display: flex;
@@ -284,7 +273,7 @@ const StyledButton = styled.button`
   }
 `;
 
-const ButtonText = styled.div`
+const ButtonText = styled.div<{ isPass: boolean }>`
   color: ${(props) => (props.isPass ? "var(--RIU_Monochrome-100, #818496)" : "#F9F9FB")};
   font-family: 'Pretendard-Bold';
   line-height: 130%;

@@ -1,48 +1,42 @@
 import styled from "styled-components";
+import type { MemberPreferenceResponse } from "../../../../shared/types/preference";
 
-function ProficiencySection({userInfo}) {
-  // 숙련도 선택 상태
+type PositionSectionProps = { userInfo?: MemberPreferenceResponse['horrorPos'] };
+
+function PositionSection({userInfo}: PositionSectionProps) {
+  // 포지션 선택 상태
   const selected = userInfo ?? "";
 
   return (
     <SectionWrapper>
       {/* 타이틀 */}
       <Title>
-        숙련도
+        공포 테마 포지션
       </Title>
 
       {/* 선택 영역 */}
       <ListWrapper>
-        <List>
-          <RadioButton
-            selected={selected === 'BEGINNER'}
-          />
-          방세포 : 0~5방 정도로 아직 방탈출에 대한 느낌을 잘 몰라요!
-        </List>
-        <List>
-          <RadioButton
-            selected={selected === 'JUNIOR'}
-          />
-          방초보 : 5~20방 정도 경험이 있어 어떤 느낌인지는 알아요!
-        </List>
-        <List>
-          <RadioButton
-            selected={selected === 'SENIOR'}
-          />
-          방중수 : 20~50방 정도의 경험이 있어 무난하게 할 수 있어요!
-        </List>
-        <List>
-          <RadioButton
-            selected={selected === 'MASTER'}
-          />
-          방고수 : 50+ 방 정도 경험이 있어 난이도가 상관이 없어요!
-        </List>
+        {[
+          { label: '탱', value: 'FEARLESS', description: '공포 구간도 주저 없이! 웬만한 공포 연출엔 안 놀라요.' },
+          { label: '쫄탱', value: 'FEARFUL_TANK', description: '떨면서도 탱 역할을 수행할 순 있어요.' },
+          { label: '마지모탱', value: 'RELUCTANT_TANK', description: '나서기는 무섭지만 떠밀려서 어쩔 수 없이 가요.' },
+          { label: '변쫄', value: 'NERVOUS', description: '공포 테마가 무섭지만 계속 하고 싶어요.' },
+          { label: '쫄', value: 'SCARED', description: '공포 테마는 무서워서 잘 못해요.' },
+          { label: '극쫄', value: 'EXTREME_SCARED', description: '공포가 아니어도 웬만한 테마는 무서워요.' },
+        ].map((item) => (
+          <List key={item.value}>
+            <RadioButton
+              selected={selected === item.value}
+            />
+            {item.label} : {item.description}
+          </List>
+        ))}
       </ListWrapper>
     </SectionWrapper>
   )
 }
 
-export default ProficiencySection;
+export default PositionSection;
 
 // CSS
 const SectionWrapper = styled.div`
@@ -85,17 +79,13 @@ const List = styled.div`
   align-items: center;
   gap: 0.625em;
   align-self: stretch;
-  color: var(--RIU_Monochrome-300, #696C7E);
-  font-family: 'Pretendard-Medium';
-  font-size: 0.875em;
-  line-height: 130%;
 
   @media (max-width: 768px) {
     font-size: 0.625em;
   }
 `;
 
-const RadioButton = styled.button`
+const RadioButton = styled.button<{ selected: boolean }>`
   all: unset;
   border: 1.5px solid var(--RIU_Primary-100, #718FF2);
   border-radius: 1.875em;
@@ -116,7 +106,6 @@ const RadioButton = styled.button`
     transform: translate(-50%, -50%);
     opacity: ${props => (props.selected ? 1 : 0)};
     transition: opacity 0.2s ease-in-out;
-  }
 
   @media (max-width: 768px) {
     font-size: 0.75em;

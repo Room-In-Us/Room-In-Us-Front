@@ -3,22 +3,23 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { surveySectionState, surveyState, modalState } from "../model/surveyAtom";
 import RightArrow from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
 import LeftArrow from "../../../shared/assets/icons/common/arrow/leftArrow.svg?react";
-import SurveyImage from "../../../shared/assets/images/survey/surveyImage3.png";
+import SurveyImage from "../../../shared/assets/images/survey/surveyImage5.png";
+import type { PreferenceHorrorPosition } from "../../../shared/types/preference";
 
-function SurveyHeadcountSection() {
+function SurveyPositionSection() {
   // state 관리
   const [survey, setSurvey] = useRecoilState(surveyState);
   const [, setSurveySection] = useRecoilState(surveySectionState);
   const setModal = useSetRecoilState(modalState);
 
-  // 인원수 선택 상태
-  const selected = survey.preferredHeadcount;
+  // 포지션 선택 상태
+  const selected = survey.horrorPos;
 
-  // 인원수 선택 함수
-  const handleSelect = (value) => {
+  // 포지션 선택 함수
+  const handleSelect = (value: PreferenceHorrorPosition) => {
     setSurvey(prev => ({
       ...prev,
-      preferredHeadcount: prev.preferredHeadcount === value ? null : value
+      horrorPos: prev.horrorPos === value ? null : value
     }));
   };
 
@@ -26,38 +27,46 @@ function SurveyHeadcountSection() {
     <SectionWrapper>
       <ContentWrapper>
         <ArrowWrapper>
-          <StyledLeftArrow onClick={() => setSurveySection("genre")}/>
+          <StyledLeftArrow onClick={() => setSurveySection("preference")}/>
           <PageNumber>
-            3/6
+            5/6
           </PageNumber>
-          <StyledRightArrow onClick={() => setSurveySection("preference")}/>
+          <StyledRightArrow onClick={() => setSurveySection("info")}/>
         </ArrowWrapper>
         <StyeldSurveyImage src={SurveyImage}/>
         <TitleWrapper>
           <Title>
-            주로 플레이하는 인원은?
+            나의 공포테마 포지션은?
           </Title>
           <Description>
-            방탈출을 몇 명이서 하는 게 가장 재미있을까요?
+            <div>공포 테마에서 나는?</div>
+            <div>선두에서 이끄는 용자 vs. 뒤에서 숨어있는 생존자</div>
           </Description>
         </TitleWrapper>
 
         {/* 선택 영역 */}
         <ListWrapper>
-          {[1, 2, 3, 4, 5, 6].map((num) => (
-            <List key={num}>
+          {([
+            { label: '탱', value: 'FEARLESS', description: '공포 구간도 주저 없이! 웬만한 공포 연출엔 안 놀라요.' },
+            { label: '쫄탱', value: 'FEARFUL_TANK', description: '떨면서도 탱 역할을 수행할 순 있어요.' },
+            { label: '마지모탱', value: 'RELUCTANT_TANK', description: '나서기는 무섭지만 떠밀려서 어쩔 수 없이 가요.' },
+            { label: '변쫄', value: 'NERVOUS', description: '공포 테마가 무섭지만 계속 하고 싶어요.' },
+            { label: '쫄', value: 'SCARED', description: '공포 테마는 무서워서 잘 못해요.' },
+            { label: '극쫄', value: 'EXTREME_SCARED', description: '공포가 아니어도 웬만한 테마는 무서워요.' },
+          ] satisfies { label: string; value: PreferenceHorrorPosition; description: string }[]).map((item) => (
+            <List key={item.value}>
               <RadioButton
-                selected={selected === num}
-                onClick={() => handleSelect(num)}
+                selected={selected === item.value}
+                onClick={() => handleSelect(item.value)}
               />
-              {num === 6 ? '6인 이상' : `${num}인`}
+              {item.label} : {item.description}
             </List>
           ))}
         </ListWrapper>
       </ContentWrapper>
 
       <ButtonWrapper>
-        <StyledButton onClick={() => setSurveySection("preference")} isPass={!selected}>
+        <StyledButton onClick={() => setSurveySection("info")} isPass={!selected}>
           <ButtonText isPass={!selected}>{selected ? '다음으로' : '질문 넘기기'}</ButtonText>
         </StyledButton>
         <MainButton onClick={() => setModal(true)}>
@@ -68,7 +77,7 @@ function SurveyHeadcountSection() {
   )
 }
 
-export default SurveyHeadcountSection;
+export default SurveyPositionSection;
 
 // CSS
 const SectionWrapper = styled.div`
@@ -158,9 +167,10 @@ const Description = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Medium';
   font-size: 0.875em;
-  font-style: normal;
-  font-weight: 500;
   line-height: 130%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   @media(max-width: 768px) {
     font-size: 0.75em;
@@ -195,7 +205,7 @@ const List = styled.div`
   }
 `;
 
-const RadioButton = styled.button`
+const RadioButton = styled.button<{ selected: boolean }>`
   all: unset;
   border: 1.5px solid var(--RIU_Primary-100, #718FF2);
   border-radius: 1.875em;
@@ -235,7 +245,7 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const StyledButton = styled.button`
+const StyledButton = styled.button<{ isPass: boolean }>`
   all: unset;
   border: none;
   display: flex;
@@ -275,7 +285,7 @@ const StyledButton = styled.button`
   }
 `;
 
-const ButtonText = styled.div`
+const ButtonText = styled.div<{ isPass: boolean }>`
   color: ${(props) => (props.isPass ? "var(--RIU_Monochrome-100, #818496)" : "#F9F9FB")};
   font-family: 'Pretendard-Bold';
   line-height: 130%;

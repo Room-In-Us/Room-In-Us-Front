@@ -3,84 +3,62 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { surveySectionState, surveyState, modalState } from "../model/surveyAtom";
 import RightArrow from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
 import LeftArrow from "../../../shared/assets/icons/common/arrow/leftArrow.svg?react";
-import SurveyImage from "../../../shared/assets/images/survey/surveyImage2.png";
-import { surveyGenreList } from "../model/surveyGenreList";
-import SurveyTag from "./SurveyTag";
+import SurveyImage from "../../../shared/assets/images/survey/surveyImage3.png";
 
-function SurveyGenreSection() {
+function SurveyHeadcountSection() {
   // state 관리
   const [survey, setSurvey] = useRecoilState(surveyState);
   const [, setSurveySection] = useRecoilState(surveySectionState);
   const setModal = useSetRecoilState(modalState);
 
-  // 장르 선택 상태
-  const selectedGenres = survey.preferredGenreList;
+  // 인원수 선택 상태
+  const selected = survey.preferredHeadcount;
 
-  // 태그 선택 핸들러
-  const handleTagClick = (enumValue) => {
-    const isSelected = selectedGenres.includes(enumValue);
-
-    if (isSelected) {
-      setSurvey(prev => ({
-        ...prev,
-        preferredGenreList: prev.preferredGenreList.filter(tag => tag !== enumValue)
-      }));
-    } else if (selectedGenres.length < 4) {
-      setSurvey(prev => ({
-        ...prev,
-        preferredGenreList: [...prev.preferredGenreList, enumValue]
-      }));
-    }
+  // 인원수 선택 함수
+  const handleSelect = (value: number) => {
+    setSurvey(prev => ({
+      ...prev,
+      preferredHeadcount: prev.preferredHeadcount === value ? null : value
+    }));
   };
 
   return (
     <SectionWrapper>
       <ContentWrapper>
         <ArrowWrapper>
-          <StyledLeftArrow onClick={() => setSurveySection("proficiency")}/>
+          <StyledLeftArrow onClick={() => setSurveySection("genre")}/>
           <PageNumber>
-            2/6
+            3/6
           </PageNumber>
-          <StyledRightArrow onClick={() => setSurveySection("headcount")}/>
+          <StyledRightArrow onClick={() => setSurveySection("preference")}/>
         </ArrowWrapper>
         <StyeldSurveyImage src={SurveyImage}/>
         <TitleWrapper>
           <Title>
-            내가 선호하는 장르는?
+            주로 플레이하는 인원은?
           </Title>
           <Description>
-            <div>나는 감성적인 이야기파? 아니면 짜릿한 스릴러 마니아?</div>
-            <div>취향을 골라보세요.</div>
+            방탈출을 몇 명이서 하는 게 가장 재미있을까요?
           </Description>
         </TitleWrapper>
 
         {/* 선택 영역 */}
-        <CheckWrapper>
-          <ListWrapper>
-            {surveyGenreList.map((item) => (
-              <SurveyTag
-                key={item.id}
-                item={item.genre}
-                selected={selectedGenres.includes(item.enum)}
-                onClick={() => handleTagClick(item.enum)}
-                disabled={
-                  !selectedGenres.includes(item.enum) &&
-                  selectedGenres.length >= 4
-                }
+        <ListWrapper>
+          {[1, 2, 3, 4, 5, 6].map((num) => (
+            <List key={num}>
+              <RadioButton
+                selected={selected === num}
+                onClick={() => handleSelect(num)}
               />
-            ))}
-          </ListWrapper>
-          <CheckDescription>
-            최대 4개까지 선택 가능합니다
-          </CheckDescription>
-        </CheckWrapper>
+              {num === 6 ? '6인 이상' : `${num}인`}
+            </List>
+          ))}
+        </ListWrapper>
       </ContentWrapper>
 
       <ButtonWrapper>
-        <StyledButton onClick={() => setSurveySection("headcount")} isPass={selectedGenres.length === 0}>
-          <ButtonText isPass={selectedGenres.length === 0}>
-            {selectedGenres.length > 0 ? '다음으로' : '질문 넘기기'}
-          </ButtonText>
+        <StyledButton onClick={() => setSurveySection("preference")} isPass={!selected}>
+          <ButtonText isPass={!selected}>{selected ? '다음으로' : '질문 넘기기'}</ButtonText>
         </StyledButton>
         <MainButton onClick={() => setModal(true)}>
           루미너스 메인으로 이동하기
@@ -90,7 +68,7 @@ function SurveyGenreSection() {
   )
 }
 
-export default SurveyGenreSection;
+export default SurveyHeadcountSection;
 
 // CSS
 const SectionWrapper = styled.div`
@@ -180,43 +158,68 @@ const Description = styled.div`
   color: var(--RIU_Monochrome-200, #717486);
   font-family: 'Pretendard-Medium';
   font-size: 0.875em;
+  font-style: normal;
+  font-weight: 500;
   line-height: 130%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 
   @media(max-width: 768px) {
     font-size: 0.75em;
   }
 `;
 
-const CheckWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 0.875em;
-  align-self: stretch;
-`;
-
 const ListWrapper = styled.div`
   display: flex;
-  flex-flow: wrap;
-  gap: 0.875em;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25em;
+  align-self: stretch;
 
-  @media (max-width: 768px) {
-    gap: 0.875em 0.3em;
+  @media(max-width: 768px) {
+    gap: 1em;
   }
 `;
 
-const CheckDescription = styled.div`
-  color: var(--RIU_Monochrome-70, #B3B6C3);
+const List = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.625em;
+  align-self: stretch;
+  color: var(--RIU_Monochrome-300, #696C7E);
   font-family: 'Pretendard-Medium';
-  font-size: 0.75em;
+  font-size: 0.875em;
   line-height: 130%;
 
-  @media (max-width: 768px) {
-    font-size: 0.625em;
+  @media(max-width: 768px) {
+    font-size: 0.65em;
+    line-height: 100%;
+  }
+`;
+
+const RadioButton = styled.button<{ selected: boolean }>`
+  all: unset;
+  border: 1.5px solid var(--RIU_Primary-100, #718FF2);
+  border-radius: 1.875em;
+  width: 1em;
+  height: 1em;
+  position: relative;
+  cursor: pointer;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.5em;
+    height: 0.5em;
+    background-color: var(--RIU_Primary-100, #718FF2);
+    border-radius: 1.875em;
+    transform: translate(-50%, -50%);
+    opacity: ${props => (props.selected ? 1 : 0)};
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  @media(max-width: 768px) {
+    border-width: 1px;
   }
 `;
 
@@ -232,7 +235,7 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const StyledButton = styled.button`
+const StyledButton = styled.button<{ isPass: boolean }>`
   all: unset;
   border: none;
   display: flex;
@@ -272,7 +275,7 @@ const StyledButton = styled.button`
   }
 `;
 
-const ButtonText = styled.div`
+const ButtonText = styled.div<{ isPass: boolean }>`
   color: ${(props) => (props.isPass ? "var(--RIU_Monochrome-100, #818496)" : "#F9F9FB")};
   font-family: 'Pretendard-Bold';
   line-height: 130%;

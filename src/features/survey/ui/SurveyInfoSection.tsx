@@ -7,6 +7,8 @@ import RightArrow from '../../../shared/assets/icons/common/arrow/rightArrow.svg
 import LeftArrow from '../../../shared/assets/icons/common/arrow/leftArrow.svg?react';
 import SurveyImage from '../../../shared/assets/images/survey/surveyImage6.png';
 import { patchPreferencesAPI } from '../api/surveyAPI';
+import type { ChangeEvent } from 'react';
+import type { PatchMemberPreferenceRequest } from '../../../shared/types/preference';
 
 function SurveyInfoSection() {
   // state 관리
@@ -18,7 +20,7 @@ function SurveyInfoSection() {
   const navigate = useNavigate();
 
   // 입력 핸들러
-  const handleTextChange = (e) => {
+  const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
     setText(newText);
     setSurvey((prev) => ({
@@ -30,7 +32,7 @@ function SurveyInfoSection() {
   // 성향조사 제출 핸들러
   const handleSubmitSurvey = async () => {
     try {
-      const payload = {
+      const payload: PatchMemberPreferenceRequest = {
         proficiency: survey.proficiency,
         preferredGenreList: survey.preferredGenreList,
         preferredHeadcount: survey.preferredHeadcount,

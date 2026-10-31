@@ -1,8 +1,15 @@
 import styled from "styled-components";
 import { preferredElementList, preferredDeviceList, preferredActivityList } from "../../../survey/model/surveyPreferenceList";
 import SurveyTag from "./SurveyTag";
+import type { MemberPreferenceResponse } from "../../../../shared/types/preference";
 
-function PreferenceSection({elementInfo, deviceInfo, activityInfo}) {
+type PreferenceSectionProps = {
+  elementInfo?: MemberPreferenceResponse['preferredElementList'];
+  deviceInfo?: MemberPreferenceResponse['preferredDevice'];
+  activityInfo?: MemberPreferenceResponse['preferredActivity'];
+};
+
+function PreferenceSection({elementInfo, deviceInfo, activityInfo}: PreferenceSectionProps) {
   // 요소 선택 상태
   const selectedElements = elementInfo ?? [];
   const selectedDevice = deviceInfo ?? "";

@@ -6,6 +6,7 @@ import LeftArrow from "../../../shared/assets/icons/common/arrow/leftArrow.svg?r
 import SurveyImage from "../../../shared/assets/images/survey/surveyImage4.png";
 import { preferredElementList, preferredDeviceList, preferredActivityList } from "../model/surveyPreferenceList";
 import SurveyTag from "./SurveyTag";
+import type { PreferenceActivity, PreferenceDevice, PreferenceElement } from "../../../shared/types/preference";
 
 function SurveyPreferenceSection() {
   // state 관리
@@ -20,7 +21,7 @@ function SurveyPreferenceSection() {
   const isSelected = selectedElements.length > 0 || selectedDevice !== null || selectedActivity !== null;
   
   // 요소 태그 선택 핸들러
-  const handleElementClick = (enumValue) => {
+  const handleElementClick = (enumValue: PreferenceElement) => {
     const isSelected = selectedElements.includes(enumValue);
     if (isSelected) {
       setSurvey(prev => ({
@@ -36,7 +37,7 @@ function SurveyPreferenceSection() {
   };
 
   // 장치 태그 선택 핸들러
-  const handleDeviceClick = (enumValue) => {
+  const handleDeviceClick = (enumValue: PreferenceDevice) => {
     setSurvey(prev => ({
       ...prev,
       preferredDevice: selectedDevice === enumValue ? null : enumValue,
@@ -44,7 +45,7 @@ function SurveyPreferenceSection() {
   };
 
   // 활동성 태그 선택 핸들러
-  const handleActivityClick = (enumValue) => {
+  const handleActivityClick = (enumValue: PreferenceActivity) => {
     setSurvey(prev => ({
       ...prev,
       preferredActivity: selectedActivity === enumValue ? null : enumValue,
@@ -324,7 +325,7 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const StyledButton = styled.button`
+const StyledButton = styled.button<{ isPass: boolean }>`
   all: unset;
   border: none;
   display: flex;
@@ -364,7 +365,7 @@ const StyledButton = styled.button`
   }
 `;
 
-const ButtonText = styled.div`
+const ButtonText = styled.div<{ isPass: boolean }>`
   color: ${(props) => (props.isPass ? "var(--RIU_Monochrome-100, #818496)" : "#F9F9FB")};
   font-family: 'Pretendard-Bold';
   line-height: 130%;

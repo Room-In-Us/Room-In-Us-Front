@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useResetRecoilState, useSetRecoilState } from 'recoil';
 import { surveySectionState, surveyState, modalState } from '../model/surveyAtom';
 import { patchPreferencesAPI } from '../api/surveyAPI';
+import type { PatchMemberPreferenceRequest } from '../../../shared/types/preference';
 
 function QuitModal() {
   // 상태 관리
@@ -18,7 +19,7 @@ function QuitModal() {
   // 성향조사 제출 핸들러
   const handleSubmitSurvey = async () => {
     try {
-      const payload = {
+      const payload: PatchMemberPreferenceRequest = {
         proficiency: survey.proficiency,
         preferredGenreList: survey.preferredGenreList,
         preferredHeadcount: survey.preferredHeadcount,
@@ -177,7 +178,7 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const StyledButton = styled.button`
+const StyledButton = styled.button<{ isCancel: boolean }>`
   all: unset;
   border: none;
   border-radius: 2.5rem;
@@ -219,7 +220,7 @@ const StyledButton = styled.button`
   }
 `;
 
-const ButtonText = styled.div`
+const ButtonText = styled.div<{ isCancel: boolean }>`
   color: ${(props) => (props.isCancel ? 'var(--RIU_Monochrome-100, #818496)' : '#F9F9FB')};
   font-family: 'Pretendard-Bold';
   font-size: 1rem;

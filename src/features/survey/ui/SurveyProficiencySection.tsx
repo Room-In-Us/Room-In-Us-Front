@@ -4,6 +4,7 @@ import { surveySectionState, surveyState, modalState } from "../model/surveyAtom
 import RightArrow from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
 import LeftArrow from "../../../shared/assets/icons/common/arrow/leftArrow.svg?react";
 import SurveyImage from "../../../shared/assets/images/survey/surveyImage1.png";
+import type { ThemeProficiency } from "../../../shared/types/theme";
 
 function SurveyProficiencySection() {
   // state 관리
@@ -15,7 +16,7 @@ function SurveyProficiencySection() {
   const selected = survey.proficiency;
 
   // 숙련도 저장 함수
-  const handleSelect = (value) => {
+  const handleSelect = (value: ThemeProficiency) => {
     setSurvey(prev => ({
       ...prev,
       proficiency: prev.proficiency === value ? null : value,
@@ -219,7 +220,7 @@ const List = styled.div`
   }
 `;
 
-const RadioButton = styled.button`
+const RadioButton = styled.button<{ selected: boolean }>`
   all: unset;
   border: 1.5px solid var(--RIU_Primary-100, #718FF2);
   border-radius: 1.875em;
@@ -259,7 +260,7 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const StyledButton = styled.button`
+const StyledButton = styled.button<{ isPass: boolean }>`
   all: unset;
   border: none;
   display: flex;
@@ -299,7 +300,7 @@ const StyledButton = styled.button`
   }
 `;
 
-const ButtonText = styled.div`
+const ButtonText = styled.div<{ isPass: boolean }>`
   color: ${(props) => (props.isPass ? "var(--RIU_Monochrome-100, #818496)" : "#F9F9FB")};
   font-family: 'Pretendard-Bold';
   line-height: 130%;

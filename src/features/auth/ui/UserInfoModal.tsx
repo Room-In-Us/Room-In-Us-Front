@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import CloseIcon from "../../../shared/assets/icons/reviewWrite/closeicon.svg";
 import UserIcon from "../../../shared/assets/icons/userInfo/userIcon.svg";
@@ -10,17 +10,30 @@ import GenreSection from "./preferences/GenreSection";
 import HeadcountSection from "./preferences/HeadcountSection";
 import PreferenceSection from "./preferences/PreferenceSection";
 import PositionSection from "./preferences/PositionSection";
-import InfoSection from "./preferences/InfoSection.jsx";
+import InfoSection from "./preferences/InfoSection";
 import NoDataIcon from "../../../shared/assets/images/common/noData/noDataImageLarge.png";
 import Loading from "../../../shared/components/Loading";
+import type { MemberPreferenceResponse } from "../../../shared/types/preference";
+import type { MemberIdPathParam } from "../api/types";
+
+type UserInfoPreferences = Omit<MemberPreferenceResponse, 'memberId'>;
 
 function UserInfoModal() {
   // 상태 관리
   const setModalOpen = useSetRecoilState(userInfoModalState);
   const userId = useRecoilValue(userInfoIdState);
   const userName = useRecoilValue(userInfoNameState);
-  const [userInfoList, setUserInfoList] = useState(null);
+  const [userInfoList, setUserInfoList] = useState<UserInfoPreferences | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [resolvedUserId, setResolvedUserId] = useState<MemberIdPathParam | null>(null);
+  const requestGeneration = useRef(0);
+  const currentUserId = useRef(userId);
+  currentUserId.current = userId;
+
+  // effect 실행 전 렌더에서도 이전 회원의 성향을 표시하지 않는다.
+  const hasUserId = typeof userId === 'number' || typeof userId === 'string';
+  const displayedUserInfo = hasUserId && resolvedUserId === userId ? userInfoList : null;
+  const isCurrentUserLoading = hasUserId && (isLoading || resolvedUserId !== userId);
 
   // 모달 닫기 핸들러
   const handleClose = () => {
@@ -28,9 +41,9 @@ function UserInfoModal() {
   };
 
   // 데이터 확인 함수
-  const hasAnyData = (obj) => {
+  const hasAnyData = (obj: UserInfoPreferences | null) => {
     if (!obj) return false;
-    return Object.values(obj).some((value) => {
+    return Object.values(obj).some((value: unknown) => {
       if (Array.isArray(value)) return value.length > 0;
       return !!value;
     });
@@ -38,10 +51,22 @@ function UserInfoModal() {
 
   // 유저 정보 호출
   useEffect(() => {
+    const generation = ++requestGeneration.current;
+    let isActive = true;
+    const isCurrentRequest = () => isActive && currentUserId.current === userId && requestGeneration.current === generation;
+
+    setUserInfoList(null);
+    setResolvedUserId(null);
+    if (typeof userId !== 'number' && typeof userId !== 'string') {
+      setIsLoading(false);
+      return;
+    }
+
     const fetchPreferences = async () => {
       setIsLoading(true);
       try {
         const data = await getUserInfoAPI(userId);
+        if (!isCurrentRequest()) return;
         const mapped = {
           proficiency: data.proficiency,
           preferredGenreList: data.preferredGenreList,
@@ -54,14 +79,22 @@ function UserInfoModal() {
         };
         setUserInfoList(mapped || {});
       } catch (error) {
+        if (!isCurrentRequest()) return;
         console.error("유저 정보 로딩 실패:", error);
         setUserInfoList({});
       } finally {
-        setIsLoading(false);
+        if (isCurrentRequest()) {
+          setResolvedUserId(userId);
+          setIsLoading(false);
+        }
       }
     };
 
     fetchPreferences();
+
+    return () => {
+      isActive = false;
+    };
   }, [userId]);
 
   return (
@@ -82,31 +115,31 @@ function UserInfoModal() {
           <TitleDescription>님의 방탈출 취향</TitleDescription>
         </TitleWrapper>
 
-        {isLoading ? (
+        {isCurrentUserLoading ? (
           <Loading />
-        ) : hasAnyData(userInfoList) ? (
+        ) : hasAnyData(displayedUserInfo) ? (
           <>
             {/* 숙련도 섹션 */}
-            <ProficiencySection userInfo={userInfoList?.proficiency} />
+            <ProficiencySection userInfo={displayedUserInfo?.proficiency} />
 
             {/* 장르 섹션 */}
-            <GenreSection userInfo={userInfoList?.preferredGenreList} />
+            <GenreSection userInfo={displayedUserInfo?.preferredGenreList} />
 
             {/* 인원 섹션 */}
-            <HeadcountSection userInfo={userInfoList?.preferredHeadcount} />
+            <HeadcountSection userInfo={displayedUserInfo?.preferredHeadcount} />
 
             {/* 취향 섹션 */}
             <PreferenceSection
-              elementInfo={userInfoList?.preferredElementList}
-              deviceInfo={userInfoList?.preferredDevice}
-              activityInfo={userInfoList?.preferredActivity}
+              elementInfo={displayedUserInfo?.preferredElementList}
+              deviceInfo={displayedUserInfo?.preferredDevice}
+              activityInfo={displayedUserInfo?.preferredActivity}
             />
 
             {/* 포지션 섹션 */}
-            <PositionSection userInfo={userInfoList?.horrorPos} />
+            <PositionSection userInfo={displayedUserInfo?.horrorPos} />
 
             {/* 추가정보 섹션 */}
-            <InfoSection userInfo={userInfoList?.preference} />
+            <InfoSection userInfo={displayedUserInfo?.preference} />
           </>
         ): (
           <NoDataWrapper>

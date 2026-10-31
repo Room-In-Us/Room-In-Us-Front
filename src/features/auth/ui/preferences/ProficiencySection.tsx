@@ -1,32 +1,51 @@
 import styled from "styled-components";
+import type { MemberPreferenceResponse } from "../../../../shared/types/preference";
 
-function HeadcountSection({userInfo}) {
-  // 인원수 선택 상태
+type ProficiencySectionProps = { userInfo?: MemberPreferenceResponse['proficiency'] };
+
+function ProficiencySection({userInfo}: ProficiencySectionProps) {
+  // 숙련도 선택 상태
   const selected = userInfo ?? "";
-  
+
   return (
     <SectionWrapper>
       {/* 타이틀 */}
       <Title>
-        선호 인원
+        숙련도
       </Title>
 
       {/* 선택 영역 */}
       <ListWrapper>
-        {[1, 2, 3, 4, 5, 6].map((num) => (
-          <List key={num}>
-            <RadioButton
-              selected={selected === num}
-            />
-            {num === 6 ? '6인 이상' : `${num}인`}
-          </List>
-        ))}
+        <List>
+          <RadioButton
+            selected={selected === 'BEGINNER'}
+          />
+          방세포 : 0~5방 정도로 아직 방탈출에 대한 느낌을 잘 몰라요!
+        </List>
+        <List>
+          <RadioButton
+            selected={selected === 'JUNIOR'}
+          />
+          방초보 : 5~20방 정도 경험이 있어 어떤 느낌인지는 알아요!
+        </List>
+        <List>
+          <RadioButton
+            selected={selected === 'SENIOR'}
+          />
+          방중수 : 20~50방 정도의 경험이 있어 무난하게 할 수 있어요!
+        </List>
+        <List>
+          <RadioButton
+            selected={selected === 'MASTER'}
+          />
+          방고수 : 50+ 방 정도 경험이 있어 난이도가 상관이 없어요!
+        </List>
       </ListWrapper>
     </SectionWrapper>
   )
 }
 
-export default HeadcountSection;
+export default ProficiencySection;
 
 // CSS
 const SectionWrapper = styled.div`
@@ -79,7 +98,7 @@ const List = styled.div`
   }
 `;
 
-const RadioButton = styled.button`
+const RadioButton = styled.button<{ selected: boolean }>`
   all: unset;
   border: 1.5px solid var(--RIU_Primary-100, #718FF2);
   border-radius: 1.875em;

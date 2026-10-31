@@ -1,31 +1,27 @@
 import styled from "styled-components";
+import type { MemberPreferenceResponse } from "../../../../shared/types/preference";
 
-function PositionSection({userInfo}) {
-  // 포지션 선택 상태
+type HeadcountSectionProps = { userInfo?: MemberPreferenceResponse['preferredHeadcount'] };
+
+function HeadcountSection({userInfo}: HeadcountSectionProps) {
+  // 인원수 선택 상태
   const selected = userInfo ?? "";
-
+  
   return (
     <SectionWrapper>
       {/* 타이틀 */}
       <Title>
-        공포 테마 포지션
+        선호 인원
       </Title>
 
       {/* 선택 영역 */}
       <ListWrapper>
-        {[
-          { label: '탱', value: 'FEARLESS', description: '공포 구간도 주저 없이! 웬만한 공포 연출엔 안 놀라요.' },
-          { label: '쫄탱', value: 'FEARFUL_TANK', description: '떨면서도 탱 역할을 수행할 순 있어요.' },
-          { label: '마지모탱', value: 'RELUCTANT_TANK', description: '나서기는 무섭지만 떠밀려서 어쩔 수 없이 가요.' },
-          { label: '변쫄', value: 'NERVOUS', description: '공포 테마가 무섭지만 계속 하고 싶어요.' },
-          { label: '쫄', value: 'SCARED', description: '공포 테마는 무서워서 잘 못해요.' },
-          { label: '극쫄', value: 'EXTREME_SCARED', description: '공포가 아니어도 웬만한 테마는 무서워요.' },
-        ].map((item) => (
-          <List key={item.value}>
+        {[1, 2, 3, 4, 5, 6].map((num) => (
+          <List key={num}>
             <RadioButton
-              selected={selected === item.value}
+              selected={selected === num}
             />
-            {item.label} : {item.description}
+            {num === 6 ? '6인 이상' : `${num}인`}
           </List>
         ))}
       </ListWrapper>
@@ -33,7 +29,7 @@ function PositionSection({userInfo}) {
   )
 }
 
-export default PositionSection;
+export default HeadcountSection;
 
 // CSS
 const SectionWrapper = styled.div`
@@ -76,13 +72,17 @@ const List = styled.div`
   align-items: center;
   gap: 0.625em;
   align-self: stretch;
+  color: var(--RIU_Monochrome-300, #696C7E);
+  font-family: 'Pretendard-Medium';
+  font-size: 0.875em;
+  line-height: 130%;
 
   @media (max-width: 768px) {
     font-size: 0.625em;
   }
 `;
 
-const RadioButton = styled.button`
+const RadioButton = styled.button<{ selected: boolean }>`
   all: unset;
   border: 1.5px solid var(--RIU_Primary-100, #718FF2);
   border-radius: 1.875em;
@@ -103,6 +103,7 @@ const RadioButton = styled.button`
     transform: translate(-50%, -50%);
     opacity: ${props => (props.selected ? 1 : 0)};
     transition: opacity 0.2s ease-in-out;
+  }
 
   @media (max-width: 768px) {
     font-size: 0.75em;

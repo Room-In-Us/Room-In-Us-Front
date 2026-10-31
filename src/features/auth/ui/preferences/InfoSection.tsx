@@ -1,6 +1,9 @@
 import styled from "styled-components";
+import type { MemberPreferenceResponse } from "../../../../shared/types/preference";
 
-function InfoSection({userInfo}) {
+type InfoSectionProps = { userInfo?: MemberPreferenceResponse['preference'] };
+
+function InfoSection({userInfo}: InfoSectionProps) {
   // state 관리
   const text = userInfo ?? "";
 
