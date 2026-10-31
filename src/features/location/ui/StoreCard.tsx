@@ -16,16 +16,22 @@ import { getLocationListAPI } from "../api/locationThemeAPI";
 import BottomSheet from "../../../shared/components/BottomSheet";
 import { sortOptions } from '../../../shared/components/filter/OptionList';
 import useDevice from "../../../shared/hooks/useDevice";
+import type { Dispatch, SetStateAction } from "react";
+import type { LocationStoreInfoResponse } from "../api/types";
+import type { ThemeResponse, ThemeSortOption } from "../../../shared/types/theme";
+import type { FilterValues } from "../../../shared/components/filter/filterTypes";
 
 function StoreCard() {
   // 상태 관리
   const [headCount, setHeadCount] = useState(2); // 인원 필터 상태
-  const [selectedSort, setSelectedSort] = useState("HIGH_SATISFACTION_LEVEL"); // 정렬 필터 상태
-  const [themeList, setThemeList] = useState([]);
+  const [selectedSort, setSelectedSort] = useState<ThemeSortOption>("HIGH_SATISFACTION_LEVEL"); // 정렬 필터 상태
+  const [themeList, setThemeList] = useState<ThemeResponse[]>([]);
   const [, setIsStationCardVisible] = useRecoilState(stationCardVisible);
   const [, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
   const [storeId,] = useRecoilState(locationStoreId);
-  const [storeInfo, setStoreInfo] = useState([]);
+  const [storeInfo, setStoreInfo] = useState<LocationStoreInfoResponse | []>([]);
+  const currentStoreInfo = !Array.isArray(storeInfo) && storeInfo.storeId === storeId ? storeInfo : undefined;
+  const visibleThemeList = storeId === null ? [] : themeList;
   // 복사 툴팁 상태 관리
   const [showAddressTooltip, setShowAddressTooltip] = useState(false);
   const [showUrlTooltip, setShowUrlTooltip] = useState(false);
@@ -59,15 +65,21 @@ function StoreCard() {
   };
 
   // 인원수 필터링
-  const handlePeopleFilterChange = (count) => {
+  const handlePeopleFilterChange = (count: number) => {
     setHeadCount(count); 
   };
 
   // 매장 상세 조회
   useEffect(() => {
+    setStoreInfo([]);
+    if (storeId === null) return;
+
+    let isActive = true;
+
     const fetchData = async () => {
       try {
         const response = await getLocationStoreInfoAPI(storeId);
+        if (!isActive) return;
         console.log('매장 상세 정보: ', response);
         setStoreInfo(response);
       } catch (error) {
@@ -75,13 +87,25 @@ function StoreCard() {
       }
     };
     fetchData();
+
+    return () => {
+      isActive = false;
+    };
   }, [storeId]);
 
   // 테마 목록 조회
   useEffect(() => {
+    if (storeId === null) {
+      setThemeList([]);
+      return;
+    }
+
+    let isActive = true;
+
     const fetchData = async () => {
       try {
         const response = await getLocationListAPI(storeId, headCount, 1, 10000, selectedSort);
+        if (!isActive) return;
         console.log('테마 목록: ', response.contents);
         setThemeList(response.contents);
       } catch (error) {
@@ -89,15 +113,19 @@ function StoreCard() {
       }
     };
     fetchData();
+
+    return () => {
+      isActive = false;
+    };
   }, [storeId, headCount, selectedSort]);
 
   // 상세 정보 복사 기능
-  const showTooltipWithTimer = (setFn) => {
+  const showTooltipWithTimer = (setFn: Dispatch<SetStateAction<boolean>>) => {
     setFn(true);
     setTimeout(() => setFn(false), 1500);
   };
 
-  const handleAddressCopy = (data) => {
+  const handleAddressCopy = (data: string) => {
     navigator.clipboard.writeText(data)
       .then(() => {
         showTooltipWithTimer(setShowAddressTooltip);
@@ -107,7 +135,7 @@ function StoreCard() {
       });
   };
 
-  const handleUrlCopy = (data) => {
+  const handleUrlCopy = (data: string) => {
     navigator.clipboard.writeText(data)
       .then(() => {
         showTooltipWithTimer(setShowUrlTooltip);
@@ -117,7 +145,7 @@ function StoreCard() {
       });
   };
 
-  const handleContactCopy = (data) => {
+  const handleContactCopy = (data: string) => {
     navigator.clipboard.writeText(data)
       .then(() => {
         showTooltipWithTimer(setShowContactTooltip);
@@ -128,7 +156,7 @@ function StoreCard() {
   };
 
   // 필터 적용 함수 수정
-  const handleApplyFilters = ({ people, sort }) => {
+  const handleApplyFilters = ({ people, sort }: FilterValues) => {
     setHeadCount(people);
     setSelectedSort(sort);
     setIsFilterActive(true);
@@ -163,7 +191,7 @@ function StoreCard() {
   };
 
   // 리셋 처리 함수
-  const handleResetFilters = ({ people, sort }) => {
+  const handleResetFilters = ({ people, sort }: FilterValues) => {
     setHeadCount(people);  
     setSelectedSort(sort);
     // setSelectedRegion(region); 
@@ -279,34 +307,34 @@ function StoreCard() {
       {/* 타이틀 영역 */}
       <TitleWrapper>
         <Title>
-          {storeInfo.storeName}
+          {currentStoreInfo?.storeName}
         </Title>
         <DescriptionWrapper>
           <DescriptionList>
             <StyledLocationIcon/>
-            <DescriptionText>{storeInfo.storeAddress}</DescriptionText>
+            <DescriptionText>{currentStoreInfo?.storeAddress}</DescriptionText>
             <CopyWrapper>
-              <StyledCopyIcon onClick={() => handleAddressCopy(storeInfo.storeAddress)}></StyledCopyIcon>
+              <StyledCopyIcon aria-disabled={!currentStoreInfo} onClick={currentStoreInfo ? () => handleAddressCopy(currentStoreInfo.storeAddress) : undefined}></StyledCopyIcon>
               {showAddressTooltip && <Tooltip>주소 복사 완료!</Tooltip>}
             </CopyWrapper>
           </DescriptionList>
           <DescriptionList>
             <StyledLinkIcon/>
             <DescriptionText
-              href={storeInfo.storeWebsiteUrl}
+              href={currentStoreInfo?.storeWebsiteUrl}
               target="_blank"
               rel="noopener noreferrer"
-            >{storeInfo.storeWebsiteUrl}</DescriptionText>
+            >{currentStoreInfo?.storeWebsiteUrl}</DescriptionText>
             <CopyWrapper>
-              <StyledCopyIcon onClick={() => handleUrlCopy(storeInfo.storeWebsiteUrl)}/>
+              <StyledCopyIcon aria-disabled={!currentStoreInfo} onClick={currentStoreInfo ? () => handleUrlCopy(currentStoreInfo.storeWebsiteUrl) : undefined}/>
               {showUrlTooltip && <Tooltip>URL 복사 완료!</Tooltip>}
             </CopyWrapper>
           </DescriptionList>
           <DescriptionList>
             <StyledTelIcon/>
-            <DescriptionText>{storeInfo.storeContact}</DescriptionText>
+            <DescriptionText>{currentStoreInfo?.storeContact}</DescriptionText>
             <CopyWrapper>
-              <StyledCopyIcon onClick={() => handleContactCopy(storeInfo.storeContact)}/>          
+              <StyledCopyIcon aria-disabled={!currentStoreInfo} onClick={currentStoreInfo ? () => handleContactCopy(currentStoreInfo.storeContact) : undefined}/>
               {showContactTooltip && <Tooltip>번호 복사 완료!</Tooltip>}
             </CopyWrapper>
           </DescriptionList>
@@ -316,7 +344,7 @@ function StoreCard() {
       {/* 필터 영역 */}
       <FilterTitleWrapper>
         <ThemeNumber>
-          테마 목록 &#40;{themeList.length}&#41;
+          테마 목록 &#40;{visibleThemeList.length}&#41;
         </ThemeNumber>
         {isMobile ? (
           <>
@@ -362,8 +390,8 @@ function StoreCard() {
 
       {/* 콘텐츠 카드 영역 */}
       <ContentCardWrapper>
-        {themeList.map((items) => (
-          <LocationContentCard key={items.id} data={items} headCount={headCount} type="location"/>
+        {visibleThemeList.map((items) => (
+          <LocationContentCard key={items.themeId} data={items} headCount={headCount} type="location"/>
         ))}
       </ContentCardWrapper>
     </ComponentWrapper>
@@ -573,7 +601,7 @@ const Filter = styled.div`
   }
 `;
 
-const FilterIcon = styled.img`
+const FilterIcon = styled.img<{ $isSelected: boolean }>`
   display: flex;
   width: 0.9375rem;
   height: 0.9375rem;
@@ -590,7 +618,7 @@ const FilterIcon = styled.img`
       : "none"};
 `;
 
-const LocationFilterText = styled.div`
+const LocationFilterText = styled.div<{ $isSelected: boolean }>`
   font-family: ${({ $isSelected }) => $isSelected ? 'Pretendard-Bold' : 'Pretendard-Medium'};
   font-size: 0.875rem;
   color: ${({ $isSelected }) => $isSelected ? "var(--RIU_Primary-300, #5B6ACC)" : "var(--RIU_Monochrome-200, #717486)"};

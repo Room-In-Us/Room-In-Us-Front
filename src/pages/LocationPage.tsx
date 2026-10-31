@@ -21,22 +21,30 @@ import { getLocationZonesAPI } from '../features/location/api/locationAPI';
 import useDevice from '../shared/hooks/useDevice';
 import { Sheet } from 'react-modal-sheet';
 import { useLocation } from 'react-router-dom';
+import type { Location } from 'react-router-dom';
+import type { SheetRef } from 'react-modal-sheet';
+import type { RegionId, ZoneResponse } from '../features/location/api/types';
+
+interface LocationEntryState {
+  regionId: RegionId;
+  zoneName: string;
+}
 
 function LocationPage() {
   // 초기 구역 세팅 관련 상태 관리
-  const location = useLocation();
-  const [entryRegionId, setEntryRegionId] = useState(location.state?.regionId);
-  const [entryZoneName, setEntryZoneName] = useState(location.state?.zoneName);
+  const location: Location<LocationEntryState | null> = useLocation();
+  const [entryRegionId, setEntryRegionId] = useState<RegionId | null | undefined>(location.state?.regionId);
+  const [entryZoneName, setEntryZoneName] = useState<string | null | undefined>(location.state?.zoneName);
 
   // 상태 관리
-  const [selectedStationIndices, setSelectedStationIndices] = useState({
+  const [selectedStationIndices, setSelectedStationIndices] = useState<Record<RegionId, number | null>>({
     1: null, // 서울
     2: null, // 경기/인천
   });
   const [isStationListVisible, setIsStationListVisible] = useState(true);
   const [isStationCardVisible, setIsStationCardVisible] = useRecoilState(stationCardVisible);
   const [isStoreCardVisible, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
-  const [stationList, setStationList] = useState([]); // 역 목록 상태
+  const [stationList, setStationList] = useState<ZoneResponse[]>([]); // 역 목록 상태
   const [regionId, setRegionId] = useRecoilState(locationRegionId); // 지역 아이디 상태
   const [, setZoneName] = useRecoilState(zoneName); // 구역 이름 상태
   const [, setStoreCount] = useRecoilState(storeCount); // 구역별 매장 개수
@@ -48,7 +56,7 @@ function LocationPage() {
   const activeRegionId = entryRegionId ?? regionId;
   const isSeoulCheck = activeRegionId === 1;
 
-  const sheetRef = useRef(null);
+  const sheetRef = useRef<SheetRef>(null);
 
   // 스냅 포인트
   const snapPoints = [0, 26, 0.5, 1];
@@ -60,7 +68,7 @@ function LocationPage() {
   const { isMobile } = useDevice();
 
   // 지역 선택 핸들러
-  const handleLocationCheck = (id) => {
+  const handleLocationCheck = (id: RegionId) => {
     setEntryRegionId(null);
     setEntryZoneName(null);
     setIsStationListVisible(true);
@@ -69,7 +77,7 @@ function LocationPage() {
   };
 
   // 역 선택 핸들러
-  const handleStationSelect = (data) => {
+  const handleStationSelect = (data: ZoneResponse) => {
     setIsStationCardVisible(true);
     setIsStoreCardVisible(false);
 
@@ -85,9 +93,13 @@ function LocationPage() {
   useEffect(() => {
     if (!activeRegionId) return;
 
+    setStationList([]);
+    let isActive = true;
+
     const fetchData = async () => {
       try {
         const response = await getLocationZonesAPI(activeRegionId);
+        if (!isActive) return;
         console.log('구역별 역 목록: ', response);
         setStationList(response);
       } catch (error) {
@@ -96,6 +108,10 @@ function LocationPage() {
     };
 
     fetchData();
+
+    return () => {
+      isActive = false;
+    };
   }, [activeRegionId]);
 
   useEffect(() => {
@@ -286,7 +302,7 @@ function LocationPage() {
 export default LocationPage;
 
 // CSS
-const PageWrapper = styled.div`
+const PageWrapper = styled.div<{ isMobile: boolean }>`
   font-size: 0.6rem; // 임의로 지정
   margin-top: ${({ isMobile }) => (isMobile ? '4.375rem' : '5.625rem')}; // 헤더높이
   width: 100vw;
@@ -323,7 +339,7 @@ const LocationButtonWrapper = styled.div`
   }
 `;
 
-const LocationButton = styled.div`
+const LocationButton = styled.div<{ isSeoulCheck: boolean }>`
   border-bottom: 1px solid var(--RIU_Monochrome-50, #d6d6df);
   width: 4.375em;
   height: 4.375em;
@@ -341,7 +357,7 @@ const LocationButton = styled.div`
   transition: all 0.2s ease-in-out;
 `;
 
-const StyledMarkerIcon = styled(MarkerIcon)`
+const StyledMarkerIcon = styled(MarkerIcon)<{ isSeoulCheck: boolean }>`
   width: 1.875em;
   height: 1.875em;
   fill: ${(props) => (props.isSeoulCheck ? 'var(--RIU_Monochrome-10, #F9F9FB)' : 'var(--RIU_Primary-100, #718FF2)')};
@@ -374,7 +390,7 @@ const SideButton = styled.div`
   background: #fff;
 `;
 
-const SideButtonArrow = styled(ArrowIcon)`
+const SideButtonArrow = styled(ArrowIcon)<{ openState: boolean }>`
   width: 0.9375em;
   height: 0.9375em;
   fill: var(--RIU_Primary-80, #8da3ff);
@@ -382,7 +398,7 @@ const SideButtonArrow = styled(ArrowIcon)`
   transition: all 0.3s ease;
 `;
 
-const StationListWrapper = styled.div`
+const StationListWrapper = styled.div<{ isVisible: boolean }>`
   font-size: 1.3em; // 임의로 지정
   height: 100%;
   display: flex;
@@ -440,7 +456,7 @@ const StyledArrowIcon = styled(ArrowIcon)`
   }
 `;
 
-const StationList = styled.div`
+const StationList = styled.div<{ isSelected: boolean }>`
   border-bottom: 1px solid var(--RIU_Monochrome-50, #d6d6df);
   padding: 0em 1.25em 0em 2.5em;
   box-sizing: border-box;
