@@ -79,7 +79,7 @@ const SortText = styled.div`
   }
 `;
 
-const DropDown = styled(DropDownIcon)`
+const DropDown = styled(DropDownIcon)<{ $isRotated: boolean }>`
   display: flex;
   width: 0.9375em;
   height: 0.9375em;
@@ -112,7 +112,7 @@ const RadioIcon = styled.img`
   }
 `;
 
-const RadioLabel = styled.div`
+const RadioLabel = styled.div<{ $isSelected: boolean }>`
   font-size: 0.875rem;
   font-family: ${({ $isSelected }) => ($isSelected ? "Pretendard-Bold" : "Pretendard-Medium")};
   color: ${({ $isSelected }) => ($isSelected ? "var(--RIU_Primary-300, #5B6ACC)" : "var(--RIU_Monochrome-200, #717486)")};
@@ -122,7 +122,7 @@ const RadioLabel = styled.div`
   }
 `;
 
-const DropdownItem = styled.div`
+const DropdownItem = styled.div<{ $isSelected: boolean }>`
   font-size: 0.875rem;
   color: var(--RIU_Monochrome-200, #717486);
   cursor: pointer;

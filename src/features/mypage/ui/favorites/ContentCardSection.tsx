@@ -5,15 +5,16 @@ import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { headCountState } from "../../model/favoriteAtom";
 import NoDataImg from "../../../../shared/assets/images/common/noData/noDataImageLarge.png";
+import type { ThemeResponse } from "../../../../shared/types/theme";
 
 export default function ContentCardSection() {
 
 	// 인원수 필터 상태
 	const headCount = useRecoilValue(headCountState);
 
-	const [themeList, setThemeList] = useState([]);
+	const [themeList, setThemeList] = useState<ThemeResponse[]>([]);
 
-	const handleUnlike = (themeId) => {
+	const handleUnlike = (themeId: ThemeResponse['themeId']) => {
 		setThemeList(prevList => 
 			prevList.map(item =>
 				item.themeId === themeId
@@ -29,7 +30,7 @@ export default function ContentCardSection() {
 				const response = await getFavoriteThemesAPI(headCount, 1, 1000);
 				setThemeList(response.contents);
 
-				const initialLikes = {};
+				const initialLikes: Record<ThemeResponse['themeId'], boolean> = {};
 				response.contents.forEach(item => {
 					initialLikes[item.themeId] = true;
 				});

@@ -23,16 +23,17 @@ import {
 import { getSeoulZonesInfoAPI, getSeoulZoneStoreListAPI, getZoneStoreListAPI } from '../api/locationAPI';
 import { stationLineConversion } from '../../../shared/utils/stationLineUtils';
 import useDevice from '../../../shared/hooks/useDevice';
+import type { SeoulZoneInfoResponse, StationResponse, StoreId, StoreSortOption } from '../api/types';
 
 function StationCard() {
   // 상태 관리
   const [, setIsStationCardVisible] = useRecoilState(stationCardVisible);
   const [, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
-  const [, setZoneInfo] = useState(''); // 구역별 상세정보
-  const [stationList, setStationList] = useState([]); // 역 목록 상태
+  const [, setZoneInfo] = useState<SeoulZoneInfoResponse | ''>(''); // 구역별 상세정보
+  const [stationList, setStationList] = useState<StationResponse[]>([]); // 역 목록 상태
   const [isZoneId] = useRecoilState(zoneId);
   const [currentPage, setCurrentPage] = useRecoilState(storePageNumber);
-  const [totalPages, setTotalPages] = useState('');
+  const [totalPages, setTotalPages] = useState<number | ''>('');
   const [, setStoreId] = useRecoilState(locationStoreId);
   const [selectedRegionId] = useRecoilState(selectedLocationRegionId); // 지역 아이디 상태
   const [CapitalZoneName] = useRecoilState(zoneName); // 구역 이름 상태
@@ -42,11 +43,15 @@ function StationCard() {
   const [storeList, setStoreList] = useRecoilState(storeInfoList); // 매장 리스트
   const [, setZoomLevel] = useRecoilState(zoomLevel); // 줌 레벨
   const [isSortOpen, setIsSortOpen] = useState(false);
-  const [sortStatus, setSortStatus] = useState('RECOMMEND');
-  const [stationDisplayZoneName, setStationDisplayZoneName] = useState('');
+  const [sortStatus, setSortStatus] = useState<StoreSortOption>('RECOMMEND');
+  const [stationDisplayZoneName, setStationDisplayZoneName] = useState<string | null>('');
 
   // 반응형 함수
   const { isMobile } = useDevice();
+
+  // effect가 목록을 비우기 전 렌더에서도 이전 결과를 표시하지 않는다.
+  const hasRequiredIds = isZoneId !== null &&
+    ((isZoneId > 0 && isZoneId < 17) || selectedRegionId !== null);
 
   // 돌아가기 핸들러
   const handleStationSelect = () => {
@@ -55,7 +60,7 @@ function StationCard() {
   };
 
   // 매장 선택 핸들러
-  const handleStoreSelect = (id) => {
+  const handleStoreSelect = (id: StoreId) => {
     setIsStoreCardVisible(true);
     setIsStationCardVisible(false);
     setStoreId(id);
@@ -63,7 +68,7 @@ function StationCard() {
 
   // 서울 구역 상세정보 조회
   useEffect(() => {
-    if (!(isZoneId > 0 && isZoneId < 17)) {
+    if (!(isZoneId !== null && isZoneId > 0 && isZoneId < 17)) {
       setStationList([]);
       setStationDisplayZoneName('');
       return;
@@ -92,10 +97,20 @@ function StationCard() {
 
   // 서울 구역 매장 목록 조회
   useEffect(() => {
+    let isActive = true;
+
     const fetchData = async () => {
+      if (isZoneId === null) {
+        setStoreList([]);
+        setTotalPages(0);
+        setCurrentPage(1);
+        return;
+      }
+
       try {
         if (isZoneId > 0 && isZoneId < 17) {
           const response = await getSeoulZoneStoreListAPI(isZoneId, currentPage, isMobile ? 6 : 10, sortStatus);
+          if (!isActive) return;
           console.log('서울 구역 매장 목록: ', response);
           setTotalPages(response.storeData.totalPages);
           setCenterLatAndLng({
@@ -106,6 +121,14 @@ function StationCard() {
           setStoreList(response.storeData.contents); // 매장 리스트
           setZoomLevel(16); // 줌 레벨
         } else {
+          // 서울 전용 경로에서는 지역 ID를 사용하지 않는다.
+          if (selectedRegionId === null) {
+            setStoreList([]);
+            setTotalPages(0);
+            setCurrentPage(1);
+            return;
+          }
+
           const response = await getZoneStoreListAPI(
             selectedRegionId,
             isZoneId,
@@ -113,6 +136,7 @@ function StationCard() {
             isMobile ? 6 : 10,
             sortStatus,
           );
+          if (!isActive) return;
           console.log('수도권 구역 매장 목록: ', response);
           setTotalPages(response.storeData.totalPages);
           setCenterLatAndLng({
@@ -128,27 +152,34 @@ function StationCard() {
       }
     };
     fetchData();
-  }, [isZoneId, currentPage, selectedRegionId, setCenterLatAndLng, setStoreList, setZoomLevel, sortStatus, isMobile]);
+
+    return () => {
+      isActive = false;
+    };
+  }, [isZoneId, currentPage, selectedRegionId, setCenterLatAndLng, setStoreList, setZoomLevel, setCurrentPage, sortStatus, isMobile]);
+
+  // 빈 문자열과의 기존 숫자 비교 결과를 보존한다.
+  const hasNextPage = hasRequiredIds && (totalPages === '' ? currentPage < 0 : currentPage < totalPages);
 
   // 페이지 이동
-  const handlePageClick = (page) => {
+  const handlePageClick = (page: number) => {
     setCurrentPage(page);
   };
   // 이전 페이지 이동
   const handlePrevPage = () => {
-    if (currentPage > 1) {
+    if (hasRequiredIds && currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
   // 다음 페이지 이동
   const handleNextPage = () => {
-    if (currentPage < totalPages) {
+    if (hasNextPage) {
       setCurrentPage(currentPage + 1);
     }
   };
 
   // 역 이름 포맷팅 (잠실 -> '역' 제거)
-  const formatStationName = (stationName, zoneName) => {
+  const formatStationName = (stationName: string, zoneName: string | null) => {
     if (!stationName) return '';
     if (zoneName === '잠실') {
       return stationName.replace(/역$/, '');
@@ -178,7 +209,7 @@ function StationCard() {
             </StationDescription>
           </StationTitleWrapper>
           <StationListWrapper isSmallSize={isSmallStationSize}>
-            {isZoneId > 0 && isZoneId < 17
+            {isZoneId !== null && isZoneId > 0 && isZoneId < 17
               ? stationList.map((station, index) => (
                   <StationList key={index}>
                     {/* 호선 아이콘 렌더링 */}
@@ -229,7 +260,7 @@ function StationCard() {
         </ListWrapper>
         {/* 매장 목록 */}
         <StoreList>
-          {storeList.map((store, index) => (
+          {hasRequiredIds && storeList.map((store, index) => (
             <ListItem
               key={index}
               onClick={() => {
@@ -244,7 +275,7 @@ function StationCard() {
                 <ItemNumber>&#40;{store.themeCount}&#41;</ItemNumber>
               </ItemTitleWrapper>
               <ArrowWrapper>
-                {(isZoneId === 0 || isZoneId > 16) && Array.isArray(store.stationLineList) && store.stationName && (
+                {(isZoneId === 0 || (isZoneId !== null && isZoneId > 16)) && Array.isArray(store.stationLineList) && store.stationName && (
                   <ListStationWrapper>
                     {store.stationLineList.map((line, lineIndex) => {
                       const LineIcon = stationLineConversion(line);
@@ -266,9 +297,9 @@ function StationCard() {
 
       {/* 페이징 영역 */}
       <PagingWrapper>
-        <StyledLeftArrowIcon hasNextPage={currentPage > 1} onClick={handlePrevPage} />
+        <StyledLeftArrowIcon hasNextPage={hasRequiredIds && currentPage > 1} onClick={handlePrevPage} />
         <PageNumberWrapper>
-          {[...Array(totalPages)].map((_, idx) => {
+          {hasRequiredIds && [...(totalPages === '' ? [totalPages] : Array<undefined>(totalPages))].map((_, idx) => {
             const page = idx + 1;
             const isActive = currentPage === page;
 
@@ -279,7 +310,7 @@ function StationCard() {
             );
           })}
         </PageNumberWrapper>
-        <StyledRightArrowIcon hasNextPage={currentPage < totalPages} onClick={handleNextPage} />
+        <StyledRightArrowIcon hasNextPage={hasNextPage} onClick={handleNextPage} />
       </PagingWrapper>
     </ComponentWrapper>
   );
@@ -375,7 +406,7 @@ const StationDescription = styled.div`
   line-height: normal;
 `;
 
-const StationListWrapper = styled.div`
+const StationListWrapper = styled.div<{ isSmallSize: boolean }>`
   display: flex;
   width: 29em;
   height: 1.8125em;
@@ -390,7 +421,7 @@ const StationList = styled.div`
   gap: 0.375em;
 `;
 
-const StationLineIconWrapper = styled.div`
+const StationLineIconWrapper = styled.div<{ isSmallSize?: boolean }>`
   width: ${({ isSmallSize }) => (isSmallSize ? '1em' : '1.25em')};
   height: ${({ isSmallSize }) => (isSmallSize ? '1em' : '1.25em')};
   svg {
@@ -399,7 +430,7 @@ const StationLineIconWrapper = styled.div`
   }
 `;
 
-const StationListName = styled.div`
+const StationListName = styled.div<{ isSmallSize?: boolean }>`
   color: var(--RIU_Monochrome-500, #515467);
   text-align: center;
   font-family: 'Pretendard-Medium';
@@ -445,7 +476,7 @@ const FilterName = styled.div`
   line-height: 1.25em;
 `;
 
-const StyledDownArrowIcon = styled(DownArrowIcon)`
+const StyledDownArrowIcon = styled(DownArrowIcon)<{ isSortOpen: boolean }>`
   width: 1.25em;
   height: 1.25em;
   transition: transform 0.2s ease-in-out;
@@ -561,13 +592,13 @@ const PagingWrapper = styled.div`
   }
 `;
 
-const StyledLeftArrowIcon = styled(LeftArrowIcon)`
+const StyledLeftArrowIcon = styled(LeftArrowIcon)<{ hasNextPage: boolean }>`
   width: 1.25em;
   height: 1.25em;
   fill: ${(props) => (props.hasNextPage ? 'var(--RIU_Primary-300, #5B6ACC)' : 'var(--RIU_Monochrome-80, #A1A4B5)')};
   cursor: ${(props) => (props.hasNextPage ? 'pointer' : 'default')};
 `;
-const StyledRightArrowIcon = styled(RightArrowIcon)`
+const StyledRightArrowIcon = styled(RightArrowIcon)<{ hasNextPage: boolean }>`
   width: 1.25em;
   height: 1.25em;
   fill: ${(props) => (props.hasNextPage ? 'var(--RIU_Primary-300, #5B6ACC)' : 'var(--RIU_Monochrome-80, #A1A4B5)')};
@@ -580,7 +611,7 @@ const PageNumberWrapper = styled.div`
   gap: 0.625em;
 `;
 
-const PageItem = styled.div`
+const PageItem = styled.div<{ isActive: boolean }>`
   display: flex;
   width: 2em;
   height: 2em;
@@ -596,7 +627,7 @@ const PageItem = styled.div`
   }
 `;
 
-const PageButton = styled.div`
+const PageButton = styled.div<{ isActive: boolean }>`
   color: ${({ isActive }) => (isActive ? 'var(--RIU_Monochrome-10, #F9F9FB)' : 'var(--RIU_Monochrome-80, #A1A4B5)')};
   font-family: 'Pretendard-SemiBold';
   font-size: 0.875em;

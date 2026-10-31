@@ -13,6 +13,8 @@ import { googleMapStyles } from '../../../shared/styles/googleMapStyles';
 import MarkerIcon from '../../../shared/assets/images/location/marker.png';
 import AwardMarkerIcon from '../../../shared/assets/images/location/awardMarker.png';
 import useDevice from '../../../shared/hooks/useDevice';
+import type { StoreId } from '../api/types';
+import type { LocationMapCenter } from '../model/locationAtom';
 
 function GoogleMapComponent() {
   // 중앙 좌표
@@ -24,7 +26,7 @@ function GoogleMapComponent() {
 
   // 지도 우측으로 이동
   // const { isMobile } = useDevice();
-  const adjustedCenter = {
+  const adjustedCenter: LocationMapCenter = {
     lat: centerState.lat,
     lng: centerState.lng,
     // lng: centerState.lng - (isMobile ? 0 : 0.005),
@@ -36,7 +38,7 @@ function GoogleMapComponent() {
   const [, setStoreId] = useRecoilState(locationStoreId);
 
   // 매장 선택 핸들러
-  const handleStoreSelect = (id) => {
+  const handleStoreSelect = (id: StoreId) => {
     setIsStoreCardVisible(true);
     setIsStationCardVisible(false);
     setStoreId(id);
@@ -48,7 +50,7 @@ function GoogleMapComponent() {
     height: '100%',
   };
 
-  const options = {
+  const options: google.maps.MapOptions = {
     styles: googleMapStyles, // 커스텀 ui
     zoomControl: true, // 확대 축소 버튼
     disableDefaultUI: true, // 기본 설정 초기화
@@ -99,7 +101,7 @@ function GoogleMapComponent() {
 export default GoogleMapComponent;
 
 // CSS
-const MapWrapper = styled.div`
+const MapWrapper = styled.div<{ isMobile: boolean }>`
   width: 100vw;
   height: calc(
     100vh - ${({ isMobile }) => (isMobile ? '4.375rem - 1.625rem' : '5.625rem - 2.375rem')}

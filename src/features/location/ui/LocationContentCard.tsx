@@ -13,8 +13,15 @@ import { levelTextConversion, genreListConversion, satisfactionConversion } from
 import { postThemeLikeAPI, deleteThemeLikeAPI } from '../../../features/like/api/themeLikeAPI';
 import PopUpModal from '../../../shared/components/PopUpModal';
 import useAuthSession from '../../../shared/hooks/useAuthSession';
+import type { ThemeResponse } from '../../../shared/types/theme';
 
-function LocationContentCard({ data, headCount, type }) {
+type LocationContentCardProps = {
+  data: ThemeResponse;
+  headCount: number;
+  type: string;
+};
+
+function LocationContentCard({ data, headCount, type }: LocationContentCardProps) {
   const {
     themeId,
     awardsYear,
@@ -199,7 +206,7 @@ const ContentWrapper = styled.div`
   }
 `;
 
-const ImageSection = styled.div`
+const ImageSection = styled.div<{ imgUrl: string }>`
   border-radius: 0.375rem;
   width: 7.875rem;
   min-width: 7.875rem;
@@ -411,7 +418,7 @@ const PriceWrapper = styled.div`
   }
 `;
 
-const CautionWrapper = styled.div`
+const CautionWrapper = styled.div<{ type: 'priceCaution' | 'headCountCaution' }>`
   border-radius: 1.875rem;
   padding: ${(props) => (props.type === 'headCountCaution' ? '0.125rem 0.5rem' : '0')};
   width: ${(props) => (props.type === 'headCountCaution' ? '70%' : 'auto')};

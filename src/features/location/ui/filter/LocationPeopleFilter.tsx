@@ -19,8 +19,14 @@ import useDevice from "../../../../shared/hooks/useDevice";
 import useDropdown from "../../../../shared/hooks/useDropDown";
 import { peopleOptions } from "../../../../shared/components/filter/OptionList";
 import PropTypes from 'prop-types';
+import type { FilterSelectionHandle } from '../../../../shared/components/filter/filterTypes';
 
-const LocationPeopleFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) => {
+type LocationPeopleFilterProps = {
+  onSelect: (value: number) => void;
+  selected: number;
+};
+
+const LocationPeopleFilter = forwardRef<FilterSelectionHandle<number>, LocationPeopleFilterProps>(({ onSelect, selected: externalSelected }, ref) => {
   
   const { isMobile } = useDevice();
   
@@ -90,7 +96,7 @@ export const RadioIcon = styled.img`
   align-items: center;
 `;
 
-export const RadioLabel = styled.div`
+export const RadioLabel = styled.div<{ $isSelected: boolean }>`
   font-size: 0.875em;
   font-family: ${({ $isSelected }) => ($isSelected ? "Pretendard-Bold" : "Pretendard-Medium")};
   color: ${({ $isSelected }) => ($isSelected ? "var(--RIU_Primary-300, #5B6ACC)" : "var(--RIU_Monochrome-200, #717486)")};

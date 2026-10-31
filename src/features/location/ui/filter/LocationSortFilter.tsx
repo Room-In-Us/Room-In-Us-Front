@@ -18,8 +18,15 @@ import useDevice from "../../../../shared/hooks/useDevice";
 import useDropdown from "../../../../shared/hooks/useDropDown";
 import { sortOptions } from "../../../../shared/components/filter/OptionList";
 import PropTypes from 'prop-types';
+import type { FilterSelectionHandle } from '../../../../shared/components/filter/filterTypes';
+import type { ThemeSortOption } from '../../../../shared/types/theme';
 
-const LocationSortFilter = forwardRef(({ onSelect, selected: externalSelected }, ref) => {
+type LocationSortFilterProps = {
+  onSelect: (value: ThemeSortOption) => void;
+  selected: ThemeSortOption;
+};
+
+const LocationSortFilter = forwardRef<FilterSelectionHandle<ThemeSortOption>, LocationSortFilterProps>(({ onSelect, selected: externalSelected }, ref) => {
   const { isMobile } = useDevice();
   const {
     isOpen,
@@ -104,7 +111,7 @@ const StyledIcon = styled.div`
   }
 `;
 
-const RadioLabel = styled.div`
+const RadioLabel = styled.div<{ $isSelected: boolean }>`
   font-size: 0.875em;
   font-family: ${({ $isSelected }) => ($isSelected ? "Pretendard-Bold" : "Pretendard-Medium")};
   color: ${({ $isSelected }) => ($isSelected ? "var(--RIU_Primary-300, #5B6ACC)" : "var(--RIU_Monochrome-200, #717486)")};
