@@ -9,8 +9,12 @@ import { format } from 'date-fns';
 import { calendarMonthState, reservationListState } from '../../mypage/model/reservationAtom';
 import { addReservationsAPI, deleteReservationAPI, getMyReservationsAPI, patchReservationAPI } from '../../mypage/api/reservationAPI';
 import PopUpModal from '../../../shared/components/PopUpModal';
+import type { ThemeIdPathParam } from '../../themeDetail/api/types';
+import type { ScheduleSubmitState } from '../model/types';
 
-export default function ScheduleModal({themeId}) {
+type ScheduleModalProps = { themeId?: ThemeIdPathParam };
+
+export default function ScheduleModal({themeId}: ScheduleModalProps) {
 
   const modalState = useRecoilValue(scheduleModalState);
   const { mode, reservation } = modalState;
@@ -19,7 +23,7 @@ export default function ScheduleModal({themeId}) {
   const setReservationList = useSetRecoilState(reservationListState);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const [submitState, setSubmitState] = useState({
+  const [submitState, setSubmitState] = useState<ScheduleSubmitState>({
       selectedThemeId: null,
       visitDate: null,
       selectedTime: null,
@@ -32,7 +36,7 @@ export default function ScheduleModal({themeId}) {
     setScheduleModalState(prev => ({ ...prev, isOpen: false }));
   };
 
-  const handleStateChange = useCallback((newState) => {
+  const handleStateChange = useCallback((newState: ScheduleSubmitState) => {
     setSubmitState(newState);
   }, []);
 
@@ -141,7 +145,7 @@ export default function ScheduleModal({themeId}) {
 }
 
 // CSS
-const ModalWrapper = styled.div`
+const ModalWrapper = styled.div<{ $isEdit: boolean }>`
 font-size: 0.8rem; // 임의로 지정
   border-radius: 0.625em;
   width: 40em;
@@ -226,7 +230,7 @@ const BtnWrapper = styled.div`
   gap: 0.625em;
 `;
 
-const SubmitBtn = styled.div`
+const SubmitBtn = styled.div<{ $isEnabled: boolean }>`
   display: flex;
   width: 100%;
   height: 3.125em;
@@ -246,7 +250,7 @@ const SubmitBtn = styled.div`
   }
 `;
 
-const SubmitBtnText = styled.div`
+const SubmitBtnText = styled.div<{ $isEnabled: boolean }>`
   color: ${({ $isEnabled }) => $isEnabled ? 'var(--RIU_Monochrome-10, #F9F9FB)' : 'var(--RIU_Monochrome-300, #696C7E)'};
   font-family: Pretendard-Bold;
   font-size: 1em;

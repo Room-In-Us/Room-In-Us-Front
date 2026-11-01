@@ -5,6 +5,7 @@ import Logo from '../../../../shared/assets/icons/common/logo.svg?react'
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameMonth, format } from 'date-fns';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { calendarMonthState, reservationListState } from '../../model/reservationAtom';
+import type { ReactNode } from 'react';
 
 export default function CalendarSection() {
   const [currentMonth, setCurrentMonth] = useRecoilState(calendarMonthState);
@@ -37,13 +38,13 @@ export default function CalendarSection() {
     const startDate = startOfWeek(monthStart);
     const endDate = endOfWeek(monthEnd);
 
-    const rows = [];
-    let days = [];
+    const rows: ReactNode[] = [];
+    let days: ReactNode[] = [];
     let day = startDate;
 
     const dateCountMap = Object.values(reservationMap)
     .flat()
-    .reduce((acc, r) => {
+    .reduce<Record<string, number>>((acc, r) => {
       const date = r.reservedAt?.split(' ')[0];
       if (!date) return acc;
       acc[date] = (acc[date] || 0) + 1;
@@ -73,7 +74,7 @@ export default function CalendarSection() {
         );
         day = addDays(day, 1);
       }
-      rows.push(<WeekRow key={day}>{days}</WeekRow>);
+      rows.push(<WeekRow key={String(day)}>{days}</WeekRow>);
       days = [];
     }
 
@@ -218,7 +219,7 @@ const WeekRow = styled.div`
   width: 100%;
 `;
 
-const DateCell = styled.div`
+const DateCell = styled.div<{ isCurrentMonth: boolean }>`
   display: flex;
   width: 4.5em;
   height: 6.25em;
@@ -236,7 +237,7 @@ const DateCell = styled.div`
   }
 `;
 
-const DateNumber = styled.div`
+const DateNumber = styled.div<{ hasEvent: boolean }>`
   color: ${({ hasEvent }) =>
     hasEvent ? 'var(--RIU_Primary-300, #5B6ACC)' : 'var(--RIU_Monochrome-100, #818496)'};
   font-family: ${({ hasEvent }) =>

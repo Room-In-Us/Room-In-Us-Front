@@ -12,8 +12,26 @@ import { reviewModalState, selectedThemeDataState } from "../../../themeDetail/m
 import Plus from '../../../../shared/assets/icons/common/plusIcon.svg?react';
 import Trash from "../../../../shared/assets/icons/reviewWrite/trashicon.svg?react";
 import dayjs from "dayjs";
+import type { MouseEvent } from 'react';
+import type { ThemeReservationResponse } from '../../api/types';
+import type { ScheduleReservationPreview } from '../../../schedule/model/types';
 
-export default function ReservedCard({ data, isModal, hideTrash=false, setSelectedTheme, setSelectedThemeId, isMyPage=false }) {
+type ReservedCardProps = {
+  hideTrash?: boolean;
+  isMyPage?: boolean;
+} & ({
+  isModal?: false;
+  data: ThemeReservationResponse;
+  setSelectedTheme?: never;
+  setSelectedThemeId?: never;
+} | {
+  isModal: true;
+  data: ScheduleReservationPreview | null;
+  setSelectedTheme: (value: null) => void;
+  setSelectedThemeId: (value: null) => void;
+});
+
+export default function ReservedCard({ data, isModal, hideTrash=false, setSelectedTheme, setSelectedThemeId, isMyPage=false }: ReservedCardProps) {
     const {
     themeId,
     locationName,
@@ -52,10 +70,13 @@ export default function ReservedCard({ data, isModal, hideTrash=false, setSelect
     setImageUrl(ThumbnailImg);
   };
 
-  const handleRemoveSelection = (e) => {
+  const handleRemoveSelection = (e: MouseEvent<SVGSVGElement>) => {
     e.stopPropagation();
-    setSelectedTheme(null);
-    setSelectedThemeId(null);
+    // 이 핸들러의 버튼은 미리보기 분기에서만 렌더링된다.
+    if (isModal) {
+      setSelectedTheme(null);
+      setSelectedThemeId(null);
+    }
   };
 
   return (
@@ -64,7 +85,7 @@ export default function ReservedCard({ data, isModal, hideTrash=false, setSelect
         <Wrapper>
       <ThemeItemBox isMyPage={isMyPage}
         onClick={() => {
-          isMyPage && navigate(`/theme/${themeId}`, { state: { backButtonText: '내 후기 목록으로 돌아가기' } });
+          if (isMyPage) navigate(`/theme/${themeId}`, { state: { backButtonText: '내 후기 목록으로 돌아가기' } });
         }}
       >
         {/* 이미지 영역 */}
@@ -78,7 +99,7 @@ export default function ReservedCard({ data, isModal, hideTrash=false, setSelect
             <AwardsTagText isModal={isModal}>{awardsYear}</AwardsTagText>
           </AwardsTag>}
           {/* 보이지 않는 img 태그 추가 (onError 감지용) */}
-          <img src={imageUrl} alt="테마 이미지" onError={handleImageError} />
+          <img src={imageUrl ?? undefined} alt="테마 이미지" onError={handleImageError} />
         </ImageSection>
 
         <TagAndTitleWrapper isModal={isModal}>
@@ -179,7 +200,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const ThemeItemBox = styled.div`
+const ThemeItemBox = styled.div<{ isMyPage?: boolean }>`
   display: flex;
   padding: 0.625em;
   align-items: flex-start;
@@ -217,7 +238,7 @@ const ThemeItemBox2 = styled.div`
   }
 `;
 
-const ImageSection = styled.div`
+const ImageSection = styled.div<{ isModal?: boolean; imgUrl?: string | null }>`
   display: flex;
   border-radius: 0.5625rem;
   width: 10rem;
@@ -254,7 +275,7 @@ const ImageSection = styled.div`
   }
 `;
 
-const LocationTag = styled.div`
+const LocationTag = styled.div<{ isModal?: boolean }>`
   padding: 0.3125em 0.75rem;
   box-sizing: border-box;
   margin: 0.5rem 0 0 0.5rem;
@@ -284,7 +305,7 @@ const LocationTag = styled.div`
   }
 `;
 
-const LocationText = styled.div`
+const LocationText = styled.div<{ isModal?: boolean }>`
   color: var(--RIU_Monochrome-10, #F9F9FB);
   font-family: 'Pretendard-Bold';
   font-size: 0.65625rem;
@@ -294,7 +315,7 @@ const LocationText = styled.div`
   `}
 `;
 
-const AwardsTag = styled.div`
+const AwardsTag = styled.div<{ isModal?: boolean }>`
   border: 1px solid var(--RIU_Monochrome-80, #A1A4B5);
   border-radius: 0.9375rem;
   padding: 0 0.75rem;
@@ -325,7 +346,7 @@ const AwardsTag = styled.div`
   }
 `;
 
-const AwardsTagText = styled.div`
+const AwardsTagText = styled.div<{ isModal?: boolean }>`
   color: var(--RIU_Primary-80, #8DA3FF);
   font-family: 'Pretendard-Bold';
   font-size: 0.65625rem;
@@ -343,7 +364,7 @@ const AwardsTagText = styled.div`
   }
 `;
 
-const StyledAwards = styled(AwardsIcon)`
+const StyledAwards = styled(AwardsIcon)<{ isModal?: boolean }>`
   width: 0.625rem;
 
   ${props => props.isModal && css`
@@ -351,7 +372,7 @@ const StyledAwards = styled(AwardsIcon)`
   `}
 `;
 
-const TagAndTitleWrapper = styled.div`
+const TagAndTitleWrapper = styled.div<{ isModal?: boolean }>`
   width: 100%;
   height: 100%;
   display: flex;
@@ -373,7 +394,7 @@ const TagAndTitleWrapper = styled.div`
   }
 `;
 
-const TagSection = styled.div`
+const TagSection = styled.div<{ isModal?: boolean }>`
   width: 100%;
   display: flex;
   align-items: center;
@@ -392,7 +413,7 @@ const TagSection = styled.div`
   }
 `;
 
-const ScoreTag = styled.div`
+const ScoreTag = styled.div<{ isModal?: boolean }>`
   border-radius: 0.1875rem;
   padding: 0 0.46875rem;
   height: 1.375rem;
@@ -418,7 +439,7 @@ const ScoreTag = styled.div`
   }
 `;
 
-const ScoreTagText = styled.div`
+const ScoreTagText = styled.div<{ isModal?: boolean }>`
   color: var(--RIU_Monochrome-10, #F9F9FB);
   font-family: 'Pretendard-Bold';
   font-size: 0.65625rem;
@@ -436,7 +457,7 @@ const ScoreTagText = styled.div`
   }
 `;
 
-const Tag = styled.div`
+const Tag = styled.div<{ isModal?: boolean; isMyPage?: boolean }>`
   border-radius: 0.1875rem;
   padding: 0 0.46875rem;
   height: 1.375rem;
@@ -464,7 +485,7 @@ const Tag = styled.div`
   }
 `;
 
-const TagText = styled.div`
+const TagText = styled.div<{ isModal?: boolean; isMyPage?: boolean }>`
   font-family: 'Pretendard-Medium';
   font-size: 0.65625rem;
   transition: background 0.2s ease-in-out;
@@ -513,7 +534,7 @@ const TitleSection = styled.div`
   }
 `;
 
-const CafeName = styled.div`
+const CafeName = styled.div<{ isModal?: boolean }>`
   width: 100%;
   color: var(--RIU_Primary-80, #8DA3FF);
   font-family: 'Pretendard-Bold';
@@ -535,7 +556,7 @@ const CafeName = styled.div`
   }
 `;
 
-const Title = styled.div`
+const Title = styled.div<{ isModal?: boolean }>`
   width: 100%;
   color: var(--RIU_Primary-600, #303281);
   font-family: 'Pretendard-ExtraBold';
@@ -560,7 +581,7 @@ const Title = styled.div`
   }
 `;
 
-const GenreSection = styled.div`
+const GenreSection = styled.div<{ isModal?: boolean }>`
   width: 100%;
   display: flex;
   align-items: center;

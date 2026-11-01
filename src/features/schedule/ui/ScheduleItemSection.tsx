@@ -10,13 +10,24 @@ import dayjs from "dayjs";
 import { useRecoilValue } from "recoil";
 import { scheduleModalState } from "../modal/scheduleAtom";
 import { getThemeDetailAPI } from "../../themeDetail/api/themeDetailAPI";
+import type { Dayjs } from 'dayjs';
+import type { ThemeResponse } from '../../../shared/types/theme';
+import type { ThemeIdPathParam } from '../../themeDetail/api/types';
+import type { ReservationRequestDateTimeInput } from '../../mypage/api/types';
+import type { ScheduleThemeSelection, ScheduleSubmitState } from '../model/types';
 
-export default function ScheduleItemSection({ themeId, isModal, onStateChange }) {
+type ScheduleItemSectionProps = {
+  themeId?: ThemeIdPathParam;
+  isModal: boolean;
+  onStateChange?: (state: ScheduleSubmitState) => void;
+};
+
+export default function ScheduleItemSection({ themeId, isModal, onStateChange }: ScheduleItemSectionProps) {
   // 상태
   const [searchValue, setSearchValue] = useState("");
-  const [themes, setThemes] = useState([]);
-  const [selectedThemeId, setSelectedThemeId] = useState(null);
-  const [selectedTheme, setSelectedTheme] = useState(null);
+  const [themes, setThemes] = useState<ThemeResponse[]>([]);
+  const [selectedThemeId, setSelectedThemeId] = useState<number | null>(null);
+  const [selectedTheme, setSelectedTheme] = useState<ScheduleThemeSelection | null>(null);
   const {mode, reservation} = useRecoilValue(scheduleModalState);
 
   const handleSearch = useCallback(async () => {
@@ -30,7 +41,7 @@ export default function ScheduleItemSection({ themeId, isModal, onStateChange })
   }, [searchValue]);
 
   // 테마 상세 정보 조회
-  const fetchThemeById = useCallback(async (id) => {
+  const fetchThemeById = useCallback(async (id: ThemeIdPathParam) => {
     try {
       const data = await getThemeDetailAPI(id);
       if (data) return data;
@@ -51,8 +62,8 @@ export default function ScheduleItemSection({ themeId, isModal, onStateChange })
       if (theme) {
         const unified = {
           ...theme,
-          themeImg: theme.img || theme.themeImg,
-          locationName: theme.locationName ?? theme.storeInfo?.locationName,
+          themeImg: theme.img || undefined,
+          locationName: theme.storeInfo?.locationName,
         };
         setSelectedTheme(unified);
         setSelectedThemeId(unified.themeId);
@@ -78,20 +89,20 @@ export default function ScheduleItemSection({ themeId, isModal, onStateChange })
     }
   }, [searchValue, handleSearch]);
 
-  const handleItemClick = useCallback((theme) => {
+  const handleItemClick = useCallback((theme: ThemeResponse) => {
     const unifiedData = {
         ...theme,
-        themeImg: theme.img || theme.themeImg,
+        themeImg: theme.img || undefined,
       };
     setSelectedTheme(unifiedData);
     setSelectedThemeId(theme.themeId);
   }, []);
 
-  const [visitDate, setVisitDate] = useState(null);
-  const [reservedAt, setReservedAt] = useState(null);
+  const [visitDate, setVisitDate] = useState<Date | Dayjs | null>(null);
+  const [reservedAt, setReservedAt] = useState<ReservationRequestDateTimeInput>(null);
 
   // 날짜 선택 핸들러
-  const handleDateChange = useCallback((date) => {
+  const handleDateChange = useCallback((date: Date) => {
     setVisitDate(date);
 
     // 시간이 이미 선택돼 있다면 날짜와 합쳐서 reservedAt 갱신
@@ -103,7 +114,7 @@ export default function ScheduleItemSection({ themeId, isModal, onStateChange })
   }, [reservedAt]);
 
   // 시간 선택 핸들러
-  const handleTimeChange = useCallback((timeString) => {
+  const handleTimeChange = useCallback((timeString: string) => {
     // 날짜가 선택되지 않았다면 reservation.reservedAt에서 날짜를 기본값으로 사용
     const datePart = visitDate
       ? dayjs(visitDate).format("YYYY-MM-DD")
@@ -123,12 +134,10 @@ export default function ScheduleItemSection({ themeId, isModal, onStateChange })
     console.log('------------------------------------');
 
     if (onStateChange) {
-      onStateChange({
-        selectedThemeId,
-        visitDate,
-        isSubmitEnabled,
-        reservedAt,
-      });
+      const state: ScheduleSubmitState = isSubmitEnabled && selectedThemeId !== null
+        ? { selectedThemeId, visitDate, isSubmitEnabled: true, reservedAt }
+        : { selectedThemeId, visitDate, isSubmitEnabled: false, reservedAt };
+      onStateChange(state);
     }
   }, [selectedThemeId, visitDate, isSubmitEnabled, reservedAt, onStateChange]);
 
@@ -202,7 +211,7 @@ export default function ScheduleItemSection({ themeId, isModal, onStateChange })
 
       </DropDownWrapper>
 
-      {selectedTheme ? (
+      {isModal && (selectedTheme ? (
         <ReservedCard 
           isModal={isModal} 
           data={{ ...selectedTheme, reservedAt }}
@@ -217,7 +226,7 @@ export default function ScheduleItemSection({ themeId, isModal, onStateChange })
           setSelectedTheme={setSelectedTheme}
           setSelectedThemeId={setSelectedThemeId}
         />
-      )}
+      ))}
     </Wrapper>
   )
 }
@@ -373,7 +382,7 @@ const ResultBox2 = styled.div`
   box-sizing: border-box;
 `;
 
-const ResultItem = styled.div`
+const ResultItem = styled.div<{ $isSelected: boolean; data: ThemeResponse }>`
   display: flex;
   height: 3.125em;
   padding: 0.5em 1em;

@@ -8,6 +8,7 @@ import ReservedCard from "./ReservedCard";
 import Pen from '../../../../shared/assets/icons/myPage/pen.svg?react';
 import { scheduleModalState } from "../../../schedule/modal/scheduleAtom";
 import ScheduleModal from "../../../schedule/ui/ScheduleModal";
+import type { ThemeReservationResponse } from '../../api/types';
 
 export default function ScheduleSection() {
 
@@ -47,7 +48,7 @@ export default function ScheduleSection() {
     load();
   }, [currentMonth, setReservationList]);
 
-  const grouped = reservations.reduce((acc, item) => {
+  const grouped = reservations.reduce<Record<string, ThemeReservationResponse[]>>((acc, item) => {
     const date = format(new Date(item.reservedAt), 'yyyy년 M월 d일');
     if (!acc[date]) acc[date] = [];
     acc[date].push(item);

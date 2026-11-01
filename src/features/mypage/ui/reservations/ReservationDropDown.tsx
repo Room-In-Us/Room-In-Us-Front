@@ -10,20 +10,24 @@ import { deleteReservationAPI, getMyReservationsAPI } from '../../api/reservatio
 import { format } from 'date-fns';
 import PopUpModal from '../../../../shared/components/PopUpModal';
 import { scheduleModalState } from '../../../schedule/modal/scheduleAtom';
+import type { ThemeReservationResponse } from '../../api/types';
 
-export default function ReservationDropDown({onReviewClick, reservation}) {
+type ReservationDropDownProps = { onReviewClick: () => void; reservation: ThemeReservationResponse };
+
+export default function ReservationDropDown({onReviewClick, reservation}: ReservationDropDownProps) {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const currentMonth = useRecoilValue(calendarMonthState);
   const setReservationList = useSetRecoilState(reservationListState);
   const setScheduleModal = useSetRecoilState(scheduleModalState);
 
   // 바깥 클릭 시 드롭다운 닫기
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+    const handleClickOutside = (e: MouseEvent) => {
+      // document의 mousedown target은 DOM Node 또는 null이다.
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node | null)) {
         setIsOpen(false);
       }
     };

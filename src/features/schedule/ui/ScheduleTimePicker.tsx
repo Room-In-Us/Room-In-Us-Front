@@ -8,17 +8,20 @@ import { Popover } from "@mui/material";
 import leftArrow from '../../../shared/assets/icons/common/arrow/leftArrow.svg?react';
 import Clock from "../../../shared/assets/icons/reviewWrite/clock.svg?react";
 import DropDown from "../../../shared/assets/icons/common/arrow/downArrow.svg?react";
+import type { Dayjs } from 'dayjs';
 
-export default function ScheduleTimePicker({ onTimeChange, initialTime }) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+type ScheduleTimePickerProps = { onTimeChange: (time: string) => void; initialTime?: string | null };
+
+export default function ScheduleTimePicker({ onTimeChange, initialTime }: ScheduleTimePickerProps) {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLDivElement | null>(null);
   const [value, setValue] = React.useState(
     initialTime ? dayjs(initialTime, "HH:mm:ss") : dayjs()
   );
-  const [step, setStep] = React.useState("hour");
+  const [step, setStep] = React.useState<'hour' | 'minute'>("hour");
   const [tempHour, setTempHour] = React.useState(value.hour());
   const [isSelected, setIsSelected] = React.useState(!!initialTime);
 
-  const handleBoxClick = (event) => {
+  const handleBoxClick = (event: React.MouseEvent<HTMLDivElement>) => {
     setAnchorEl(event.currentTarget);
     setStep("hour");
   };
@@ -27,14 +30,14 @@ export default function ScheduleTimePicker({ onTimeChange, initialTime }) {
   const open = Boolean(anchorEl);
 
   // 시 선택 → 분 선택 단계 전환
-  const handleHourSelect = (newValue) => {
+  const handleHourSelect = (newValue: Dayjs | null) => {
     if (!newValue) return;
     setTempHour(newValue.hour());
     setStep("minute"); 
   };
 
   // 분 선택 → 최종 확정
-  const handleMinuteSelect = (newValue) => {
+  const handleMinuteSelect = (newValue: Dayjs | null) => {
     if (!newValue) return;
     const finalValue = dayjs().hour(tempHour).minute(newValue.minute()).second(0);
     setValue(finalValue);
@@ -77,7 +80,6 @@ export default function ScheduleTimePicker({ onTimeChange, initialTime }) {
               onChange={handleHourSelect}
               ampm={false} // 24시간제
               views={["hours"]}
-              clockSize={window.innerWidth < 768 ? 100 : 180}
               sx={{
               "& .MuiClock-clock": {
                 backgroundColor: "#F9F9FB",
@@ -130,7 +132,6 @@ export default function ScheduleTimePicker({ onTimeChange, initialTime }) {
               ampm={false}
               views={["minutes"]}
               minutesStep={5} 
-              clockSize={window.innerWidth < 768 ? 100 : 180}
               sx={{
                 "& .MuiClock-clock": {
                   backgroundColor: " #E8EAFF",
