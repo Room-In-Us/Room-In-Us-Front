@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
 import More from '../../../../shared/assets/icons/common/more.svg?react';
 import Write from '../../../../shared/assets/icons/myPage/write.svg?react';
@@ -13,15 +13,55 @@ import { scheduleModalState } from '../../../schedule/modal/scheduleAtom';
 import type { ThemeReservationResponse } from '../../api/types';
 
 type ReservationDropDownProps = { onReviewClick: () => void; reservation: ThemeReservationResponse };
+type SavedDeletion = { year: string; month: string };
+type DeleteOperation = { generation: number };
 
 export default function ReservationDropDown({onReviewClick, reservation}: ReservationDropDownProps) {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isRefreshFailed, setIsRefreshFailed] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const currentMonth = useRecoilValue(calendarMonthState);
   const setReservationList = useSetRecoilState(reservationListState);
   const setScheduleModal = useSetRecoilState(scheduleModalState);
+  const mounted = useRef(false);
+  const generation = useRef(0);
+  const pendingOperation = useRef<DeleteOperation | null>(null);
+  const savedDeletion = useRef<SavedDeletion | null>(null);
+  const currentReservation = useRef({ themeId: reservation.themeId, id: reservation.themeReservationId });
+
+  useLayoutEffect(() => {
+    mounted.current = true;
+    currentReservation.current = { themeId: reservation.themeId, id: reservation.themeReservationId };
+    savedDeletion.current = null;
+    setIsRefreshFailed(false);
+    return () => {
+      mounted.current = false;
+      generation.current += 1;
+      pendingOperation.current = null;
+      savedDeletion.current = null;
+    };
+  }, [reservation.themeId, reservation.themeReservationId]);
+
+  const beginOperation = (): DeleteOperation | null => {
+    if (!mounted.current || pendingOperation.current
+      || currentReservation.current.themeId !== reservation.themeId
+      || currentReservation.current.id !== reservation.themeReservationId) return null;
+    const operation = { generation: generation.current };
+    pendingOperation.current = operation;
+    return operation;
+  };
+
+  const isCurrentOperation = (operation: DeleteOperation) => mounted.current
+    && generation.current === operation.generation && pendingOperation.current === operation;
+
+  const closeDeleteModal = () => {
+    generation.current += 1;
+    pendingOperation.current = null;
+    setIsDeleteModalOpen(false);
+    setIsRefreshFailed(false);
+  };
 
   // 바깥 클릭 시 드롭다운 닫기
   useEffect(() => {
@@ -38,27 +78,60 @@ export default function ReservationDropDown({onReviewClick, reservation}: Reserv
     };
   }, []);
 
-  const handleDelete = async () => {
-
+  const finishSavedDeletion = async (operation: DeleteOperation, saved: SavedDeletion) => {
     try {
-      await deleteReservationAPI(reservation.themeId, reservation.themeReservationId);
-
-      const year = format(currentMonth, "yyyy");
-      const month = format(currentMonth, "MM");
+      if (!isCurrentOperation(operation)) return;
+      const { year, month } = saved;
       const data = await getMyReservationsAPI(year, month);
+      if (!isCurrentOperation(operation)) return;
 
       const allDates = data?.themeReservationList || {};
       const allReservations = Object.values(allDates).flat();
 
-      setReservationList(prev => ({
+      setReservationList(prev => isCurrentOperation(operation) ? ({
         ...prev,
         [`${year}-${month}`]: allReservations,
-      }));
+      }) : prev);
 
       alert("예약이 삭제되었습니다.");
+      setIsDeleteModalOpen(false);
+      setIsRefreshFailed(false);
     } catch (error) {
+      if (!isCurrentOperation(operation)) return;
+      console.error("예약 목록 갱신 실패:", error);
+      setIsDeleteModalOpen(false);
+      setIsRefreshFailed(true);
+    }
+  };
+
+  const handleRetryRefresh = async () => {
+    const saved = savedDeletion.current;
+    if (!saved) return;
+    const operation = beginOperation();
+    if (!operation) return;
+    try {
+      await finishSavedDeletion(operation, saved);
+    } finally {
+      if (pendingOperation.current === operation) pendingOperation.current = null;
+    }
+  };
+
+  const handleDelete = async () => {
+    if (savedDeletion.current) return handleRetryRefresh();
+    const operation = beginOperation();
+    if (!operation) return;
+    try {
+      await deleteReservationAPI(reservation.themeId, reservation.themeReservationId);
+      if (!isCurrentOperation(operation)) return;
+      const saved = { year: format(currentMonth, "yyyy"), month: format(currentMonth, "MM") };
+      savedDeletion.current = saved;
+      await finishSavedDeletion(operation, saved);
+    } catch (error) {
+      if (!isCurrentOperation(operation)) return;
       alert("예약 삭제에 실패했습니다.");
       console.error(error);
+    } finally {
+      if (pendingOperation.current === operation) pendingOperation.current = null;
     }
   };
 
@@ -99,7 +172,10 @@ export default function ReservationDropDown({onReviewClick, reservation}: Reserv
             onClick={(e) => {
               e.stopPropagation();
               setIsOpen(false);
-              setIsDeleteModalOpen(true);
+              generation.current += 1;
+              pendingOperation.current = null;
+              if (savedDeletion.current) setIsRefreshFailed(true);
+              else setIsDeleteModalOpen(true);
             }}
           >
             <TrashIcon/>
@@ -117,7 +193,17 @@ export default function ReservationDropDown({onReviewClick, reservation}: Reserv
         confirmText="삭제"
         cancelText="취소"
         onConfirm={handleDelete}
-        onCancel={() => setIsDeleteModalOpen(false)}
+        onCancel={closeDeleteModal}
+      />
+      <PopUpModal
+        isOpen={isRefreshFailed}
+        title="예약 목록 갱신 실패"
+        message="예약은 삭제되었지만 목록을 불러오지 못했습니다."
+        subMessage="다시 시도하면 목록만 조회합니다. 삭제 요청은 반복되지 않습니다."
+        confirmText="목록 다시 불러오기"
+        cancelText="닫기"
+        onConfirm={handleRetryRefresh}
+        onCancel={closeDeleteModal}
       />
     </Wrapper>
   )

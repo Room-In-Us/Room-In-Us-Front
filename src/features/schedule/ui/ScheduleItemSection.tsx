@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import Search from '../../../shared/assets/icons/common/searchIcon.svg?react';
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { getThemesAPI } from '../../../features/search/api/getSearchAPI';
 import NoResultFace from '../../../shared/assets/icons/myPage/noresultface.svg?react';
 import ReservedCard from "../../mypage/ui/reservations/ReservedCard";
@@ -29,12 +29,29 @@ export default function ScheduleItemSection({ themeId, isModal, onStateChange }:
   const [selectedThemeId, setSelectedThemeId] = useState<number | null>(null);
   const [selectedTheme, setSelectedTheme] = useState<ScheduleThemeSelection | null>(null);
   const {mode, reservation} = useRecoilValue(scheduleModalState);
+  const searchGeneration = useRef(0);
+  const searchContext = useRef<{ keyword: string } | null>(null);
+
+  useLayoutEffect(() => {
+    searchContext.current = { keyword: searchValue };
+    return () => {
+      searchContext.current = null;
+      searchGeneration.current += 1;
+    };
+  }, [searchValue]);
 
   const handleSearch = useCallback(async () => {
+    const context = searchContext.current;
+    if (!context || context.keyword !== searchValue) return;
+    const generation = ++searchGeneration.current;
+    const isCurrent = () => searchContext.current === context && searchGeneration.current === generation;
+
     try {
       const data = await getThemesAPI({ keyword: searchValue, page: 1, size: 10000 });
+      if (!isCurrent()) return;
       setThemes(data.contents || []);
     } catch (error) {
+      if (!isCurrent()) return;
       console.error('검색 실패:', error);
       setThemes([]);
     }
@@ -164,7 +181,10 @@ export default function ScheduleItemSection({ themeId, isModal, onStateChange }:
               type="text"
               placeholder="내가 예약한 테마는?"
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
+              onChange={(e) => {
+                searchGeneration.current += 1;
+                setSearchValue(e.target.value);
+              }}
             />
           </SearchTextWrapper>
         </InputBoxWrapper>

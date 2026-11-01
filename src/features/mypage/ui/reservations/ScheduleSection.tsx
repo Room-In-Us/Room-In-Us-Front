@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { calendarMonthState, reservationListState } from "../../model/reservationAtom";
@@ -21,8 +21,18 @@ export default function ScheduleSection() {
 
   const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
   const modalState = useRecoilValue(scheduleModalState);
+  const loadGeneration = useRef(0);
+
+  useLayoutEffect(() => {
+    // passive effect cleanup 전에도 이전 월 조회의 공유 캐시 쓰기를 막는다.
+    loadGeneration.current += 1;
+    return () => { loadGeneration.current += 1; };
+  }, [currentMonth]);
 
   useEffect(() => {
+    let active = true;
+    const generation = loadGeneration.current;
+    const isCurrent = () => active && generation === loadGeneration.current;
     const load = async () => {
       const prev = subMonths(currentMonth, 1);
       const next = addMonths(currentMonth, 1);
@@ -30,22 +40,27 @@ export default function ScheduleSection() {
       const targets = [prev, currentMonth, next];
 
       for (const date of targets) {
+        if (!isCurrent()) return;
         const y = format(date, "yyyy");
         const m = format(date, "MM");
         const ym = format(date, "yyyy-MM");
 
         const data = await getMyReservationsAPI(y, m);
+        if (!isCurrent()) return;
         const allDates = data?.themeReservationList || {};
         const allReservations = Object.values(allDates).flat();
 
-        setReservationList((prev) => ({
+        setReservationList((prev) => isCurrent() ? ({
           ...prev,
           [ym]: allReservations,
-        }));
+        }) : prev);
       }
     };
 
-    load();
+    load().catch(error => {
+      if (isCurrent()) console.error("예약 목록 조회 실패:", error);
+    });
+    return () => { active = false; };
   }, [currentMonth, setReservationList]);
 
   const grouped = reservations.reduce<Record<string, ThemeReservationResponse[]>>((acc, item) => {

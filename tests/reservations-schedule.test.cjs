@@ -14,27 +14,30 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
 
 // Actual UI, atom defaults, converters and API functions run with a deferred,
 // local HTTP transport. Child UI and library widgets are inspected via props.
-function mount(relative, { props = {}, values = {}, isMobile = false } = {}) {
-  const atoms = { ...values }, slots = [], effects = [], writes = [], requests = [], navigation = [], alerts = [], errors = [];
+function mount(relative, { props = {}, values = {}, isMobile = false, sharedAtoms } = {}) {
+  const atoms = sharedAtoms || { ...values }, slots = [], effects = [], layoutEffects = [], writes = [], stateWrites = [], requests = [], navigation = [], alerts = [], errors = [];
+  if (sharedAtoms) for (const [key, value] of Object.entries(values)) if (!Object.hasOwn(atoms, key)) atoms[key] = value;
   const cache = new Map(), defaults = new Map(), setters = new Map();
   const listeners = new Map();
-  let cursor = 0, changed = false, tree;
+  let cursor = 0, changed = false, tree, unmounted = false;
   const setAtom = (key, value) => { atoms[key] = typeof value === 'function' ? value(atoms[key]) : value; writes.push({ key, value: atoms[key] }); changed = true; };
   const setter = key => { if (!setters.has(key)) setters.set(key, value => setAtom(key, value)); return setters.get(key); };
+  const effectHook = queue => (effect, deps) => {
+    const i = cursor++;
+    if (!slots[i] || deps.some((value, j) => !Object.is(value, slots[i].deps[j]))) {
+      const previous = slots[i]; slots[i] = { deps };
+      queue.push(() => { previous?.cleanup?.(); slots[i].cleanup = effect(); });
+    }
+  };
   const react = {
     useState(initial) {
       const i = cursor++; if (!(i in slots)) slots[i] = typeof initial === 'function' ? initial() : initial;
-      return [slots[i], value => { const next = typeof value === 'function' ? value(slots[i]) : value; changed ||= !Object.is(next, slots[i]); slots[i] = next; }];
+      return [slots[i], value => { const next = typeof value === 'function' ? value(slots[i]) : value; stateWrites.push({ next, unmounted }); changed ||= !Object.is(next, slots[i]); slots[i] = next; }];
     },
     useRef(initial) { const i = cursor++; if (!(i in slots)) slots[i] = { current: initial }; return slots[i]; },
     useCallback(callback, deps) { const i = cursor++; if (!slots[i] || deps.some((value, j) => !Object.is(value, slots[i].deps[j]))) slots[i] = { callback, deps }; return slots[i].callback; },
-    useEffect(effect, deps) {
-      const i = cursor++;
-      if (!slots[i] || deps.some((value, j) => !Object.is(value, slots[i].deps[j]))) {
-        const previous = slots[i]; slots[i] = { deps };
-        effects.push(() => { previous?.cleanup?.(); slots[i].cleanup = effect(); });
-      }
-    },
+    useEffect: effectHook(effects),
+    useLayoutEffect: effectHook(layoutEffects),
   };
   const styled = new Proxy(target => () => `styled(${String(target)})`, { get: (_, name) => () => `styled.${String(name)}` });
   const css = () => '';
@@ -71,7 +74,8 @@ function mount(relative, { props = {}, values = {}, isMobile = false } = {}) {
       if (id.startsWith('@mui/')) { const name = id.split('/').at(-1); return { [name]: name }; }
       return { __esModule: true, default: id.replace(/\.(jsx|tsx)$/, '') };
     };
-    const baseline = process.env.RESERVATION_UI_BASELINE && path.join(process.env.RESERVATION_UI_BASELINE, path.relative(root, filename).replace(/\.tsx$/, '.jsx'));
+    const baselineRoot = process.env.RESERVATION_UI_BASELINE;
+    const baseline = baselineRoot && [path.join(baselineRoot, path.relative(root, filename)), path.join(baselineRoot, path.relative(root, filename).replace(/\.tsx$/, '.jsx'))].find(candidate => fs.existsSync(candidate));
     const source = baseline && fs.existsSync(baseline) ? baseline : filename;
     const code = ts.transpileModule(fs.readFileSync(source, 'utf8'), { fileName: source, compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX } }).outputText;
     vm.runInNewContext(code, {
@@ -83,7 +87,7 @@ function mount(relative, { props = {}, values = {}, isMobile = false } = {}) {
     cache.set(filename, module.exports); return module.exports;
   }
   const component = load(path.join(root, relative)).default;
-  const render = () => { cursor = 0; effects.length = 0; changed = false; tree = component(props); effects.splice(0).forEach(effect => effect()); return tree; };
+  const render = () => { cursor = 0; effects.length = 0; layoutEffects.length = 0; changed = false; tree = component(props); layoutEffects.splice(0).forEach(effect => effect()); effects.splice(0).forEach(effect => effect()); return tree; };
   const nodes = predicate => {
     const found = [];
     const visit = node => { if (Array.isArray(node)) return node.forEach(visit); if (!node || typeof node !== 'object') return; if (predicate(node)) found.push(node); visit(node.props?.children); };
@@ -91,14 +95,14 @@ function mount(relative, { props = {}, values = {}, isMobile = false } = {}) {
   };
   const text = node => Array.isArray(node) ? node.map(text).join('') : node == null || typeof node === 'boolean' ? '' : typeof node === 'object' ? text(node.props?.children) : String(node);
   return {
-    atoms, writes, requests, navigation, alerts, errors, listeners, render, nodes, text: () => text(tree), textOf: text,
+    atoms, writes, stateWrites, requests, navigation, alerts, errors, listeners, render, nodes, text: () => text(tree), textOf: text,
     children: name => nodes(node => String(node.type).endsWith('/' + name) || node.type === name),
     update(next) { Object.assign(props, next); return render(); },
     setAtom(key, value) { setAtom(key, value); return render(); },
     click(textValue, event = {}) { const result = nodes(node => typeof node.props.onClick === 'function' && text(node) === textValue)[0].props.onClick(event); render(); return result; },
     dispatch(name, event) { listeners.get(name)?.forEach(fn => fn(event)); return render(); },
-    async settle() { for (let i = 0; i < 20; i++) { await flush(); if (!changed) return; render(); } throw Error('UI did not settle'); },
-    unmount() { slots.forEach(slot => slot?.cleanup?.()); },
+    async settle() { for (let i = 0; i < 20; i++) { await flush(); if (unmounted || !changed) return; render(); } throw Error('UI did not settle'); },
+    unmount() { unmounted = true; slots.forEach(slot => slot?.cleanup?.()); },
   };
 }
 
@@ -369,5 +373,381 @@ test('4-24 reservations page preserves responsive navigation, schedule reset and
     const backs = m.nodes(n => n.props.onClick); assert.equal(backs.length, isMobile ? 0 : 1);
     if (!isMobile) { backs[0].props.onClick(); assert.equal(m.navigation[0][0], '/mypage'); }
     m.setAtom('selectedThemeDataState', null); assert.equal(m.children('ReviewWriteModal').length, 0); assert.equal(m.requests.length, 0);
+  }
+});
+
+const changeSearch = (m, value) => {
+  m.nodes(n => n.type === 'styled.input')[0].props.onChange({ target: { value } });
+  m.render();
+};
+const enabledSubmit = m => m.nodes(n => n.props.$isEnabled === true && n.props.onClick)[0].props.onClick;
+const closeSchedule = m => m.nodes(n => n.props.onClick && String(n.type).includes('closeicon.svg'))[0].props.onClick();
+const replaceModal = (m, reservationData = null) => m.setAtom('scheduleModalState', {
+  isOpen: true, mode: reservationData ? 'edit' : 'add', reservation: reservationData,
+});
+const cacheWrites = m => m.writes.filter(write => write.key === 'reservationListState');
+const refreshPopup = m => m.children('PopUpModal').find(node => node.props.title === '예약 목록 갱신 실패').props;
+
+test('async search A → B → A accepts only the latest request, including stale errors and same-query retries', async () => {
+  for (const isMobile of [false, true]) {
+    const m = mount(schedule('ScheduleItemSection'), { props: { isModal: true }, isMobile }); m.render();
+    changeSearch(m, 'A'); changeSearch(m, 'B'); changeSearch(m, 'A');
+    assert.deepEqual(m.requests.map(request => request.config.params.keyword), ['A', 'B', 'A']);
+    m.requests[2].resolve({ contents: [theme(3)] }); await m.settle();
+    m.requests[0].resolve({ contents: [theme(1)] }); m.requests[1].reject(Error('old B')); await m.settle();
+    assert.match(m.text(), /테마3/); assert.doesNotMatch(m.text(), /테마1/);
+    assert.equal(m.errors.some(args => args[0] === '검색 실패:'), false);
+    const searchClick = m.nodes(n => n.props.onClick && String(n.type).includes('searchIcon.svg'))[0].props.onClick;
+    const older = searchClick(), newer = searchClick();
+    m.requests[4].resolve({ contents: [theme(5)] }); await newer; await m.settle();
+    m.requests[3].resolve({ contents: [theme(4)] }); await older; await m.settle();
+    assert.match(m.text(), /테마5/); assert.doesNotMatch(m.text(), /테마4/);
+  }
+});
+
+test('async search clear, input-before-render, and unmount discard pending success/error writes', async () => {
+  for (const finish of ['resolve', 'reject']) {
+    const { m } = itemSection(); changeSearch(m, 'A');
+    // A response can settle after input changes but before the next render.
+    m.nodes(n => n.type === 'styled.input')[0].props.onChange({ target: { value: '' } });
+    const before = m.stateWrites.length;
+    if (finish === 'resolve') m.requests[0].resolve({ contents: [theme(1)] }); else m.requests[0].reject(Error('old'));
+    await flush(); assert.equal(m.stateWrites.length, before);
+    m.render(); await m.settle(); assert.match(m.text(), /검색 결과가 표시됩니다/);
+    changeSearch(m, 'B'); m.unmount(); const after = m.stateWrites.length;
+    if (finish === 'resolve') m.requests[1].resolve({ contents: [theme(2)] }); else m.requests[1].reject(Error('old'));
+    await m.settle(); assert.equal(m.stateWrites.length, after);
+    assert.equal(m.errors.some(args => args[0] === '검색 실패:'), false);
+  }
+});
+
+test('async month A → B → A cannot overwrite the latest shared cache or continue obsolete prefetches', async () => {
+  const m = mount(cards('ScheduleSection'), { values: { calendarMonthState: new Date(2026, 10, 1), reservationListState: {} } }); m.render();
+  m.setAtom('calendarMonthState', new Date(2026, 11, 1));
+  m.setAtom('calendarMonthState', new Date(2026, 10, 1));
+  m.requests[2].resolve({ themeReservationList: { dates: [reservation()] } }); await m.settle();
+  const cache = m.atoms.reservationListState, count = cacheWrites(m).length;
+  m.requests[0].resolve({ themeReservationList: { dates: [{ ...reservation(), themeReservationId: 999 }] } });
+  m.requests[1].resolve({ themeReservationList: { dates: [] } }); await m.settle();
+  assert.equal(m.atoms.reservationListState, cache); assert.equal(cacheWrites(m).length, count);
+  assert.equal(m.atoms.reservationListState['2026-10'][0].themeReservationId, 81);
+  assert.equal(m.requests.length, 4); // Only the current A load advances to its November request.
+  m.requests[3].resolve({ themeReservationList: {} }); await m.settle();
+  m.requests[4].resolve({ themeReservationList: {} }); await m.settle();
+  assert.equal(m.requests.length, 5);
+});
+
+test('async unmounted month load cannot modify another consumer of the shared Recoil cache', async () => {
+  for (const pendingIndex of [0, 1, 2]) {
+    const sharedAtoms = { calendarMonthState: new Date(2026, 10, 1), reservationListState: { '2026-09': [{ ...reservation(), reservedAt: '2026.09.01 14:30' }] } };
+    const m = mount(cards('ScheduleSection'), { sharedAtoms }); m.render();
+    const calendar = mount(cards('CalendarSection'), { sharedAtoms }); calendar.render();
+    for (let index = 0; index < pendingIndex; index++) {
+      m.requests[index].resolve({ themeReservationList: {} }); await m.settle();
+    }
+    m.unmount();
+    // A live consumer can publish fresh data after the old loader has unmounted.
+    const fresh = { ...sharedAtoms.reservationListState, '2026-11': [reservation(), { ...reservation(), themeReservationId: 82 }] };
+    calendar.setAtom('reservationListState', fresh); assert.match(calendar.text(), /2건/);
+    const count = cacheWrites(m).length;
+    m.requests[pendingIndex].resolve({ themeReservationList: { dates: [{ ...reservation(), themeReservationId: 999 }] } }); await m.settle();
+    calendar.render(); assert.equal(sharedAtoms.reservationListState, fresh); assert.match(calendar.text(), /2건/);
+    assert.equal(cacheWrites(m).length, count); assert.equal(m.requests.length, pendingIndex + 1);
+  }
+});
+
+test('async month failures retain cache, stop the sequence and suppress obsolete UI error handling', async () => {
+  for (const cleanup of ['none', 'month', 'unmount']) {
+    const cache = { '2026-11': [reservation()] };
+    const m = mount(cards('ScheduleSection'), { values: { calendarMonthState: new Date(2026, 10, 1), reservationListState: cache } }); m.render();
+    if (cleanup === 'month') m.setAtom('calendarMonthState', new Date(2026, 11, 1));
+    if (cleanup === 'unmount') m.unmount();
+    m.requests[0].reject(Error('offline')); await m.settle();
+    assert.equal(m.atoms.reservationListState, cache); assert.equal(cacheWrites(m).length, 0);
+    assert.equal(m.errors.filter(args => args[0] === '예약 목록 조회 실패:').length, cleanup === 'none' ? 1 : 0);
+    assert.equal(m.requests.length, cleanup === 'month' ? 2 : 1);
+  }
+});
+
+test('async submit locks synchronously through mutation and refresh, then permits retry after failure', async () => {
+  for (const mode of ['add', 'edit']) {
+    const { m, select } = saveModal({ mode, reservationData: mode === 'edit' ? reservation() : null }); select({ reservedAt: null });
+    const submit = enabledSubmit(m), first = submit();
+    await submit(); await submit(); assert.equal(m.requests.length, 1);
+    m.requests[0].reject(Error('offline')); await first; await m.settle();
+    const retry = enabledSubmit(m)(); assert.equal(m.requests.length, 2);
+    assert.deepEqual(plain(m.requests[1].body), plain(m.requests[0].body));
+    m.requests[1].resolve(mode === 'edit' ? 'updated' : { reservationId: 82 }); await m.settle();
+    await enabledSubmit(m)(); assert.equal(m.requests.length, 3); // GET is still pending, so submit stays locked.
+    m.requests[2].resolve({ themeReservationList: { dates: [reservation()] } }); await retry; await m.settle();
+    assert.equal(m.atoms.scheduleModalState.isOpen, false); assert.equal(cacheWrites(m).length, 1);
+    assert.equal(m.alerts.length, 2); // One failed attempt, one normal success.
+  }
+});
+
+test('async close invalidates old handlers before rendering, and re-entry ignores old success/error/finally', async () => {
+  for (const finish of ['resolve', 'reject']) {
+    const { m, select } = saveModal(); select();
+    const submit = enabledSubmit(m), old = submit();
+    closeSchedule(m); await submit(); assert.equal(m.requests.length, 1);
+    m.render(); replaceModal(m); select();
+    const current = enabledSubmit(m)(); assert.equal(m.requests.length, 2);
+    if (finish === 'resolve') m.requests[0].resolve({ reservationId: 1 }); else m.requests[0].reject(Error('old'));
+    await old; await m.settle();
+    assert.equal(m.atoms.scheduleModalState.isOpen, true); assert.deepEqual(m.alerts, []); assert.equal(cacheWrites(m).length, 0);
+    await enabledSubmit(m)(); assert.equal(m.requests.length, 2); // The old finally cannot unlock this request.
+    m.requests[1].resolve({ reservationId: 2 }); await m.settle();
+    m.requests[2].resolve({ themeReservationList: {} }); await current; await m.settle();
+    assert.equal(m.atoms.scheduleModalState.isOpen, false); assert.deepEqual(m.alerts, ['예약이 추가되었습니다.']);
+  }
+});
+
+test('async reservation A → B → A distinguishes modal generations even when IDs repeat', async () => {
+  for (const finish of ['resolve', 'reject']) {
+    const a = reservation(), b = { ...reservation(), themeId: 8, themeReservationId: 82 };
+    const { m, select } = saveModal({ mode: 'edit', reservationData: a }); select();
+    const old = enabledSubmit(m)(); replaceModal(m, b); select({ selectedThemeId: 8 });
+    const middle = enabledSubmit(m)(); replaceModal(m, a); select();
+    const current = enabledSubmit(m)(); assert.equal(m.requests.length, 3);
+    m.requests[1].resolve('B');
+    if (finish === 'resolve') m.requests[0].resolve('old A'); else m.requests[0].reject(Error('old A'));
+    await Promise.all([old, middle]); await m.settle();
+    assert.deepEqual(m.alerts, []); assert.equal(cacheWrites(m).length, 0); assert.equal(m.atoms.scheduleModalState.isOpen, true);
+    await enabledSubmit(m)(); assert.equal(m.requests.length, 3);
+    m.requests[2].resolve('new A'); await m.settle();
+    m.requests[3].resolve({ themeReservationList: {} }); await current;
+    assert.equal(m.atoms.scheduleModalState.isOpen, false); assert.deepEqual(m.alerts, ['예약이 수정되었습니다.']);
+  }
+});
+
+test('async selected theme A → B → A and entry theme prop changes invalidate previous saves', async () => {
+  for (const change of ['selection', 'entry']) {
+    const { m, select } = saveModal({ props: { themeId: 7 } }); select();
+    const old = enabledSubmit(m)();
+    if (change === 'selection') { select({ selectedThemeId: 8 }); select(); }
+    else { m.update({ themeId: 8 }); m.update({ themeId: 7 }); select(); }
+    const current = enabledSubmit(m)();
+    m.requests[0].resolve({ reservationId: 1 }); await old; await m.settle();
+    assert.equal(m.requests.length, 2); assert.deepEqual(m.alerts, []); assert.equal(m.atoms.scheduleModalState.isOpen, true);
+    await enabledSubmit(m)(); assert.equal(m.requests.length, 2);
+    m.requests[1].resolve({ reservationId: 2 }); await m.settle(); m.requests[2].resolve({ themeReservationList: {} }); await current;
+    assert.equal(m.atoms.scheduleModalState.isOpen, false);
+  }
+});
+
+test('async old post-save refresh cannot write shared cache, close a new modal, or release its lock', async () => {
+  for (const finish of ['resolve', 'reject']) {
+    const { m, select } = saveModal(); select();
+    const old = enabledSubmit(m)(); m.requests[0].resolve({ reservationId: 1 }); await m.settle();
+    assert.deepEqual(m.alerts, ['예약이 추가되었습니다.']); assert.equal(m.requests.length, 2);
+    closeSchedule(m); m.render(); replaceModal(m); select(); const current = enabledSubmit(m)();
+    const fresh = { '2026-11': [reservation()] }; m.setAtom('reservationListState', fresh);
+    const count = cacheWrites(m).length;
+    if (finish === 'resolve') m.requests[1].resolve({ themeReservationList: {} }); else m.requests[1].reject(Error('old refresh'));
+    await old; await m.settle();
+    assert.equal(m.atoms.reservationListState, fresh); assert.equal(cacheWrites(m).length, count); assert.equal(m.atoms.scheduleModalState.isOpen, true);
+    assert.deepEqual(m.alerts, ['예약이 추가되었습니다.']); await enabledSubmit(m)(); assert.equal(m.requests.length, 3);
+    m.requests[2].resolve({ reservationId: 2 }); await m.settle(); m.requests[3].resolve({ themeReservationList: {} }); await current;
+    assert.equal(m.atoms.scheduleModalState.isOpen, false);
+  }
+});
+
+test('async unmounted modal mutation/refresh never writes another instance shared state or displays stale alerts', async () => {
+  for (const stage of ['mutation', 'refresh']) for (const finish of ['resolve', 'reject']) {
+    const sharedAtoms = {
+      calendarMonthState: new Date(2026, 10, 1), reservationListState: {},
+      scheduleModalState: { isOpen: true, mode: 'add', reservation: null },
+    };
+    const m = mount(schedule('ScheduleModal'), { sharedAtoms }); m.render();
+    m.children('ScheduleItemSection')[0].props.onStateChange({ selectedThemeId: 7, visitDate: null, reservedAt: '2026-11-02T14:35:00', isSubmitEnabled: true }); m.render();
+    const old = enabledSubmit(m)();
+    if (stage === 'refresh') { m.requests[0].resolve({ reservationId: 1 }); await m.settle(); }
+    const alertsBefore = m.alerts.length;
+    m.unmount();
+    const next = mount(schedule('ScheduleModal'), { sharedAtoms });
+    next.setAtom('scheduleModalState', { isOpen: true, mode: 'edit', reservation: { ...reservation(), themeReservationId: 99 } });
+    const cache = sharedAtoms.reservationListState, context = sharedAtoms.scheduleModalState;
+    const pending = m.requests.at(-1);
+    if (finish === 'reject') pending.reject(Error('old')); else pending.resolve(stage === 'mutation' ? { reservationId: 1 } : { themeReservationList: { dates: [reservation()] } });
+    await old; await m.settle();
+    assert.equal(sharedAtoms.reservationListState, cache); assert.equal(sharedAtoms.scheduleModalState, context);
+    assert.equal(cacheWrites(m).length, 0); assert.equal(m.alerts.length, alertsBefore);
+    assert.equal(m.requests.length, stage === 'mutation' ? 1 : 2); assert.equal(m.stateWrites.some(write => write.unmounted), false);
+  }
+});
+
+test('refresh failure keeps create/edit/delete successful and every retry sends only GET for the original month', async () => {
+  for (const kind of ['add', 'edit', 'delete']) {
+    const { m, select } = saveModal({ mode: kind === 'add' ? 'add' : 'edit', reservationData: kind === 'add' ? null : reservation() });
+    select({ reservedAt: null });
+    const start = kind === 'delete' ? m.children('PopUpModal')[0].props.onConfirm : enabledSubmit(m);
+    const first = start(); m.requests[0].resolve(kind === 'add' ? { reservationId: 1 } : 'saved'); await m.settle();
+    m.requests[1].reject(Error('refresh offline')); await first; await m.settle();
+    const successAlerts = kind === 'delete' ? [] : [kind === 'add' ? '예약이 추가되었습니다.' : '예약이 수정되었습니다.'];
+    assert.deepEqual(m.alerts, successAlerts); assert.equal(m.atoms.scheduleModalState.isOpen, true); assert.equal(cacheWrites(m).length, 0);
+    assert.equal(refreshPopup(m).isOpen, true); assert.match(refreshPopup(m).message, /예약 처리는 완료/);
+    m.setAtom('calendarMonthState', new Date(2026, 11, 1));
+    const retry = refreshPopup(m).onConfirm(); await refreshPopup(m).onConfirm(); await start();
+    assert.equal(m.requests.length, 3); assert.equal(m.requests[2].method, 'GET');
+    assert.deepEqual(plain(m.requests[2].config.params), { year: '2026', month: '11' });
+    m.requests[2].reject(Error('still offline')); await retry; await m.settle();
+    assert.deepEqual(m.alerts, successAlerts); assert.equal(refreshPopup(m).isOpen, true);
+    // Even an old save/delete handler must use the completed mutation's receipt.
+    select({ selectedThemeId: 8 });
+    const final = start(); assert.equal(m.requests[3].method, 'GET');
+    m.requests[3].resolve({ themeReservationList: { dates: [reservation()] } }); await final; await m.settle();
+    assert.equal(m.atoms.scheduleModalState.isOpen, false); assert.equal(m.atoms.reservationListState['2026-11'].length, 1);
+    assert.deepEqual(m.requests.map(request => request.method), [kind === 'add' ? 'POST' : kind === 'edit' ? 'PATCH' : 'DELETE', 'GET', 'GET', 'GET']);
+    assert.deepEqual(m.alerts, kind === 'delete' ? ['예약이 삭제되었습니다.'] : successAlerts);
+  }
+});
+
+test('async modal deletion shares the synchronous save lock, supports retry and ignores obsolete completions', async () => {
+  const { m, select } = saveModal({ mode: 'edit', reservationData: reservation() }); select();
+  const confirm = m.children('PopUpModal')[0].props.onConfirm, failed = confirm();
+  await confirm(); await enabledSubmit(m)(); assert.equal(m.requests.length, 1);
+  m.requests[0].reject(Error('offline')); await failed; assert.deepEqual(m.alerts, ['예약 삭제에 실패했습니다.']);
+  const old = confirm(); replaceModal(m, { ...reservation(), themeReservationId: 82 }); select();
+  const current = enabledSubmit(m)(); m.requests[1].resolve('deleted'); await old; await m.settle();
+  assert.equal(m.requests.length, 3); assert.equal(m.atoms.scheduleModalState.isOpen, true); assert.equal(cacheWrites(m).length, 0);
+  await enabledSubmit(m)(); assert.equal(m.requests.length, 3);
+  m.requests[2].resolve('updated'); await m.settle(); m.requests[3].resolve({ themeReservationList: {} }); await current;
+  assert.equal(m.atoms.scheduleModalState.isOpen, false); assert.deepEqual(m.alerts, ['예약 삭제에 실패했습니다.', '예약이 수정되었습니다.']);
+});
+
+test('refresh separation preserves failed mutation inputs and permits normal create/edit/delete retries', async () => {
+  for (const kind of ['add', 'edit', 'delete']) {
+    const { m, select } = saveModal({ mode: kind === 'add' ? 'add' : 'edit', reservationData: kind === 'add' ? null : reservation() }); select();
+    const start = kind === 'delete' ? m.children('PopUpModal')[0].props.onConfirm : enabledSubmit(m);
+    const first = start(); await start(); assert.equal(m.requests.length, 1);
+    const original = plain(m.requests[0].body ?? m.requests[0].config);
+    m.requests[0].reject(Error('mutation failed')); await first; await m.settle();
+    assert.equal(refreshPopup(m).isOpen, false); assert.equal(m.atoms.scheduleModalState.isOpen, true);
+    assert.equal(m.nodes(n => n.props.$isEnabled === true && n.props.onClick).length, 1);
+    assert.deepEqual(m.alerts, [kind === 'add' ? '예약 추가에 실패했습니다.' : kind === 'edit' ? '예약 수정에 실패했습니다.' : '예약 삭제에 실패했습니다.']);
+    const retry = start(); assert.equal(m.requests.length, 2); assert.equal(m.requests[1].method, m.requests[0].method);
+    assert.deepEqual(plain(m.requests[1].body ?? m.requests[1].config), original);
+    m.requests[1].resolve(kind === 'add' ? { reservationId: 1 } : 'saved'); await m.settle();
+    assert.equal(m.requests[2].method, 'GET'); await start(); assert.equal(m.requests.length, 3);
+    m.requests[2].resolve({ themeReservationList: {} }); await retry; await m.settle();
+    assert.equal(m.atoms.scheduleModalState.isOpen, false); assert.equal(cacheWrites(m).length, 1);
+    assert.equal(refreshPopup(m).isOpen, false); assert.equal(m.alerts.length, 2);
+  }
+});
+
+test('refresh-only retry close/re-entry ignores old success/error/finally while the new save stays locked', async () => {
+  for (const kind of ['add', 'edit', 'delete']) for (const finish of ['resolve', 'reject']) {
+    const { m, select } = saveModal({ mode: kind === 'add' ? 'add' : 'edit', reservationData: kind === 'add' ? null : reservation() }); select();
+    const first = kind === 'delete' ? m.children('PopUpModal')[0].props.onConfirm() : enabledSubmit(m)();
+    m.requests[0].resolve(kind === 'add' ? { reservationId: 1 } : 'saved'); await m.settle();
+    m.requests[1].reject(Error('refresh')); await first; await m.settle();
+    const old = refreshPopup(m).onConfirm(), oldCancel = refreshPopup(m).onCancel;
+    oldCancel(); m.render(); assert.equal(m.atoms.scheduleModalState.isOpen, false);
+    replaceModal(m); select(); const current = enabledSubmit(m)();
+    const alerts = [...m.alerts], cache = m.atoms.reservationListState;
+    if (finish === 'resolve') m.requests[2].resolve({ themeReservationList: { dates: [reservation()] } }); else m.requests[2].reject(Error('old retry'));
+    await old; await m.settle();
+    oldCancel(); assert.equal(m.atoms.scheduleModalState.isOpen, true);
+    assert.deepEqual(m.alerts, alerts); assert.equal(m.atoms.reservationListState, cache); assert.equal(refreshPopup(m).isOpen, false);
+    await enabledSubmit(m)(); assert.equal(m.requests.length, 4);
+    m.requests[3].resolve({ reservationId: 2 }); await m.settle(); m.requests[4].resolve({ themeReservationList: {} }); await current;
+    assert.equal(m.atoms.scheduleModalState.isOpen, false);
+  }
+});
+
+test('refresh-only retry handles reservation A → B → A and unmount without stale state or cache writes', async () => {
+  for (const change of ['ABA', 'unmount']) for (const finish of ['resolve', 'reject']) {
+    const { m, select } = saveModal({ mode: 'edit', reservationData: reservation() }); select();
+    const first = enabledSubmit(m)(); m.requests[0].resolve('saved'); await m.settle();
+    m.requests[1].reject(Error('refresh')); await first; await m.settle();
+    const old = refreshPopup(m).onConfirm();
+    let current;
+    if (change === 'ABA') {
+      replaceModal(m, { ...reservation(), themeId: 8, themeReservationId: 82 });
+      replaceModal(m, reservation()); select(); current = enabledSubmit(m)();
+    } else m.unmount();
+    const writes = m.stateWrites.length, cache = m.atoms.reservationListState, alerts = [...m.alerts];
+    if (finish === 'resolve') m.requests[2].resolve({ themeReservationList: { dates: [reservation()] } }); else m.requests[2].reject(Error('old retry'));
+    await old; await m.settle();
+    assert.equal(m.stateWrites.length, writes); assert.equal(m.atoms.reservationListState, cache); assert.deepEqual(m.alerts, alerts);
+    if (current) {
+      await enabledSubmit(m)(); assert.equal(m.requests.length, 4);
+      m.requests[3].resolve('saved again'); await m.settle(); m.requests[4].resolve({ themeReservationList: {} }); await current;
+      assert.equal(m.atoms.scheduleModalState.isOpen, false);
+    }
+  }
+});
+
+test('dropdown successful deletion retries only GET, preserves its original month and cannot resend DELETE', async () => {
+  for (const isMobile of [false, true]) {
+    const m = mount(cards('ReservationDropDown'), { isMobile, props: { reservation: reservation(), onReviewClick() {} }, values: { calendarMonthState: new Date(2026, 10, 1), reservationListState: { '2026-10': [reservation()] } } }); m.render();
+    const confirm = m.children('PopUpModal')[0].props.onConfirm, first = confirm(); await confirm(); assert.equal(m.requests.length, 1);
+    m.requests[0].resolve('deleted'); await m.settle(); m.requests[1].reject(Error('refresh')); await first; await m.settle();
+    assert.deepEqual(m.alerts, []); assert.equal(refreshPopup(m).isOpen, true); assert.match(refreshPopup(m).message, /예약은 삭제/);
+    m.setAtom('calendarMonthState', new Date(2026, 11, 1));
+    const second = refreshPopup(m).onConfirm(); await refreshPopup(m).onConfirm(); await confirm(); assert.equal(m.requests.length, 3);
+    assert.equal(m.requests[2].method, 'GET'); assert.deepEqual(plain(m.requests[2].config.params), { year: '2026', month: '11' });
+    m.requests[2].reject(Error('still offline')); await second; await m.settle();
+    assert.equal(refreshPopup(m).isOpen, true); refreshPopup(m).onCancel(); m.render();
+    m.nodes(n => String(n.type).includes('more.svg') && n.props.onClick)[0].props.onClick({ stopPropagation() {} }); m.render();
+    m.click('예약 내역 삭제', { stopPropagation() {} }); assert.equal(refreshPopup(m).isOpen, true);
+    const retry = refreshPopup(m).onConfirm(); m.requests[3].resolve({ themeReservationList: {} }); await retry; await m.settle();
+    assert.deepEqual(m.requests.map(request => request.method), ['DELETE', 'GET', 'GET', 'GET']); assert.deepEqual(m.alerts, ['예약이 삭제되었습니다.']);
+    assert.deepEqual(plain(m.atoms.reservationListState['2026-11']), []); assert.equal(m.atoms.reservationListState['2026-10'].length, 1);
+    assert.equal(refreshPopup(m).isOpen, false); assert.equal(m.children('PopUpModal')[0].props.isOpen, false);
+  }
+});
+
+test('dropdown deletion failure leaves the confirmation retryable with unchanged DELETE parameters', async () => {
+  const m = mount(cards('ReservationDropDown'), { props: { reservation: reservation(), onReviewClick() {} } }); m.render();
+  const confirm = m.children('PopUpModal')[0].props.onConfirm, first = confirm();
+  m.requests[0].reject(Error('delete offline')); await first; await m.settle();
+  assert.equal(refreshPopup(m).isOpen, false); assert.deepEqual(m.alerts, ['예약 삭제에 실패했습니다.']);
+  const retry = confirm(); assert.equal(m.requests[1].method, 'DELETE'); assert.equal(m.requests[1].url, m.requests[0].url);
+  assert.deepEqual(plain(m.requests[1].config), plain(m.requests[0].config));
+  m.requests[1].resolve('deleted'); await m.settle(); assert.equal(m.requests[2].method, 'GET');
+  m.requests[2].resolve({ themeReservationList: {} }); await retry; await m.settle();
+  assert.deepEqual(m.alerts, ['예약 삭제에 실패했습니다.', '예약이 삭제되었습니다.']); assert.equal(cacheWrites(m).length, 1);
+});
+
+test('dropdown refresh-only retry ignores A → B → A and unmount success/error without releasing new locks', async () => {
+  for (const change of ['ABA', 'unmount']) for (const finish of ['resolve', 'reject']) {
+    const m = mount(cards('ReservationDropDown'), { props: { reservation: reservation(), onReviewClick() {} } }); m.render();
+    const first = m.children('PopUpModal')[0].props.onConfirm(); m.requests[0].resolve('deleted'); await m.settle();
+    m.requests[1].reject(Error('refresh')); await first; await m.settle();
+    const old = refreshPopup(m).onConfirm();
+    let current;
+    if (change === 'ABA') {
+      m.update({ reservation: { ...reservation(), themeId: 8, themeReservationId: 82 } }); m.update({ reservation: reservation() });
+      current = m.children('PopUpModal')[0].props.onConfirm();
+    } else m.unmount();
+    const writes = m.stateWrites.length, cache = m.atoms.reservationListState;
+    if (finish === 'resolve') m.requests[2].resolve({ themeReservationList: { dates: [reservation()] } }); else m.requests[2].reject(Error('old refresh'));
+    await old; await m.settle();
+    assert.equal(m.stateWrites.length, writes); assert.equal(m.atoms.reservationListState, cache); assert.deepEqual(m.alerts, []);
+    if (current) {
+      await m.children('PopUpModal')[0].props.onConfirm(); assert.equal(m.requests.length, 4);
+      m.requests[3].resolve('new deletion'); await m.settle(); m.requests[4].resolve({ themeReservationList: {} }); await current;
+      assert.deepEqual(m.alerts, ['예약이 삭제되었습니다.']);
+    }
+  }
+});
+
+test('dropdown refresh dialog close/re-entry keeps deletion completed and isolates old GET finally', async () => {
+  for (const finish of ['resolve', 'reject']) {
+    const m = mount(cards('ReservationDropDown'), { props: { reservation: reservation(), onReviewClick() {} } }); m.render();
+    const first = m.children('PopUpModal')[0].props.onConfirm(); m.requests[0].resolve('deleted'); await m.settle();
+    m.requests[1].reject(Error('refresh')); await first; await m.settle();
+    const old = refreshPopup(m).onConfirm(); refreshPopup(m).onCancel(); m.render();
+    m.nodes(n => String(n.type).includes('more.svg') && n.props.onClick)[0].props.onClick({ stopPropagation() {} }); m.render();
+    m.click('예약 내역 삭제', { stopPropagation() {} });
+    const current = refreshPopup(m).onConfirm(); assert.equal(m.requests.length, 4);
+    if (finish === 'resolve') m.requests[2].resolve({ themeReservationList: { dates: [reservation()] } }); else m.requests[2].reject(Error('old refresh'));
+    await old; await m.settle();
+    assert.equal(refreshPopup(m).isOpen, true); assert.deepEqual(m.alerts, []); assert.equal(cacheWrites(m).length, 0);
+    await refreshPopup(m).onConfirm(); assert.equal(m.requests.length, 4);
+    m.requests[3].resolve({ themeReservationList: {} }); await current; await m.settle();
+    assert.equal(refreshPopup(m).isOpen, false); assert.deepEqual(m.alerts, ['예약이 삭제되었습니다.']);
+    assert.deepEqual(m.requests.map(request => request.method), ['DELETE', 'GET', 'GET', 'GET']);
   }
 });
