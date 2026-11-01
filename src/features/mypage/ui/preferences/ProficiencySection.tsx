@@ -1,19 +1,20 @@
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
 import { surveyState } from "../../model/surveyAtom";
+import type { ThemeProficiency } from "../../../../shared/types/theme";
 
-function PositionSection() {
+function ProficiencySection() {
   // state 관리
   const [survey, setSurvey] = useRecoilState(surveyState);
 
-  // 포지션 선택 상태
-  const selected = survey.horrorPos;
+  // 숙련도 선택 상태
+  const selected = survey.proficiency;
 
-  // 포지션 선택 함수
-  const handleSelect = (value) => {
+  // 숙련도 저장 함수
+  const handleSelect = (value: ThemeProficiency) => {
     setSurvey(prev => ({
       ...prev,
-      horrorPos: prev.horrorPos === value ? null : value
+      proficiency: prev.proficiency === value ? null : value,
     }));
   };
 
@@ -21,33 +22,45 @@ function PositionSection() {
     <SectionWrapper>
       {/* 타이틀 */}
       <Title>
-        공포 테마 포지션
+        숙련도
       </Title>
 
       {/* 선택 영역 */}
       <ListWrapper>
-        {[
-          { label: '탱', value: 'FEARLESS', description: '공포 구간도 주저 없이! 웬만한 공포 연출엔 안 놀라요.' },
-          { label: '쫄탱', value: 'FEARFUL_TANK', description: '떨면서도 탱 역할을 수행할 순 있어요.' },
-          { label: '마지모탱', value: 'RELUCTANT_TANK', description: '나서기는 무섭지만 떠밀려서 어쩔 수 없이 가요.' },
-          { label: '변쫄', value: 'NERVOUS', description: '공포 테마가 무섭지만 계속 하고 싶어요.' },
-          { label: '쫄', value: 'SCARED', description: '공포 테마는 무서워서 잘 못해요.' },
-          { label: '극쫄', value: 'EXTREME_SCARED', description: '공포가 아니어도 웬만한 테마는 무서워요.' },
-        ].map((item) => (
-          <List key={item.value}>
-            <RadioButton
-              selected={selected === item.value}
-              onClick={() => handleSelect(item.value)}
-            />
-            {item.label} : {item.description}
-          </List>
-        ))}
+        <List>
+          <RadioButton
+            selected={selected === 'BEGINNER'}
+            onClick={() => handleSelect('BEGINNER')}
+          />
+          방세포 : 0~5방 정도로 아직 방탈출에 대한 느낌을 잘 몰라요!
+        </List>
+        <List>
+          <RadioButton
+            selected={selected === 'JUNIOR'}
+            onClick={() => handleSelect('JUNIOR')}
+          />
+          방초보 : 5~20방 정도 경험이 있어 어떤 느낌인지는 알아요!
+        </List>
+        <List>
+          <RadioButton
+            selected={selected === 'SENIOR'}
+            onClick={() => handleSelect('SENIOR')}
+          />
+          방중수 : 20~50방 정도의 경험이 있어 무난하게 할 수 있어요!
+        </List>
+        <List>
+          <RadioButton
+            selected={selected === 'MASTER'}
+            onClick={() => handleSelect('MASTER')}
+          />
+          방고수 : 50+ 방 정도 경험이 있어 난이도가 상관이 없어요!
+        </List>
       </ListWrapper>
     </SectionWrapper>
   )
 }
 
-export default PositionSection;
+export default ProficiencySection;
 
 // CSS
 const SectionWrapper = styled.div`
@@ -96,7 +109,7 @@ const List = styled.div`
   }
 `;
 
-const RadioButton = styled.button`
+const RadioButton = styled.button<{ selected: boolean }>`
 font-size: 1rem;
   all: unset;
   border: 1.5px solid var(--RIU_Primary-100, #718FF2);

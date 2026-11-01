@@ -10,13 +10,15 @@ const plain = value => JSON.parse(JSON.stringify(value));
 const flush = () => new Promise(resolve => setImmediate(resolve));
 const authUI = name => `src/features/auth/ui/${name}.tsx`;
 const surveyUI = name => `src/features/survey/ui/${name}.tsx`;
+const mypageUI = name => `src/features/mypage/ui/preferences/${name}.tsx`;
 
 // Actual atom defaults, option data and API functions are loaded; HTTP is replaced
 // with a deferred local transport. UI children are inspected through their props.
-function mount(relative, { props = {}, values = {}, sharedAtoms } = {}) {
+function mount(relative, { props = {}, values = {}, sharedAtoms, sharedSession, isMobile = false } = {}) {
   const atoms = sharedAtoms || {};
-  const defaults = new Map(), setters = new Map(), cache = new Map();
-  const slots = [], requests = [], writes = [], navigation = [], errors = [];
+  const session = sharedSession || { generation: 0, authenticated: true, listeners: new Set() };
+  const defaults = new Map(), setters = new Map(), resetters = new Map(), cache = new Map();
+  const slots = [], requests = [], writes = [], navigation = [], errors = [], alerts = [];
   let cursor = 0, changed = false, pending = [], tree;
   const setAtom = (key, value) => {
     const next = typeof value === 'function' ? value(atoms[key]) : value;
@@ -26,6 +28,10 @@ function mount(relative, { props = {}, values = {}, sharedAtoms } = {}) {
   const setter = key => {
     if (!setters.has(key)) setters.set(key, value => setAtom(key, value));
     return setters.get(key);
+  };
+  const resetter = key => {
+    if (!resetters.has(key)) resetters.set(key, () => setAtom(key, structuredClone(defaults.get(key))));
+    return resetters.get(key);
   };
   const react = {
     useState(initial) {
@@ -41,15 +47,30 @@ function mount(relative, { props = {}, values = {}, sharedAtoms } = {}) {
     useEffect(effect, deps) {
       const i = cursor++;
       if (!slots[i]?.deps || deps.some((value, j) => !Object.is(value, slots[i].deps[j]))) {
-        const previous = slots[i]; slots[i] = { deps };
+        const previous = slots[i]; slots[i] = { deps, effect };
         pending.push(() => { previous?.cleanup?.(); slots[i].cleanup = effect(); });
       }
     },
+    useSyncExternalStore(subscribe, getSnapshot) {
+      react.useEffect(() => subscribe(() => { changed = true; }), [subscribe]);
+      return getSnapshot();
+    },
+  };
+  const sessionState = {
+    getAuthSessionGeneration: () => session.generation,
+    getAuthSessionSnapshot: () => session.authenticated,
+    isAuthSessionCurrent: generation => session.generation === generation,
+    synchronizeAuthSessionToken() {
+      if (!session.pendingTokenChange) return false;
+      session.pendingTokenChange = false; session.generation++; session.authenticated = null;
+      session.listeners.forEach(listener => listener()); return true;
+    },
+    subscribeAuthSessionState(listener) { session.listeners.add(listener); return () => session.listeners.delete(listener); },
   };
   const transport = (method, url, body) => {
     let resolve, reject;
     const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
-    requests.push({ method, url, body, resolve: data => resolve({ data }), reject });
+    requests.push({ method, url, body, generation: session.generation, resolve: data => resolve({ data }), reject });
     return promise;
   };
   const api = { get: url => transport('GET', url), patch: (url, body) => transport('PATCH', url, body) };
@@ -70,9 +91,11 @@ function mount(relative, { props = {}, values = {}, sharedAtoms } = {}) {
           return config.key;
         },
         useRecoilState: key => [atoms[key], setter(key)], useRecoilValue: key => atoms[key],
-        useSetRecoilState: setter, useResetRecoilState: key => () => setAtom(key, structuredClone(defaults.get(key))),
+        useSetRecoilState: setter, useResetRecoilState: resetter,
       };
       if (id === 'react-router-dom') return { useNavigate: () => (...args) => navigation.push(args) };
+      if (id.endsWith('/hooks/useDevice')) return { __esModule: true, default: () => ({ isMobile }) };
+      if (id.endsWith('/auth/sessionState')) return sessionState;
       if (id.includes('app/API')) return { api };
       if (id.includes('/api/') || id.includes('/model/')) return load(path.resolve(path.dirname(filename), id + '.ts'));
       return { __esModule: true, default: id.replace(/\.(jsx|tsx)$/, '') };
@@ -85,6 +108,7 @@ function mount(relative, { props = {}, values = {}, sharedAtoms } = {}) {
     }).outputText;
     vm.runInNewContext(code, {
       module, exports: module.exports, require: requireModule,
+      alert: message => alerts.push(message),
       console: { log() {}, error(...args) { if (filename === path.join(root, relative)) errors.push(args[0]); } },
     }, { filename: sourceFile });
     cache.set(filename, module.exports); return module.exports;
@@ -108,12 +132,27 @@ function mount(relative, { props = {}, values = {}, sharedAtoms } = {}) {
     return typeof node === 'object' ? text(node.props?.children) : String(node);
   };
   return {
-    atoms, requests, writes, errors, navigation, render, find, text: () => text(tree),
+    atoms, requests, writes, errors, alerts, navigation, render, find, text: () => text(tree),
     children: name => find(n => String(n.type).endsWith('/' + name)),
     radios: () => find(n => n.type === 'styled.button' && typeof n.props.selected === 'boolean'),
     tags: () => find(n => n.props.item !== undefined),
     loading: () => find(n => String(n.type).endsWith('/Loading')).length > 0,
     update(values) { Object.entries(values).forEach(([key, value]) => setAtom(key, value)); return render(); },
+    switchSession(authenticated = true) {
+      session.generation++; session.authenticated = authenticated;
+      session.listeners.forEach(listener => listener()); return render();
+    },
+    setAuthentication(authenticated) {
+      session.authenticated = authenticated;
+      session.listeners.forEach(listener => listener()); return render();
+    },
+    changeTokenBeforeEvent() { session.pendingTokenChange = true; },
+    replayEffects() {
+      const effects = slots.filter(slot => slot?.effect);
+      effects.forEach(slot => slot.cleanup?.());
+      effects.forEach(slot => { slot.cleanup = slot.effect(); });
+      return render();
+    },
     clickText(value) {
       const nodes = find(n => typeof n.props.onClick === 'function' && text(n) === value);
       assert.equal(nodes.length, 1, `Expected one clickable ${value}`); nodes[0].props.onClick(); render();
@@ -369,4 +408,319 @@ test('4-16 normal SurveyPage selects all seven sections and backdrop closes only
     m.find(n => typeof n.props.onClick === 'function')[0].props.onClick(); m.render(); assert.equal(m.atoms.modalState, false);
     assert.equal(m.atoms.surveySectionState, section); assert.equal(m.requests.length, 0);
   });
+});
+
+test('4-17 mypage defaults and restored selections use the separate mypage draft without requests', () => {
+  const sharedAtoms = {};
+  for (const name of ['ProficiencySection', 'GenreSection', 'HeadcountSection', 'PreferenceSection', 'PositionSection', 'InfoSection']) {
+    const m = mount(mypageUI(name), { sharedAtoms }); m.render();
+    assert.equal(m.requests.length, 0); assert.equal(m.writes.length, 0);
+    assert.equal(m.radios().some(n => n.props.selected), false);
+    assert.equal(m.tags().some(n => n.props.selected), false);
+  }
+  assert.deepEqual(plain(sharedAtoms.myPageSurveyState), { proficiency: null, preferredGenreList: [], preferredHeadcount: null, preferredElementList: [], preferredActivity: null, preferredDevice: null, horrorPos: null, preference: null });
+  sharedAtoms.myPageSurveyState = structuredClone(preference);
+  const genre = mount(mypageUI('GenreSection'), { sharedAtoms }); genre.render();
+  assert.deepEqual(genre.tags().filter(n => n.props.selected).map(n => n.props.item), ['공포', 'SF']);
+  const pref = mount(mypageUI('PreferenceSection'), { sharedAtoms }); pref.render();
+  assert.deepEqual(pref.tags().filter(n => n.props.selected).map(n => n.props.item), ['스토리', '가격', '자물쇠', '활동성 낮음']);
+  const signup = mount(surveyUI('SurveyProficiencySection'), { sharedAtoms }); signup.render();
+  signup.radios()[0].props.onClick(); signup.render();
+  assert.equal(sharedAtoms.surveyState.proficiency, 'BEGINNER');
+  assert.deepEqual(plain(sharedAtoms.myPageSurveyState), preference);
+});
+
+test('4-17 genre editing keeps twenty options, maximum four, order and other draft fields', () => {
+  const m = mount(mypageUI('GenreSection'), { values: { myPageSurveyState: { ...preference, preferredGenreList: [] } } }); m.render();
+  assert.equal(m.tags().length, 20);
+  ['감성', '공포', '스릴러', '추리'].forEach(label => m.clickTag(label));
+  assert.deepEqual(plain(m.atoms.myPageSurveyState.preferredGenreList), ['SENTIMENTAL', 'HORROR', 'THRILLER', 'DETECTIVE']);
+  const extra = m.tags().find(n => n.props.item === '미스터리');
+  assert.equal(extra.props.disabled, true); extra.props.onClick(); m.render();
+  assert.equal(m.atoms.myPageSurveyState.preferredGenreList.length, 4);
+  m.clickTag('공포'); m.clickTag('미스터리');
+  assert.deepEqual(plain(m.atoms.myPageSurveyState.preferredGenreList), ['SENTIMENTAL', 'THRILLER', 'DETECTIVE', 'MYSTERY']);
+  assert.equal(m.atoms.myPageSurveyState.preference, preference.preference);
+  ['감성', '스릴러', '추리', '미스터리'].forEach(label => m.clickTag(label));
+  assert.deepEqual(plain(m.atoms.myPageSurveyState), { ...preference, preferredGenreList: [] });
+  assert.equal(m.requests.length, 0);
+});
+
+test('4-17 element editing keeps maximum three and device/activity toggles keep API literal values', () => {
+  const m = mount(mypageUI('PreferenceSection')); m.render();
+  ['가격', '스토리', '연출'].forEach(label => m.clickTag(label));
+  assert.deepEqual(plain(m.atoms.myPageSurveyState.preferredElementList), ['PRICE', 'STORY', 'DIRECTION']);
+  const extra = m.tags().find(n => n.props.item === '볼륨');
+  assert.equal(extra.props.disabled, true); extra.props.onClick(); m.render();
+  assert.equal(m.atoms.myPageSurveyState.preferredElementList.length, 3);
+  m.clickTag('스토리'); m.clickTag('볼륨');
+  assert.deepEqual(plain(m.atoms.myPageSurveyState.preferredElementList), ['PRICE', 'DIRECTION', 'VOLUME']);
+  for (const [offset, field, options] of [[6, 'preferredDevice', ['DEVICE', 'LOCK', 'NO_MATTER']], [9, 'preferredActivity', ['HIGH', 'LOW', 'NO_MATTER']]]) {
+    options.forEach((value, index) => {
+      m.tags()[offset + index].props.onClick(); m.render(); assert.equal(m.atoms.myPageSurveyState[field], value);
+      m.tags()[offset + index].props.onClick(); m.render(); assert.equal(m.atoms.myPageSurveyState[field], null);
+    });
+  }
+  assert.equal(m.requests.length, 0);
+});
+
+test('4-17 headcount, proficiency and horror position selection/deselection keep numbers, enums and null', () => {
+  for (const [name, field, options] of [
+    ['HeadcountSection', 'preferredHeadcount', [1, 2, 3, 4, 5, 6]],
+    ['ProficiencySection', 'proficiency', ['BEGINNER', 'JUNIOR', 'SENIOR', 'MASTER']],
+    ['PositionSection', 'horrorPos', ['FEARLESS', 'FEARFUL_TANK', 'RELUCTANT_TANK', 'NERVOUS', 'SCARED', 'EXTREME_SCARED']],
+  ]) {
+    const m = mount(mypageUI(name)); m.render();
+    options.forEach((value, index) => {
+      m.radios()[index].props.onClick(); m.render(); assert.equal(m.atoms.myPageSurveyState[field], value);
+      m.radios()[index].props.onClick(); m.render(); assert.equal(m.atoms.myPageSurveyState[field], null);
+    });
+    m.update({ myPageSurveyState: { ...preference, [field]: options[1] } });
+    assert.deepEqual(m.radios().map(n => n.props.selected), options.map((_, index) => index === 1));
+    assert.equal(m.requests.length, 0);
+  }
+});
+
+test('4-17 mypage textarea preserves null display, raw whitespace, empty text and other fields', () => {
+  const m = mount(mypageUI('InfoSection'), { values: { myPageSurveyState: { ...preference, preference: null } } }); m.render();
+  const textarea = () => m.find(n => n.type === 'styled.textarea')[0];
+  assert.equal(textarea().props.value, ''); assert.equal(textarea().props.maxLength, 500);
+  for (const input of ['  추리 선호  ', '   ', '', '가'.repeat(500)]) {
+    textarea().props.onChange({ target: { value: input } }); m.render();
+    assert.equal(textarea().props.value, input); assert.equal(m.atoms.myPageSurveyState.preference, input);
+    assert.deepEqual(plain(m.atoms.myPageSurveyState.preferredGenreList), preference.preferredGenreList);
+  }
+  assert.equal(m.requests.length, 0);
+});
+
+test('4-17 mypage tag retains optional callbacks, click event identity and disabled behavior', () => {
+  const event = { type: 'click' };
+  let calls = 0;
+  for (const disabled of [false, true, undefined]) {
+    const m = mount(mypageUI('SurveyTag'), { props: { item: '태그', disabled, onClick: value => { assert.equal(value, event); calls++; } } });
+    const tree = m.render();
+    if (disabled) assert.equal(tree.props.onClick, undefined); else tree.props.onClick(event);
+    assert.equal(Object.hasOwn(tree.props, 'disabled'), false); // Do not fix the existing styled prop omission during migration.
+  }
+  const optional = mount(mypageUI('SurveyTag'), { props: { item: '태그' } });
+  assert.equal(optional.render().props.onClick, undefined); assert.equal(calls, 2);
+});
+
+test('4-17 page restores a complete response and saves eight fields unchanged before navigating', async () => {
+  const m = mount('src/pages/myPage/PreferencesPage.tsx'); m.render();
+  assert.equal(m.requests.length, 1); assert.equal(m.requests[0].method, 'GET'); assert.equal(m.requests[0].url, 'members/preferences');
+  m.requests[0].resolve({ memberId: 7, ...preference }); await m.settle();
+  assert.deepEqual(plain(m.atoms.myPageSurveyState), preference);
+  m.update({ myPageSurveyState: { ...preference, preferredGenreList: [], preference: '  그대로  ' } });
+  m.clickText('성향조사 결과 저장하기');
+  assert.equal(m.requests[1].method, 'PATCH'); assert.equal(m.requests[1].url, 'members/preferences');
+  assert.deepEqual(plain(m.requests[1].body), { ...preference, preferredGenreList: [], preference: '  그대로  ' });
+  assert.equal(m.alerts.length, 0); assert.equal(m.navigation.length, 0);
+  m.requests[1].resolve('저장 완료'); await m.settle();
+  assert.deepEqual(m.alerts, ['성향조사 결과가 저장되었습니다.']); assert.deepEqual(m.navigation, [['/mypage']]);
+  assert.equal(m.atoms.myPageSurveyState.preference, '  그대로  '); assert.equal(m.requests.length, 2);
+});
+
+test('4-17 read failure clears prior draft and prevents editing or saving', async () => {
+  const m = mount('src/pages/myPage/PreferencesPage.tsx', { values: { myPageSurveyState: structuredClone(preference) } }); m.render();
+  assert.equal(m.children('GenreSection').length, 0);
+  assert.deepEqual(plain(m.atoms.myPageSurveyState.preferredGenreList), []);
+  m.requests[0].reject(Error('mock read failure')); await m.settle();
+  assert.equal(m.atoms.myPageSurveyState.preference, null); assert.equal(m.errors.length, 1);
+  assert.equal(m.find(n => n.props.role === 'alert').length, 1);
+  m.clickText('성향조사 결과 저장하기');
+  assert.equal(m.requests.length, 1); assert.equal(m.alerts.length, 0); assert.equal(m.navigation.length, 0);
+});
+
+test('4-17 page keeps desktop/mobile layout and child imports after a validated load', async () => {
+  for (const isMobile of [false, true]) {
+    const m = mount('src/pages/myPage/PreferencesPage.tsx', { isMobile }); m.render();
+    assert.equal(m.text().includes('마이페이지로 돌아가기'), !isMobile);
+    assert.equal(m.children('GenreSection').length, 0);
+    m.requests[0].resolve(preference); await m.settle();
+    for (const name of ['ProficiencySection', 'GenreSection', 'HeadcountSection', 'PreferenceSection', 'PositionSection', 'InfoSection']) {
+      assert.equal(m.children(name).length, 1);
+    }
+    assert.equal(m.requests.length, 1);
+  }
+});
+
+const preferencesPage = 'src/pages/myPage/PreferencesPage.tsx';
+const saveButton = m => m.find(n => n.props.disabled !== undefined && typeof n.props.onClick === 'function')[0];
+
+test('4-17 empty arrays and scalar nulls remain explicit values without defaults', async () => {
+  const response = { proficiency: null, preferredGenreList: [], preferredHeadcount: null, preferredElementList: [], preferredActivity: null, preferredDevice: null, horrorPos: null, preference: null };
+  const m = mount(preferencesPage); m.render();
+  assert.equal(saveButton(m).props.disabled, true); assert.equal(m.find(n => n.props.role === 'status').length, 1);
+  m.requests[0].resolve(response); await m.settle();
+  assert.deepEqual(plain(m.atoms.myPageSurveyState), response); assert.equal(saveButton(m).props.disabled, false);
+  m.clickText('성향조사 결과 저장하기'); assert.deepEqual(plain(m.requests[1].body), response);
+});
+
+test('4-17 zero, empty string, whitespace, ETC and array order are copied without coercion or trimming', async () => {
+  for (const text of ['', '   ', '  추리 선호  ']) {
+    const response = { ...preference, memberId: 7, preferredHeadcount: 0, preferredGenreList: ['ETC', 'SF', 'HORROR'], preferredElementList: ['PRICE', 'DIRECTION', 'STORY'], preference: text };
+    const { memberId, ...draft } = response;
+    const m = mount(preferencesPage); m.render(); m.requests[0].resolve(response); await m.settle();
+    assert.deepEqual(plain(m.atoms.myPageSurveyState), draft);
+    assert.notEqual(m.atoms.myPageSurveyState.preferredGenreList, response.preferredGenreList);
+    m.clickText('성향조사 결과 저장하기'); assert.deepEqual(plain(m.requests[1].body), draft);
+    assert.equal(Object.hasOwn(m.requests[1].body, 'memberId'), false); assert.equal(memberId, 7);
+  }
+});
+
+test('4-17 every missing/undefined field and null array blocks the whole response and PATCH', async () => {
+  const invalid = [null, undefined, [], 'not an object', { ...preference, preferredGenreList: null }, { ...preference, preferredElementList: null }];
+  for (const field of Object.keys(preference)) {
+    const omitted = { ...preference }; delete omitted[field];
+    invalid.push(omitted, { ...preference, [field]: undefined });
+  }
+  for (const response of invalid) {
+    const m = mount(preferencesPage, { values: { myPageSurveyState: structuredClone(preference) } }); m.render();
+    m.requests[0].resolve(response); await m.settle();
+    assert.equal(m.children('GenreSection').length, 0); assert.equal(saveButton(m).props.disabled, true);
+    assert.equal(m.find(n => n.props.role === 'alert').length, 1);
+    assert.equal(m.atoms.myPageSurveyState.preference, null);
+    m.clickText('성향조사 결과 저장하기'); assert.equal(m.requests.length, 1);
+  }
+});
+
+test('4-17 invalid enums, nullable array items, wrong types and documented choice overflows are rejected', async () => {
+  const cases = [
+    ['proficiency', 'UNKNOWN'], ['preferredGenreList', ['UNKNOWN']], ['preferredGenreList', [null]],
+    ['preferredGenreList', new Array(1)], ['preferredGenreList', {}], ['preferredElementList', ['toString']],
+    ['preferredElementList', [undefined]], ['preferredActivity', ''], ['preferredDevice', false],
+    ['horrorPos', 'UNKNOWN'], ['preference', 0], ['preferredHeadcount', '3'], ['preferredHeadcount', NaN],
+    ['preferredHeadcount', Infinity], ['preferredHeadcount', 1.5],
+    ['preferredGenreList', ['HORROR', 'SF', 'DETECTIVE', 'COMIC', 'ETC']],
+    ['preferredElementList', ['PRICE', 'STORY', 'DIRECTION', 'VOLUME']],
+  ];
+  for (const [field, value] of cases) {
+    const m = mount(preferencesPage); m.render(); m.requests[0].resolve({ ...preference, [field]: value }); await m.settle();
+    assert.equal(m.children('GenreSection').length, 0); assert.equal(saveButton(m).props.disabled, true);
+    m.clickText('성향조사 결과 저장하기'); assert.equal(m.requests.length, 1);
+  }
+});
+
+test('4-17 account changes hide prior fields in the first render and clear the shared draft', async () => {
+  const m = mount(preferencesPage); m.render(); m.requests[0].resolve({ ...preference, memberId: 7 }); await m.settle();
+  m.switchSession();
+  assert.equal(m.children('GenreSection').length, 0); assert.equal(saveButton(m).props.disabled, true);
+  assert.equal(m.atoms.myPageSurveyState.preference, null); assert.equal(m.requests.length, 2);
+  m.requests[1].resolve({ ...preference, memberId: 8, preference: '회원 B' }); await m.settle();
+  assert.equal(m.atoms.myPageSurveyState.preference, '회원 B'); assert.equal(m.children('GenreSection').length, 1);
+});
+
+test('4-17 A → B → A ignores old successes, errors and invalid responses despite matching member IDs', async () => {
+  for (const failCurrent of [false, true]) {
+    const m = mount(preferencesPage); m.render(); m.switchSession(); m.switchSession();
+    assert.deepEqual(m.requests.map(r => r.generation), [0, 1, 2]);
+    m.requests[0].resolve({ ...preference, memberId: 7, preference: '이전 A' });
+    m.requests[1].reject(Error('이전 B 실패')); await m.settle();
+    assert.equal(m.atoms.myPageSurveyState.preference, null); assert.equal(m.errors.length, 0);
+    assert.equal(m.find(n => n.props.role === 'status').length, 1);
+    if (failCurrent) m.requests[2].reject(Error('현재 A 실패'));
+    else m.requests[2].resolve({ ...preference, memberId: 7, preference: '최신 A' });
+    await m.settle();
+    assert.equal(m.atoms.myPageSurveyState.preference, failCurrent ? null : '최신 A');
+    assert.equal(m.children('GenreSection').length, failCurrent ? 0 : 1);
+  }
+  const m = mount(preferencesPage); m.render(); m.switchSession();
+  m.requests[1].resolve(preference); await m.settle(); const writes = m.writes.length;
+  m.requests[0].resolve({}); await m.settle(); assert.equal(m.writes.length, writes);
+  assert.equal(m.children('GenreSection').length, 1);
+});
+
+test('4-17 StrictMode cleanup and edits prevent a late initial GET from replacing user changes', async () => {
+  const m = mount(preferencesPage); m.render(); m.replayEffects();
+  assert.equal(m.requests.length, 2);
+  m.requests[1].resolve(preference); await m.settle();
+  m.find(n => typeof n.props.onChangeCapture === 'function')[0].props.onChangeCapture();
+  m.update({ myPageSurveyState: { ...preference, preference: '편집한 값' } });
+  const count = m.writes.length;
+  m.requests[0].resolve({ ...preference, preference: '늦은 응답' }); await m.settle();
+  assert.equal(m.atoms.myPageSurveyState.preference, '편집한 값'); assert.equal(m.writes.length, count);
+});
+
+test('4-17 unmount ignores pending GET success/error without overwriting a new page', async () => {
+  for (const fails of [false, true]) {
+    const sharedAtoms = {}, sharedSession = { generation: 0, authenticated: true, listeners: new Set() };
+    const old = mount(preferencesPage, { sharedAtoms, sharedSession }); old.render(); old.unmount();
+    const current = mount(preferencesPage, { sharedAtoms, sharedSession }); current.render();
+    current.requests[0].resolve({ ...preference, preference: '새 화면' }); await current.settle();
+    const writes = old.writes.length;
+    if (fails) old.requests[0].reject(Error('late failure')); else old.requests[0].resolve({ ...preference, preference: '이전 화면' });
+    await flush(); await flush();
+    assert.equal(old.writes.length, writes); assert.equal(old.errors.length, 0);
+    assert.equal(sharedAtoms.myPageSurveyState.preference, '새 화면');
+  }
+});
+
+test('4-17 unauthenticated/loading sessions send no preference request and cannot save old data', async () => {
+  const m = mount(preferencesPage); m.render(); m.requests[0].resolve(preference); await m.settle();
+  m.switchSession(false); assert.equal(m.children('GenreSection').length, 0);
+  m.clickText('성향조사 결과 저장하기'); assert.equal(m.requests.length, 1);
+  assert.equal(m.atoms.myPageSurveyState.preference, null);
+  m.setAuthentication(null); await m.settle(); assert.equal(m.requests.length, 1);
+  m.setAuthentication(true); await m.settle(); assert.equal(m.requests.length, 2);
+  assert.ok(m.requests.every(r => r.url === 'members/preferences')); // No additional authentication/profile lookup.
+});
+
+test('4-17 failed save keeps edits, re-enables submit and permits retry without duplicate requests', async () => {
+  const m = mount(preferencesPage); m.render(); m.requests[0].resolve(preference); await m.settle();
+  m.update({ myPageSurveyState: { ...preference, preference: '  수정 내용  ' } });
+  const click = saveButton(m).props.onClick;
+  click(); click(); m.render(); assert.equal(m.requests.length, 2); assert.equal(saveButton(m).props.disabled, true);
+  m.requests[1].reject(Error('mock save failure')); await m.settle();
+  assert.equal(m.atoms.myPageSurveyState.preference, '  수정 내용  '); assert.equal(saveButton(m).props.disabled, false);
+  assert.equal(m.alerts.length, 0); assert.equal(m.navigation.length, 0);
+  m.clickText('성향조사 결과 저장하기'); m.requests[2].resolve('저장 완료'); await m.settle();
+  assert.equal(m.alerts.length, 1); assert.deepEqual(m.navigation, [['/mypage']]);
+});
+
+test('4-17 an incomplete draft from an unchecked JS writer is never PATCHed', async () => {
+  const m = mount(preferencesPage); m.render(); m.requests[0].resolve(preference); await m.settle();
+  m.update({ myPageSurveyState: { ...preference, preferredGenreList: null } });
+  assert.equal(m.children('GenreSection').length, 0); assert.equal(m.find(n => n.props.role === 'alert').length, 1);
+  m.clickText('성향조사 결과 저장하기'); assert.equal(m.requests.length, 1);
+});
+
+test('4-17 editing, rerendering and unchanged authentication checks do not refetch preferences', async () => {
+  const m = mount(preferencesPage); m.render(); m.requests[0].resolve(preference); await m.settle();
+  m.find(n => typeof n.props.onChangeCapture === 'function')[0].props.onChangeCapture();
+  m.update({ myPageSurveyState: { ...preference, preference: '편집 유지' } });
+  m.render(); m.setAuthentication(true); await m.settle();
+  assert.equal(m.requests.length, 1); assert.equal(m.atoms.myPageSurveyState.preference, '편집 유지');
+});
+
+test('4-17 stale save success/error/finally cannot alert, navigate or unlock another account save', async () => {
+  for (const fails of [false, true]) {
+    const m = mount(preferencesPage); m.render(); m.requests[0].resolve({ ...preference, memberId: 7 }); await m.settle();
+    m.clickText('성향조사 결과 저장하기'); m.switchSession(); m.switchSession();
+    m.requests[3].resolve({ ...preference, memberId: 7, preference: '최신 A' }); await m.settle();
+    m.clickText('성향조사 결과 저장하기'); assert.equal(saveButton(m).props.disabled, true);
+    const writes = m.writes.length;
+    if (fails) m.requests[1].reject(Error('old save failure')); else m.requests[1].resolve('old success');
+    await m.settle(); assert.equal(m.writes.length, writes); assert.equal(m.errors.length, 0);
+    assert.equal(m.alerts.length, 0); assert.equal(m.navigation.length, 0); assert.equal(saveButton(m).props.disabled, true);
+    m.requests[4].resolve('current success'); await m.settle(); assert.equal(m.alerts.length, 1);
+  }
+});
+
+test('4-17 pending save completion after unmount has no UI or shared-state effects', async () => {
+  for (const fails of [false, true]) {
+    const m = mount(preferencesPage); m.render(); m.requests[0].resolve(preference); await m.settle();
+    m.clickText('성향조사 결과 저장하기'); m.unmount(); const writes = m.writes.length;
+    if (fails) m.requests[1].reject(Error('late failure')); else m.requests[1].resolve('late success');
+    await flush(); await flush();
+    assert.equal(m.writes.length, writes); assert.equal(m.errors.length, 0); assert.equal(m.alerts.length, 0); assert.equal(m.navigation.length, 0);
+  }
+});
+
+test('4-17 a token change before the storage event cannot PATCH the previous account draft', async () => {
+  const m = mount(preferencesPage); m.render(); m.requests[0].resolve(preference); await m.settle();
+  m.changeTokenBeforeEvent();
+  saveButton(m).props.onClick(); await m.settle();
+  assert.equal(m.requests.length, 1); assert.equal(m.children('GenreSection').length, 0);
+  assert.equal(m.atoms.myPageSurveyState.preference, null); assert.equal(m.alerts.length, 0);
 });

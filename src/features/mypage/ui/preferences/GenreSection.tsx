@@ -3,6 +3,7 @@ import { useRecoilState } from 'recoil';
 import { surveyState } from "../../model/surveyAtom";
 import { surveyGenreList } from "../../../survey/model/surveyGenreList";
 import SurveyTag from "./SurveyTag";
+import type { ThemeGenre } from "../../../../shared/types/theme";
 
 function GenreSection() {
   // state 관리
@@ -12,7 +13,7 @@ function GenreSection() {
   const selectedGenres = survey.preferredGenreList;
 
   // 태그 선택 핸들러
-  const handleTagClick = (enumValue) => {
+  const handleTagClick = (enumValue: ThemeGenre) => {
     const isSelected = selectedGenres.includes(enumValue);
 
     if (isSelected) {

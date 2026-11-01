@@ -1,19 +1,20 @@
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
 import { surveyState } from "../../model/surveyAtom";
+import type { PreferenceHorrorPosition } from "../../../../shared/types/preference";
 
-function HeadcountSection() {
+function PositionSection() {
   // state 관리
   const [survey, setSurvey] = useRecoilState(surveyState);
 
-  // 인원수 선택 상태
-  const selected = survey.preferredHeadcount;
+  // 포지션 선택 상태
+  const selected = survey.horrorPos;
 
-  // 인원수 선택 함수
-  const handleSelect = (value) => {
+  // 포지션 선택 함수
+  const handleSelect = (value: PreferenceHorrorPosition) => {
     setSurvey(prev => ({
       ...prev,
-      preferredHeadcount: prev.preferredHeadcount === value ? null : value
+      horrorPos: prev.horrorPos === value ? null : value
     }));
   };
 
@@ -21,18 +22,25 @@ function HeadcountSection() {
     <SectionWrapper>
       {/* 타이틀 */}
       <Title>
-        선호 인원
+        공포 테마 포지션
       </Title>
 
       {/* 선택 영역 */}
       <ListWrapper>
-        {[1, 2, 3, 4, 5, 6].map((num) => (
-          <List key={num}>
+        {([
+          { label: '탱', value: 'FEARLESS', description: '공포 구간도 주저 없이! 웬만한 공포 연출엔 안 놀라요.' },
+          { label: '쫄탱', value: 'FEARFUL_TANK', description: '떨면서도 탱 역할을 수행할 순 있어요.' },
+          { label: '마지모탱', value: 'RELUCTANT_TANK', description: '나서기는 무섭지만 떠밀려서 어쩔 수 없이 가요.' },
+          { label: '변쫄', value: 'NERVOUS', description: '공포 테마가 무섭지만 계속 하고 싶어요.' },
+          { label: '쫄', value: 'SCARED', description: '공포 테마는 무서워서 잘 못해요.' },
+          { label: '극쫄', value: 'EXTREME_SCARED', description: '공포가 아니어도 웬만한 테마는 무서워요.' },
+        ] satisfies { label: string; value: PreferenceHorrorPosition; description: string }[]).map((item) => (
+          <List key={item.value}>
             <RadioButton
-              selected={selected === num}
-              onClick={() => handleSelect(num)}
+              selected={selected === item.value}
+              onClick={() => handleSelect(item.value)}
             />
-            {num === 6 ? '6인 이상' : `${num}인`}
+            {item.label} : {item.description}
           </List>
         ))}
       </ListWrapper>
@@ -40,7 +48,7 @@ function HeadcountSection() {
   )
 }
 
-export default HeadcountSection;
+export default PositionSection;
 
 // CSS
 const SectionWrapper = styled.div`
@@ -89,7 +97,7 @@ const List = styled.div`
   }
 `;
 
-const RadioButton = styled.button`
+const RadioButton = styled.button<{ selected: boolean }>`
 font-size: 1rem;
   all: unset;
   border: 1.5px solid var(--RIU_Primary-100, #718FF2);

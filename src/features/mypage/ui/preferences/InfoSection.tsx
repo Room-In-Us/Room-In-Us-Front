@@ -1,13 +1,14 @@
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
 import { surveyState } from "../../model/surveyAtom";
+import type { ChangeEvent } from "react";
 
 function InfoSection() {
   // state 관리
   const [survey, setSurvey] = useRecoilState(surveyState);
 
   // 입력 핸들러
-  const handleTextChange = (e) => {
+  const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
     setSurvey(prev => ({
       ...prev,

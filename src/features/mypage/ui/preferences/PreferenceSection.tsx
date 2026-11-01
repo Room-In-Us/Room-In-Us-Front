@@ -3,6 +3,7 @@ import { useRecoilState } from 'recoil';
 import { surveyState } from "../../model/surveyAtom";
 import { preferredElementList, preferredDeviceList, preferredActivityList } from "../../../survey/model/surveyPreferenceList";
 import SurveyTag from "./SurveyTag";
+import type { PreferenceActivity, PreferenceDevice, PreferenceElement } from "../../../../shared/types/preference";
 
 function PreferenceSection() {
   // state 관리
@@ -12,9 +13,9 @@ function PreferenceSection() {
   const selectedElements = survey.preferredElementList;
   const selectedDevice = survey.preferredDevice;
   const selectedActivity = survey.preferredActivity;
-  
+
   // 요소 태그 선택 핸들러
-  const handleElementClick = (enumValue) => {
+  const handleElementClick = (enumValue: PreferenceElement) => {
     const isSelected = selectedElements.includes(enumValue);
     if (isSelected) {
       setSurvey(prev => ({
@@ -30,7 +31,7 @@ function PreferenceSection() {
   };
 
   // 장치 태그 선택 핸들러
-  const handleDeviceClick = (enumValue) => {
+  const handleDeviceClick = (enumValue: PreferenceDevice) => {
     setSurvey(prev => ({
       ...prev,
       preferredDevice: selectedDevice === enumValue ? null : enumValue,
@@ -38,7 +39,7 @@ function PreferenceSection() {
   };
 
   // 활동성 태그 선택 핸들러
-  const handleActivityClick = (enumValue) => {
+  const handleActivityClick = (enumValue: PreferenceActivity) => {
     setSurvey(prev => ({
       ...prev,
       preferredActivity: selectedActivity === enumValue ? null : enumValue,
