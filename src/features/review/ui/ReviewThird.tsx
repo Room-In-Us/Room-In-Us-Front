@@ -1,12 +1,16 @@
 import styled from 'styled-components'
-import RangeItem from './RangeItem.jsx';
+import RangeItem from './RangeItem';
 import { GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3 } from "../../../shared/styles/ReviewStyles";
-import InputBox from "./InputBox.jsx";
+import InputBox from "./InputBox";
 import useDevice from "../../../shared/hooks/useDevice";
 import { useRecoilState } from 'recoil';
 import { reviewStateFamily } from '../../themeDetail/model/reviewAtom';
+import type { ReviewThemeData } from './ReviewFirst';
+import type { ThemeReviewRecommendedCloth } from '../../../shared/types/review';
 
-export default function ReviewThird({themeData}) {
+type ReviewThirdProps = { themeData: ReviewThemeData };
+
+export default function ReviewThird({themeData}: ReviewThirdProps) {
 
   // 반응형
   const { isMobile } = useDevice();
@@ -15,7 +19,7 @@ export default function ReviewThird({themeData}) {
   const [review, setReview] = useRecoilState(reviewStateFamily(themeData.themeId));
 
   // 복장 추천 선택 핸들러러
-  const handleSelect = (value) => {
+  const handleSelect = (value: ThemeReviewRecommendedCloth | null) => {
     setReview(prev => ({
       ...prev,
       recommendedCloth: value,
@@ -52,7 +56,7 @@ export default function ReviewThird({themeData}) {
                     </Wrap4>
 
                   <RangeItem 
-                    onChange={(value) => {
+                    onChange={(value: number) => {
                       setReview(prev => ({
                         ...prev,
                         lockRatio: Math.round(value / 10) || null,
@@ -176,7 +180,7 @@ export default function ReviewThird({themeData}) {
                 </Wrap4>
 
               <RangeItem
-                onChange={(value) => {
+                onChange={(value: number) => {
                   setReview(prev => ({
                     ...prev,
                     lockRatio: Math.round(value / 10) || null,

@@ -1,8 +1,17 @@
 import styled from "styled-components";
 import SelectedCheckbox from '../../../shared/assets/icons/reviewWrite/selectedcheckbox.svg';
 import CheckBox from "../../../shared/assets/icons/reviewWrite/checkbox.svg";
+import type { MouseEventHandler } from 'react';
 
-export function ToggleCheckbox({ label, checked, onToggle, icon, special }) {
+type ToggleCheckboxProps = {
+  label: string;
+  checked: boolean;
+  onToggle: MouseEventHandler<HTMLLabelElement>;
+  icon?: string;
+  special?: boolean;
+};
+
+export function ToggleCheckbox({ label, checked, onToggle, icon, special }: ToggleCheckboxProps) {
   return (
     <CheckboxWrapper $special={special} onClick={onToggle}>
       <CheckBoxIcon src={checked ? SelectedCheckbox : CheckBox} />
@@ -12,7 +21,7 @@ export function ToggleCheckbox({ label, checked, onToggle, icon, special }) {
   );
 }
 
-const CheckboxWrapper = styled.label`
+const CheckboxWrapper = styled.label<{ $special?: boolean }>`
   display: flex;
   flex-direction: ${({ $special }) => ($special ? 'column' : 'row')};
   align-items: center;

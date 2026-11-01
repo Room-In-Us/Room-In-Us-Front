@@ -4,7 +4,10 @@ import Minus from "../../../shared/assets/icons/reviewWrite/minus.svg";
 import DisabledPlus from "../../../shared/assets/icons/reviewWrite/disabledplus.svg";
 import DisabledMinus from "../../../shared/assets/icons/reviewWrite/disabledminus.svg";
 
-export default function HintCounter({disabled, value = 0, onChange}) {
+type HintCounterProps = { disabled?: boolean; value?: number; onChange: (value: number) => void };
+type DisabledProps = { $disabled?: boolean };
+
+export default function HintCounter({disabled, value = 0, onChange}: HintCounterProps) {
 
   // 증감 핸들러
   const increase = () => {
@@ -25,7 +28,7 @@ export default function HintCounter({disabled, value = 0, onChange}) {
   );
 }
 
-const HintNumWrapper = styled.div`
+const HintNumWrapper = styled.div<DisabledProps>`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -33,7 +36,7 @@ const HintNumWrapper = styled.div`
   pointer-events: ${({ $disabled }) => $disabled ? 'none' : 'auto'};
 `;
 
-const HintNumBox = styled.div`
+const HintNumBox = styled.div<DisabledProps>`
   display: flex;
   width: 5em;
   padding: 0.625em 0.875em;
@@ -52,7 +55,7 @@ const HintNumBox = styled.div`
   }
 `;
 
-const PlusMinusIcon = styled.img`
+const PlusMinusIcon = styled.img<DisabledProps>`
   display: flex;
   width: 1.875em;
   height: 1.875em;
@@ -68,7 +71,7 @@ const PlusMinusIcon = styled.img`
   }
 `;
 
-const NumText = styled.div`
+const NumText = styled.div<DisabledProps>`
   display: flex;
   justify-content: center;
   align-items: center;

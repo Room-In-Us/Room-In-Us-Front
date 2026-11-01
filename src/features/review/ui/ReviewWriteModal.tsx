@@ -1,19 +1,43 @@
 import styled from "styled-components";
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from 'recoil';
 import { reviewModalState, reviewSectionState, reviewStateFamily } from "../../themeDetail/model/reviewAtom";
-import ReviewFirst from "./ReviewFirst.jsx";
-import ReviewSecond from "./ReviewSecond.jsx";
-import ReviewThird from "./ReviewThird.jsx";
+import ReviewFirst from "./ReviewFirst";
+import ReviewSecond from "./ReviewSecond";
+import ReviewThird from "./ReviewThird";
 import CloseIcon from "../../../shared/assets/icons/reviewWrite/closeicon.svg";
 import LikeIcon from "../../../shared/assets/icons/reviewWrite/likeIcon.svg";
-import ReviewLast from "./ReviewLast.jsx";
+import ReviewLast from "./ReviewLast";
 import { postReviewAPI } from "../api/postReviewAPI";
 import { putMyReviewAPI } from "../../mypage/api/myReviewAPI";
 import PopUpModal from "../../../shared/components/PopUpModal";
+import type { ReviewThemeData } from './ReviewFirst';
+import type { ReviewDraftParticipant, ReviewDraftState } from '../../themeDetail/model/reviewAtom';
+import type { ThemeDetailResponse } from '../../themeDetail/api/types';
+import type { MyReviewPathParam, ThemeReservationResponse } from '../../mypage/api/types';
+import type { ThemeReviewMutationInput, ThemeReviewMutationParticipant } from '../../../shared/types/review';
 
-function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
+type ReviewWriteModalProps = {
+  themeData: ReviewThemeData & {
+    storeName?: ThemeReservationResponse['storeName'];
+    storeInfo?: Pick<ThemeDetailResponse['storeInfo'], 'storeName'>;
+  };
+  reviewId?: MyReviewPathParam;
+  isEditMode?: boolean;
+  onUpdated?: () => void | Promise<void>;
+};
+type SubmittedReviewData = Omit<ReviewDraftState, 'uiState'>;
+type CompletedReviewData = Omit<SubmittedReviewData, 'reviewId'> & {
+  reviewId: MyReviewPathParam | null;
+  themeName: string;
+  storeName: string;
+  thumbnailUrl: string;
+  participantCnt: number;
+};
+type SaveRequest = { generation: number };
+
+function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }: ReviewWriteModalProps) {
   const navigate = useNavigate();
 
   // 상태 관리
@@ -24,17 +48,40 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
   const resetReview = useResetRecoilState(reviewStateFamily(themeData.themeId));
   const [, setIsSubmitting] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
-  const [errorMessages, setErrorMessages] = useState([]);
-  const [completedReviewData, setCompletedReviewData] = useState(null);
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
+  const [completedReviewData, setCompletedReviewData] = useState<CompletedReviewData | null>(null);
+  const saveGeneration = useRef(0);
+  const inFlightSave = useRef<SaveRequest | null>(null);
+  const saveSessionOpen = useRef(isModalOpen);
+
+  // ID가 같아도 닫기·재진입·A → B → A는 서로 다른 저장 세션이다.
+  // commit 직후의 응답도 보호하도록 passive effect보다 먼저 무효화한다.
+  useLayoutEffect(() => {
+    saveGeneration.current += 1;
+    inFlightSave.current = null;
+    saveSessionOpen.current = isModalOpen;
+    setIsSubmitting(false);
+    return () => {
+      saveGeneration.current += 1;
+      inFlightSave.current = null;
+      saveSessionOpen.current = false;
+    };
+  }, [isModalOpen, isEditMode, themeData.themeId, reviewId]);
 
   // 모달 닫기 핸들러
   const handleClose = () => {
+    saveGeneration.current += 1;
+    inFlightSave.current = null;
+    saveSessionOpen.current = false;
     setReviewModalOpen(false);
   };
 
   const handleShare = () => {
     if (!completedReviewData) return;
 
+    saveGeneration.current += 1;
+    inFlightSave.current = null;
+    saveSessionOpen.current = false;
     setReviewModalOpen(false);
     navigate('/review/share', {
       state: {
@@ -98,8 +145,8 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
   };  
 
   // 필수 데이터 검증 함수
-  const validateRequiredFields = (data) => {
-    const missingFields = [];
+  const validateRequiredFields = (data: ReviewDraftState): string[] => {
+    const missingFields: string[] = [];
     const fieldNames = {
       satisfactionLevel: '총평 점수',
       review: '총평 선택',
@@ -148,8 +195,8 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
     return missingFields;
   };
 
-  const parseServerErrors = (rawMsg) => {
-    const messages = [];
+  const parseServerErrors = (rawMsg: string): string[] => {
+    const messages: string[] = [];
     const EXCLUDE_PHRASES = [
       "0.5 단위로 입력해 주세요"
     ];
@@ -171,7 +218,10 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
     return messages;
   };
 
-  const buildShareReviewData = (submittedReviewData, submittedReviewId) => {
+  const buildShareReviewData = (
+    submittedReviewData: SubmittedReviewData,
+    submittedReviewId?: MyReviewPathParam,
+  ): CompletedReviewData => {
     const storeName = themeData?.storeName || themeData?.storeInfo?.storeName || '';
     const thumbnailUrl = themeData?.img || themeData?.themeImg || '';
 
@@ -182,14 +232,14 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
       themeName: themeData?.themeName || '',
       storeName,
       thumbnailUrl,
-      participantCnt: Array.isArray(submittedReviewData.participantList)
-        ? submittedReviewData.participantList.length
-        : submittedReviewData.participantCnt,
+      participantCnt: submittedReviewData.participantList.length,
     };
   };
 
 
   const handleSubmit = async () => {
+    // state 반영 전의 연속 클릭과 닫힌 모달의 이전 핸들러도 차단한다.
+    if (!isModalOpen || !saveSessionOpen.current || inFlightSave.current) return;
     
     // 플레이 인원 숙련도 검증
     const invalidPlayerIndexes = reviewData.participantList
@@ -204,31 +254,65 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
       return;
     }
 
-    const { uiState, ...serverData } = reviewData;
+    const themeId = themeData.themeId;
+    if (themeId == null || (isEditMode && (reviewId == null || reviewId === ''))) {
+      setErrorMessages([themeId == null ? '테마 정보를 확인할 수 없습니다.' : '수정할 후기 정보를 확인할 수 없습니다.']);
+      setErrorModalOpen(true);
+      return;
+    }
+
+    // 조회에서 복원한 null/누락 값을 요청용 빈 문자열로 보정하지 않는다.
+    const participants = reviewData.participantList;
+    if (!participants.every((participant): participant is ReviewDraftParticipant & ThemeReviewMutationParticipant =>
+      participant.proficiency !== undefined && typeof participant.remark === 'string'
+    )) {
+      const invalidRemarks = participants
+        .map((participant, index) => typeof participant.remark !== 'string' ? index + 1 : null)
+        .filter(Boolean);
+      setErrorMessages([`플레이 인원 ${invalidRemarks.join(', ')}번의 특이 사항 입력 상태를 확인해주세요.`]);
+      setErrorModalOpen(true);
+      return;
+    }
+
+    const missingFields = validateRequiredFields(reviewData);
+    if (missingFields.length > 0) {
+      setErrorMessages(missingFields);
+      setErrorModalOpen(true);
+      return;
+    }
+
+    const { uiState, ...draftData } = reviewData;
     void uiState;
+    const serverData = { ...draftData, participantList: participants } satisfies ThemeReviewMutationInput;
     const sharePayload = buildShareReviewData(serverData);
-  
+    const request: SaveRequest = { generation: saveGeneration.current };
+    inFlightSave.current = request;
+    const isCurrentRequest = () =>
+      saveGeneration.current === request.generation && inFlightSave.current === request;
+
     setIsSubmitting(true);
   
     try {
       // 수정 모드
       if (isEditMode) {
-        const updateResponse = await putMyReviewAPI(themeData.themeId, reviewId, serverData);
+        // 위 ID 검증을 통과한 수정 요청만 보낸다.
+        if (reviewId == null || reviewId === '') return;
+        await putMyReviewAPI(themeId, reviewId, serverData);
+        if (!isCurrentRequest()) return;
         console.log("[ReviewWriteModal] 후기 수정 요청 데이터:", serverData);
-  
-        const updatedReviewId =
-          updateResponse?.reviewId ??
-          updateResponse?.id ??
-          reviewId;
-        setCompletedReviewData(buildShareReviewData(serverData, updatedReviewId));
+
+        // PUT 응답은 문자열이며, 수정 대상 ID를 그대로 공유에 사용한다.
+        setCompletedReviewData(buildShareReviewData(serverData, reviewId));
         if (onUpdated) onUpdated();
+        if (!isCurrentRequest()) return;
         resetReview();
         setReviewSection("last");
         return;
       }
   
       // 작성 모드
-      const response = await postReviewAPI(themeData.themeId, serverData);
+      const response = await postReviewAPI(themeId, serverData);
+      if (!isCurrentRequest()) return;
   
       if (!response.success) {
         const rawMsg = response?.message ?? '알 수 없는 오류가 발생했습니다.';
@@ -238,32 +322,25 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }) {
         return;
       }
   
-      const missingFields = validateRequiredFields(reviewData);
-  
-      if (missingFields.length > 0) {
-        setErrorMessages(missingFields);
-        setErrorModalOpen(true);
-        return;
-      }
-  
       console.log("[ReviewWriteModal] 후기 작성 요청 데이터:", serverData);
-      const createdReviewId =
-        response?.data?.reviewId ??
-        response?.data?.id ??
-        response?.data?.contents?.reviewId ??
-        null;
+      const createdReviewId = response.data?.reviewId ?? null;
       setCompletedReviewData({
         ...sharePayload,
         reviewId: createdReviewId,
       });
       if (onUpdated) onUpdated();
+      if (!isCurrentRequest()) return;
       resetReview();
       setReviewSection("last");
   
     } catch (err) {
+      if (!isCurrentRequest()) return;
       console.error("후기 전송 실패:", err);
     } finally {
-      setIsSubmitting(false);
+      if (isCurrentRequest()) {
+        inFlightSave.current = null;
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -458,7 +535,7 @@ const PrevBtnText = styled.div`
   }
 `;
 
-const NextBtn = styled.div`
+const NextBtn = styled.div<{ $isCompact?: boolean; $isFirstLast?: boolean }>`
   display: flex;
   width: ${({ $isCompact }) => $isCompact ? '23.125em' : '100%'};
   height: 3.125em;

@@ -1,8 +1,17 @@
 import styled from "styled-components";
+import type { ChangeEvent } from 'react';
 
-export default function EscapeTimePicker({ disabled, value = { min: 0, sec: 0 }, onChange }) {
+export type EscapeTimeValue = { min: number; sec: number };
+type EscapeTimePickerProps = {
+  disabled?: boolean;
+  value?: EscapeTimeValue;
+  onChange: (value: EscapeTimeValue) => void;
+};
+type DisabledProps = { $disabled?: boolean };
 
-  const handleMinuteChange = (e) => {
+export default function EscapeTimePicker({ disabled, value = { min: 0, sec: 0 }, onChange }: EscapeTimePickerProps) {
+
+  const handleMinuteChange = (e: ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value.replace(/\D/g, "");
     let min = parseInt(input, 10);
     if (isNaN(min)) min = 0;
@@ -10,7 +19,7 @@ export default function EscapeTimePicker({ disabled, value = { min: 0, sec: 0 },
     onChange({ ...value, min });
   };
 
-  const handleSecondChange = (e) => {
+  const handleSecondChange = (e: ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value.replace(/\D/g, "");
     let sec = parseInt(input, 10);
     if (isNaN(sec)) sec = 0;
@@ -73,7 +82,7 @@ const Containor = styled.div`
   }
 `;
 
-const TimeInput = styled.input`
+const TimeInput = styled.input<DisabledProps>`
   font-size: 0.75em;
   font-family: Pretendard-Medium;
   color: ${({ $disabled }) => 
@@ -95,7 +104,7 @@ const TimeInput = styled.input`
   }
 `;
   
-const BoxText = styled.div`
+const BoxText = styled.div<DisabledProps>`
   display: flex;
   justify-content: center;
   align-items: center;

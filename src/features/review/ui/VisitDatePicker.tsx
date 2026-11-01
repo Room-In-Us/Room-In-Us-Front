@@ -10,8 +10,22 @@ import { ko } from 'date-fns/locale';
 import LeftArrow from '../../../shared/assets/icons/common/arrow/leftArrow.svg?react';
 import RightArrow from '../../../shared/assets/icons/common/arrow/rightArrow.svg?react';
 import { format, isValid, parse } from "date-fns";
+import type { Dayjs } from 'dayjs';
+import type { DatePickerProps } from 'react-datepicker';
+import type { ReviewDraftParameter } from '../../themeDetail/model/reviewAtom';
 
-const toSafeDate = (input) => {
+type VisitDateValue = Date | Dayjs | string | null;
+type VisitDatePickerProps = {
+  disabled?: boolean;
+  themeId?: ReviewDraftParameter;
+  onChange?: (date: Date) => void;
+  value?: VisitDateValue;
+};
+type CustomDateInputProps = { disabled?: boolean; value?: string; onToggle?: () => void };
+type DisabledProps = { $disabled?: boolean };
+type SingleDatePickerProps = Extract<DatePickerProps, { selectsRange?: never; selectsMultiple?: never }>;
+
+const toSafeDate = (input: VisitDateValue | undefined): Date | null => {
   if (!input) return null;
 
   if (input instanceof Date) {
@@ -38,16 +52,16 @@ const toSafeDate = (input) => {
   return null;
 };
 
-const CustomDateInput = React.forwardRef(({ disabled, value, onToggle }, ref) => {
+const CustomDateInput = React.forwardRef<HTMLButtonElement, CustomDateInputProps>(({ disabled, value, onToggle }, ref) => {
   const lastToggleAtRef = React.useRef(0);
 
-  const formatDate = (rawValue) => {
+  const formatDate = (rawValue: string | undefined) => {
     const date = toSafeDate(rawValue);
     if (!date) return "날짜 선택";
     return format(date, "yyyy.MM.dd");
   };
 
-  const handlePointerDown = (e) => {
+  const handlePointerDown = (e: React.SyntheticEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (disabled) return;
 
@@ -78,13 +92,13 @@ const CustomDateInput = React.forwardRef(({ disabled, value, onToggle }, ref) =>
 // eslint 에러 방지
 CustomDateInput.displayName = "CustomDateInput";
 
-export default function VisitDatePicker({ disabled, themeId, onChange, value }) {
+export default function VisitDatePicker({ disabled, themeId, onChange, value }: VisitDatePickerProps) {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [review, setReview] = useRecoilState(reviewStateFamily(themeId));
 
-  const handleChange = (date) => {
+  const handleChange = (date: Date | null) => {
     if (!date) return;
     const formatted = format(date, 'yyyy-MM-dd'); 
     if (themeId != null) {
@@ -181,9 +195,9 @@ const StyledDatePickerWrapper = styled.div`
   }
 `;
 
-const StyledDatePicker = styled(DatePicker)``;
+const StyledDatePicker: React.ComponentType<SingleDatePickerProps> = styled(DatePicker)``;
 
-const DateBox = styled.button`
+const DateBox = styled.button<DisabledProps>`
   width: 100%;
   height: 2.5em;
   display: flex;
@@ -219,7 +233,7 @@ const DateIcon = styled.img`
   height: 0.9375em;
 `;
 
-const DateBoxText = styled.div`
+const DateBoxText = styled.div<DisabledProps>`
   color: ${({ $disabled }) => 
     $disabled ? 'var(--RIU_Monochrome-50, #D6D6DF)' : 
   'var(--RIU_Monochrome-100, #818496)'};

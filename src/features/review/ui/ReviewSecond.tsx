@@ -5,12 +5,12 @@ import UnselectedIcon from '../../../shared/assets/icons/common/filterIcon/unsel
 import SelectedIcon from '../../../shared/assets/icons/common/filterIcon/selected.svg';
 import { finishOption } from '../modal/reviewDataList';
 import { specialIssues } from '../modal/reviewDataList';
-import EscapeResultDetails from "./EscapeResultDetails.jsx";
-import VisitDatePicker from './VisitDatePicker.jsx';
-import { ToggleCheckbox } from './ToggleCheckBox.jsx';
-import PlayerBoxSection from './PlayerBoxSection.jsx';
-import FlexibleRangeSelector from './FlexibleRangeSelector.jsx';
-import HintCounter from "./HintCounter.jsx";
+import EscapeResultDetails from "./EscapeResultDetails";
+import VisitDatePicker from './VisitDatePicker';
+import { ToggleCheckbox } from './ToggleCheckBox';
+import PlayerBoxSection from './PlayerBoxSection';
+import FlexibleRangeSelector from './FlexibleRangeSelector';
+import HintCounter from "./HintCounter";
 import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3 } from '../../../shared/styles/ReviewStyles';
 import useDevice from '../../../shared/hooks/useDevice';
 import InfoBox from '../../../shared/components/InfoBox';
@@ -18,8 +18,13 @@ import { useRecoilState } from 'recoil';
 import { reviewStateFamily } from '../../themeDetail/model/reviewAtom';
 import { format } from "date-fns";
 import { getPreferencesAPI } from '../../mypage/api/surveyAPI';
+import type { ReviewThemeData } from './ReviewFirst';
+import type { ThemeProficiency } from '../../../shared/types/theme';
+import type { ThemeReviewTag } from '../../../shared/types/review';
 
-export default function ReviewSecond({themeData}) {
+type ReviewSecondProps = { themeData: ReviewThemeData };
+
+export default function ReviewSecond({themeData}: ReviewSecondProps) {
 
   // 반응형
   const { isMobile } = useDevice();
@@ -73,12 +78,13 @@ export default function ReviewSecond({themeData}) {
 
   // info 팝업 상태
   const [isInfoOpen, setIsInfoOpen] = useState(false);
-  const infoRef = useRef(null);
+  const infoRef = useRef<HTMLDivElement>(null);
 
   // info 팝업 효과
   useEffect(() => {
-    function handleClickOutside(e) {
-      if (infoRef.current && !infoRef.current.contains(e.target)) {
+    function handleClickOutside(e: MouseEvent) {
+      // document의 mousedown target은 DOM Node 또는 null이다.
+      if (infoRef.current && !infoRef.current.contains(e.target as Node | null)) {
         setIsInfoOpen(false);
       }
     }
@@ -93,7 +99,7 @@ export default function ReviewSecond({themeData}) {
   }, [isInfoOpen]);
 
   // 특이사항 선택 기능
-  const toggleIssue = (value) => {
+  const toggleIssue = (value: ThemeReviewTag) => {
     setReview(prev => {
       const current = prev.reviewTagList ?? [];
       const newList = current.includes(value)
@@ -107,7 +113,7 @@ export default function ReviewSecond({themeData}) {
   };
 
   // 탈출 여부 선택 기능
-  const handleEscapeSelect = (value) => {
+  const handleEscapeSelect = (value: boolean | null) => {
     setReview(prev => ({
       ...prev,
       isEscaped: value,
@@ -123,14 +129,14 @@ export default function ReviewSecond({themeData}) {
   };
 
   // 플레이 인원 삭제 기능
-  const handleRemovePlayer = (index) => {
+  const handleRemovePlayer = (index: number) => {
     if (index === 0) return;
     const newList = review.participantList.filter((_, i) => i !== index);
     setReview(prev => ({...prev, participantList: newList }));
   };
 
   // 플레이 인원 숙련도 선택 기능
-  const handleSkillChange = (index, value) => {
+  const handleSkillChange = (index: number, value: ThemeProficiency | null) => {
     const newList = review.participantList.map((participant, i) =>
       i === index
         ? { ...participant, proficiency: value }
@@ -144,7 +150,7 @@ export default function ReviewSecond({themeData}) {
   };
 
   // 플레이 인원 특이 사항 입력 기능
-  const handleNoteChange = (index, value) => {
+  const handleNoteChange = (index: number, value: string) => {
     const newList = review.participantList.map((participant, i) =>
       i === index
         ? { ...participant, remark: value }
@@ -230,7 +236,6 @@ export default function ReviewSecond({themeData}) {
                 <VisitDatePicker
                   themeId={themeData.themeId}
                   disabled={checkedDate}
-                  selectedDate={review.playedAt}
                   onChange={(date) => {
                     setReview(prev => ({...prev, playedAt: format(date, "yyyy-MM-dd")}));
                   }}
@@ -284,7 +289,7 @@ export default function ReviewSecond({themeData}) {
               </Wrap>
               <Container2>
               {finishOption.map((option) => (
-                <DropdownItem key={option.value} onClick={() => handleEscapeSelect(option.value)} $isSelected={review.isEscaped === option.value}>
+                <DropdownItem key={String(option.value)} onClick={() => handleEscapeSelect(option.value)} $isSelected={review.isEscaped === option.value}>
                   <RadioIcon src={review.isEscaped === option.value ? SelectedIcon : UnselectedIcon} alt="radio-icon" />
                   <RadioLabel $isSelected={review.isEscaped === option.value}>{option.label}</RadioLabel>
                 </DropdownItem>
@@ -292,16 +297,7 @@ export default function ReviewSecond({themeData}) {
               </Container2>
               <EscapeResultDetails
                 themeId={themeData.themeId}
-                disabled={review.isEscaped} 
                 selected={review.isEscaped} 
-                onUpdate={({ remainingTime, failReason, hasViewedEnding }) => {
-                  setReview(prev => ({
-                    ...prev,
-                    remainingTime,
-                    failReason,
-                    hasViewedEnding,
-                  }));
-                }}
               />
             </ItemSection>
 
@@ -413,7 +409,6 @@ export default function ReviewSecond({themeData}) {
               <VisitDatePicker
                 themeId={themeData.themeId}
                 disabled={checkedDate}
-                selectedDate={review.playedAt}
                 onChange={(date) => {
                   setReview(prev => ({...prev, playedAt: format(date, "yyyy-MM-dd")}));
                 }}
@@ -465,7 +460,7 @@ export default function ReviewSecond({themeData}) {
             </Wrap>
             <Container2>
             {finishOption.map((option) => (
-              <DropdownItem key={option.value} onClick={() => handleEscapeSelect(option.value)} $isSelected={review.isEscaped === option.value}>
+              <DropdownItem key={String(option.value)} onClick={() => handleEscapeSelect(option.value)} $isSelected={review.isEscaped === option.value}>
                 <RadioIcon src={review.isEscaped === option.value ? SelectedIcon : UnselectedIcon} alt="radio-icon" />
                 <RadioLabel $isSelected={review.isEscaped === option.value}>{option.label}</RadioLabel>
               </DropdownItem>
@@ -473,16 +468,7 @@ export default function ReviewSecond({themeData}) {
             </Container2>
             <EscapeResultDetails
               themeId={themeData.themeId}
-              disabled={review.isEscaped} 
               selected={review.isEscaped} 
-              onUpdate={({ remainingTime, failReason, hasViewedEnding }) => {
-                setReview(prev => ({
-                  ...prev,
-                  remainingTime,
-                  failReason,
-                  hasViewedEnding,
-                }));
-              }}              
             />
           </ItemSection>
 
@@ -635,7 +621,7 @@ const IconWrapper = styled.div`
   display: inline-block;
 `;
 
-const InfoPopup = styled.div`
+const InfoPopup = styled.div<{ $isInfoOpen?: boolean }>`
   visibility: ${({ $isInfoOpen }) => ($isInfoOpen ? 'visible' : 'hidden')};
   opacity: ${({ $isInfoOpen }) => ($isInfoOpen ? '1' : '0')};
   transition: all 0.2s ease-in-out;
@@ -722,7 +708,7 @@ const Container2 = styled.div`
   gap: 0.625em;
 `;
 
-const DropdownItem = styled.div`
+const DropdownItem = styled.div<{ $isSelected: boolean }>`
   color: var(--RIU_Monochrome-200, #717486);
   cursor: pointer;
 
@@ -747,7 +733,7 @@ export const RadioIcon = styled.img`
   }
 `;
 
-export const RadioLabel = styled.div`
+export const RadioLabel = styled.div<{ $isSelected: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;

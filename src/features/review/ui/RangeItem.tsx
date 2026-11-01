@@ -3,20 +3,24 @@ import styled from 'styled-components';
 import Thumb from '../../../shared/assets/icons/reviewWrite/thumb.svg?react';
 import Line from '../../../shared/assets/icons/reviewWrite/line.svg';
 import BoldLine from '../../../shared/assets/icons/reviewWrite/boldline.svg';
+import type { MouseEvent as ReactMouseEvent, TouchEvent as ReactTouchEvent } from 'react';
 
-export default function RangeItem({ disabled, onChange, value }) {
+type RangeItemProps = { disabled?: boolean; onChange?: (value: number) => void; value: number };
+type DisabledProps = { $disabled?: boolean };
+
+export default function RangeItem({ disabled, onChange, value }: RangeItemProps) {
 
   // 상태 관리
-  const sliderRef = useRef(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
 
   // 마우스 이벤트
-  const handleMove = useCallback((e) => {
+  const handleMove = useCallback((clientX: number) => {
     if (!sliderRef.current) return;
 
     const rect = sliderRef.current.getBoundingClientRect();
     const margin = 0.75 * 16;
-    let relativeX = e.clientX - rect.left;
+    let relativeX = clientX - rect.left;
 
     relativeX = Math.max(margin, Math.min(rect.width - margin, relativeX));
     let percent = (relativeX / rect.width) * 100;
@@ -25,38 +29,56 @@ export default function RangeItem({ disabled, onChange, value }) {
     onChange?.(stepped);
   }, [onChange]);
 
-  const handleMouseDown = useCallback((e) => {
+  const handleMouseDown = useCallback((e: ReactMouseEvent<HTMLDivElement>) => {
     if (disabled) return;
     isDragging.current = true;
-    handleMove(e);
+    handleMove(e.clientX);
   }, [disabled, handleMove]);
 
-  const handleMouseMove = useCallback((e) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging.current) return;
-    handleMove(e);
+    handleMove(e.clientX);
   }, [handleMove]);
 
   const handleMouseUp = useCallback(() => {
     isDragging.current = false;
   }, []);
 
-  const handleTouchMove = useCallback((e) => {
+  const handleTouchStart = useCallback((e: ReactTouchEvent<HTMLDivElement>) => {
+    if (disabled) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+    isDragging.current = true;
+    handleMove(touch.clientX);
+  }, [disabled, handleMove]);
+
+  const handleTouchMove = useCallback((e: TouchEvent) => {
     if (!isDragging.current) return;
-    handleMove(e);
+    const touch = e.touches[0];
+    if (touch) handleMove(touch.clientX);
+  }, [handleMove]);
+
+  const handleTouchEnd = useCallback((e: TouchEvent) => {
+    if (!isDragging.current) return;
+    const touch = e.changedTouches[0];
+    if (touch) handleMove(touch.clientX);
+    isDragging.current = false;
   }, [handleMove]);
 
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('touchmove', handleTouchMove);
-    window.addEventListener('touchend', handleMouseUp);
+    window.addEventListener('touchend', handleTouchEnd);
+    window.addEventListener('touchcancel', handleMouseUp);
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleMouseUp);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchcancel', handleMouseUp);
     };
-  }, [handleMouseMove, handleMouseUp, handleTouchMove]);
+  }, [handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd]);
 
   return (
     <SliderContainer>
@@ -74,7 +96,7 @@ export default function RangeItem({ disabled, onChange, value }) {
           ))}
         </LineWrapper>
 
-        <Track ref={sliderRef} onMouseDown={handleMouseDown} onTouchStart={handleMouseDown} $disabled={disabled}>
+        <Track ref={sliderRef} onMouseDown={handleMouseDown} onTouchStart={handleTouchStart} $disabled={disabled}>
 
           <ThumbIcon
             style={{
@@ -109,7 +131,7 @@ const Wrap = styled.div`
   align-items: center;
 `;
 
-const ItemText2 = styled.div`
+const ItemText2 = styled.div<DisabledProps>`
   color: ${({ $disabled }) => ($disabled ? '#E0E0E0' : 'var(--RIU_Primary-100, #718FF2)')};
   text-align: center;
   font-family: Pretendard-Bold;
@@ -131,7 +153,7 @@ const TrackWrapper = styled.div`
   gap: 0.75em;
 `;
 
-const Track = styled.div`
+const Track = styled.div<DisabledProps>`
   width: 100%;
   height: 0.9375em;
   position: relative;
@@ -151,7 +173,7 @@ const LineWrapper = styled.div`
   box-sizing: border-box;
 `;
 
-const LineDiv = styled.img`
+const LineDiv = styled.img<{ $bold: boolean }>`
   height: ${({ $bold }) => ($bold ? '0.875em' : '0.625em')};
 `;
 

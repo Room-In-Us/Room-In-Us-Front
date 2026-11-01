@@ -3,21 +3,33 @@ import styled from "styled-components";
 import DropDown from "../../../shared/assets/icons/common/arrow/downArrow.svg?react";
 import Overall from "../../../shared/assets/icons/reviewWrite/overallIcon.svg";
 
-export default function ReviewDropdown({ 
+type DropdownVariant = 'default' | 'overall' | 'fail' | 'skill';
+type ReviewDropdownProps<Value extends string | boolean | null> = {
+  disabled?: boolean;
+  placeholder?: string;
+  options: { value: Value; label: string }[];
+  selected?: NoInfer<Value> | '' | null;
+  onSelect: (value: Value) => void;
+  variant?: DropdownVariant;
+};
+type VariantProps = { $variant?: DropdownVariant };
+type DisabledProps = { $disabled?: boolean };
+
+export default function ReviewDropdown<Value extends string | boolean | null>({
     disabled, 
     placeholder, 
     options, 
     selected, 
     onSelect, 
     variant = "default",
-  }) {
+  }: ReviewDropdownProps<Value>) {
   
   const [isOpen, setIsOpen] = useState(false);
-  const wrapperRef = useRef(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = () => setIsOpen((prev) => !prev);
 
-  const handleSelect = (value) => {
+  const handleSelect = (value: Value) => {
     onSelect(value); 
     setIsOpen(false);   
   };
@@ -25,8 +37,9 @@ export default function ReviewDropdown({
   const selectedLabel = options.find(opt => opt.value === selected)?.label || placeholder;
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      // document의 mousedown 대상은 DOM Node 또는 null이다.
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node | null)) {
         setIsOpen(false);
       }
     };
@@ -56,7 +69,7 @@ export default function ReviewDropdown({
       {isOpen && (
         <DropdownMenu $variant={variant}>
         {options.map((option) => (
-          <DropdownItem key={option.value} onClick={() => handleSelect(option.value)}>
+          <DropdownItem key={String(option.value)} onClick={() => handleSelect(option.value)}>
             {option.label}
           </DropdownItem>
         ))}
@@ -66,14 +79,14 @@ export default function ReviewDropdown({
   );
 }
 
-const DropdownWrapper = styled.div`
+const DropdownWrapper = styled.div<VariantProps>`
   position: relative;
   ${({ $variant }) => $variant === 'fail' && `
     flex: 1 0 0;
   `}
 `;
 
-const Box = styled.div`
+const Box = styled.div<VariantProps & DisabledProps>`
   display: flex;
   width: ${({ $variant }) =>
     $variant === 'fail' ? '' :
@@ -100,7 +113,7 @@ const Box = styled.div`
   }
 `;
 
-const BoxText = styled.div`
+const BoxText = styled.div<DisabledProps>`
   font-family: Pretendard-Medium;
   font-size: 0.75em;
   color: ${({ $disabled }) => $disabled ? 'var(--RIU_Monochrome-50, #D6D6DF)' : 'var(--RIU_Monochrome-100, #818496)'};
@@ -112,7 +125,7 @@ const BoxText = styled.div`
   }
 `;
 
-const DropdownMenu = styled.div`
+const DropdownMenu = styled.div<VariantProps>`
   position: absolute;
   top: 2.75em;
   left: 0;

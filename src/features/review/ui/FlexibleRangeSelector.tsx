@@ -1,13 +1,16 @@
 import styled from "styled-components";
 
-export default function FlexibleRangeSelector({disabled, value = [], onChange }) {
+type FlexibleRangeSelectorProps = { disabled?: boolean; value?: number[]; onChange?: (value: number[]) => void };
+type RangeStyleProps = { $inRange: boolean; $isBoundary: boolean };
+
+export default function FlexibleRangeSelector({disabled, value = [], onChange }: FlexibleRangeSelectorProps) {
 
   // 상태 관리
   const range = value;
 
   // 범위 선택 핸들러
-  const handleClick = (num) => {
-    let newRange = [];
+  const handleClick = (num: number) => {
+    let newRange: number[] = [];
     if (range.length === 0) {
       newRange = [num];
     } else if (range.length === 1) {
@@ -24,7 +27,7 @@ export default function FlexibleRangeSelector({disabled, value = [], onChange })
   };
 
   // 범위 제한
-  const isInRange = (num) => {
+  const isInRange = (num: number) => {
     if (range.length === 1) return num === range[0];
     if (range.length === 2) return num >= range[0] && num <= range[1];
     return false;
@@ -58,7 +61,7 @@ export default function FlexibleRangeSelector({disabled, value = [], onChange })
   );
 }
 
-const Container = styled.div`
+const Container = styled.div<{ $disabled?: boolean }>`
   display: flex;
   height: 2.25em;
   align-items: center;
@@ -71,7 +74,7 @@ const Container = styled.div`
   }
 `;
 
-const NumberButton = styled.div`
+const NumberButton = styled.div<RangeStyleProps>`
   display: flex;
   width: 1.875em;
   height: 1.875em;
@@ -91,7 +94,7 @@ const NumberButton = styled.div`
   }
 `;
 
-const Num = styled.div`
+const Num = styled.div<RangeStyleProps & { $disabled?: boolean }>`
   font-family: Pretendard-Medium;
   font-size: 0.75em;
   color: ${({ $isBoundary, $inRange, $disabled }) =>

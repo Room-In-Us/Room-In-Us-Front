@@ -1,7 +1,18 @@
 import styled from "styled-components";
-import ReviewDropdown from "./ReviewDropdown.jsx";
+import ReviewDropdown from "./ReviewDropdown";
 import Trash from "../../../shared/assets/icons/reviewWrite/trashicon.svg";
 import { skillOptions } from '../modal/reviewDataList';
+import type { ReviewDraftParticipant } from '../../themeDetail/model/reviewAtom';
+import type { ThemeProficiency } from '../../../shared/types/theme';
+
+type PlayerBoxSectionProps = {
+  skill: ReviewDraftParticipant['proficiency'];
+  note: ReviewDraftParticipant['remark'];
+  isOwner: boolean;
+  onSkillChange: (value: ThemeProficiency | null) => void;
+  onNoteChange: (value: string) => void;
+  onRemove: () => void;
+};
 
 export default function PlayerBoxSection({
   skill,
@@ -10,7 +21,7 @@ export default function PlayerBoxSection({
   onSkillChange,
   onNoteChange,
   onRemove,
-}) {
+}: PlayerBoxSectionProps) {
   return (
     <BoxSection>
       <ReviewDropdown
@@ -23,7 +34,7 @@ export default function PlayerBoxSection({
       <Box2>
         <Box2Input
           placeholder="특이 사항 입력 (선택)"
-          value={note}
+          value={note ?? ''}
           onChange={(e) => onNoteChange(e.target.value)}
         />
       </Box2>

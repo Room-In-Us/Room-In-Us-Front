@@ -6,8 +6,20 @@ import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubT
 import useDevice from '../../../shared/hooks/useDevice';
 import { useRecoilState } from "recoil";
 import { reviewStateFamily } from "../../themeDetail/model/reviewAtom";
+import type { ChangeEvent } from 'react';
+import type { ThemeDetailResponse } from '../../themeDetail/api/types';
+import type { ThemeReservationResponse } from '../../mypage/api/types';
 
-export default function ReviewFirst({themeData}) {
+// 상세·예약·후기 수정 진입에서 사용하는 표시용 부분 데이터. 서버 DTO와 구분한다.
+export type ReviewThemeData = {
+  themeId?: ThemeDetailResponse['themeId'];
+  themeName?: ThemeReservationResponse['themeName'];
+  img?: ThemeDetailResponse['img'] | ThemeReservationResponse['themeImg'];
+  themeImg?: ThemeReservationResponse['themeImg'];
+};
+type ReviewFirstProps = { themeData: ReviewThemeData };
+
+export default function ReviewFirst({themeData}: ReviewFirstProps) {
 
   // 반응형
   const { isMobile } = useDevice();
@@ -16,7 +28,7 @@ export default function ReviewFirst({themeData}) {
   const [review, setReview] = useRecoilState(reviewStateFamily(themeData.themeId));
 
   // 글자 수 제한
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length <= 500) {
       setReview(prev => ({ ...prev, reviewComment: e.target.value }))
     }

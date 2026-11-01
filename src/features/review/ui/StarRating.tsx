@@ -5,12 +5,18 @@ import EmptyStar from "../../../shared/assets/icons/reviewWrite/starEmpty.svg";
 import HalfStar from '../../../shared/assets/icons/reviewWrite/starhalf.svg';
 import { FEEDBACK_TEXT } from "../modal/reviewDataList";
 
-export default function StarRating({ value = 0, onChange, feedbackTexts }) {
-  const [hovered, setHovered] = useState(null);
+type StarRatingProps = {
+  value?: number | null;
+  onChange?: (value: number) => void;
+  feedbackTexts?: string[];
+};
 
-  const handleMouseEnter = (value) => setHovered(value);
+export default function StarRating({ value = 0, onChange, feedbackTexts }: StarRatingProps) {
+  const [hovered, setHovered] = useState<number | null>(null);
+
+  const handleMouseEnter = (value: number) => setHovered(value);
   const handleMouseLeave = () => setHovered(null);
-  const handleClick = (val) => onChange?.(val);
+  const handleClick = (val: number) => onChange?.(val);
 
   const rating = hovered !== null ? hovered : value;
 
@@ -18,8 +24,8 @@ export default function StarRating({ value = 0, onChange, feedbackTexts }) {
     return Array.from({ length: 5 }, (_, i) => {
       const val = i + 1;
       let icon;
-      if (rating >= val) icon = StarIcon;
-      else if (rating >= val - 0.5) icon = HalfStar;
+      if (rating !== null && rating >= val) icon = StarIcon;
+      else if (rating !== null && rating >= val - 0.5) icon = HalfStar;
       else icon = EmptyStar;
 
       return (
@@ -36,7 +42,7 @@ export default function StarRating({ value = 0, onChange, feedbackTexts }) {
 
   const texts = feedbackTexts?.length ? feedbackTexts : FEEDBACK_TEXT;
 
-  const feedbackText = rating > 0 ? texts[Math.round(rating * 2) - 1] : '\u00A0';
+  const feedbackText = rating !== null && rating > 0 ? texts[Math.round(rating * 2) - 1] : '\u00A0';
 
   return (
     <Container>
@@ -99,7 +105,7 @@ const FeedbackText = styled.div`
   }
 `;
 
-const Half = styled.div`
+const Half = styled.div<{ $right?: boolean }>`
   position: absolute;
   top: 0;
   ${({ $right }) => $right ? "left: 50%;" : "left: 0;"}

@@ -1,10 +1,29 @@
 import styled from 'styled-components';
-import StarRating from './StarRating.jsx';
+import StarRating from './StarRating';
 import { clothOptions, FEEDBACK_TEXT_MAP } from '../modal/reviewDataList';
 import UnselectedIcon from '../../../shared/assets/icons/common/filterIcon/unselected.svg';
 import SelectedIcon from '../../../shared/assets/icons/common/filterIcon/selected.svg';
+import type { ChangeEventHandler } from 'react';
+import type { ThemeReviewRecommendedCloth } from '../../../shared/types/review';
 
-export default function InputBox({ rateValue, rateOnChange, label, placeholder, value, onChange, active, selected, handleSelect }) {
+type InputBoxProps = {
+  rateValue: number | null;
+  rateOnChange: (value: number) => void;
+  label: keyof typeof FEEDBACK_TEXT_MAP;
+  placeholder: string;
+  value: string;
+  onChange: ChangeEventHandler<HTMLTextAreaElement>;
+} & ({
+  active: true;
+  selected: ThemeReviewRecommendedCloth | null;
+  handleSelect: (value: ThemeReviewRecommendedCloth | null) => void;
+} | {
+  active?: false;
+  selected?: never;
+  handleSelect?: never;
+});
+
+export default function InputBox({ rateValue, rateOnChange, label, placeholder, value, onChange, active, selected, handleSelect }: InputBoxProps) {
   return (
     <ItemSection>
       <Wrap4>       
@@ -26,7 +45,7 @@ export default function InputBox({ rateValue, rateOnChange, label, placeholder, 
       {active && (
         <Container2>
         {clothOptions.map((option) => (
-          <DropdownItem key={option.value} onClick={() => handleSelect(option.value)} $isSelected={selected === option.value}>
+          <DropdownItem key={String(option.value)} onClick={() => handleSelect(option.value)} $isSelected={selected === option.value}>
             <RadioIcon src={selected === option.value ? SelectedIcon : UnselectedIcon} alt="radio-icon" />
             <RadioLabel $isSelected={selected === option.value}>{option.label}</RadioLabel>
           </DropdownItem>
@@ -103,7 +122,7 @@ const CountText = styled.div`
   }
 `;
 
-const DropdownItem = styled.div`
+const DropdownItem = styled.div<{ $isSelected: boolean }>`
   color: var(--RIU_Monochrome-200, #717486);
   cursor: pointer;
 
@@ -128,7 +147,7 @@ export const RadioIcon = styled.img`
   }
 `;
 
-export const RadioLabel = styled.div`
+export const RadioLabel = styled.div<{ $isSelected: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;

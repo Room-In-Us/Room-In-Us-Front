@@ -1,6 +1,9 @@
 import { FinalWrapper, ThemeImg, ThemeSubText, ThemeTitle, Wrap2 } from "../../../shared/styles/ReviewStyles"
+import type { ReviewThemeData } from './ReviewFirst';
 
-export default function ReviewLast({ themeData, isEditMode }) {
+type ReviewLastProps = { themeData: ReviewThemeData; isEditMode?: boolean };
+
+export default function ReviewLast({ themeData, isEditMode }: ReviewLastProps) {
   return (
     <FinalWrapper>
       <ThemeImg src={themeData?.img || themeData?.themeImg || ''} />

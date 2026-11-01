@@ -5,8 +5,13 @@ import EscapeTimePicker from './EscapeTimePicker';
 import { ToggleCheckbox } from './ToggleCheckBox';
 import { useRecoilState } from 'recoil';
 import { reviewStateFamily } from '../../themeDetail/model/reviewAtom';
+import type { ReviewDraftParameter, ReviewDraftState } from '../../themeDetail/model/reviewAtom';
+import type { EscapeTimeValue } from './EscapeTimePicker';
 
-export default function EscapeResultDetails ({selected, themeId}) {
+type EscapeResultDetailsProps = { selected: ReviewDraftState['isEscaped']; themeId: ReviewDraftParameter };
+type DisabledProps = { $disabled?: boolean };
+
+export default function EscapeResultDetails ({selected, themeId}: EscapeResultDetailsProps) {
 
   // 상태 관리
   const [review, setReview] = useRecoilState(reviewStateFamily(themeId));
@@ -22,7 +27,7 @@ export default function EscapeResultDetails ({selected, themeId}) {
   // 엔딩 열람 체크박스: hasViewedEnding이 true일 때 체크됨 (failReason과 독립적)
   const checkedEnding = review.hasViewedEnding === true;
 
-  const handleTimeChange = (newTime) => {
+  const handleTimeChange = (newTime: EscapeTimeValue) => {
     const formattedTime = `00:${String(newTime.min).padStart(2, "0")}:${String(newTime.sec).padStart(2, "0")}`;
     setReview(prev => ({ ...prev, remainingTime: formattedTime }));
   };
@@ -36,7 +41,7 @@ export default function EscapeResultDetails ({selected, themeId}) {
     }));
   };
 
-  const handleReasonChange = (value) => {
+  const handleReasonChange = (value: ReviewDraftState['failReason']) => {
     setReview(prev => ({ ...prev, failReason: value }));
   };
 
@@ -99,7 +104,7 @@ const Wrapper2 = styled.div`
   gap: 0.625em;
 `;
 
-const BoxSection = styled.div`
+const BoxSection = styled.div<DisabledProps>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -107,7 +112,7 @@ const BoxSection = styled.div`
   pointer-events: ${({ $disabled }) => $disabled ? 'none' : 'auto'};
 `;
 
-const BoxText = styled.div`
+const BoxText = styled.div<DisabledProps>`
   display: flex;
   justify-content: center;
   align-items: center;
