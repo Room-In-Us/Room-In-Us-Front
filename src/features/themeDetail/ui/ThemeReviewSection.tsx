@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import RatingStar from "../../../shared/assets/icons/themeDetail/ratingStar.svg?react";
 import ThemeReview from "./ThemeReview";
 import RightArrowIcon from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
@@ -13,14 +13,26 @@ import PropTypes from 'prop-types';
 import useAuthSession from "../../../shared/hooks/useAuthSession";
 import PopUpModal from "../../../shared/components/PopUpModal";
 import { useNavigate } from "react-router-dom";
+import type { ThemeDetailResponse, ThemeReviewDto } from '../api/types';
 
-function ThemeReviewSection({ themeId, reviewRefetchKey }) {
-  const [currentPage, setCurrentPage] = useState(1);
+type ThemeReviewSectionProps = { themeId?: ThemeDetailResponse['themeId']; reviewRefetchKey?: number };
+
+function ThemeReviewSection({ themeId, reviewRefetchKey }: ThemeReviewSectionProps) {
+  const [pageSelection, setPageSelection] = useState({ themeId, page: 1 });
+  // 이전 테마의 페이지로 새 조회가 시작되는 중간 렌더도 방지한다.
+  const currentPage = pageSelection.themeId === themeId ? pageSelection.page : 1;
   const [totalPages, setTotalPages] = useState(1);
   const [satisfactionAvg, setSatisfactionAvg] = useState(0);
   const [reviewCnt, setReviewCnt] = useState(0);
-  const [reviews, setReviews] = useState([]);
+  const [reviews, setReviews] = useState<ThemeReviewDto[]>([]);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [resolvedThemeId, setResolvedThemeId] = useState(themeId);
+  const requestGeneration = useRef(0);
+  const requestContext = useRef({ themeId, currentPage, reviewRefetchKey });
+  const displayedReviews = resolvedThemeId === themeId ? reviews : [];
+  const displayedSatisfactionAvg = resolvedThemeId === themeId ? satisfactionAvg : 0;
+  const displayedReviewCnt = resolvedThemeId === themeId ? reviewCnt : 0;
+  const displayedTotalPages = resolvedThemeId === themeId ? totalPages : 1;
 
   const setModal = useSetRecoilState(reviewModalState);
 
@@ -31,31 +43,58 @@ function ThemeReviewSection({ themeId, reviewRefetchKey }) {
 
   const pageSize = 3;
 
+  useLayoutEffect(() => {
+    requestContext.current = { themeId, currentPage, reviewRefetchKey };
+    requestGeneration.current += 1;
+    return () => { requestGeneration.current += 1; };
+  }, [themeId, currentPage, reviewRefetchKey]);
+
+  useLayoutEffect(() => {
+    setPageSelection({ themeId, page: 1 });
+    setSatisfactionAvg(0);
+    setReviewCnt(0);
+    setReviews([]);
+    setTotalPages(1);
+    setResolvedThemeId(themeId);
+  }, [themeId]);
+
   useEffect(() => {
     if (themeId == null) return;
+    let active = true;
+    const generation = requestGeneration.current;
+    const isCurrent = () => active && generation === requestGeneration.current
+      && requestContext.current.themeId === themeId && requestContext.current.currentPage === currentPage
+      && requestContext.current.reviewRefetchKey === reviewRefetchKey;
 
     const fetchData = async () => {
-      const res = await getThemeReviewsListAPI(themeId, currentPage, pageSize);
-      if (res) {
-        setSatisfactionAvg(res.satisfactionAvg || 0);
-        setReviewCnt(res.reviewCnt || 0);
-        setReviews(res.reviewList || []);
-        setTotalPages(Math.ceil((res.reviewCnt || 0) / pageSize));
+      try {
+        const res = await getThemeReviewsListAPI(themeId, currentPage, pageSize);
+        if (!isCurrent()) return;
+        if (res) {
+          setSatisfactionAvg(res.satisfactionAvg || 0);
+          setReviewCnt(res.reviewCnt || 0);
+          setReviews(res.reviewList || []);
+          setTotalPages(Math.ceil((res.reviewCnt || 0) / pageSize));
+          setResolvedThemeId(themeId);
+        }
+      } catch (error) {
+        if (isCurrent()) console.error('테마 후기 목록 조회 중 오류 발생:', error);
       }
     };
     fetchData();
+    return () => { active = false; };
   }, [themeId, currentPage, reviewRefetchKey]);
 
-  const handlePageClick = (page) => {
-    if (page !== currentPage) setCurrentPage(page);
+  const handlePageClick = (page: number) => {
+    if (page !== currentPage) setPageSelection({ themeId, page });
   };
 
   const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
+    if (currentPage > 1) setPageSelection({ themeId, page: currentPage - 1 });
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+    if (currentPage < totalPages) setPageSelection({ themeId, page: currentPage + 1 });
   };
 
   return (
@@ -63,7 +102,7 @@ function ThemeReviewSection({ themeId, reviewRefetchKey }) {
       <SectionTitle>테마 후기</SectionTitle>
       <Divider />
 
-      {reviews.length === 0 ? (
+      {displayedReviews.length === 0 ? (
         <>
           {/* 정보 미상 섹션 */}
           <NoDataWrapper>
@@ -95,8 +134,8 @@ function ThemeReviewSection({ themeId, reviewRefetchKey }) {
             <RatingText>이 테마의 평균 별점은</RatingText>
             <RatingWrapper>
               <StyledRatingStar />
-              <Rating>{satisfactionAvg.toFixed(1)}/5</Rating>
-              <RatingMember>({reviewCnt}명)</RatingMember>
+              <Rating>{displayedSatisfactionAvg.toFixed(1)}/5</Rating>
+              <RatingMember>({displayedReviewCnt}명)</RatingMember>
             </RatingWrapper>
           </RatingContainer>
 
@@ -116,20 +155,20 @@ function ThemeReviewSection({ themeId, reviewRefetchKey }) {
           </ReviewWriteButton>
 
           {/* 후기 목록 */}
-          {reviews.map((review) => (
+          {displayedReviews.map((review) => (
             <ThemeReview key={review.reviewId} data={review} />
           ))}
         </>
       )}
 
-      {totalPages > 1 && (
+      {displayedTotalPages > 1 && (
         <PagingWrapper>
           <StyledLeftArrowIcon
             hasNextPage={currentPage > 1}
             onClick={handlePrevPage}
           />
           <PageNumberWrapper>
-            {[...Array(totalPages)].map((_, idx) => (
+            {[...Array(displayedTotalPages)].map((_: unknown, idx) => (
               <PageNumber
                 key={idx}
                 pageState={currentPage === idx + 1}
@@ -309,21 +348,21 @@ const PageNumberWrapper = styled.div`
   gap: 1.875rem;
 `;
 
-const StyledLeftArrowIcon = styled(LeftArrowIcon)`
+const StyledLeftArrowIcon = styled(LeftArrowIcon)<{ hasNextPage: boolean }>`
   width: 1.25rem;
   height: 1.25rem;
   fill: ${(props) => (props.hasNextPage ? '#5B6ACC' : '#A1A4B5')};
   cursor: ${(props) => (props.hasNextPage ? 'pointer' : 'default')};
 `;
 
-const StyledRightArrowIcon = styled(RightArrowIcon)`
+const StyledRightArrowIcon = styled(RightArrowIcon)<{ hasNextPage: boolean }>`
   width: 1.25rem;
   height: 1.25rem;
   fill: ${(props) => (props.hasNextPage ? '#5B6ACC' : '#A1A4B5')};
   cursor: ${(props) => (props.hasNextPage ? 'pointer' : 'default')};
 `;
 
-const PageNumber = styled.div`
+const PageNumber = styled.div<{ pageState: boolean }>`
   color: ${(props) => (props.pageState ? '#5B6ACC' : '#A1A4B5')};
   font-family: 'Pretendard-SemiBold';
   font-size: 0.875rem;

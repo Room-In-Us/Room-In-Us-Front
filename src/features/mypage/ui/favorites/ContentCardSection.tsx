@@ -1,7 +1,7 @@
 import styled from "styled-components"
 import { getFavoriteThemesAPI } from "../../api/favoriteThemesAPI";
 import ContentCard from "../../../../shared/components/ContentCard";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { headCountState } from "../../model/favoriteAtom";
 import NoDataImg from "../../../../shared/assets/images/common/noData/noDataImageLarge.png";
@@ -13,6 +13,14 @@ export default function ContentCardSection() {
 	const headCount = useRecoilValue(headCountState);
 
 	const [themeList, setThemeList] = useState<ThemeResponse[]>([]);
+	const requestGeneration = useRef(0);
+	const requestContext = useRef({ headCount });
+
+	useLayoutEffect(() => {
+		requestContext.current = { headCount };
+		requestGeneration.current += 1;
+		return () => { requestGeneration.current += 1; };
+	}, [headCount]);
 
 	const handleUnlike = (themeId: ThemeResponse['themeId']) => {
 		setThemeList(prevList => 
@@ -25,9 +33,14 @@ export default function ContentCardSection() {
 	};
 
 	useEffect(() => {
+		let active = true;
+		const generation = ++requestGeneration.current;
+		const isCurrent = () => active && requestGeneration.current === generation
+			&& requestContext.current.headCount === headCount;
 		const fetchData = async () => {
 			try {
 				const response = await getFavoriteThemesAPI(headCount, 1, 1000);
+				if (!isCurrent()) return;
 				setThemeList(response.contents);
 
 				const initialLikes: Record<ThemeResponse['themeId'], boolean> = {};
@@ -35,10 +48,12 @@ export default function ContentCardSection() {
 					initialLikes[item.themeId] = true;
 				});
 			} catch (error) {
+				if (!isCurrent()) return;
 				console.error('좋아요한 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
 			}
 		};
 		fetchData();
+		return () => { active = false; };
 	}, [headCount]);
 
 	const visibleThemeList = themeList.filter((item) => item.isLiked !== false);

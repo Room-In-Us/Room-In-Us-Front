@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components"
 import { getThemeDetailAPI } from "../../../themeDetail/api/themeDetailAPI";
@@ -17,15 +17,24 @@ import { getReviewDetailAPI } from "../../../reviewDetail/api/reviewDetailAPI";
 import More from './../../../../shared/assets/icons/common/more.svg?react';
 import Share from './../../../../shared/assets/icons/themeDetail/shareIcon.svg?react';
 import ReviewActionDropDown from "./ReviewActionDropDown";
+import type { MyReviewListItem } from '../../api/types';
+import type { EditableMyReview } from '../../model/reviewView';
 
-export default function ReviewCard({ data, onDeleted, onEdit }) {
+type ReviewCardProps = {
+  data: MyReviewListItem;
+  onDeleted: (reviewId: MyReviewListItem['reviewId']) => void;
+  onEdit: (reviewData: EditableMyReview) => void;
+  onEditStart?: (themeId: number, reviewId: number) => (() => boolean) | null;
+};
+
+export default function ReviewCard({ data, onDeleted, onEdit, onEditStart }: ReviewCardProps) {
 
   const { isMobile } = useDevice();
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleteSuccess, setIsDeleteSuccess] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const moreRef = useRef(null);
+  const moreRef = useRef<HTMLDivElement>(null);
 
   const {
     reviewId,
@@ -42,8 +51,30 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
     participantCnt,
     review
   } = data;
-  const initialThumbnailUrl = data?.thumbnailUrl || data?.img || data?.themeImg || null;
-  const [thumbnailUrl, setThumbnailUrl] = useState(initialThumbnailUrl);
+  const target = useMemo(() => ({ themeId, reviewId }), [themeId, reviewId]);
+  const currentTarget = useRef<typeof target | null>(null);
+  const editGeneration = useRef(0);
+  const shareGeneration = useRef(0);
+  const thumbnailGeneration = useRef(0);
+  const [thumbnail, setThumbnail] = useState<{ target: typeof target; url: string | null }>({ target, url: null });
+  const thumbnailUrl = thumbnail.target === target ? thumbnail.url : null;
+
+  useLayoutEffect(() => {
+    currentTarget.current = target;
+    editGeneration.current += 1;
+    shareGeneration.current += 1;
+    thumbnailGeneration.current += 1;
+    setThumbnail({ target, url: null });
+    setIsOpen(false);
+    setIsDeleteModalOpen(false);
+    setIsDeleteSuccess(false);
+    return () => {
+      currentTarget.current = null;
+      editGeneration.current += 1;
+      shareGeneration.current += 1;
+      thumbnailGeneration.current += 1;
+    };
+  }, [target]);
 
   const infoItems = createReviewInfoItems({
     review,
@@ -57,49 +88,68 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
 
   useEffect(() => {
     if (!themeId) return;
+    let active = true;
+    const generation = ++thumbnailGeneration.current;
+    const isCurrent = () => active && currentTarget.current === target && thumbnailGeneration.current === generation;
 
     getThemeDetailAPI(themeId)
       .then((themeData) => {
-        setThumbnailUrl(themeData?.img || themeData?.themeImg || initialThumbnailUrl);
+        if (!isCurrent()) return;
+        setThumbnail({ target, url: themeData?.img || null });
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
+        if (!isCurrent()) return;
         console.error('썸네일 로딩 실패:', error);
-        setThumbnailUrl(initialThumbnailUrl);
+        setThumbnail({ target, url: null });
       });
-  }, [themeId, initialThumbnailUrl]);
+    return () => { active = false; };
+  }, [themeId, target]);
 
   const getShareThumbnailUrl = async () => {
     if (thumbnailUrl) return thumbnailUrl;
-    if (initialThumbnailUrl) return initialThumbnailUrl;
     if (!themeId) return DefaultThumbnail;
+    const generation = ++thumbnailGeneration.current;
+    const isCurrent = () => currentTarget.current === target && thumbnailGeneration.current === generation;
 
     try {
       const themeData = await getThemeDetailAPI(themeId);
-      const nextThumbnailUrl = themeData?.img || themeData?.themeImg || DefaultThumbnail;
-      setThumbnailUrl(nextThumbnailUrl);
+      if (!isCurrent()) return null;
+      const nextThumbnailUrl = themeData?.img || DefaultThumbnail;
+      setThumbnail({ target, url: nextThumbnailUrl });
       return nextThumbnailUrl;
     } catch (error) {
+      if (!isCurrent()) return null;
       console.error('[ReviewCard] 공유용 썸네일 로딩 실패:', error);
       return DefaultThumbnail;
     }
   };
 
   const handleDelete = async () => {
+    if (currentTarget.current !== target) return;
     setIsOpen(false);
     try {
       await deleteMyReviewAPI(themeId, reviewId);
+      if (currentTarget.current !== target) return;
       setIsDeleteSuccess(true);
     } catch (error) {
+      if (currentTarget.current !== target) return;
       console.error('[ReviewCard] 후기 삭제 실패:', error);
       alert("삭제 중 오류가 발생했습니다.");
     }
   };
 
   const handleEdit = async () => {
+    if (currentTarget.current !== target) return;
+    const isCurrentParentEdit = onEditStart ? onEditStart(themeId, reviewId) : () => true;
+    if (!isCurrentParentEdit) return;
+    const generation = ++editGeneration.current;
+    const isCurrent = () => currentTarget.current === target && editGeneration.current === generation && isCurrentParentEdit();
     setIsOpen(false);
     try {
       const themeData = await getThemeDetailAPI(themeId);
+      if (!isCurrent()) return;
       const reviewDetail = await getReviewDetailAPI(themeId, reviewId);
+      if (!isCurrent()) return;
       console.log("[ReviewCard] reviewDetail:", reviewDetail);
 
       // null 상태 기반으로 토글 체크박스 상태 복원
@@ -125,14 +175,18 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
         storeName: storeName,
       });
     } catch (error) {
+      if (!isCurrent()) return;
       console.error("[ReviewCard] 후기 수정 모드 진입 실패:", error);
       alert("후기 정보를 불러오는 중 오류가 발생했습니다.");
     }
   };
 
   const handleShare = async () => {
+    if (currentTarget.current !== target) return;
+    const generation = ++shareGeneration.current;
     setIsOpen(false);
     const shareThumbnailUrl = await getShareThumbnailUrl();
+    if (shareThumbnailUrl == null || currentTarget.current !== target || shareGeneration.current !== generation) return;
 
     navigate('/review/share', {
       state: {
@@ -245,6 +299,7 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
         cancelText={isDeleteSuccess ? null : "취소"}
         showCancel={!isDeleteSuccess}
         onConfirm={() => {
+          if (currentTarget.current !== target) return;
           if (isDeleteSuccess) {
             setIsDeleteModalOpen(false);
             setIsDeleteSuccess(false);
@@ -254,6 +309,7 @@ export default function ReviewCard({ data, onDeleted, onEdit }) {
           }
         }}
         onCancel={() => {
+          if (currentTarget.current !== target) return;
           if (!isDeleteSuccess) setIsDeleteModalOpen(false);
         }}
       />

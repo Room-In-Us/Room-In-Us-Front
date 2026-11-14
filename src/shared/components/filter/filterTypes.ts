@@ -1,4 +1,3 @@
-import type { MutableRefObject } from 'react';
 import type { RegionId, RegionResponse, ZoneId, ZoneResponse } from '../../../features/location/api/types';
 import type { ThemeSortOption } from '../../types/theme';
 
@@ -12,13 +11,7 @@ export interface FilterValues {
 export interface FilterSelectionHandle<T> {
   reset: () => void;
   getValue: () => T | null;
-  currentValue?: T;
 }
-
-// 기존 코드는 ref.current와 ref 객체 자체에 각각 currentValue를 기록한다.
-export type FilterSelectionRef<T> = MutableRefObject<FilterSelectionHandle<T> | null | undefined> & {
-  currentValue?: T;
-};
 
 export interface RegionFilterHandle {
   reset: () => void;

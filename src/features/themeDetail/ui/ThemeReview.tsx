@@ -17,8 +17,11 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import { userInfoModalState, userInfoIdState, userInfoNameState } from '../../auth/model/authAtom';
+import type { ThemeReviewDto } from '../api/types';
 
-function ThemeReview({ data }) {
+type ThemeReviewProps = { data: ThemeReviewDto };
+
+function ThemeReview({ data }: ThemeReviewProps) {
   // 상태 관리
   const setModal = useSetRecoilState(userInfoModalState);
   const setUserId = useSetRecoilState(userInfoIdState);
@@ -30,8 +33,9 @@ function ThemeReview({ data }) {
 
   // 유저 ID 저장
   const handleClickUserName = () => {
+    if (data.memberId == null) return;
     setUserId(data.memberId);
-    setUserName(data.memberNickname);
+    setUserName(data.memberNickname === undefined ? null : data.memberNickname);
     setModal(true);
   };
 
@@ -105,7 +109,10 @@ function ThemeReview({ data }) {
       </ContentWrapper>
 
       {/* 상세 버튼 */}
-      <DetailButton onClick={() => navigate(`/theme/${themeId}/review/${data.reviewId}`)}>
+      <DetailButton onClick={() => {
+        if (themeId == null || data.reviewId == null) return;
+        navigate(`/theme/${themeId}/review/${data.reviewId}`);
+      }}>
         <div className="button-text">후기 상세보기</div>
         <RightArrowIcon className="arrow-icon" />
       </DetailButton>

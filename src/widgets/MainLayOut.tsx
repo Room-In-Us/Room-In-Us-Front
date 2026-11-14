@@ -34,7 +34,7 @@ const MainWrapper = styled.div`
   min-height: 100vh;
 `;
 
-const ContentWrapper = styled.div`
+const ContentWrapper = styled.div<{ hasMarginBottom: boolean }>`
   margin-bottom: ${({ hasMarginBottom }) => (hasMarginBottom ? '0' : '3rem')};
   flex-grow: 1;
 `;

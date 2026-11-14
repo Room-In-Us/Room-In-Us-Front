@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import SearchInput from '../../../shared/components/SearchInput';
 import ContentCard from '../../../shared/components/ContentCard';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
 import { getThemesAPI } from '../../../features/search/api/getSearchAPI';
 import CustomPagination from '../../../shared/components/CustomPagination';
 import useDevice from '../../../shared/hooks/useDevice';
@@ -20,6 +20,17 @@ export default function SearchSection() {
 
   const keywordFromState = location.state?.keyword ?? '';
   const [keyword, setKeyword] = useState(keywordFromState);
+  const requestGeneration = useRef(0);
+  const requestContext = useRef<{ keyword: string } | null>(null);
+
+  useLayoutEffect(() => {
+    requestContext.current = { keyword };
+    requestGeneration.current += 1;
+    return () => {
+      requestContext.current = null;
+      requestGeneration.current += 1;
+    };
+  }, [keyword]);
   
   const [themes, setThemes] = useState<ThemeResponse[]>([]);
 
@@ -37,6 +48,11 @@ export default function SearchSection() {
   };
 
   const handleSearch = useCallback(async () => {
+    const context = requestContext.current;
+    if (!context || context.keyword !== keyword) return;
+    const generation = ++requestGeneration.current;
+    const isCurrent = () => requestContext.current === context
+      && requestGeneration.current === generation && context.keyword === keyword;
     try {
       const data = await getThemesAPI({
         keyword: keyword || undefined,
@@ -44,9 +60,11 @@ export default function SearchSection() {
         size: 10000,
       });
 
+      if (!isCurrent()) return;
       setThemes(data.contents || []);
       setCurrentPage(1);
     } catch (error) {
+      if (!isCurrent()) return;
       console.error('검색 실패:', error);
       setThemes([]);
     }

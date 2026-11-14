@@ -7,6 +7,8 @@ import GoogleLogo from '../shared/assets/icons/login/googleLogo.svg?react';
 import useDevice from '../shared/hooks/useDevice';
 import { useNavigate } from 'react-router-dom';
 
+type SocialProviderProps = { type: 'kakao' | 'google' };
+
 function LoginPage() {
   // 반응형 함수
   const { isMobile } = useDevice();
@@ -181,7 +183,7 @@ const ButtonSection = styled.div`
   gap: 0.625em;
 `;
 
-const LoginText = styled.div`
+const LoginText = styled.div<SocialProviderProps>`
   color: ${({ type }) => (type == 'kakao' ? '#000' : '#1E1E2B')};
   font-family: 'Pretendard-Bold';
   line-height: 130%;
@@ -192,7 +194,7 @@ const LoginText = styled.div`
   }
 `;
 
-const SocialLoginButton = styled.div`
+const SocialLoginButton = styled.div<SocialProviderProps>`
   border: ${({ type }) => (type == 'kakao' ? 'none' : '1px solid #B7C1D4')};
   display: flex;
   width: 100%;

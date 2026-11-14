@@ -1,7 +1,10 @@
 import styled from "styled-components";
 import PropTypes from 'prop-types';
+import type { ReactNode } from 'react';
 
-function SummaryInfoCard({ icon, type, value }) {
+type SummaryInfoCardProps = { icon: ReactNode; type: string; value: string };
+
+function SummaryInfoCard({ icon, type, value }: SummaryInfoCardProps) {
   return (
     <CardWrapper>
       <TitleWrapper>

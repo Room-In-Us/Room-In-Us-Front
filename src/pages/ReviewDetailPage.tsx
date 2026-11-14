@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import LeftArrowIcon from "../shared/assets/icons/common/arrow/leftArrow.svg?react";
@@ -18,37 +18,60 @@ import useAuthSession from "../shared/hooks/useAuthSession";
 import ScheduleModal from "../features/schedule/ui/ScheduleModal";
 import { scheduleModalState } from "../features/schedule/modal/scheduleAtom";
 import PopUpModal from "../shared/components/PopUpModal";
+import type { Location } from 'react-router-dom';
+import type { DetailNavigationState, ThemeDetailView } from '../features/themeDetail/model/themeDetailView';
 
 function ReviewDetailPage() {
   // 상태 관리
   const isModalOpen = useRecoilValue(reviewModalState);
   const setReviewWriteModal = useSetRecoilState(reviewModalState);
-  const [themeDetail, setThemeDetail] = useState({});
+  const [themeDetailState, setThemeDetail] = useState<ThemeDetailView>({});
   const [isFloatingButtonOpen, setIsFloatingButtonOpen] = useState(false);
   const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
   const modalState = useRecoilValue(scheduleModalState);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const navigate = useNavigate();
-  const location = useLocation();
+  const location: Location<DetailNavigationState | null> = useLocation();
   const { themeId, reviewId } = useParams();
+  const [resolvedThemeId, setResolvedThemeId] = useState(themeId);
+  const requestGeneration = useRef(0);
+  const currentThemeId = useRef(themeId);
+  const themeDetail = resolvedThemeId === themeId ? themeDetailState : {};
 
   // 로그인 상태 검증
   const isLoggedIn = useAuthSession();
 
   const { isMobile } = useDevice();
 
+  useLayoutEffect(() => {
+    currentThemeId.current = themeId;
+    requestGeneration.current += 1;
+    setThemeDetail({});
+    setResolvedThemeId(themeId);
+    return () => { requestGeneration.current += 1; };
+  }, [themeId]);
+
   // 테마 상세 api 호출
   useEffect(() => {
+    if (themeId == null) return;
+    const requestedThemeId = themeId;
+    let active = true;
+    const generation = requestGeneration.current;
+    const isCurrent = () => active && requestGeneration.current === generation && currentThemeId.current === requestedThemeId;
     async function fetchThemeDetail() {
       try {
-        const detailRes = await getThemeDetailAPI(themeId);
+        const detailRes = await getThemeDetailAPI(requestedThemeId);
+        if (!isCurrent()) return;
         setThemeDetail(detailRes);
+        setResolvedThemeId(themeId);
       } catch (err) {
+        if (!isCurrent()) return;
         console.error('테마 상세 api 호출 중 오류 발생: ', err);
       }
     }
     fetchThemeDetail();
+    return () => { active = false; };
   }, [themeId]);
 
   return (
@@ -143,7 +166,7 @@ function ReviewDetailPage() {
 
       {/* 일정 관리 모달 */}
       {modalState.isOpen && (
-        <ModalBackdrop ModalBackdrop>
+        <ModalBackdrop>
           <ScheduleModal themeId={themeId} />
         </ModalBackdrop>
       )}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
 import { useRecoilValue } from 'recoil';
 import { activeLevelState } from '../model/levelAtom';
@@ -67,9 +67,70 @@ export default function LevelContentSection() {
 
   // 검색어 상태
   const [keyword,] = useState('');
+  const filtersMounted = useRef(false);
+  const filterLifetime = useRef(0);
+  const regionSelectionVersion = useRef(0);
+  const zoneRequestVersion = useRef(0);
+  const viewedRegionId = useRef(activeRegionId);
+  const availableZones = useRef({ regionId: activeRegionId, zones });
+  const selectedZoneNames = useRef(selectedZones);
+
+  useLayoutEffect(() => {
+    filtersMounted.current = true;
+    filterLifetime.current += 1;
+    return () => {
+      filtersMounted.current = false;
+      filterLifetime.current += 1;
+      zoneRequestVersion.current += 1;
+      regionSelectionVersion.current += 1;
+    };
+  }, []);
+
+  const viewRegion = useCallback((nextRegionId: RegionId) => {
+    if (!filtersMounted.current) return;
+    if (viewedRegionId.current !== nextRegionId) {
+      viewedRegionId.current = nextRegionId;
+      zoneRequestVersion.current += 1;
+      availableZones.current = { regionId: nextRegionId, zones: [] };
+      setZones([]);
+    }
+    setActiveRegionId(nextRegionId);
+  }, []);
+
+  // 구역 조회 결과는 현재 탭의 목록만 갱신하고 적용된 필터 ID는 바꾸지 않는다.
+  const fetchZones = useCallback(async (requestedRegionId: RegionId) => {
+    const lifetime = filterLifetime.current;
+    if (!filtersMounted.current || viewedRegionId.current !== requestedRegionId) return;
+    const generation = ++zoneRequestVersion.current;
+    const isCurrent = () => filtersMounted.current && filterLifetime.current === lifetime
+      && zoneRequestVersion.current === generation && viewedRegionId.current === requestedRegionId;
+    try {
+      const nextZones = await loadZones(requestedRegionId);
+      if (!isCurrent()) return;
+      availableZones.current = { regionId: requestedRegionId, zones: nextZones };
+      setZones(nextZones);
+    } catch (error) {
+      if (isCurrent()) console.error("구역 목록 불러오기 실패:", error);
+    }
+  }, []);
+
+  const requestGeneration = useRef(0);
+  const requestContext = useRef({ activeLevel, headCount, selectedSort, keyword, regionId, zoneIdList });
+
+  useLayoutEffect(() => {
+    requestContext.current = { activeLevel, headCount, selectedSort, keyword, regionId, zoneIdList };
+    requestGeneration.current += 1;
+    return () => { requestGeneration.current += 1; };
+  }, [activeLevel, headCount, selectedSort, keyword, regionId, zoneIdList]);
 
   // 숙련도 목록 조회
   useEffect(() => {
+    let active = true;
+    const generation = ++requestGeneration.current;
+    const isCurrent = () => active && requestGeneration.current === generation
+      && requestContext.current.activeLevel === activeLevel && requestContext.current.headCount === headCount
+      && requestContext.current.selectedSort === selectedSort && requestContext.current.keyword === keyword
+      && requestContext.current.regionId === regionId && requestContext.current.zoneIdList === zoneIdList;
     const fetchData = async () => {
       try {
         const response = await getLevelListAPI(
@@ -82,12 +143,15 @@ export default function LevelContentSection() {
           regionId, 
           zoneIdList
         );
+        if (!isCurrent()) return;
         setThemeList(response.contents);
       } catch (error) {
+        if (!isCurrent()) return;
         console.error('숙련도 기반 방탈출 목록 데이터를 불러오는 중 오류 발생:', error);
       }
     };
     fetchData();
+    return () => { active = false; };
   }, [activeLevel, headCount, selectedSort, keyword, regionId, zoneIdList]);
 
   // 인원수 필터링
@@ -98,108 +162,105 @@ export default function LevelContentSection() {
   // 선택된 숙련도 찾기
   const selectedLevel = levels.find((l) => l.level === activeLevel);
   
-  // 지역 목록 가져오기
+  // 지역 목록이 늦게 도착해도 사용자가 고른 탭을 초기 서울 탭으로 되돌리지 않는다.
   useEffect(() => {
+    let active = true;
+    const lifetime = filterLifetime.current;
+    const initialSelection = regionSelectionVersion.current;
+    const isCurrent = () => active && filtersMounted.current && filterLifetime.current === lifetime;
     const fetchRegions = async () => {
       try {
         const response = await getRegionAPI();
+        if (!isCurrent()) return;
         if (response.contents) {
           setRegions(response.contents);
-          
-          // 초기 활성화 상태 설정: 서울
+
           const initialRegion = response.contents.find(region => region.regionId === 1);
-          if (initialRegion) {
-            setActiveRegionId(initialRegion.regionId);
-            fetchZones(initialRegion.regionId);
+          if (initialRegion && regionSelectionVersion.current === initialSelection && viewedRegionId.current === 1) {
+            viewRegion(initialRegion.regionId);
+            void fetchZones(initialRegion.regionId);
           }
         }
       } catch (error) {
-        console.error("지역 목록 불러오기 실패:", error);
+        if (isCurrent()) console.error("지역 목록 불러오기 실패:", error);
       }
     };
     fetchRegions();
-  }, []);
-    
-  // 데스크톱 지역 탭의 구역 목록 가져오기
-  const fetchZones = async (regionId: RegionId) => {
-    try {
-      setZones(await loadZones(regionId));
-    } catch (error) {
-      console.error("구역 목록 불러오기 실패:", error);
-    }
-  };
-    
+    return () => { active = false; };
+  }, [fetchZones, viewRegion]);
+
   // 전체 지역 버튼 클릭 핸들러
   const handleRegionAllClick = () => {
-    setActiveRegionId(1);
+    if (!filtersMounted.current) return;
+    regionSelectionVersion.current += 1;
+    viewRegion(1);
     setSelectedRegion("지역 전체");
     setIsAllZoneSelected(false);
+    selectedZoneNames.current = [];
     setSelectedZones([]);
-    fetchZones(1);
-    setRegionId(null); 
-    setZoneIdList(null);  
+    void fetchZones(1);
+    setRegionId(null);
+    setZoneIdList(null);
   };
 
-  // 지역 버튼 클릭 핸들러 (구역 렌더링)
+  // 지역 탭은 표시할 구역만 바꾸고 적용된 필터는 선택할 때 확정한다.
   const handleTabClick = (regionId: RegionId) => {
-    setActiveRegionId(regionId); 
-    setSelectedZones([]);     
-    setSelectedZone(null);  
-    fetchZones(regionId);    
+    if (!filtersMounted.current) return;
+    regionSelectionVersion.current += 1;
+    viewRegion(regionId);
+    selectedZoneNames.current = [];
+    setSelectedZones([]);
+    setSelectedZone(null);
+    void fetchZones(regionId);
   };
-    
+
   const handleTabAllClick = async (regionId: RegionId, buttonText: string) => {
-    setActiveRegionId(regionId);
+    if (!filtersMounted.current) return;
+    regionSelectionVersion.current += 1;
+    viewRegion(regionId);
     setIsAllZoneSelected(true);
+    selectedZoneNames.current = [];
     setSelectedZones([]);
     setSelectedRegion(buttonText);
-
-    await getZoneAPI(regionId);
-    setZoneIdList(null); 
+    // 조회 완료를 기다리지 않고 사용자의 선택을 확정한다.
+    setZoneIdList(null);
     setRegionId(regionId);
+    await fetchZones(regionId);
   };
-    
+
   // 지역 선택 핸들러
   const handleRegionSelect = (regionName: string) => {
+    if (!filtersMounted.current) return;
+    regionSelectionVersion.current += 1;
     setSelectedRegion(regionName);
     setSelectedZone(null);
   };
-    
-  // 구역 선택 핸들러
+
+  // 로딩 중 이전 탭의 버튼이나 오래된 callback으로 다른 지역의 ID를 조합하지 않는다.
   const handleZoneSelect = async (zoneName: string) => {
+    const currentZones = availableZones.current;
+    if (!filtersMounted.current || viewedRegionId.current !== activeRegionId
+      || currentZones.regionId !== activeRegionId || !currentZones.zones.some(zone => zone.zoneName === zoneName)) return;
+    regionSelectionVersion.current += 1;
     setIsAllZoneSelected(false);
-  
-    setSelectedZones((prevZones) => {
-      let updatedZones;
-  
-      if (prevZones.includes(zoneName)) {
-        // 이미 선택된 경우 → 제거
-        updatedZones = prevZones.filter((name) => name !== zoneName);
-      } else {
-        // 새로 선택
-        updatedZones = [...prevZones, zoneName];
-      }
-  
-      // 선택 텍스트 표시용
-      if (updatedZones.length === 0) {
-        setSelectedRegion("지역 전체");
-      } else if (updatedZones.length === 1) {
-        setSelectedRegion(updatedZones[0]);
-      } else {
-        setSelectedRegion(`${updatedZones[0]} 외 ${updatedZones.length - 1}개`);
-      }
-  
-      // zoneIdList 생성
-      const selectedIds = zones
-        .filter((zone) => updatedZones.includes(zone.zoneName))
-        .map((zone) => zone.zoneId);
-  
-      setZoneIdList(updatedZones.length === 0 ? null : selectedIds);
-      setRegionId(updatedZones.length === 0 ? null : activeRegionId);
-  
-      return updatedZones;
-    });
-  };  
+
+    const previous = selectedZoneNames.current;
+    const updatedZones = previous.includes(zoneName)
+      ? previous.filter(name => name !== zoneName)
+      : [...previous, zoneName];
+    selectedZoneNames.current = updatedZones;
+    setSelectedZones(updatedZones);
+
+    if (updatedZones.length === 0) setSelectedRegion("지역 전체");
+    else if (updatedZones.length === 1) setSelectedRegion(updatedZones[0]);
+    else setSelectedRegion(`${updatedZones[0]} 외 ${updatedZones.length - 1}개`);
+
+    const selectedIds = currentZones.zones
+      .filter(zone => updatedZones.includes(zone.zoneName))
+      .map(zone => zone.zoneId);
+    setZoneIdList(updatedZones.length === 0 ? null : selectedIds);
+    setRegionId(updatedZones.length === 0 ? null : activeRegionId);
+  };
 
   // 바텀 시트 오픈 함수
   const handleOpenBottomSheet = () => {
@@ -235,6 +296,12 @@ export default function LevelContentSection() {
   
   // 모바일의 임시 선택을 적용 버튼에서 한 번에 확정한다.
   const handleApplyFilters = ({ people, sort, region, regionSelection }: RegionFilterValues) => {
+    if (!filtersMounted.current) return;
+    regionSelectionVersion.current += 1;
+    zoneRequestVersion.current += 1;
+    viewedRegionId.current = regionSelection.activeRegionId;
+    availableZones.current = { regionId: regionSelection.activeRegionId, zones: regionSelection.zones };
+    selectedZoneNames.current = regionSelection.selectedZones;
     setHeadCount(people);
     setSelectedSort(sort);
     setIsFilterActive(true);

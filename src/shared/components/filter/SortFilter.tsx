@@ -26,7 +26,7 @@ type SortFilterProps = {
   isMobile?: boolean;
 };
 
-const SortFilter = forwardRef<FilterSelectionHandle<ThemeSortOption> | undefined, SortFilterProps>(({ onSelect, selected: externalSelected }, ref) => {
+const SortFilter = forwardRef<FilterSelectionHandle<ThemeSortOption>, SortFilterProps>(({ onSelect, selected: externalSelected }, ref) => {
   const { isMobile } = useDevice();
   const {
     isOpen,

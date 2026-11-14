@@ -4,15 +4,23 @@ import StarIcon from "../../../shared/assets/icons/reviewWrite/star.svg?react";
 import EmptyStar from "../../../shared/assets/icons/reviewWrite/starEmpty.svg?react";
 import HalfStar from '../../../shared/assets/icons/reviewWrite/starhalf.svg?react';
 import NoDataIcon from "../../../shared/assets/images/common/noData/noDataImageSmall.png";
+import type { ThemeReviewRecommendedCloth } from '../../../shared/types/review';
 
-function StarRatingSection({ type, rating, comment, recommendedCloth }) {
+type StarRatingSectionProps = {
+  type: '난이도' | '공포도' | '활동성' | '스토리' | '인테리어';
+  rating?: number;
+  comment?: string;
+  recommendedCloth?: ThemeReviewRecommendedCloth | null;
+};
+
+function StarRatingSection({ type, rating, comment, recommendedCloth }: StarRatingSectionProps) {
   // 별 배열 생성
   const renderStars = () => {
     return Array.from({ length: 5 }).map((_, i) => {
       const starValue = i + 1;
-      if (rating >= starValue) {
+      if (rating !== undefined && rating >= starValue) {
         return <StyledStarIcon key={i} />;
-      } else if (rating >= starValue - 0.5) {
+      } else if (rating !== undefined && rating >= starValue - 0.5) {
         return <StyledHalfStarIcon key={i} />;
       } else {
         return <StyledEmptyStarIcon key={i} />;
@@ -21,7 +29,7 @@ function StarRatingSection({ type, rating, comment, recommendedCloth }) {
   };
 
   // 복장 추천 리스트
-  const recommendedClothList = [
+  const recommendedClothList: ThemeReviewRecommendedCloth[] = [
     'PANTS', 'LONG_SKIRT', 'SHORT_SKIRT'
   ];
   // 복장 추천 텍스트 매핑 함수
@@ -187,7 +195,7 @@ const ClothOptionWrapper = styled.div`
   gap: 0.25rem;
 `;
 
-const RadioButton = styled.button`
+const RadioButton = styled.button<{ selected: boolean }>`
 font-size: 1rem;
   all: unset;
   border: 1.4px solid ${(props) => (props.selected ? 'var(--RIU_Primary-100, #718FF2)' : 'var(--RIU_Primary-40, #B9C3FF)')};
@@ -216,7 +224,7 @@ font-size: 1rem;
   }
 `;
 
-const ClothText = styled.div`
+const ClothText = styled.div<{ selected: boolean }>`
   color: ${(props) => (props.selected ? 'var(--RIU_Monochrome-300, #696C7E)' : 'var(--RIU_Monochrome-70, #B3B6C3)')};
   font-family: 'Pretendard-Medium';
   font-size: 0.75rem;

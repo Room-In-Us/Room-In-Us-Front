@@ -130,7 +130,7 @@ function StoreCard() {
       .then(() => {
         showTooltipWithTimer(setShowAddressTooltip);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error('주소 복사 실패:', err);
       });
   };
@@ -140,7 +140,7 @@ function StoreCard() {
       .then(() => {
         showTooltipWithTimer(setShowUrlTooltip);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error('URL 복사 실패:', err);
       });
   };
@@ -150,7 +150,7 @@ function StoreCard() {
       .then(() => {
         showTooltipWithTimer(setShowContactTooltip);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error('연락처 복사 실패:', err);
       });
   };

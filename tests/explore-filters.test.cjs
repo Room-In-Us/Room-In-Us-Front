@@ -48,6 +48,11 @@ function mount(relative, { mobile = false, props = {}, ref = null, themes = Arra
       if (!(i in slots)) slots[i] = { current: initial };
       return slots[i];
     },
+    useCallback(callback, deps) {
+      const i = cursor++;
+      if (!dependenciesEqual(slots[i]?.deps, deps)) slots[i] = { callback, deps };
+      return slots[i].callback;
+    },
     useEffect(fn, deps) {
       const i = cursor++;
       if (!dependenciesEqual(slots[i]?.deps, deps)) {
@@ -63,6 +68,7 @@ function mount(relative, { mobile = false, props = {}, ref = null, themes = Arra
     forwardRef: fn => (props, ref) => fn(props, ref),
     memo: fn => fn,
   };
+  react.useLayoutEffect = react.useEffect;
   const api = {
     async get(url, options = {}) {
       requests.push({ url, params: options.params });

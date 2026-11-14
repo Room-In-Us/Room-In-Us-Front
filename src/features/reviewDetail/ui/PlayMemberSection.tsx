@@ -5,16 +5,20 @@ import { proficiencyConversion } from "../../../shared/utils/dataUtils";
 import PropTypes from "prop-types";
 import useDevice from "../../../shared/hooks/useDevice";
 import InfoBox from "../../../shared/components/InfoBox";
+import type { ThemeReviewDetailResponse } from '../api/types';
 
-function PlayMemberSection({ participantList }) {
+type PlayMemberSectionProps = { participantList: ThemeReviewDetailResponse['participantList'] };
+
+function PlayMemberSection({ participantList }: PlayMemberSectionProps) {
   const { isMobile } = useDevice();
 
   const [isInfoOpen, setIsInfoOpen] = useState(false);
-  const infoRef = useRef(null);
+  const infoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function handleClickOutside(e) {
-      if (infoRef.current && !infoRef.current.contains(e.target)) {
+    function handleClickOutside(e: MouseEvent | TouchEvent) {
+      // document의 포인터 이벤트 target은 DOM Node 또는 null이다.
+      if (infoRef.current && !infoRef.current.contains(e.target as Node | null)) {
         setIsInfoOpen(false);
       }
     }
@@ -127,7 +131,7 @@ const IconWrapper = styled.div`
   align-items: center;
 `;
 
-const InfoPopup = styled.div`
+const InfoPopup = styled.div<{ $isInfoOpen: boolean }>`
   visibility: ${({ $isInfoOpen }) => ($isInfoOpen ? "visible" : "hidden")};
   opacity: ${({ $isInfoOpen }) => ($isInfoOpen ? "1" : "0")};
   transition: all 0.2s ease-in-out;

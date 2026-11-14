@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import LogoIcon from '../../shared/assets/icons/common/logo.svg?react';
@@ -9,6 +9,8 @@ import { patchNicknameAPI } from "../../features/mypage/api/nicknameAPI";
 import CancelIcon from '../../shared/assets/icons/common/cancelIcon.svg?react';
 import CheckIcon from '../../shared/assets/icons/myPage/checkIcon.svg?react';
 
+type NicknameUpdate = { generation: number; viewGeneration: number; editGeneration: number; nickname: string };
+
 function MyPage() {
   // 상태 관리
   const [nickname, setNickname] = useState('');
@@ -17,33 +19,123 @@ function MyPage() {
   const [prevNickname, setPrevNickname] = useState('');
   const [errorState, setErrorState] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const mountedProfile = useRef(false);
+  const viewGeneration = useRef(0);
+  const editGeneration = useRef(0);
+  const updateGeneration = useRef(0);
+  const savedNicknameGeneration = useRef(0);
+  const currentNickname = useRef(nickname);
+  const confirmedNickname = useRef<string | null>(null);
+  const editingNickname = useRef(false);
+  const pendingUpdate = useRef<NicknameUpdate | null>(null);
+  const errorTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navigate = useNavigate();
 
+  const clearErrorTimer = () => {
+    if (errorTimer.current !== null) {
+      clearTimeout(errorTimer.current);
+      errorTimer.current = null;
+    }
+  };
+
+  useLayoutEffect(() => {
+    mountedProfile.current = true;
+    viewGeneration.current += 1;
+    return () => {
+      mountedProfile.current = false;
+      viewGeneration.current += 1;
+      editGeneration.current += 1;
+      pendingUpdate.current = null;
+      if (errorTimer.current !== null) {
+        clearTimeout(errorTimer.current);
+        errorTimer.current = null;
+      }
+    };
+  }, []);
+
   // 닉네임 가져오기 (로그인 상태일 때만 실행)
   useEffect(() => {
+    let active = true;
+    const generation = viewGeneration.current;
+    const initialSavedGeneration = savedNicknameGeneration.current;
+    const isCurrent = () => active && mountedProfile.current && viewGeneration.current === generation;
     const fetchNickname = async () => {
       try {
         const response = await getMemberInfoAPI();
-        setNickname(response.nickname);
+        if (!isCurrent()) return;
         setEmail(response.email);
+        // 수정 성공보다 오래된 조회로 저장값을 되돌리지 않는다. 편집 중이면
+        // 입력 대신 취소 시 복원할 서버 닉네임만 기록한다.
+        if (savedNicknameGeneration.current === initialSavedGeneration) {
+          confirmedNickname.current = response.nickname;
+          if (editingNickname.current) setPrevNickname(response.nickname);
+          else {
+            currentNickname.current = response.nickname;
+            setNickname(response.nickname);
+          }
+        }
       } catch (error) {
+        if (!isCurrent()) return;
         console.error("닉네임 불러오는 중 오류 발생:", error);
       }
     };
     fetchNickname();
+    return () => { active = false; };
   }, []);
+
+  const beginNicknameEdit = () => {
+    if (!mountedProfile.current) return;
+    editGeneration.current += 1;
+    pendingUpdate.current = null;
+    editingNickname.current = true;
+    clearErrorTimer();
+    setErrorState(false);
+    setPrevNickname(currentNickname.current);
+    setEditState(true);
+  };
+
+  const cancelNicknameEdit = () => {
+    if (!mountedProfile.current) return;
+    editGeneration.current += 1;
+    pendingUpdate.current = null;
+    editingNickname.current = false;
+    clearErrorTimer();
+    setErrorState(false);
+    currentNickname.current = confirmedNickname.current ?? prevNickname;
+    setNickname(currentNickname.current);
+    setEditState(false);
+  };
 
   // 닉네임 수정하기
   const handleNicknameUpdate = async () => {
+    if (!mountedProfile.current || !editingNickname.current || pendingUpdate.current !== null) return;
+    const operation: NicknameUpdate = {
+      generation: ++updateGeneration.current,
+      viewGeneration: viewGeneration.current,
+      editGeneration: editGeneration.current,
+      nickname: currentNickname.current,
+    };
+    pendingUpdate.current = operation;
+    clearErrorTimer();
+    setErrorState(false);
+    const isCurrent = () => mountedProfile.current && editingNickname.current && pendingUpdate.current === operation
+      && viewGeneration.current === operation.viewGeneration && editGeneration.current === operation.editGeneration
+      && updateGeneration.current === operation.generation && currentNickname.current === operation.nickname;
     try {
-      const response = await patchNicknameAPI(nickname);
+      const response = await patchNicknameAPI(operation.nickname);
+      if (!isCurrent()) return;
       console.log("닉네임 수정 결과: ", response);
+      savedNicknameGeneration.current += 1;
+      confirmedNickname.current = operation.nickname;
+      editingNickname.current = false;
       setEditState(false);
     } catch (error) {
+      if (!isCurrent()) return;
       console.error("닉네임 수정 중 오류 발생:", error);
 
-      if (error.response?.status === 409) {
+      const response = error != null && typeof error === 'object' && 'response' in error ? error.response : undefined;
+      if (response != null && typeof response === 'object' && 'status' in response && response.status === 409) {
         setErrorMessage("이미 존재하는 닉네임입니다.");
       } else {
         setErrorMessage("닉네임 수정 중 오류가 발생했습니다.");
@@ -51,9 +143,15 @@ function MyPage() {
 
       setErrorState(true);
 
-      setTimeout(() => {
-        setErrorState(false);
+      errorTimer.current = setTimeout(() => {
+        if (mountedProfile.current && viewGeneration.current === operation.viewGeneration
+          && editGeneration.current === operation.editGeneration && updateGeneration.current === operation.generation) {
+          setErrorState(false);
+          errorTimer.current = null;
+        }
       }, 2000);
+    } finally {
+      if (pendingUpdate.current === operation) pendingUpdate.current = null;
     }
   };
   
@@ -68,7 +166,17 @@ function MyPage() {
               <NicknameInput
                 maxLength={10}
                 value={nickname}
-                onChange={(e) => setNickname(e.target.value.slice(0, 10))}
+                onChange={(e) => {
+                  const value = e.target.value.slice(0, 10);
+                  if (currentNickname.current !== value) {
+                    editGeneration.current += 1;
+                    pendingUpdate.current = null;
+                    currentNickname.current = value;
+                    clearErrorTimer();
+                    setErrorState(false);
+                  }
+                  setNickname(value);
+                }}
               />
               :
               <Nickname>
@@ -80,18 +188,12 @@ function MyPage() {
             </Email>
             { editState ?
               <NicknameUpdateButton>
-                <StyledCancelIcon onClick={() => {
-                  setNickname(prevNickname);
-                  setEditState(false);
-                }} />
+                <StyledCancelIcon onClick={cancelNicknameEdit} />
                 <StyledCheckIcon onClick={handleNicknameUpdate} />
               </NicknameUpdateButton>
               :
               <StyledUpdateIcon
-                onClick={() => {
-                  setEditState(true);
-                  setPrevNickname(nickname);
-                }}
+                onClick={beginNicknameEdit}
               />
             }
             <ErrorText errorState={errorState}>
@@ -256,7 +358,7 @@ const StyledUpdateIcon = styled(UpdateIcon)`
   cursor: pointer;
 `;
 
-const ErrorText = styled.div`
+const ErrorText = styled.div<{ errorState: boolean }>`
   color: #ED2222;
   font-family: Pretendard;
   font-size: 0.75rem;

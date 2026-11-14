@@ -129,7 +129,7 @@ export const reviewTagConversion = (tag: ThemeReviewTag): string => {
   const tagMap: Record<ThemeReviewTag, string> = {
     AGING: "노후화",
     DEVICE_ERROR: "장치 오류",
-    ENTRY_DELAY: "당일 예약",
+    ENTRY_DELAY: "입장 지연",
     SAME_DAY_BOOKING: "당일 예약",
     EARLY_EXIT: "중도 포기",
   };

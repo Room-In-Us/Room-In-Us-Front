@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useLayoutEffect, useRef } from "react";
+import { isAxiosError } from 'axios';
 import styled from "styled-components";
 import ThumbnailImg from '../../../shared/assets/images/common/thumbnailImg.png';
 import InfoIcon from '../../../shared/assets/icons/themeDetail/infoIcon.svg?react';
@@ -11,14 +12,25 @@ import ScheduleIcon from '../../../shared/assets/icons/themeDetail/scheduleIcon.
 import PropTypes from 'prop-types';
 import useDevice from "../../../shared/hooks/useDevice";
 import { postThemeLikeAPI, deleteThemeLikeAPI } from "../../like/api/themeLikeAPI";
-import { useSetRecoilState, useRecoilValue } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { scheduleModalState } from "../../schedule/modal/scheduleAtom";
-import ScheduleModal from "../../schedule/ui/ScheduleModal";
 import useAuthSession from "../../../shared/hooks/useAuthSession";
 import PopUpModal from "../../../shared/components/PopUpModal";
 import { useNavigate } from "react-router-dom";
+import type { ThemeDetailView } from '../model/themeDetailView';
+import type { MouseEvent as ReactMouseEvent } from 'react';
 
-function ThemeOverviewCard({ themeData }) {
+type ThemeOverviewCardProps = { themeData: ThemeDetailView };
+type LikeSession = {
+  themeId: ThemeDetailView['themeId'];
+  generation: number;
+  confirmed: boolean | undefined;
+  desired: boolean | undefined;
+  revision: number;
+  pending: boolean;
+};
+
+function ThemeOverviewCard({ themeData }: ThemeOverviewCardProps) {
   // 로그인 상태 검증
   const isLoggedIn = useAuthSession();
 
@@ -27,29 +39,94 @@ function ThemeOverviewCard({ themeData }) {
   const [isHeartActive, setIsHeartActive] = useState(isLoggedIn ? themeData.isLiked : false);
   const [showTooltip, setShowTooltip] = useState(false);
   const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
-  const modalState = useRecoilValue(scheduleModalState);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const likeGeneration = useRef(0);
+  const likeSession = useRef<LikeSession | null>(null);
   
   const navigate = useNavigate();
   
   const { isMobile } = useDevice();
   
   // 이미지 로드 실패 시, 기본 썸네일로 변경
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!themeData.img) {
       setImageUrl(ThumbnailImg);
     } else {
       setImageUrl(themeData.img);
     }
-  }, [themeData.img]);
+  }, [themeData.img, themeData.themeId]);
   const handleImageError = () => {
     setImageUrl(ThumbnailImg);
   };
 
   // 좋아요 상태 관리
-  useEffect(() => {
-    setIsHeartActive(isLoggedIn ? themeData.isLiked : false);
-  }, [themeData.isLiked, isLoggedIn]);
+  useLayoutEffect(() => {
+    const confirmed = isLoggedIn ? themeData.isLiked : false;
+    const session: LikeSession = {
+      themeId: themeData.themeId,
+      generation: ++likeGeneration.current,
+      confirmed,
+      desired: confirmed,
+      revision: 0,
+      pending: false,
+    };
+    likeSession.current = session;
+    setIsHeartActive(confirmed);
+    return () => {
+      likeGeneration.current += 1;
+      if (likeSession.current === session) likeSession.current = null;
+    };
+  }, [themeData.isLiked, themeData.themeId, isLoggedIn]);
+
+  const isCurrentLikeSession = (session: LikeSession) => likeSession.current === session
+    && likeGeneration.current === session.generation && session.themeId === themeData.themeId;
+
+  const flushLikeChanges = async (session: LikeSession) => {
+    const themeId = session.themeId;
+    if (themeId == null || !isCurrentLikeSession(session) || session.pending) return;
+    session.pending = true;
+    try {
+      // 동시에 보내지 않아 같은 테마의 POST/DELETE 처리 순서도 유지한다.
+      while (isCurrentLikeSession(session) && session.desired !== session.confirmed) {
+        const next = !!session.desired;
+        const revision = session.revision;
+        try {
+          if (next) await postThemeLikeAPI(themeId);
+          else await deleteThemeLikeAPI(themeId);
+          if (!isCurrentLikeSession(session)) return;
+          session.confirmed = next;
+        } catch (error) {
+          if (!isCurrentLikeSession(session)) return;
+          console.error('찜 상태 변경 실패:', error);
+          if (session.revision === revision) {
+            session.desired = session.confirmed;
+            setIsHeartActive(session.confirmed);
+            if (isAxiosError(error) && (error.response?.status === 401 || error.response?.status === 403)) {
+              setIsLoginModalOpen(true);
+            }
+          }
+        }
+      }
+    } finally {
+      // 이전 컨텍스트의 finally는 새 세션의 잠금을 변경하지 않는다.
+      session.pending = false;
+    }
+  };
+
+  const handleToggleLike = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+    if (themeData.themeId == null) return;
+    const session = likeSession.current;
+    if (!session || !isCurrentLikeSession(session)) return;
+    event.stopPropagation();
+    session.revision += 1;
+    session.desired = !session.desired;
+    setIsHeartActive(session.desired);
+    void flushLikeChanges(session);
+  };
 
   // 복사 기능
   const handleCopyLink = () => {
@@ -58,7 +135,7 @@ function ThemeOverviewCard({ themeData }) {
         setShowTooltip(true);
         setTimeout(() => setShowTooltip(false), 1500);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error('링크 복사 실패:', err);
       });
   };
@@ -124,19 +201,7 @@ function ThemeOverviewCard({ themeData }) {
                 <StyledShareIcon/>
               </InteractionButton>
               <InteractionButton
-                onClick={(e) => {
-                  if (!isLoggedIn) {
-                    setIsLoginModalOpen(true);
-                    return;
-                  }
-                  e.stopPropagation();
-                  setIsHeartActive(!isHeartActive);
-                  if (isHeartActive) {
-                    deleteThemeLikeAPI(themeData.themeId);
-                  } else {
-                    postThemeLikeAPI(themeData.themeId);
-                  }
-                }}
+                onClick={handleToggleLike}
               >
                 {isHeartActive ? (
                   <StyledHeartIcon3 />
@@ -183,19 +248,7 @@ function ThemeOverviewCard({ themeData }) {
               <StyledShareIcon/>
             </InteractionButton>
             <InteractionButton
-              onClick={(e) => {
-                if (!isLoggedIn) {
-                  setIsLoginModalOpen(true);
-                  return;
-                }
-                e.stopPropagation();
-                setIsHeartActive(!isHeartActive);
-                if (isHeartActive) {
-                  deleteThemeLikeAPI(themeData.themeId);
-                } else {
-                  postThemeLikeAPI(themeData.themeId);
-                }
-              }}
+              onClick={handleToggleLike}
             >
               {isHeartActive ? (
                 <StyledHeartIcon3 />
@@ -221,13 +274,6 @@ function ThemeOverviewCard({ themeData }) {
         onConfirm={() => navigate('/login')}
         onCancel={() => setIsLoginModalOpen(false)}
       />
-
-      {/* 일정 관리 모달 */}
-      {modalState.isOpen && (
-        <ModalBackdrop>
-          <ScheduleModal themeId={themeData.themeId} />
-        </ModalBackdrop>
-      )}
     </ComponentWrapper>
   )
 }
@@ -276,7 +322,7 @@ const ComponentWrapper = styled.div`
   }
 `;
 
-const ImageSection = styled.div`
+const ImageSection = styled.div<{ imgUrl?: string }>`
   border-radius: 0.625rem;
   height: 35.625rem;
   align-self: stretch;
@@ -398,7 +444,7 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const StyledButton = styled.div`
+const StyledButton = styled.div<{ type?: 'reservation' | 'schedule' }>`
   border-radius: 2.5rem;
   padding: 0.875rem 0rem;
   box-sizing: border-box;
@@ -622,17 +668,4 @@ const Tooltip = styled.div`
     85% { opacity: 1; transform: translate(-50%, 0); }
     100% { opacity: 0; transform: translate(-50%, 4px); }
   }
-`;
-
-const ModalBackdrop = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 3500;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;

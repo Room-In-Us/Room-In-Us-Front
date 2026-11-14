@@ -26,7 +26,7 @@ type PeopleFilterProps = {
   isMobile?: boolean;
 };
 
-const PeopleFilter = forwardRef<FilterSelectionHandle<number> | undefined, PeopleFilterProps>(({ onSelect, selected: externalSelected }, ref) => {
+const PeopleFilter = forwardRef<FilterSelectionHandle<number>, PeopleFilterProps>(({ onSelect, selected: externalSelected }, ref) => {
   
   const { isMobile } = useDevice();
   

@@ -28,7 +28,8 @@ const member = (memberId = 1, nickname = 'current') => ({
 function loadComponentHandler(relative, name, bindings) {
   const filename = path.join(root, relative);
   const source = ts.createSourceFile(
-    filename, fs.readFileSync(filename, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.JSX,
+    filename, fs.readFileSync(filename, 'utf8'), ts.ScriptTarget.Latest, true,
+    filename.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
   );
   let initializer;
   const visit = (node) => {
@@ -39,7 +40,10 @@ function loadComponentHandler(relative, name, bindings) {
   };
   visit(source);
   assert.ok(initializer, `${relative} exports an executable ${name} closure`);
-  return vm.runInNewContext(`(${initializer.getText(source)})`, bindings, { filename });
+  const code = ts.transpileModule(`(${initializer.getText(source)})`, {
+    fileName: 'handler.ts', compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS },
+  }).outputText;
+  return vm.runInNewContext(code, bindings, { filename });
 }
 
 function createEventTarget() {
@@ -647,6 +651,7 @@ function createAuthFlow(harness, flow) {
     replaceState: (state, title, pathname) => cleanedUrls.push(pathname),
   };
   harness.document.title = 'Test application';
+  if (flow === 'signup') harness.localStorage.setItem('userCode', 'signup-test-code');
   const bindings = {
     ...harness.state(),
     checkAuthSession: harness.session().checkAuthSession,
@@ -667,10 +672,21 @@ function createAuthFlow(harness, flow) {
     },
     setSignupSection: (section) => signupSections.push(section),
     alert: (message) => alerts.push(message),
+    signupAttempts: new Map(),
+    mountedSignup: { current: true },
+    signupGeneration: { current: 0 },
+    pendingSignup: { current: null },
+    activeSignupCode: { current: harness.localStorage.getItem('userCode') },
+    // The extracted callback runs in a current mounted effect. Component
+    // lifecycle/URL changes are exercised by auth-ui.test.cjs with real closures.
+    mountedCallback: { current: true },
+    callbackGeneration: { current: 1 },
+    generation: 1,
+    active: true,
   };
   const handler = flow === 'callback'
-    ? loadComponentHandler('src/features/auth/ui/AuthCallback.jsx', 'handleAuthCallback', bindings)
-    : loadComponentHandler('src/features/auth/ui/AgreeSection.jsx', 'onSubmit', bindings);
+    ? loadComponentHandler('src/features/auth/ui/AuthCallback.ts', 'handleAuthCallback', bindings)
+    : loadComponentHandler('src/features/auth/ui/AgreeSection.tsx', 'onSubmit', bindings);
   return { handler, redirects, cleanedUrls, alerts, signupSections, signupPayloads };
 }
 

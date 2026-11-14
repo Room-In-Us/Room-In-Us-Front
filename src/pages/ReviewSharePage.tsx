@@ -8,10 +8,43 @@ import CopyIcon from '../shared/assets/icons/location/copyIcon.svg?react';
 import CloseIcon from '../shared/assets/icons/common/cancelIcon.svg?react';
 import { formatDateToDot, mapRecommendedHeadcount, reviewEnumConversion } from '../shared/utils/dataUtils';
 
+import type { ChangeEvent } from 'react';
+import type { Location } from 'react-router-dom';
+import type { MyReviewListItem, ThemeReservationResponse } from '../features/mypage/api/types';
+import type { ReviewDraftState } from '../features/themeDetail/model/reviewAtom';
+
+type TemplateId = 'center-badge' | 'bottom-record' | 'poster' | 'corner-stamp' | 'date-card' | 'minimal' | 'score-grid' | 'film';
+type ShareMessageTone = 'default' | 'success' | 'error';
+type ShareVariant = 'instagram' | 'download';
+type ActiveProps = { $active: boolean };
+type CompactProps = { $compact?: boolean };
+
+// 목록 공유·저장 완료 공유에서 전달하는 화면 데이터이며 API 응답 DTO와 구분한다.
+type ReviewShareData = Pick<MyReviewListItem,
+  'themeName' | 'storeName' | 'satisfactionLevel' | 'review' | 'playedAt'
+  | 'isEscaped' | 'remainingTime' | 'usedHint' | 'participantCnt'>
+  & Partial<Pick<ReviewDraftState, 'participantList' | 'minRecommendedHeadcount' | 'maxRecommendedHeadcount' | 'img'>>
+  & { thumbnailUrl?: string; themeImg?: ThemeReservationResponse['themeImg'] };
+type ReviewShareNavigationState = { backButtonText?: string; reviewData?: ReviewShareData | null };
+type ShareDisplayData = {
+  themeName: ReviewShareData['themeName'];
+  storeName: ReviewShareData['storeName'];
+  review: string;
+  playedAt: string;
+  remainingTime: string;
+  result: string;
+  usedHint: string;
+  satisfaction: string;
+  participantCount: string;
+  recommendedHeadcount: string;
+};
+type TemplateContentProps = { templateId: TemplateId; data: ShareDisplayData; backgroundImage: string; compact?: boolean };
+type ShareOperation = { generation: number };
+
 const SHARE_IMAGE_SIZE = 1080;
 const TEMPLATE_THUMB_SIZE = 96;
 
-const fallbackReview = {
+const fallbackReview: ReviewShareData = {
   themeName: '비밀의 화원',
   storeName: '루미너스 강남점',
   review: 'FLOWER_GARDEN',
@@ -28,7 +61,7 @@ const fallbackReview = {
   maxRecommendedHeadcount: 4,
 };
 
-const templates = [
+const templates: { id: TemplateId; name: string; description: string }[] = [
   {
     id: 'center-badge',
     name: '센터 배지',
@@ -71,7 +104,7 @@ const templates = [
   },
 ];
 
-function toProxyImageUrl(imageUrl) {
+function toProxyImageUrl(imageUrl: string): string {
   if (!imageUrl || imageUrl.startsWith('blob:') || imageUrl.startsWith('data:') || imageUrl.startsWith('/')) {
     return imageUrl;
   }
@@ -88,7 +121,7 @@ function toProxyImageUrl(imageUrl) {
       return `/api/image-proxy?url=${encodeURIComponent(imageUrl)}`;
     }
 
-    const proxyPrefixByHost = {
+    const proxyPrefixByHost: Partial<Record<string, string>> = {
       'firebasestorage.googleapis.com': '/storage-proxy',
       'storage.googleapis.com': '/storage-proxy',
       'naverbooking-phinf.pstatic.net': '/pstatic-proxy',
@@ -107,15 +140,15 @@ function toProxyImageUrl(imageUrl) {
   }
 }
 
-function getRawReviewThemeImageUrl(reviewData) {
+function getRawReviewThemeImageUrl(reviewData: ReviewShareData): string {
   return reviewData?.thumbnailUrl || reviewData?.img || reviewData?.themeImg || ThumbnailImg;
 }
 
-function getReviewThemeImageUrl(reviewData) {
+function getReviewThemeImageUrl(reviewData: ReviewShareData): string {
   return toProxyImageUrl(getRawReviewThemeImageUrl(reviewData));
 }
 
-function isCrossOriginImageUrl(imageUrl) {
+function isCrossOriginImageUrl(imageUrl: string): boolean {
   if (!imageUrl || imageUrl.startsWith('blob:') || imageUrl.startsWith('data:') || imageUrl.startsWith('/')) {
     return false;
   }
@@ -134,15 +167,15 @@ function isCrossOriginImageUrl(imageUrl) {
 }
 
 function ReviewSharePage() {
-  const { state } = useLocation();
-  const previewRef = useRef(null);
-  const [selectedTemplate, setSelectedTemplate] = useState(templates[0].id);
+  const { state }: Location<ReviewShareNavigationState | null> = useLocation();
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>(templates[0].id);
   const [uploadedImage, setUploadedImage] = useState('');
-  const [backgroundMode, setBackgroundMode] = useState('theme');
+  const [backgroundMode, setBackgroundMode] = useState<'theme' | 'upload'>('theme');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSharePending, setIsSharePending] = useState(false);
   const [shareMessage, setShareMessage] = useState('');
-  const [shareMessageTone, setShareMessageTone] = useState('default');
+  const [shareMessageTone, setShareMessageTone] = useState<ShareMessageTone>('default');
   const [previewSceneSize, setPreviewSceneSize] = useState(0);
   const [isThemeImageUsingDirectUrl, setIsThemeImageUsingDirectUrl] = useState(false);
 
@@ -156,8 +189,46 @@ function ReviewSharePage() {
   const templatePreviewScale = TEMPLATE_THUMB_SIZE / templatePreviewSize;
   const isThemeImageExportRestricted =
     backgroundMode === 'theme' && isThemeImageUsingDirectUrl && isCrossOriginImageUrl(rawThemeImageUrl);
+  const exportContext = useMemo(() => ({
+    reviewData, selectedTemplate, backgroundMode, uploadedImage, backgroundImage, isThemeImageExportRestricted,
+  }), [reviewData, selectedTemplate, backgroundMode, uploadedImage, backgroundImage, isThemeImageExportRestricted]);
+  const currentExportContext = useRef<typeof exportContext | null>(null);
+  const exportGeneration = useRef(0);
+  const pendingExport = useRef<ShareOperation | null>(null);
 
-  const displayData = useMemo(() => {
+  useLayoutEffect(() => {
+    currentExportContext.current = exportContext;
+    exportGeneration.current += 1;
+    pendingExport.current = null;
+    setIsSharePending(false);
+    setShareMessage('');
+    setShareMessageTone('default');
+    return () => {
+      currentExportContext.current = null;
+      exportGeneration.current += 1;
+      pendingExport.current = null;
+    };
+  }, [exportContext]);
+
+  const beginExport = (): ShareOperation | null => {
+    if (currentExportContext.current !== exportContext || pendingExport.current) return null;
+    const operation = { generation: ++exportGeneration.current };
+    // state가 렌더링되기 전의 연속 클릭도 같은 잠금을 사용한다.
+    pendingExport.current = operation;
+    setIsSharePending(true);
+    return operation;
+  };
+
+  const isCurrentExport = (operation: ShareOperation) => currentExportContext.current === exportContext
+    && exportGeneration.current === operation.generation && pendingExport.current === operation;
+
+  const finishExport = (operation: ShareOperation) => {
+    if (!isCurrentExport(operation)) return;
+    pendingExport.current = null;
+    setIsSharePending(false);
+  };
+
+  const displayData = useMemo<ShareDisplayData>(() => {
     const memberCount = Array.isArray(reviewData.participantList)
       ? reviewData.participantList.length
       : reviewData.participantCnt;
@@ -242,7 +313,7 @@ function ReviewSharePage() {
     setIsThemeImageUsingDirectUrl(false);
   };
 
-  const handleUpload = (event) => {
+  const handleUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -254,7 +325,7 @@ function ReviewSharePage() {
     setBackgroundMode('upload');
   };
 
-  const updateShareMessage = (message, tone = 'default') => {
+  const updateShareMessage = (message: string, tone: ShareMessageTone = 'default') => {
     setShareMessage(message);
     setShareMessageTone(tone);
   };
@@ -273,12 +344,13 @@ function ReviewSharePage() {
   };
 
   const handleCloseShareModal = () => {
-    if (isSharePending) return;
+    if (currentExportContext.current !== exportContext || pendingExport.current) return;
     setIsShareModalOpen(false);
     updateShareMessage('');
   };
 
-  const exportCurrentPreview = async () => {
+  const exportCurrentPreview = async (operation: ShareOperation) => {
+    if (!isCurrentExport(operation)) return null;
     if (!previewRef.current) {
       throw new Error('공유할 미리보기를 찾을 수 없습니다.');
     }
@@ -287,36 +359,43 @@ function ReviewSharePage() {
       throw new Error('THEME_IMAGE_PROXY_REQUIRED');
     }
 
-    return exportReviewImage(previewRef.current);
+    return exportReviewImage(previewRef.current, () => isCurrentExport(operation));
   };
 
   const handleImageDownload = async () => {
-    setIsSharePending(true);
+    const operation = beginExport();
+    if (!operation) return;
     updateShareMessage('이미지를 만드는 중이에요.', 'default');
 
     try {
-      const blob = await exportCurrentPreview();
+      const blob = await exportCurrentPreview(operation);
+      if (!blob || !isCurrentExport(operation)) return;
       downloadBlob(blob, createShareFileName(displayData.themeName, selectedTemplate));
+      if (!isCurrentExport(operation)) return;
       updateShareMessage('이미지를 다운로드했어요.', 'success');
     } catch (error) {
+      if (!isCurrentExport(operation)) return;
       console.error('[ReviewSharePage] 이미지 다운로드 실패:', error);
+      const shareError = error != null && (typeof error === 'object' || typeof error === 'function') ? error : {};
       updateShareMessage(
-        error?.message === 'THEME_IMAGE_PROXY_REQUIRED'
+        'message' in shareError && shareError.message === 'THEME_IMAGE_PROXY_REQUIRED'
           ? '테마 사진은 현재 서버 설정 때문에 저장할 수 없어요. 사진 업로드 이미지를 사용해 주세요.'
           : '이미지 다운로드에 실패했어요. 잠시 후 다시 시도해 주세요.',
         'error',
       );
     } finally {
-      setIsSharePending(false);
+      finishExport(operation);
     }
   };
 
   const handleInstagramStoryShare = async () => {
-    setIsSharePending(true);
+    const operation = beginExport();
+    if (!operation) return;
     updateShareMessage('공유를 준비하고 있어요.', 'default');
 
     try {
-      const blob = await exportCurrentPreview();
+      const blob = await exportCurrentPreview(operation);
+      if (!blob || !isCurrentExport(operation)) return;
       const shareFile = new File([blob], createShareFileName(displayData.themeName, selectedTemplate), {
         type: 'image/png',
       });
@@ -327,16 +406,20 @@ function ReviewSharePage() {
           title: `${displayData.themeName} 후기 공유`,
           text: 'ROOM IN US에서 만든 후기 이미지를 공유해 보세요.',
         });
+        if (!isCurrentExport(operation)) return;
         updateShareMessage('공유 메뉴가 열렸어요. 원하는 앱을 선택해 주세요.', 'success');
         return;
       }
 
       downloadBlob(blob, shareFile.name);
+      if (!isCurrentExport(operation)) return;
       updateShareMessage('이 기기에서는 직접 공유가 어려워 먼저 이미지를 저장했어요.', 'default');
     } catch (error) {
-      if (error?.name === 'AbortError') {
+      if (!isCurrentExport(operation)) return;
+      const shareError = error != null && (typeof error === 'object' || typeof error === 'function') ? error : {};
+      if ('name' in shareError && shareError.name === 'AbortError') {
         updateShareMessage('공유가 취소되었어요.', 'default');
-      } else if (error?.message === 'THEME_IMAGE_PROXY_REQUIRED') {
+      } else if ('message' in shareError && shareError.message === 'THEME_IMAGE_PROXY_REQUIRED') {
         updateShareMessage(
           '테마 사진은 현재 서버 설정 때문에 공유할 수 없어요. 사진 업로드 이미지를 사용해 주세요.',
           'error',
@@ -346,7 +429,7 @@ function ReviewSharePage() {
         updateShareMessage('공유를 준비하지 못했어요. 이미지 다운로드를 이용해 주세요.', 'error');
       }
     } finally {
-      setIsSharePending(false);
+      finishExport(operation);
     }
   };
 
@@ -489,7 +572,7 @@ function ReviewSharePage() {
   );
 }
 
-function TemplateContent({ templateId, data, backgroundImage, compact = false }) {
+function TemplateContent({ templateId, data, backgroundImage, compact = false }: TemplateContentProps) {
   const statItems = [
     { label: 'DATE', value: data.playedAt },
     { label: 'TIME', value: data.remainingTime },
@@ -623,13 +706,13 @@ function TemplateContent({ templateId, data, backgroundImage, compact = false })
   );
 }
 
-function formatRemainingTime(timeString) {
+function formatRemainingTime(timeString: ReviewShareData['remainingTime']): string {
   if (!timeString) return '-';
   const [, minutes = '00', seconds = '00'] = timeString.split(':');
   return `${minutes}'${seconds}"`;
 }
 
-function createShareFileName(themeName, templateName) {
+function createShareFileName(themeName: ReviewShareData['themeName'], templateName: TemplateId): string {
   const safeThemeName = (themeName || 'review-share')
     .replace(/[^\p{L}\p{N}\s-]/gu, '')
     .trim()
@@ -639,8 +722,9 @@ function createShareFileName(themeName, templateName) {
   return `${safeThemeName || 'review-share'}-${templateName}.png`;
 }
 
-async function exportReviewImage(node) {
+async function exportReviewImage(node: HTMLDivElement, isCurrent: () => boolean): Promise<Blob | null> {
   await waitForPreviewStabilization(node);
+  if (!isCurrent()) return null;
   const shouldCacheBust = shouldEnableCacheBust(node);
 
   const blob = await toBlob(node, {
@@ -650,6 +734,7 @@ async function exportReviewImage(node) {
     canvasHeight: SHARE_IMAGE_SIZE,
     pixelRatio: 1,
   });
+  if (!isCurrent()) return null;
 
   if (!blob) {
     throw new Error('이미지 변환에 실패했습니다.');
@@ -658,16 +743,16 @@ async function exportReviewImage(node) {
   return blob;
 }
 
-function shouldEnableCacheBust(node) {
+function shouldEnableCacheBust(node: HTMLDivElement): boolean {
   const images = Array.from(node.querySelectorAll('img'));
   return !images.some((image) => isLocalObjectUrl(image.currentSrc || image.src));
 }
 
-function isLocalObjectUrl(url) {
+function isLocalObjectUrl(url: string): boolean {
   return typeof url === 'string' && (url.startsWith('blob:') || url.startsWith('data:'));
 }
 
-async function waitForPreviewStabilization(node) {
+async function waitForPreviewStabilization(node: HTMLDivElement): Promise<void> {
   if (document.fonts?.ready) {
     await document.fonts.ready;
   }
@@ -678,12 +763,12 @@ async function waitForPreviewStabilization(node) {
   await waitForNextFrame();
 }
 
-async function waitForNodeImages(node) {
+async function waitForNodeImages(node: HTMLDivElement): Promise<void> {
   const images = Array.from(node.querySelectorAll('img'));
   await Promise.all(images.map(waitForImageElement));
 }
 
-async function waitForImageElement(image) {
+async function waitForImageElement(image: HTMLImageElement): Promise<void> {
   if (image.complete) {
     if (image.decode) {
       await image.decode().catch(() => {});
@@ -691,7 +776,7 @@ async function waitForImageElement(image) {
     return;
   }
 
-  await new Promise((resolve) => {
+  await new Promise<void>((resolve) => {
     const timer = window.setTimeout(resolve, 3000);
 
     const finish = () => {
@@ -710,15 +795,15 @@ async function waitForImageElement(image) {
   }
 }
 
-function waitForNextFrame() {
-  return new Promise((resolve) => {
+function waitForNextFrame(): Promise<number> {
+  return new Promise<number>((resolve) => {
     requestAnimationFrame(() => {
       requestAnimationFrame(resolve);
     });
   });
 }
 
-function downloadBlob(blob, fileName) {
+function downloadBlob(blob: Blob, fileName: string): void {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = url;
@@ -796,7 +881,7 @@ const SegmentedControl = styled.div`
   background: #f9f9fb;
 `;
 
-const segmentStyle = css`
+const segmentStyle = css<ActiveProps>`
   position: relative;
   border: 0;
   border-radius: 0.375rem;
@@ -812,11 +897,11 @@ const segmentStyle = css`
     color 0.15s ease;
 `;
 
-const SegmentButton = styled.button`
+const SegmentButton = styled.button<ActiveProps>`
   ${segmentStyle}
 `;
 
-const UploadButton = styled.label`
+const UploadButton = styled.label<ActiveProps>`
   ${segmentStyle}
   overflow: hidden;
 `;
@@ -915,7 +1000,7 @@ const CanvasBackgroundImage = styled.img`
   z-index: 0;
 `;
 
-const CanvasShade = styled.div`
+const CanvasShade = styled.div<{ $gradient?: string }>`
   position: absolute;
   inset: 0;
   pointer-events: none;
@@ -939,7 +1024,7 @@ const TemplateGrid = styled.div`
   }
 `;
 
-const TemplateButton = styled.button`
+const TemplateButton = styled.button<ActiveProps>`
   display: grid;
   grid-template-columns: ${TEMPLATE_THUMB_SIZE}px 1fr;
   gap: 0.75rem;
@@ -1041,7 +1126,7 @@ const ShareOptionGrid = styled.div`
   }
 `;
 
-const ShareOptionButton = styled.button`
+const ShareOptionButton = styled.button<{ $variant: ShareVariant }>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1056,7 +1141,7 @@ const ShareOptionButton = styled.button`
   box-sizing: border-box;
 `;
 
-const ShareOptionIconWrapper = styled.div`
+const ShareOptionIconWrapper = styled.div<{ $variant: ShareVariant }>`
   width: 2.5rem;
   height: 2.5rem;
   display: flex;
@@ -1098,7 +1183,7 @@ const ShareOptionDescription = styled.div`
   line-height: 1.45;
 `;
 
-const ShareStatus = styled.div`
+const ShareStatus = styled.div<{ $tone: ShareMessageTone }>`
   padding: 0.875rem 1rem;
   border-radius: 0.625rem;
   border: 1px solid
@@ -1130,7 +1215,7 @@ const TemplateThumb = styled.div`
   background: #171a24;
 `;
 
-const TemplateThumbScene = styled.div`
+const TemplateThumbScene = styled.div<{ $sceneSize: number; $scale: number }>`
   width: ${({ $sceneSize }) => `${$sceneSize}px`};
   height: ${({ $sceneSize }) => `${$sceneSize}px`};
   position: absolute;
@@ -1164,7 +1249,7 @@ const TemplateDescription = styled.div`
   line-height: 1.35;
 `;
 
-const Overlay = styled.div`
+const Overlay = styled.div<{ $template: TemplateId }>`
   position: absolute;
   inset: 0;
   z-index: 2;
@@ -1174,7 +1259,7 @@ const Overlay = styled.div`
   ${({ $template }) => getTemplatePlacement($template)}
 `;
 
-function getTemplatePlacement(template) {
+function getTemplatePlacement(template: TemplateId) {
   const placements = {
     'center-badge': css`
       align-items: center;
@@ -1213,7 +1298,7 @@ function getTemplatePlacement(template) {
   return placements[template] ?? placements['center-badge'];
 }
 
-const compactScale = css`
+const compactScale = css<CompactProps>`
   ${({ $compact }) =>
     $compact &&
     css`
@@ -1221,7 +1306,7 @@ const compactScale = css`
     `}
 `;
 
-const CenterBadge = styled.div`
+const CenterBadge = styled.div<CompactProps>`
   width: 68%;
   min-height: 42%;
   position: relative;
@@ -1303,7 +1388,7 @@ const MetaLine = styled.div`
   font-size: 0.85rem;
 `;
 
-const BottomRecord = styled.div`
+const BottomRecord = styled.div<CompactProps>`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -1342,7 +1427,7 @@ const StatValue = styled.div`
   font-size: 1rem;
 `;
 
-const PosterBlock = styled.div`
+const PosterBlock = styled.div<CompactProps>`
   width: 100%;
   padding: 2rem;
   display: flex;
@@ -1377,7 +1462,7 @@ const PosterFooter = styled.div`
   font-family: Pretendard-Bold;
 `;
 
-const CornerStamp = styled.div`
+const CornerStamp = styled.div<CompactProps>`
   margin: 1.5rem;
   width: 13.75rem;
   min-height: 9rem;
@@ -1454,7 +1539,7 @@ const StampMeta = styled.div`
   font-size: 0.72rem;
 `;
 
-const DateCard = styled.div`
+const DateCard = styled.div<CompactProps>`
   margin: 1.5rem;
   width: 13rem;
   padding: 1.25rem;
@@ -1485,7 +1570,7 @@ const DateResult = styled.div`
   font-family: Pretendard-Bold;
 `;
 
-const MinimalLine = styled.div`
+const MinimalLine = styled.div<CompactProps>`
   margin: 1.5rem;
   padding: 0.75rem 0;
   display: flex;
@@ -1507,7 +1592,7 @@ const MinimalMeta = styled.div`
   color: rgba(249, 249, 251, 0.82);
 `;
 
-const ScoreGrid = styled.div`
+const ScoreGrid = styled.div<CompactProps>`
   width: 70%;
   position: relative;
   isolation: isolate;
@@ -1588,7 +1673,7 @@ const ScoreItem = styled.div`
   }
 `;
 
-const FilmLog = styled.div`
+const FilmLog = styled.div<CompactProps>`
   width: 100%;
   padding: 1.5rem;
   display: flex;

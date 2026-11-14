@@ -23,7 +23,7 @@ export default function StarRating({ value = 0, onChange, feedbackTexts }: StarR
   const renderStars = () => {
     return Array.from({ length: 5 }, (_, i) => {
       const val = i + 1;
-      let icon;
+      let icon: string;
       if (rating !== null && rating >= val) icon = StarIcon;
       else if (rating !== null && rating >= val - 0.5) icon = HalfStar;
       else icon = EmptyStar;

@@ -2,7 +2,9 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 
-function SignupModal({ isOpen }) {
+type SignupModalProps = { isOpen: boolean };
+
+function SignupModal({ isOpen }: SignupModalProps) {
   const navigate = useNavigate();
 
   return (
@@ -33,7 +35,7 @@ SignupModal.propTypes = {
 export default SignupModal;
 
 // CSS
-const ContentWrapper = styled.div`
+const ContentWrapper = styled.div<SignupModalProps>`
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.3);

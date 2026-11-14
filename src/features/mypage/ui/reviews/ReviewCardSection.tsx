@@ -2,34 +2,84 @@ import styled from 'styled-components'
 import ReviewCard from './ReviewCard'
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { reviewSortAtom } from '../../model/reviewSortAtom';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { getMyReviewAPI } from '../../api/myReviewAPI';
 import { reviewModalState } from '../../../themeDetail/model/reviewAtom';
 import ReviewWriteModal from '../../../review/ui/ReviewWriteModal';
 import NoDataImg from '../../../../shared/assets/images/common/noData/noDataImageLarge.png';
+import type { MyReviewListItem } from '../../api/types';
+import type { EditableMyReview } from '../../model/reviewView';
 
 export default function ReviewCardSection() {
 
   const sortOption = useRecoilValue(reviewSortAtom);
-  const [reviews, setReviews] = useState([]);
-  const [selectedReview, setSelectedReview] = useState(null);
+  const [reviews, setReviews] = useState<MyReviewListItem[]>([]);
+  const [selectedReview, setSelectedReview] = useState<EditableMyReview | null>(null);
+  const [selectedEditGeneration, setSelectedEditGeneration] = useState(0);
   const [isModalOpen, setIsModalOpen] = useRecoilState(reviewModalState);
+  const context = useMemo(() => ({ sortOption }), [sortOption]);
+  const currentContext = useRef<typeof context | null>(null);
+  const listGeneration = useRef(0);
+  const editGeneration = useRef(0);
+  const editTarget = useRef<{ themeId: number; reviewId: number } | null>(null);
+
+  useLayoutEffect(() => {
+    currentContext.current = context;
+    listGeneration.current += 1;
+    editGeneration.current += 1;
+    editTarget.current = null;
+    return () => {
+      currentContext.current = null;
+      listGeneration.current += 1;
+      editGeneration.current += 1;
+      editTarget.current = null;
+    };
+  }, [context]);
 
   const fetchReviews = useCallback(async () => {
-    const data = await getMyReviewAPI(1, 1000, sortOption);
-    setReviews(data);
-  }, [sortOption]);
+    if (currentContext.current !== context) return;
+    const generation = ++listGeneration.current;
+    const isCurrent = () => currentContext.current === context && listGeneration.current === generation;
+    try {
+      const data = await getMyReviewAPI(1, 1000, context.sortOption);
+      if (!isCurrent()) return;
+      setReviews(data);
+    } catch (error) {
+      if (!isCurrent()) return;
+      throw error;
+    }
+  }, [context]);
 
   useEffect(() => {
-    fetchReviews();
-  }, [fetchReviews]);
+    void fetchReviews().catch((error: unknown) => {
+      if (currentContext.current === context) console.error('내 후기 목록 조회 실패:', error);
+    });
+  }, [fetchReviews, context]);
 
-  const handleReviewDeleted = (deletedReviewId) => {
+  const handleReviewDeleted = (deletedReviewId: MyReviewListItem['reviewId']) => {
+    if (currentContext.current !== context) return;
+    // 삭제 전의 목록 응답이 삭제된 후기를 다시 추가하지 않게 한다.
+    listGeneration.current += 1;
     setReviews((prev) => prev.filter((review) => review.reviewId !== deletedReviewId));
   };
 
-  const handleEditReview = (reviewData) => {
+  const handleEditStart = (themeId: number, reviewId: number) => {
+    if (currentContext.current !== context) return null;
+    const generation = ++editGeneration.current;
+    const target = { themeId, reviewId };
+    editTarget.current = target;
+    // 새 조회가 끝날 때까지 이전 수정 폼을 렌더링하지 않는다.
+    setSelectedReview(null);
+    setIsModalOpen(false);
+    return () => currentContext.current === context && editGeneration.current === generation
+      && editTarget.current === target;
+  };
+
+  const handleEditReview = (reviewData: EditableMyReview) => {
+    if (currentContext.current !== context || editTarget.current?.themeId !== reviewData.themeId
+      || editTarget.current.reviewId !== reviewData.reviewId) return;
     setSelectedReview(reviewData);
+    setSelectedEditGeneration(editGeneration.current);
     setIsModalOpen(true);
   };
 
@@ -54,6 +104,7 @@ export default function ReviewCardSection() {
               data={review}
               onDeleted={handleReviewDeleted}
               onEdit={handleEditReview}
+              onEditStart={handleEditStart}
             />
           ))
         )}
@@ -62,6 +113,7 @@ export default function ReviewCardSection() {
       {isModalOpen && selectedReview && (
         <ModalBackdrop>
           <ReviewWriteModal
+            key={selectedEditGeneration}
             themeData={{
               themeId: selectedReview.themeId,
               themeName: selectedReview.themeName,

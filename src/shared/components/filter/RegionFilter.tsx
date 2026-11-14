@@ -16,7 +16,7 @@ import type { RegionFilterCompatibilityProps, RegionFilterHandle, RegionSelectio
 type RegionFilterProps = RegionSelectionProps & RegionFilterCompatibilityProps;
 type SelectedProps = { selected: boolean };
 
-const RegionFilter = forwardRef<RegionFilterHandle | undefined, RegionFilterProps>(({
+const RegionFilter = forwardRef<RegionFilterHandle, RegionFilterProps>(({
   regions,
   zones,
   selectedRegion,

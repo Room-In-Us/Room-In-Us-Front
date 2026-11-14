@@ -16,8 +16,13 @@ import PropTypes from 'prop-types';
 import useDevice from "../../../shared/hooks/useDevice";
 import { genreListConversion, mapRecommendedHeadcount } from "../../../shared/utils/dataUtils";
 import { useState } from "react";
+import type { Dispatch, SetStateAction } from 'react';
+import type { ThemePriceResponse } from '../api/types';
+import type { ThemeDetailView } from '../model/themeDetailView';
 
-function ThemeInfoSection({ themeData, themePrice, reviewRefetchKey }) {
+type ThemeInfoSectionProps = { themeData: ThemeDetailView; themePrice: ThemePriceResponse[]; reviewRefetchKey?: number };
+
+function ThemeInfoSection({ themeData, themePrice, reviewRefetchKey }: ThemeInfoSectionProps) {
   const [showAddressTooltip, setShowAddressTooltip] = useState(false);
   const [showUrlTooltip, setShowUrlTooltip] = useState(false);
   const [showContactTooltip, setShowContactTooltip] = useState(false);
@@ -45,37 +50,37 @@ function ThemeInfoSection({ themeData, themePrice, reviewRefetchKey }) {
   };
   
   // 상세 정보 복사 기능
-  const showTooltipWithTimer = (setFn) => {
+  const showTooltipWithTimer = (setFn: Dispatch<SetStateAction<boolean>>) => {
     setFn(true);
     setTimeout(() => setFn(false), 1500);
   };
 
-  const handleAddressCopy = (data) => {
+  const handleAddressCopy = (data: string) => {
     navigator.clipboard.writeText(data)
       .then(() => {
         showTooltipWithTimer(setShowAddressTooltip);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error('주소 복사 실패:', err);
       });
   };
 
-  const handleUrlCopy = (data) => {
+  const handleUrlCopy = (data: string) => {
     navigator.clipboard.writeText(data)
       .then(() => {
         showTooltipWithTimer(setShowUrlTooltip);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error('URL 복사 실패:', err);
       });
   };
 
-  const handleContactCopy = (data) => {
+  const handleContactCopy = (data: string) => {
     navigator.clipboard.writeText(data)
       .then(() => {
         showTooltipWithTimer(setShowContactTooltip);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error('연락처 복사 실패:', err);
       });
   };

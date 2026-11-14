@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useRecoilState } from 'recoil';
 import { signupSectionState, nicknameBackupState } from "../model/authAtom";
 import { postNicknameAPI } from "../api/authAPI";
+
+type NicknameCheck = { generation: number; inputGeneration: number; nickname: string };
 
 function NicknameSection() {
   // state 관리
@@ -11,31 +13,70 @@ function NicknameSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [, setSignupSection] = useRecoilState(signupSectionState);
   const [nicknameBackup, setNicknameBackup] = useRecoilState(nicknameBackupState);
+  const mountedNickname = useRef(false);
+  const currentNickname = useRef(nickname);
+  const inputGeneration = useRef(0);
+  const checkGeneration = useRef(0);
+  const pendingCheck = useRef<NicknameCheck | null>(null);
+  const verifiedInput = useRef<{ generation: number; nickname: string } | null>(null);
+
+  useLayoutEffect(() => {
+    mountedNickname.current = true;
+    return () => {
+      mountedNickname.current = false;
+      checkGeneration.current += 1;
+      pendingCheck.current = null;
+      verifiedInput.current = null;
+    };
+  }, []);
+
+  const isVerifiedInput = () => mountedNickname.current
+    && verifiedInput.current?.generation === inputGeneration.current
+    && verifiedInput.current.nickname === currentNickname.current
+    && currentNickname.current.trim() !== '';
+  const canProceed = nicknameBackup === nickname && isVerifiedInput();
 
   // 닉네임 중복 검사 실행
   const handleNicknameCheck = async () => {
+    if (!mountedNickname.current || !currentNickname.current.trim() || pendingCheck.current !== null) return;
+    const operation: NicknameCheck = {
+      generation: ++checkGeneration.current,
+      inputGeneration: inputGeneration.current,
+      nickname: currentNickname.current,
+    };
+    pendingCheck.current = operation;
+    const isCurrent = () => mountedNickname.current && pendingCheck.current === operation
+      && checkGeneration.current === operation.generation && inputGeneration.current === operation.inputGeneration
+      && currentNickname.current === operation.nickname;
     try {
-      const response = await postNicknameAPI({ nickname });
+      const response = await postNicknameAPI({ nickname: operation.nickname });
+      if (!isCurrent()) return;
 
       if (response.isAvailable === false) {
+        verifiedInput.current = null;
         setErrorMessage("이미 존재하는 닉네임입니다.");
         setIsVisible(true);
         setNicknameBackup("");
       } else {
+        verifiedInput.current = { generation: operation.inputGeneration, nickname: operation.nickname };
         setErrorMessage("사용 가능한 닉네임입니다.");
         setIsVisible(true);
-        setNicknameBackup(nickname);
+        setNicknameBackup(operation.nickname);
       }
 
     } catch (error) {
+      if (!isCurrent()) return;
       console.error("닉네임 중복 검사 중 오류 발생:", error);
       setErrorMessage("닉네임 중복 검사 중 오류가 발생했습니다.");
       setIsVisible(true);
+    } finally {
+      if (pendingCheck.current === operation) pendingCheck.current = null;
     }
   };
 
   // 섹션 넘어가기
   const handleNextSection = async () => {
+    if (!isVerifiedInput()) return;
     setSignupSection("agree");
   }
 
@@ -58,6 +99,12 @@ function NicknameSection() {
               value={nickname}
               onChange={(e) => {
                 const value = e.target.value.slice(0, 10);
+                if (value !== currentNickname.current) {
+                  currentNickname.current = value;
+                  inputGeneration.current += 1;
+                  pendingCheck.current = null;
+                  verifiedInput.current = null;
+                }
                 setNickname(value);
                 // 닉네임 백업값이 존재하고, 현재 입력값이 백업값과 다르면 초기화
                 if (nicknameBackup && value !== nicknameBackup) {
@@ -76,8 +123,8 @@ function NicknameSection() {
         <ErrorMessage isVisible={isVisible} isSuccess={nicknameBackup.trim()}>{errorMessage}</ErrorMessage>
       </InputSection>
 
-      <LoginButton onClick={handleNextSection} disabled={!nicknameBackup.trim()}>
-        <LoginText disabled={!nicknameBackup.trim()}>다음으로</LoginText>
+      <LoginButton onClick={handleNextSection} disabled={!canProceed}>
+        <LoginText disabled={!canProceed}>다음으로</LoginText>
       </LoginButton>
     </SectionWrapper>
   )
@@ -255,7 +302,7 @@ const LoginButton = styled.button`
   }
 `;
 
-const LoginText = styled.div`
+const LoginText = styled.div<{ disabled: boolean }>`
   color: ${({ disabled }) => (disabled ? "var(--RIU_Monochrome-100, #818496)" : "#FFF")};
   font-family: 'Pretendard-Bold';
   line-height: 130%;
@@ -267,7 +314,7 @@ const LoginText = styled.div`
   }
 `;
 
-const ErrorMessage = styled.div`
+const ErrorMessage = styled.div<{ isVisible: boolean; isSuccess: string }>`
   margin-top: 0.625em;
   color: ${(props) => (props.isSuccess ? "var(--RIU_Primary-100, #718FF2)" : "#ED2222")};
   font-family: 'Pretendard-Medium';

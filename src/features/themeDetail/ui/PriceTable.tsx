@@ -1,8 +1,11 @@
 import styled from "styled-components";
 import PropTypes from 'prop-types';
 import { formatNumberWithCommas } from "../../../shared/utils/formatUtils";
+import type { ThemePriceResponse } from '../api/types';
 
-function PriceTable({ themePrice }) {
+type PriceTableProps = { themePrice: ThemePriceResponse[] };
+
+function PriceTable({ themePrice }: PriceTableProps) {
   return (
     <TableWrapper>
       <thead>
@@ -128,7 +131,7 @@ const SinglePriceTitle = styled.th`
   }
 `;
 
-const CountTd = styled.td`
+const CountTd = styled.td<{ $isLast: boolean }>`
   border-bottom-left-radius: ${(props) => (props.$isLast) ? '0.625rem' : '0'};
   padding: 0.625rem 0rem;
   box-sizing: border-box;
@@ -158,7 +161,7 @@ const PriceTd = styled.td`
   }
 `;
 
-const PerPersonTd = styled.td`
+const PerPersonTd = styled.td<{ $isLast: boolean }>`
   border-bottom-right-radius: ${(props) => (props.$isLast) ? '0.625rem' : '0'};
   height: 3.125rem;
   padding: 0.625rem 0rem;
@@ -173,7 +176,7 @@ const PerPersonTd = styled.td`
   }
 `;
 
-const TdText = styled.div`
+const TdText = styled.div<{ type: 'count' | 'price' | 'perPerson' }>`
   color: ${(props) => (props.type === 'price') ? 'var(--RIU_Primary-100, #718FF2)' : 'var(--RIU_Monochrome-500, #515467)'};
   text-align: center;
   font-family: 'Pretendard-Medium';

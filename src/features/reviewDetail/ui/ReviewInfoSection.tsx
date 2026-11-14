@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import styled from 'styled-components';
 import RatingStar from '../../../shared/assets/icons/themeDetail/ratingStar.svg?react';
 import EvalutionIcon from '../../../shared/assets/icons/themeDetail/reviewEvalutionIcon.svg?react';
@@ -13,23 +13,53 @@ import StarRatingSection from './StarRatingSection';
 import RangeItem from '../../review/ui/RangeItem';
 import PropTypes from 'prop-types';
 import { getReviewDetailAPI } from '../api/reviewDetailAPI';
+import type { ThemeReviewDetailPathParam, ThemeReviewDetailResponse } from '../api/types';
 
-function ReviewInfoSection({ themeId, reviewId }) {
-  const [reviewData, setReviewData] = useState({});
+type ReviewInfoSectionProps = { themeId?: ThemeReviewDetailPathParam; reviewId?: ThemeReviewDetailPathParam };
+type ReviewDetailView = ThemeReviewDetailResponse | { [Field in keyof ThemeReviewDetailResponse]?: never };
+
+function ReviewInfoSection({ themeId, reviewId }: ReviewInfoSectionProps) {
+  const [reviewDataState, setReviewData] = useState<ReviewDetailView>({});
+  const [resolvedTarget, setResolvedTarget] = useState({ themeId, reviewId });
+  const requestGeneration = useRef(0);
+  const currentTarget = useRef({ themeId, reviewId });
+  const reviewData = resolvedTarget.themeId === themeId && resolvedTarget.reviewId === reviewId ? reviewDataState : {};
   const escapeState =
     reviewData?.isEscaped === true ? '탈출 성공' : reviewData?.isEscaped === false ? '탈출 실패' : '-';
+  const lockRatio = reviewData.lockRatio;
+  const hasValidLockRatio = typeof lockRatio === 'number' && Number.isFinite(lockRatio)
+    && lockRatio >= 0 && lockRatio <= 10;
+
+  useLayoutEffect(() => {
+    currentTarget.current = { themeId, reviewId };
+    requestGeneration.current += 1;
+    setReviewData({});
+    setResolvedTarget({ themeId, reviewId });
+    return () => { requestGeneration.current += 1; };
+  }, [themeId, reviewId]);
 
   // 후기 상세 api 호출
   useEffect(() => {
+    if (themeId == null || reviewId == null) return;
+    const requestedThemeId = themeId;
+    const requestedReviewId = reviewId;
+    let active = true;
+    const generation = requestGeneration.current;
+    const isCurrent = () => active && requestGeneration.current === generation
+      && currentTarget.current.themeId === requestedThemeId && currentTarget.current.reviewId === requestedReviewId;
     async function fetchReviewDetail() {
       try {
-        const detailRes = await getReviewDetailAPI(themeId, reviewId);
+        const detailRes = await getReviewDetailAPI(requestedThemeId, requestedReviewId);
+        if (!isCurrent()) return;
         setReviewData(detailRes);
+        setResolvedTarget({ themeId, reviewId });
       } catch (err) {
+        if (!isCurrent()) return;
         console.error('테마 상세 api 호출 중 오류 발생: ', err);
       }
     }
     fetchReviewDetail();
+    return () => { active = false; };
   }, [themeId, reviewId]);
 
   return (
@@ -142,12 +172,12 @@ function ReviewInfoSection({ themeId, reviewId }) {
         <TitleWrapper>
           <SectionTitle>장치/자물쇠 비율</SectionTitle>
           <RatioText>
-            {Number(reviewData.lockRatio)}:{10 - Number(reviewData.lockRatio)}
+            {hasValidLockRatio ? `${lockRatio}:${10 - lockRatio}` : '-'}
           </RatioText>
         </TitleWrapper>
         <Divider />
         <RangeWrapper>
-          <RangeItem disabled={false} onChange={() => {}} value={reviewData.lockRatio * 10} />
+          {hasValidLockRatio && <RangeItem disabled={false} onChange={() => {}} value={lockRatio * 10} />}
         </RangeWrapper>
       </SectionWrapper>
 

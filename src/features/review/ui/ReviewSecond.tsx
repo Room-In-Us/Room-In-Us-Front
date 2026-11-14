@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import styled from "styled-components";
 import CircleInfo from "../../../shared/assets/icons/common/circleinfo.svg?react";
 import UnselectedIcon from '../../../shared/assets/icons/common/filterIcon/unselected.svg';
@@ -43,38 +43,70 @@ export default function ReviewSecond({themeData}: ReviewSecondProps) {
     isOwner: i === 0,
   }));
 
-  const initializedRef = useRef(false);
+  const proficiencyGeneration = useRef(0);
+  const proficiencyContext = useRef<{ themeId: ReviewThemeData['themeId']; reviewId: typeof review.reviewId } | null>(null);
+  // 같은 draft로 돌아왔을 때도 사용자의 명시적인 선택·해제를 기억한다.
+  const ownerProficiencyEdits = useRef(new Map<ReviewThemeData['themeId'], Set<typeof review.reviewId>>());
+  const initializedRef = useRef<{
+    themeId: ReviewThemeData['themeId'];
+    reviewId: typeof review.reviewId;
+    promise: ReturnType<typeof getPreferencesAPI>;
+  } | null>(null);
+
+  useLayoutEffect(() => {
+    proficiencyContext.current = { themeId: themeData.themeId, reviewId: review.reviewId };
+    proficiencyGeneration.current += 1;
+    if (initializedRef.current && (initializedRef.current.themeId !== themeData.themeId
+      || initializedRef.current.reviewId !== review.reviewId)) initializedRef.current = null;
+    return () => {
+      proficiencyContext.current = null;
+      proficiencyGeneration.current += 1;
+    };
+  }, [themeData.themeId, review.reviewId, setReview]);
 
   // 유저 성향 API로부터 proficiency 자동 세팅
-    useEffect(() => {
-      async function fetchUserProficiency() {
-        if (initializedRef.current) return
-        initializedRef.current = true;
-    
-        try {
-          const pref = await getPreferencesAPI();
-          const userProficiency = pref?.proficiency;
-    
-          if (userProficiency === null || userProficiency === undefined) return;
-    
-          setReview(prev => {
-            const alreadyHasValue = prev.participantList?.[0]?.proficiency;
-            if (alreadyHasValue) return prev;
-    
-            return {
-              ...prev,
-              participantList: prev.participantList.map((p, index) =>
-                index === 0 ? { ...p, proficiency: userProficiency } : p
-              ),
-            };
-          });
-        } catch (err) {
-          console.error("유저 성향 불러오기 실패:", err);
-        }
+  useEffect(() => {
+    const context = proficiencyContext.current;
+    if (!context) return;
+    let active = true;
+    const generation = ++proficiencyGeneration.current;
+    const isCurrent = () => active && proficiencyContext.current === context
+      && proficiencyGeneration.current === generation && context.themeId === themeData.themeId
+      && context.reviewId === review.reviewId;
+    const isOwnerEdited = () => ownerProficiencyEdits.current.get(context.themeId)?.has(context.reviewId) === true;
+    // 같은 대상의 StrictMode effect 재실행은 진행 중인 조회를 공유한다.
+    if (!initializedRef.current) {
+      initializedRef.current = { ...context, promise: getPreferencesAPI() };
+    }
+    const pending = initializedRef.current.promise;
+
+    async function fetchUserProficiency() {
+      try {
+        const pref = await pending;
+        if (!isCurrent() || isOwnerEdited()) return;
+        const userProficiency = pref?.proficiency;
+        if (userProficiency === null || userProficiency === undefined) return;
+
+        setReview(prev => {
+          if (!isCurrent() || isOwnerEdited()) return prev;
+          const alreadyHasValue = prev.participantList?.[0]?.proficiency;
+          if (alreadyHasValue) return prev;
+
+          return {
+            ...prev,
+            participantList: prev.participantList.map((p, index) =>
+              index === 0 ? { ...p, proficiency: userProficiency } : p
+            ),
+          };
+        });
+      } catch (err) {
+        if (isCurrent()) console.error("유저 성향 불러오기 실패:", err);
       }
-    
-      fetchUserProficiency();
-    }, [setReview]);
+    }
+
+    fetchUserProficiency();
+    return () => { active = false; };
+  }, [themeData.themeId, review.reviewId, setReview]);
 
   // info 팝업 상태
   const [isInfoOpen, setIsInfoOpen] = useState(false);
@@ -137,6 +169,11 @@ export default function ReviewSecond({themeData}: ReviewSecondProps) {
 
   // 플레이 인원 숙련도 선택 기능
   const handleSkillChange = (index: number, value: ThemeProficiency | null) => {
+    if (index === 0) {
+      const editedReviews = ownerProficiencyEdits.current.get(themeData.themeId) ?? new Set<typeof review.reviewId>();
+      editedReviews.add(review.reviewId);
+      ownerProficiencyEdits.current.set(themeData.themeId, editedReviews);
+    }
     const newList = review.participantList.map((participant, i) =>
       i === index
         ? { ...participant, proficiency: value }

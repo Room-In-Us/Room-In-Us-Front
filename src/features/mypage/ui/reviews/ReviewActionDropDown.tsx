@@ -3,6 +3,16 @@ import styled from "styled-components";
 import Write from '../../../../shared/assets/icons/myPage/write.svg?react';
 import Trash from '../../../../shared/assets/icons/myPage/trash.svg?react';
 import Share from '../../../../shared/assets/icons/themeDetail/shareIcon.svg?react';
+import type { RefObject } from 'react';
+
+type ReviewActionDropDownProps = {
+  isOpen: boolean;
+  anchorRef: RefObject<HTMLDivElement>;
+  onShare: () => void | Promise<void>;
+  onEdit: () => void | Promise<void>;
+  onDelete: () => void;
+  onClose: () => void;
+};
 
 export default function ReviewActionDropDown({
   isOpen,
@@ -11,16 +21,17 @@ export default function ReviewActionDropDown({
   onEdit,
   onDelete,
   onClose,
-}) {
-  const dropdownRef = useRef(null);
+}: ReviewActionDropDownProps) {
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
+    const handleClickOutside = (e: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(e.target) &&
+        // document mousedown의 대상은 DOM Node 또는 null이다.
+        !dropdownRef.current.contains(e.target as Node | null) &&
         anchorRef?.current &&
-        !anchorRef.current.contains(e.target)
+        !anchorRef.current.contains(e.target as Node | null)
       ) {
         onClose();
       }

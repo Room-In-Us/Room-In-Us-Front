@@ -6,8 +6,11 @@ import TagIcon4 from "../../../shared/assets/icons/reviewDetail/tagIcon4.svg?rea
 import TagIcon5 from "../../../shared/assets/icons/reviewDetail/tagIcon5.svg?react";
 import { reviewTagConversion } from "../../../shared/utils/dataUtils";
 import PropTypes from "prop-types";
+import type { ThemeReviewTag } from '../../../shared/types/review';
 
-function SignificantSection({ tagList }) {
+type SignificantSectionProps = { tagList: ThemeReviewTag[] };
+
+function SignificantSection({ tagList }: SignificantSectionProps) {
   return (
     <SectionWrapper>
       <SectionTitle>

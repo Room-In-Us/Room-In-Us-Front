@@ -9,9 +9,9 @@ export default function ReviewDropDown() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [sortOption, setSortOption] = useRecoilState(reviewSortAtom);
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleSelect = (option) => {
+  const handleSelect = (option: (typeof reviewSortOption)[number]) => {
     setSortOption(option.value);
     setIsOpen(false);
   };
@@ -20,8 +20,9 @@ export default function ReviewDropDown() {
 
   // 바깥 클릭 시 드롭다운 닫기
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+    const handleClickOutside = (e: MouseEvent) => {
+      // document mousedown의 대상은 DOM Node 또는 null이다.
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node | null)) {
         setIsOpen(false);
       }
     };

@@ -14,7 +14,7 @@ const familyKey = id => `reviewStateFamily:${typeof id}:${JSON.stringify(id)}`;
 // Load real option data, atom defaults, APIs and UI. Only React/DOM scheduling and
 // the HTTP transport are simulated; no request can leave this test process.
 function mount(relative, { props = {}, values = {}, sharedAtoms, isMobile = false, forwardedInput = false, forwardedRef = null } = {}) {
-  const slots = [], effects = [], writes = [], requests = [], timers = [], forwarded = [], navigation = [], stateWrites = [];
+  const slots = [], effects = [], layoutEffects = [], writes = [], requests = [], timers = [], forwarded = [], navigation = [], stateWrites = [], errors = [];
   const cache = new Map(), defaults = new Map(), setters = new Map(), resetters = new Map();
   const atoms = sharedAtoms || { ...values };
   let cursor = 0, changed = false, tree, clock = 1000, unmounted = false;
@@ -25,6 +25,13 @@ function mount(relative, { props = {}, values = {}, sharedAtoms, isMobile = fals
   });
   const setAtom = (key, value) => { atoms[key] = typeof value === 'function' ? value(atoms[key]) : value; writes.push({ key, value: atoms[key] }); changed = true; };
   const setter = key => { if (!setters.has(key)) setters.set(key, value => setAtom(key, value)); return setters.get(key); };
+  const effectHook = queue => (effect, deps) => {
+    const i = cursor++;
+    if (!slots[i] || deps.some((value, j) => !Object.is(value, slots[i].deps[j]))) {
+      const previous = slots[i]; slots[i] = { deps, effect, isLayout: queue === layoutEffects };
+      queue.push(() => { previous?.cleanup?.(); slots[i].cleanup = effect(); });
+    }
+  };
   const react = {
     useState(initial) {
       const i = cursor++; if (!(i in slots)) slots[i] = typeof initial === 'function' ? initial() : initial;
@@ -36,16 +43,10 @@ function mount(relative, { props = {}, values = {}, sharedAtoms, isMobile = fals
       if (!slots[i] || deps.some((value, j) => !Object.is(value, slots[i].deps[j]))) slots[i] = { callback, deps };
       return slots[i].callback;
     },
-    useEffect(effect, deps) {
-      const i = cursor++;
-      if (!slots[i] || deps.some((value, j) => !Object.is(value, slots[i].deps[j]))) {
-        const previous = slots[i]; slots[i] = { deps };
-        effects.push(() => { previous?.cleanup?.(); slots[i].cleanup = effect(); });
-      }
-    },
+    useEffect: effectHook(effects),
+    useLayoutEffect: effectHook(layoutEffects),
     forwardRef(render) { forwarded.push(render); return function Forwarded(props) { return render(props, null); }; },
   };
-  react.useLayoutEffect = react.useEffect;
   const styled = new Proxy(target => () => `styled(${String(target)})`, { get: (_, name) => () => `styled.${String(name)}` });
   const jsx = (type, props, key) => ({ type, props: props || {}, key: key === undefined ? null : String(key) });
   const transport = (method, url, data) => new Promise((resolve, reject) => requests.push({ method, url, data, resolve: value => resolve({ data: value }), reject }));
@@ -74,20 +75,20 @@ function mount(relative, { props = {}, values = {}, sharedAtoms, isMobile = fals
       if (id.endsWith('/styles/ReviewStyles')) return Object.fromEntries(['Wrap1', 'Wrap2', 'Wrap3', 'Wrap5', 'Scroll', 'ImgSection', 'ThemeImg', 'ThemeTitle', 'ThemeSubText', 'Asterisk', 'GuideMsg', 'MsgWrapper', 'FinalWrapper'].map(name => [name, name]));
       return { __esModule: true, default: id.replace(/\.(jsx|tsx)$/, ''), ToggleCheckbox: 'ToggleCheckbox' };
     };
-    const baseline = process.env.REVIEW_UI_BASELINE && path.join(process.env.REVIEW_UI_BASELINE, path.relative(root, filename).replace(/\.tsx$/, '.jsx'));
+    const baseline = process.env.REVIEW_UI_BASELINE && [path.join(process.env.REVIEW_UI_BASELINE, path.relative(root, filename)), path.join(process.env.REVIEW_UI_BASELINE, path.relative(root, filename).replace(/\.tsx$/, '.jsx'))].find(file => fs.existsSync(file));
     const source = baseline && fs.existsSync(baseline) ? baseline : filename;
     const code = ts.transpileModule(fs.readFileSync(source, 'utf8'), { fileName: source, compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX } }).outputText;
     vm.runInNewContext(code, {
       module, exports: module.exports, require: requireModule, Date: clockDate,
       document: events('document'), window: events('window'),
       setTimeout: (fn, delay) => { timers.push({ at: clock + delay, fn }); return timers.length; },
-      console: { log() {}, error() {} },
+      console: { log() {}, error: (...args) => errors.push(args) },
     }, { filename: source });
     cache.set(filename, module.exports); return module.exports;
   }
   const exports = load(path.join(root, relative));
   const component = forwardedInput ? props => forwarded[0](props, forwardedRef) : exports.default || exports.ToggleCheckbox;
-  const render = () => { cursor = 0; effects.length = 0; changed = false; tree = component(props); effects.splice(0).forEach(effect => effect()); return tree; };
+  const render = ({ deferPassive = false } = {}) => { cursor = 0; effects.length = 0; layoutEffects.length = 0; changed = false; tree = component(props); layoutEffects.splice(0).forEach(effect => effect()); if (!deferPassive) effects.splice(0).forEach(effect => effect()); return tree; };
   const nodes = predicate => {
     const found = [];
     const visit = node => { if (Array.isArray(node)) return node.forEach(visit); if (!node || typeof node !== 'object') return; if (predicate(node)) found.push(node); visit(node.props?.children); };
@@ -95,14 +96,17 @@ function mount(relative, { props = {}, values = {}, sharedAtoms, isMobile = fals
   };
   const text = node => Array.isArray(node) ? node.map(text).join('') : node == null || typeof node === 'boolean' ? '' : typeof node === 'object' ? text(node.props?.children) : String(node);
   return {
-    atoms, writes, requests, render, nodes, text: () => text(tree), textOf: text, listeners, navigation, stateWrites,
+    atoms, writes, requests, errors, render, nodes, text: () => text(tree), textOf: text, listeners, navigation, stateWrites,
     children: name => nodes(node => String(node.type).endsWith('/' + name) || node.type === name),
-    update(next) { Object.assign(props, next); return render(); },
+    update(next, options) { Object.assign(props, next); return render(options); },
+    flushEffects() { effects.splice(0).forEach(effect => effect()); },
     setDraft(id, change) { setAtom(familyKey(id), value => ({ ...value, ...change })); return render(); },
     dispatch(target, name, event) { listeners[target].get(name)?.forEach(fn => fn(event)); return render(); },
     tick(ms) { clock += ms; for (const timer of timers.splice(0)) { if (timer.at <= clock) timer.fn(); else timers.push(timer); } return render(); },
-    async settle() { for (let i = 0; i < 15; i++) { await flush(); if (!changed) return; render(); } throw Error('UI did not settle'); },
+    async settle() { for (let i = 0; i < 15; i++) { await flush(); if (unmounted || !changed) return; render(); } throw Error('UI did not settle'); },
     unmount() { unmounted = true; slots.forEach(slot => slot?.cleanup?.()); },
+    remount() { slots.length = 0; unmounted = false; return render(); },
+    strictReplay() { slots.forEach(slot => slot?.cleanup?.()); for (const layout of [true, false]) for (const slot of slots) if (typeof slot?.effect === 'function' && slot.isLayout === layout) slot.cleanup = slot.effect(); },
   };
 }
 
@@ -668,4 +672,125 @@ test('4-21 POST optional/zero reviewId retains existing null fallback and zero i
     const m = await reviewModal(); const pending = submitReview(m); m.requests[0].resolve(response); await pending; await m.settle();
     clickReview(m, '공유하기'); assert.equal(m.navigation[0][1].state.reviewData.reviewId, response.reviewId ?? null);
   }
+});
+
+
+test('async autofill: unmounted second step cannot write into the shared review draft', async () => {
+  const m = mount(ui('ReviewSecond.tsx'), { props: { themeData: { themeId: 7 } } }); m.render(); const writes = m.writes.length;
+  m.unmount(); m.requests[0].resolve({ proficiency: 'MASTER' }); await flush(); await flush();
+  assert.equal(m.writes.length, writes); assert.equal(m.atoms[familyKey(7)].participantList[0].proficiency, null);
+});
+
+test('async autofill: explicitly cleared proficiency stays null when automatic input finishes', async () => {
+  const m = mount(ui('ReviewSecond.tsx'), { props: { themeData: { themeId: 7 } } }); m.render();
+  m.children('PlayerBoxSection')[0].props.onSkillChange('BEGINNER'); m.render();
+  m.children('PlayerBoxSection')[0].props.onSkillChange(null); m.render();
+  m.requests[0].resolve({ proficiency: 'MASTER' }); await m.settle();
+  assert.equal(m.atoms[familyKey(7)].participantList[0].proficiency, null);
+});
+
+const autofillErrors = m => m.errors.filter(([message]) => message === '유저 성향 불러오기 실패:');
+const ownerSkill = (m, value) => { m.children('PlayerBoxSection')[0].props.onSkillChange(value); m.render(); };
+
+test('async autofill: theme A-B-A uses independent requests and old success/error cannot change either shared draft', async () => {
+  for (const finish of ['resolve', 'reject']) {
+    const m = mount(ui('ReviewSecond.tsx'), { props: { themeData: { themeId: 7 } } }); m.render();
+    m.update({ themeData: { themeId: 8 } }); m.update({ themeData: { themeId: 7 } }); assert.equal(m.requests.length, 3);
+    const before = m.writes.length;
+    m.requests[2].resolve({ proficiency: 'MASTER' }); await m.settle(); assert.equal(m.writes.length, before + 1);
+    if (finish === 'resolve') m.requests[0].resolve({ proficiency: 'BEGINNER' }); else m.requests[0].reject(Error('old failure'));
+    m.requests[1].resolve({ proficiency: 'JUNIOR' }); await m.settle();
+    assert.equal(m.atoms[familyKey(7)].participantList[0].proficiency, 'MASTER'); assert.equal(m.atoms[familyKey(8)].participantList[0].proficiency, null);
+    assert.equal(m.writes.length, before + 1); assert.equal(autofillErrors(m).length, 0);
+  }
+});
+
+test('async autofill: review A-B-A within one theme invalidates the previous review context', async () => {
+  const m = mount(ui('ReviewSecond.tsx'), { props: { themeData: { themeId: 7 } } }); m.render();
+  m.setDraft(7, { reviewId: 21 }); m.setDraft(7, { reviewId: 22 }); m.setDraft(7, { reviewId: 21 }); assert.equal(m.requests.length, 4);
+  const writes = m.writes.length;
+  m.requests[0].resolve({ proficiency: 'BEGINNER' }); m.requests[1].resolve({ proficiency: 'BEGINNER' }); m.requests[2].reject(Error('old failure')); await m.settle();
+  assert.equal(m.writes.length, writes); assert.equal(autofillErrors(m).length, 0);
+  m.requests[3].resolve({ proficiency: 'MASTER' }); await m.settle(); assert.equal(m.atoms[familyKey(7)].reviewId, 21); assert.equal(m.atoms[familyKey(7)].participantList[0].proficiency, 'MASTER');
+});
+
+test('async autofill: modal/step close and reentry discard old success/error while the new request remains usable', async () => {
+  for (const finish of ['resolve', 'reject']) {
+    const m = mount(ui('ReviewSecond.tsx'), { props: { themeData: { themeId: 7 } } }); m.render(); m.unmount(); m.remount();
+    const writes = m.writes.length; assert.equal(m.requests.length, 2);
+    if (finish === 'resolve') m.requests[0].resolve({ proficiency: 'MASTER' }); else m.requests[0].reject(Error('old failure'));
+    await m.settle(); assert.equal(m.writes.length, writes); assert.equal(autofillErrors(m).length, 0);
+    m.requests[1].resolve({ proficiency: 'JUNIOR' }); await m.settle(); assert.equal(m.writes.length, writes + 1); assert.equal(m.atoms[familyKey(7)].participantList[0].proficiency, 'JUNIOR');
+  }
+});
+
+test('async autofill: StrictMode shares a target lookup and only its active continuation writes the draft', async () => {
+  for (const finish of ['resolve', 'reject']) {
+    const m = mount(ui('ReviewSecond.tsx'), { props: { themeData: { themeId: 7 } } }); m.render(); m.strictReplay(); assert.equal(m.requests.length, 1);
+    if (finish === 'resolve') m.requests[0].resolve({ proficiency: 'MASTER' }); else m.requests[0].reject(Error('current failure'));
+    await m.settle(); assert.equal(m.writes.length, finish === 'resolve' ? 1 : 0); assert.equal(autofillErrors(m).length, finish === 'reject' ? 1 : 0);
+    m.render(); assert.equal(m.requests.length, 1);
+  }
+});
+
+test('async autofill: current lookup failure keeps once-per-context behavior and reentry permits retry', async () => {
+  const m = mount(ui('ReviewSecond.tsx'), { props: { themeData: { themeId: 7 } } }); m.render();
+  m.requests[0].reject(Error('current failure')); await m.settle(); assert.equal(autofillErrors(m).length, 1); assert.equal(m.writes.length, 0);
+  m.render(); m.render(); assert.equal(m.requests.length, 1);
+  m.unmount(); m.remount(); m.requests[1].resolve({ proficiency: 'MASTER' }); await m.settle(); assert.equal(m.atoms[familyKey(7)].participantList[0].proficiency, 'MASTER');
+});
+
+test('async autofill: nullable or absent proficiency stays unchanged and valid values fill only an empty owner field', async () => {
+  for (const empty of [null, '', undefined]) for (const response of [{}, { proficiency: null }, { proficiency: 'MASTER' }]) {
+    const m = mount(ui('ReviewSecond.tsx'), { props: { themeData: { themeId: 7 } } }); m.render();
+    m.setDraft(7, { participantList: [{ proficiency: empty, remark: null, isOwner: true }, { proficiency: 'BEGINNER', remark: '' }] });
+    m.requests[0].resolve(response); await m.settle(); const players = m.atoms[familyKey(7)].participantList;
+    assert.equal(players[0].proficiency, response.proficiency ?? empty); assert.equal(players[0].remark, null); assert.deepEqual(plain(players[1]), { proficiency: 'BEGINNER', remark: '' });
+  }
+});
+
+test('async autofill: manual owner changes, including explicit null and changes before render, always win', async () => {
+  for (const isMobile of [false, true]) for (const changes of [[null], ['BEGINNER'], ['BEGINNER', null], ['BEGINNER', 'MASTER', 'BEGINNER']]) {
+    const m = mount(ui('ReviewSecond.tsx'), { isMobile, props: { themeData: { themeId: 7 } } }); m.render();
+    const change = m.children('PlayerBoxSection')[0].props.onSkillChange;
+    for (const value of changes) change(value); // Intentionally do not wait for a React render.
+    const writes = m.writes.length; m.requests[0].resolve({ proficiency: 'JUNIOR' }); await m.settle();
+    assert.equal(m.writes.length, writes); assert.equal(m.atoms[familyKey(7)].participantList[0].proficiency, changes.at(-1));
+  }
+});
+
+test('async autofill: edits to notes and other participants do not block or get lost in the owner proficiency fill', async () => {
+  for (const isMobile of [false, true]) {
+    const m = mount(ui('ReviewSecond.tsx'), { isMobile, props: { themeData: { themeId: 7 } } }); m.render();
+    m.children('PlayerBoxSection')[0].props.onNoteChange('owner note'); m.render();
+    m.children('PlayerBoxSection')[1].props.onSkillChange('BEGINNER'); m.render();
+    m.children('HintCounter')[0].props.onChange(3); m.render();
+    m.requests[0].resolve({ proficiency: 'MASTER' }); await m.settle(); const draft = m.atoms[familyKey(7)];
+    assert.equal(draft.participantList[0].proficiency, 'MASTER'); assert.equal(draft.participantList[0].remark, 'owner note'); assert.equal(draft.participantList[1].proficiency, 'BEGINNER'); assert.equal(draft.usedHint, 3);
+    assert.equal(m.requests.length, 1);
+  }
+});
+
+test('async autofill: a manual owner choice in A does not disable untouched automatic input for a new target B', async () => {
+  const m = mount(ui('ReviewSecond.tsx'), { props: { themeData: { themeId: 7 } } }); m.render(); ownerSkill(m, null);
+  m.update({ themeData: { themeId: 8 } }); m.requests[1].resolve({ proficiency: 'MASTER' }); await m.settle(); m.requests[0].resolve({ proficiency: 'JUNIOR' }); await m.settle();
+  assert.equal(m.atoms[familyKey(7)].participantList[0].proficiency, null); assert.equal(m.atoms[familyKey(8)].participantList[0].proficiency, 'MASTER');
+});
+
+test('async autofill: changed target invalidates the old continuation before passive cleanup', async () => {
+  for (const finish of ['resolve', 'reject']) {
+    const m = mount(ui('ReviewSecond.tsx'), { props: { themeData: { themeId: 7 } } }); m.render();
+    m.update({ themeData: { themeId: 8 } }, { deferPassive: true }); const writes = m.writes.length;
+    if (finish === 'resolve') m.requests[0].resolve({ proficiency: 'MASTER' }); else m.requests[0].reject(Error('old failure'));
+    await flush(); await flush(); assert.equal(m.writes.length, writes); assert.equal(autofillErrors(m).length, 0);
+    m.flushEffects(); m.requests[1].resolve({ proficiency: 'JUNIOR' }); await m.settle(); assert.equal(m.atoms[familyKey(8)].participantList[0].proficiency, 'JUNIOR');
+  }
+});
+
+test('async autofill: returning A-B-A preserves an explicit owner clear in the same shared draft session', async () => {
+  const m = mount(ui('ReviewSecond.tsx'), { props: { themeData: { themeId: 7 } } }); m.render(); ownerSkill(m, null);
+  m.update({ themeData: { themeId: 8 } }); m.requests[1].resolve({ proficiency: 'JUNIOR' }); await m.settle();
+  m.update({ themeData: { themeId: 7 } }); const writes = m.writes.length;
+  m.requests[2].resolve({ proficiency: 'MASTER' }); m.requests[0].resolve({ proficiency: 'MASTER' }); await m.settle();
+  assert.equal(m.atoms[familyKey(7)].participantList[0].proficiency, null); assert.equal(m.atoms[familyKey(8)].participantList[0].proficiency, 'JUNIOR'); assert.equal(m.writes.length, writes);
 });

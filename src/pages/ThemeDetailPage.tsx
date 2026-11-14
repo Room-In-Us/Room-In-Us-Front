@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import LeftArrowIcon from "../shared/assets/icons/common/arrow/leftArrow.svg?react";
@@ -20,14 +20,17 @@ import useAuthSession from "../shared/hooks/useAuthSession";
 import ScheduleModal from "../features/schedule/ui/ScheduleModal";
 import { scheduleModalState } from "../features/schedule/modal/scheduleAtom";
 import PopUpModal from "../shared/components/PopUpModal";
+import type { Location } from 'react-router-dom';
+import type { ThemePriceResponse } from '../features/themeDetail/api/types';
+import type { DetailNavigationState, ThemeDetailView } from '../features/themeDetail/model/themeDetailView';
 
 function ThemeDetailPage() {
   // 상태 관리
   const isModalOpen = useRecoilValue(reviewModalState);
   const setReviewWriteModal = useSetRecoilState(reviewModalState);
   const isUSerInfoModalOpen = useRecoilValue(userInfoModalState);
-  const [themeDetail, setThemeDetail] = useState({});
-  const [themePrice, setThemePrice] = useState([]);
+  const [themeDetailState, setThemeDetail] = useState<ThemeDetailView>({});
+  const [themePriceState, setThemePrice] = useState<ThemePriceResponse[]>([]);
   const [isFloatingButtonOpen, setIsFloatingButtonOpen] = useState(false);
   const setScheduleWriteModal = useSetRecoilState(scheduleModalState);
   const modalState = useRecoilValue(scheduleModalState);
@@ -35,30 +38,54 @@ function ThemeDetailPage() {
   const [reviewRefetchKey, setReviewRefetchKey] = useState(0);
 
   const navigate = useNavigate();
-  const { backButtonText } = useLocation().state || {};
+  const location: Location<DetailNavigationState | null> = useLocation();
+  const { backButtonText } = location.state || {};
   const { themeId } = useParams();
+  const [resolvedThemeId, setResolvedThemeId] = useState(themeId);
+  const requestGeneration = useRef(0);
+  const currentThemeId = useRef(themeId);
+  const themeDetail = resolvedThemeId === themeId ? themeDetailState : {};
+  const themePrice = resolvedThemeId === themeId ? themePriceState : [];
 
   const { isMobile } = useDevice();
 
   // 로그인 상태 검증
   const isLoggedIn = useAuthSession();
 
+  useLayoutEffect(() => {
+    currentThemeId.current = themeId;
+    requestGeneration.current += 1;
+    setThemeDetail({});
+    setThemePrice([]);
+    setResolvedThemeId(themeId);
+    return () => { requestGeneration.current += 1; };
+  }, [themeId]);
+
   // api 호출
   useEffect(() => {
+    if (themeId == null) return;
+    const requestedThemeId = themeId;
+    let active = true;
+    const generation = requestGeneration.current;
+    const isCurrent = () => active && requestGeneration.current === generation && currentThemeId.current === themeId;
     async function fetchAll() {
       try {
         const [detailRes, priceRes] = await Promise.all([
-          getThemeDetailAPI(themeId),
-          getThemePriceAPI(themeId),
+          getThemeDetailAPI(requestedThemeId),
+          getThemePriceAPI(requestedThemeId),
         ]);
+        if (!isCurrent()) return;
         setThemeDetail(detailRes);
         setThemePrice(priceRes);
+        setResolvedThemeId(themeId);
       } catch (err) {
+        if (!isCurrent()) return;
         console.error('테마 상세 api 호출 중 오류 발생: ', err);
       }
     }
   
     fetchAll();
+    return () => { active = false; };
   }, [themeId]);
 
   return (
@@ -168,7 +195,9 @@ function ThemeDetailPage() {
 
       {/* 일정 관리 모달 */}
       {modalState.isOpen && (
-        <ScheduleModal themeId={themeId} />
+        <ModalBackdrop>
+          <ScheduleModal themeId={themeId} />
+        </ModalBackdrop>
       )}
     </PageWrapper>
   )

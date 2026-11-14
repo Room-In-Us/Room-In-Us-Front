@@ -57,7 +57,7 @@ export default function ScheduleSection() {
       }
     };
 
-    load().catch(error => {
+    load().catch((error: unknown) => {
       if (isCurrent()) console.error("예약 목록 조회 실패:", error);
     });
     return () => { active = false; };
