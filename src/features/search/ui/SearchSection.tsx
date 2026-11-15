@@ -1,0 +1,248 @@
+import styled from 'styled-components'
+import SearchInput from '../../../shared/components/SearchInput';
+import ContentCard from '../../../shared/components/ContentCard';
+import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
+import { getThemesAPI } from '../../../features/search/api/getSearchAPI';
+import CustomPagination from '../../../shared/components/CustomPagination';
+import useDevice from '../../../shared/hooks/useDevice';
+import { useLocation } from 'react-router-dom';
+import NoDataImg from '../../../shared/assets/images/common/noData/noDataImageLarge.png';
+import type { Location } from 'react-router-dom';
+import type { ThemeResponse } from '../../../shared/types/theme';
+
+type SearchNavigationState = { keyword?: string };
+
+export default function SearchSection() {
+
+  const { isMobile } = useDevice();
+
+  const location: Location<SearchNavigationState | null> = useLocation();
+
+  const keywordFromState = location.state?.keyword ?? '';
+  const [keyword, setKeyword] = useState(keywordFromState);
+  const requestGeneration = useRef(0);
+  const requestContext = useRef<{ keyword: string } | null>(null);
+
+  useLayoutEffect(() => {
+    requestContext.current = { keyword };
+    requestGeneration.current += 1;
+    return () => {
+      requestContext.current = null;
+      requestGeneration.current += 1;
+    };
+  }, [keyword]);
+  
+  const [themes, setThemes] = useState<ThemeResponse[]>([]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = isMobile ? 4 : 16;
+  const adjustedTotalPages = Math.ceil(themes.length / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedThemes = themes.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > adjustedTotalPages) return;
+    setCurrentPage(page);
+  };
+
+  const handleSearch = useCallback(async () => {
+    const context = requestContext.current;
+    if (!context || context.keyword !== keyword) return;
+    const generation = ++requestGeneration.current;
+    const isCurrent = () => requestContext.current === context
+      && requestGeneration.current === generation && context.keyword === keyword;
+    try {
+      const data = await getThemesAPI({
+        keyword: keyword || undefined,
+        page: 1,
+        size: 10000,
+      });
+
+      if (!isCurrent()) return;
+      setThemes(data.contents || []);
+      setCurrentPage(1);
+    } catch (error) {
+      if (!isCurrent()) return;
+      console.error('검색 실패:', error);
+      setThemes([]);
+    }
+  }, [keyword]); 
+
+  useEffect(() => {
+    handleSearch();
+  }, [handleSearch]);
+
+  return (
+    <Wrap>
+
+      <SearchInput 
+        type='text' 
+        keyword={keyword} 
+        setKeyword={setKeyword}
+        onSearch={handleSearch}
+      />
+
+      <TextWrapper>
+        <MainText>검색 결과</MainText>
+        <SubText>{'('}{themes.length}{')'}</SubText>
+      </TextWrapper>
+
+      <ListWrapper>
+      {paginatedThemes.length === 0 ? (
+        <NoDataWrapper>
+          <img src={NoDataImg} alt="검색 결과 없음" />
+          <NonDataTextWrapper>
+            <NonDataText>검색 결과가 없습니다!</NonDataText>
+            <NonDataText2>다른 키워드로 검색해보세요.</NonDataText2>
+          </NonDataTextWrapper>
+        </NoDataWrapper>
+      ) : (
+        paginatedThemes.map((theme) => (
+          <ContentCard
+            key={theme.themeId}
+            data={theme}
+            type="search"
+            headCount={2}
+          />
+        ))
+      )}
+      </ListWrapper>
+
+      {themes.length > 0 && (
+        <CustomPagination
+          currentPage={currentPage}
+          totalPages={adjustedTotalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
+
+    </Wrap>
+  )
+}
+
+
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 70rem;
+  gap: 1.875rem;
+
+  @media (max-width: 1024px) {
+    width: 43.3125rem;
+  }
+  @media (max-width: 768px) {
+    width: 20.9375rem;
+    gap: 0.875rem;
+    padding-bottom: 1.21875rem;
+  }
+`;
+
+const TextWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    gap: 0.25rem;
+  }
+`;
+
+const MainText = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  text-align: center;
+  font-family: Pretendard-ExtraBold;
+  font-size: 1.375rem;
+
+  @media (max-width: 1024px) {
+    font-size: 1.03125rem;
+  }
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
+`;
+
+const SubText = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  text-align: center;
+  font-family: Pretendard-Regular;
+  font-size: 1.375rem;
+
+  @media (max-width: 1024px) {
+    font-size: 1.03125rem;
+  }
+  @media (max-width: 768px) {
+    font-family: Pretendard-Regular;
+    font-size: 0.875rem;
+  }
+`;
+
+const ListWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+
+  @media (max-width: 1024px) {
+    gap: 0.9375rem;
+    justify-content: space-between;
+  }
+  @media (max-width: 768px) {
+    gap: 0.625rem;
+    justify-content: center;
+  }
+`;
+
+const NoDataWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 0;
+  gap: 1.25em;
+
+  img {
+    width: 25rem;
+    
+    @media (max-width: 768px) {
+      width: 13.73rem;
+    }
+  }
+`;
+
+const NonDataTextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+`;
+
+const NonDataText = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  text-align: center;
+  font-family: Pretendard-ExtraBold;
+  font-size: 1.125rem;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
+`;
+
+const NonDataText2 = styled.div`
+  color: var(--RIU_Monochrome-300, #696C7E);
+  text-align: center;
+  font-family: Pretendard-Medium;
+  font-size: 1rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
+`;

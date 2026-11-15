@@ -1,0 +1,57 @@
+import styled from "styled-components";
+import PropTypes from 'prop-types';
+import type { MouseEventHandler } from 'react';
+
+type SurveyTagProps = {
+  item: string;
+  selected?: boolean;
+  onClick?: MouseEventHandler<HTMLDivElement>;
+  disabled?: boolean;
+};
+
+function SurveyTag({ item, selected, onClick, disabled }: SurveyTagProps) {
+  return (
+    <TagWrapper onClick={!disabled ? onClick : undefined} selected={selected}>
+      {item}
+    </TagWrapper>
+  )
+}
+
+// PropTypes 정의 (eslint 에러 방지)
+SurveyTag.propTypes = {
+  item: PropTypes.string.isRequired,
+  selected: PropTypes.bool,
+  onClick: PropTypes.func,
+  disabled: PropTypes.bool,
+};
+
+export default SurveyTag;
+
+// CSS
+const TagWrapper = styled.div<{ selected?: boolean; disabled?: boolean }>`
+  border: 1px solid var(--RIU_Primary-100, #718FF2);
+  border-radius: 1.5rem;
+  padding: 0.875rem 1rem;
+  box-sizing: border-box;
+  height: 2.0625rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  background-color: ${({ selected }) => selected ? '#718FF2' : 'var(--RIU_Monochrome-10, #F9F9FB)'};
+  color: ${({ selected }) => selected ? '#F9F9FB' : '#718FF2'};
+  font-family: 'Pretendard-Regular';
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.02188rem;
+  transition: all 0.1s ease-in-out;
+  pointer-events: ${({ disabled }) => disabled ? 'none' : 'auto'};
+  opacity: ${({ disabled }) => disabled ? 0.4 : 1};
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    height: 1.625rem;
+    font-size: 0.6875rem;
+    letter-spacing: -0.01719rem;
+  }
+`;

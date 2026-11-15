@@ -1,0 +1,263 @@
+import { useEffect, useRef, useState } from "react";
+import styled from "styled-components"
+import InfoIcon from "../../../shared/assets/icons/reviewDetail/infoIcon.svg?react";
+import { proficiencyConversion } from "../../../shared/utils/dataUtils";
+import PropTypes from "prop-types";
+import useDevice from "../../../shared/hooks/useDevice";
+import InfoBox from "../../../shared/components/InfoBox";
+import type { ThemeReviewDetailResponse } from '../api/types';
+
+type PlayMemberSectionProps = { participantList: ThemeReviewDetailResponse['participantList'] };
+
+function PlayMemberSection({ participantList }: PlayMemberSectionProps) {
+  const { isMobile } = useDevice();
+
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const infoRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent | TouchEvent) {
+      // document의 포인터 이벤트 target은 DOM Node 또는 null이다.
+      if (infoRef.current && !infoRef.current.contains(e.target as Node | null)) {
+        setIsInfoOpen(false);
+      }
+    }
+
+    if (isInfoOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isInfoOpen]);
+
+  return (
+    <SectionWrapper>
+      <TitleInfoWrapper>
+        <SectionTitle>
+          플레이 인원
+        </SectionTitle>
+        
+        {!isMobile ? (
+          <IconWrapper
+            onMouseEnter={() => setIsInfoOpen(true)}
+            onMouseLeave={() => setIsInfoOpen(false)}
+          >
+            <StyledInfoIcon />
+            <InfoPopup ref={infoRef} $isInfoOpen={isInfoOpen}>
+              <InfoBox />
+            </InfoPopup>
+          </IconWrapper>
+        ) : (
+          <IconWrapper>
+            <StyledInfoIcon onClick={() => setIsInfoOpen((prev) => !prev)} />
+            {isInfoOpen && (
+              <InfoPopup ref={infoRef} $isInfoOpen>
+                <InfoBox />
+              </InfoPopup>
+            )}
+          </IconWrapper>
+        )}
+
+      </TitleInfoWrapper>
+      <Divider/>
+      {participantList.map((member, index) => (
+        <ListWrapper key={index}>
+          <NumberTag>
+            <TagText>P{index+1}</TagText>
+          </NumberTag>
+          <MemberInfoWrapper>
+            <ProficiencyText>
+              {proficiencyConversion(member.proficiency)}
+            </ProficiencyText>
+            {member.remark &&
+              <Dot>・</Dot>
+            }
+            <Remark>{member.remark}</Remark>
+          </MemberInfoWrapper>
+          {index === 0 && (
+            <WriterTag>
+              <WriterText>글쓴이</WriterText>
+            </WriterTag>
+          )}
+        </ListWrapper>
+      ))}
+    </SectionWrapper>
+  )
+}
+
+// PropTypes 정의 (eslint 에러 방지)
+PlayMemberSection.propTypes = {
+  participantList: PropTypes.arrayOf(
+    PropTypes.shape({
+      proficiency: PropTypes.string.isRequired,
+      remark: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+};
+
+export default PlayMemberSection;
+
+// CSS
+const SectionWrapper = styled.div`
+  border-radius: 0.625rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  align-self: stretch;
+  background: var(--RIU_Monochrome-10, #F9F9FB);
+`;
+
+const SectionTitle = styled.div`
+  color: var(--RIU_Primary-100, #718FF2);
+  text-align: center;
+  font-family: 'Pretendard-Bold';
+  font-size: 1rem;
+  line-height: normal;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
+`;
+
+const IconWrapper = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+`;
+
+const InfoPopup = styled.div<{ $isInfoOpen: boolean }>`
+  visibility: ${({ $isInfoOpen }) => ($isInfoOpen ? "visible" : "hidden")};
+  opacity: ${({ $isInfoOpen }) => ($isInfoOpen ? "1" : "0")};
+  transition: all 0.2s ease-in-out;
+
+  position: absolute;
+  top: 100%;
+  left: 100%;
+  z-index: 999;
+`;
+
+const Divider = styled.hr`
+  border: none;
+  margin: 0;
+  width: 41.25rem;
+  height: 0.0625rem;
+  background: #C4C6D1;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const TitleInfoWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+
+  @media (max-width: 768px) {
+    gap: 0.375rem;
+  }
+`;
+
+const StyledInfoIcon = styled(InfoIcon)`
+  width: 1.25rem;
+  height: 1.25rem;
+
+  @media (max-width: 768px) {
+    width: 1rem;
+    height: 1rem;
+  }
+`;
+
+const ListWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  align-self: stretch;
+`;
+
+const NumberTag = styled.div`
+  border-radius: 0.25rem;
+  padding: 0.1875rem 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  background: var(--RIU_Primary-100, #718FF2);
+`;
+
+const TagText = styled.div`
+  color: var(--RIU_Monochrome-10, #F9F9FB);
+  font-family: 'Pretendard-Bold';
+  font-size: 0.875rem;
+  line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
+`;
+
+const MemberInfoWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+`;
+
+const ProficiencyText = styled.div`
+  color: var(--RIU_Monochrome-400, #616277);
+  font-family: 'Pretendard-Bold';
+  font-size: 0.875rem;
+  line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
+`;
+
+const Dot = styled.div`
+  color: var(--RIU_Monochrome-400, #616277);
+  font-family: 'Pretendard-SemiBold';
+  font-size: 0.875rem;
+  line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
+`;
+
+const Remark = styled.div`
+  color: var(--RIU_Monochrome-400, #616277);
+  font-family: 'Pretendard-Medium';
+  font-size: 0.875rem;
+  line-height: 130%;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
+`;
+
+const WriterTag = styled.div`
+  border: 1px solid var(--RIU_Primary-100, #718FF2);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+`;
+
+const WriterText = styled.div`
+  color: var(--RIU_Primary-100, #718FF2);
+  font-family: 'Pretendard-Medium';
+  font-size: 0.75rem;
+  line-height: 150%;
+
+  @media (max-width: 768px) {
+    font-size: 0.625rem;
+  }
+`;

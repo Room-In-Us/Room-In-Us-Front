@@ -1,0 +1,285 @@
+import styled from "styled-components";
+import StarRating from "./StarRating";
+import ReviewDropdown from "./ReviewDropdown";
+import { overallOptions } from "../modal/reviewDataList";
+import { Asterisk, GuideMsg, ImgSection, MsgWrapper, Scroll, ThemeImg, ThemeSubText, ThemeTitle, Wrap1, Wrap2, Wrap3 } from "../../../shared/styles/ReviewStyles";
+import useDevice from '../../../shared/hooks/useDevice';
+import { useRecoilState } from "recoil";
+import { reviewStateFamily } from "../../themeDetail/model/reviewAtom";
+import type { ChangeEvent } from 'react';
+import type { ThemeDetailResponse } from '../../themeDetail/api/types';
+import type { ThemeReservationResponse } from '../../mypage/api/types';
+
+// 상세·예약·후기 수정 진입에서 사용하는 표시용 부분 데이터. 서버 DTO와 구분한다.
+export type ReviewThemeData = {
+  themeId?: ThemeDetailResponse['themeId'];
+  themeName?: ThemeReservationResponse['themeName'];
+  img?: ThemeDetailResponse['img'] | ThemeReservationResponse['themeImg'];
+  themeImg?: ThemeReservationResponse['themeImg'];
+};
+type ReviewFirstProps = { themeData: ReviewThemeData };
+
+export default function ReviewFirst({themeData}: ReviewFirstProps) {
+
+  // 반응형
+  const { isMobile } = useDevice();
+
+  // 상태 관리
+  const [review, setReview] = useRecoilState(reviewStateFamily(themeData.themeId));
+
+  // 글자 수 제한
+  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    if (e.target.value.length <= 500) {
+      setReview(prev => ({ ...prev, reviewComment: e.target.value }))
+    }
+  };
+
+  return (
+    <Wrap1>
+
+      {!isMobile && (
+      <>
+        <Wrap2>
+          <ThemeTitle>{themeData?.themeName || '테마명'}</ThemeTitle>
+          <ThemeSubText>테마에 만족하셨나요?</ThemeSubText>
+        </Wrap2>
+
+        <Wrap3>
+
+          <ImgSection>
+            <ThemeImg src={themeData?.img || themeData?.themeImg || ''} />
+            <MsgWrapper>
+              <Asterisk>*</Asterisk>
+              <GuideMsg>표는 필수 입력 사항입니다.</GuideMsg>
+            </MsgWrapper>
+          </ImgSection>
+          
+          <Scroll>
+            <ReviewSection>
+              <OverallSection>
+                <Wrap4>
+                  <ItemText>총평</ItemText>
+                  <Asterisk2>*</Asterisk2>
+                </Wrap4>
+                <StarRating 
+                  value={review.satisfactionLevel}
+                  onChange={(val) =>
+                    setReview(prev => ({ ...prev, satisfactionLevel: val }))
+                  }
+                />
+                <ReviewDropdown
+                  placeholder='총평 선택'
+                  options={overallOptions}
+                  selected={review.review}
+                  onSelect={(val) =>
+                    setReview(prev => ({ ...prev, review: val }))
+                  }
+                  variant='overall'
+                />
+              </OverallSection>
+
+              <ThoughtSection>
+                <ItemText>테마 체험 소감을 간단히 적어주세요!</ItemText>
+                <InputWrapper>
+                  <ThoughtInput
+                    placeholder="테마에 대한 이용 후기를 자유롭게 남겨주세요." 
+                    value={review.reviewComment} 
+                    onChange={handleChange}
+                  />
+                  <CharCount>
+                    <CountText>{review.reviewComment.length} / 500</CountText>
+                  </CharCount>
+                </InputWrapper>
+              </ThoughtSection>
+            </ReviewSection>
+          </Scroll>
+
+        </Wrap3>
+      </>
+      )}
+
+      {isMobile && (
+        <Scroll>
+          <Wrapper>
+
+            <ThemeImg src={themeData?.img || ''} />
+
+              <Wrap2>
+                <ThemeTitle>{themeData?.themeName || '테마명'}</ThemeTitle>
+                <ThemeSubText>테마에 만족하셨나요?</ThemeSubText>
+              </Wrap2>
+
+          </Wrapper>
+
+          <ReviewSection>
+            <OverallSection>
+
+              <Wrap4>
+                <ItemText>총평</ItemText>
+                <Asterisk>*</Asterisk>
+              </Wrap4>
+              <StarRating
+                value={review.satisfactionLevel}
+                onChange={(val) =>
+                  setReview(prev => ({ ...prev, satisfactionLevel: val }))
+                }
+              />
+              <ReviewDropdown
+                placeholder='총평 선택'
+                options={overallOptions}
+                selected={review.review}
+                onSelect={(val) =>
+                  setReview(prev => ({ ...prev, review: val }))
+                }
+                variant='overall'
+              />
+            </OverallSection>
+            <ThoughtSection>
+              <ItemText>테마 체험 소감을 간단히 적어주세요!</ItemText>
+              <InputWrapper>
+                <ThoughtInput
+                  placeholder="테마에 대한 이용 후기를 자유롭게 남겨주세요." 
+                  value={review.reviewComment} 
+                  onChange={handleChange}
+                />
+                <CharCount>
+                  <CountText>{review.reviewComment.length} / 500</CountText>
+                </CharCount>
+              </InputWrapper>
+            </ThoughtSection>
+          </ReviewSection>
+        </Scroll>
+      )}
+
+    </Wrap1>
+  )
+}
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875em;
+`;
+
+const ReviewSection = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 1em;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    width: 100%;
+    gap: 1.875em;
+  }
+`;
+
+const OverallSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.625em;
+`;
+
+const Wrap4 = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+`;
+
+const ItemText = styled.div`
+  color: var(--RIU_Monochrome-500, #515467);
+  font-family: Pretendard-Bold;
+  font-size: 0.875em;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
+`;
+
+const Asterisk2 = styled.div`
+  color: var(--RIU_Primary-100, #718FF2);
+  text-align: center;
+  font-family: Pretendard-Bold;
+  font-size: 0.875em;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    font-size: 0.75em;
+  }
+`;
+
+const ThoughtSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.625em;
+`;
+
+const InputWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 8.125em;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    height: 7.5em;
+  }
+`;
+
+const ThoughtInput = styled.textarea`
+  display: flex;
+  padding: 0.625em 0.875em;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  border-radius: 0.3125em;
+  border: 1px solid var(--RIU_Monochrome-60, #C4C6D1);
+  box-sizing: border-box;
+
+  outline: none;
+  &:focus {
+    border: 1px solid var(--RIU_Monochrome-60, #C4C6D1);
+    box-shadow: none;
+  }
+
+  color: var(--RIU_Monochrome-500, #515467);
+  font-family: Pretendard-Medium;
+  font-size: 0.75em;
+  background: none;
+  resize: none;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    font-size: 0.625em;
+  }
+`;
+
+const CharCount = styled.div`
+  position: absolute;
+  bottom: 0.625em;
+  right: 0.875em;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const CountText = styled.div`
+  font-size: 0.625em;
+  color: var(--RIU_Monochrome-500, #515467);
+  font-family: Pretendard-Regular;
+
+  @media (max-width: 1024px) {
+  }
+  @media (max-width: 768px) {
+    font-size: 0.5em;
+  }
+`;
