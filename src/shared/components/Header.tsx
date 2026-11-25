@@ -17,7 +17,7 @@ import InquiryIcon from '../assets/icons/common/inquiryIcon.svg?react';
 import LeftArrowIcon from '../assets/icons/common/arrow/leftArrow.svg?react';
 import { postLogoutAPI } from '../../features/auth/api/authAPI';
 import useAuthSession from '../hooks/useAuthSession';
-import { clearTrackedUserId } from '../utils/analytics';
+import { clearTrackedUserId, navigateAfterAnalytics, track } from '../utils/analytics';
 import { clearAuthSession } from '../auth/authSession';
 import { getAuthSessionGeneration, invalidateAuthSession, isAuthSessionCurrent } from '../auth/sessionState';
 
@@ -42,7 +42,8 @@ function Header() {
   const isLoggedIn = useAuthSession();
 
   // 페이지 이동
-  const handleNavigation = (path: string) => {
+  const handleNavigation = (path: string, menuName?: string) => {
+    if (menuName) track('click_header_menu', { menu_name: menuName });
     navigate(path);
     setIsVisibleMenu(false);
   };
@@ -133,8 +134,11 @@ function Header() {
         // 프론트 토큰 정리
         clearAuthSession();
         clearTrackedUserId();
+        const redirectGeneration = getAuthSessionGeneration();
         alert('로그아웃 되었습니다.');
-        window.location.replace('/login');
+        navigateAfterAnalytics(() => {
+          if (isAuthSessionCurrent(redirectGeneration)) window.location.replace('/login');
+        });
       }
     }
   };
@@ -148,7 +152,7 @@ function Header() {
             <StyledLogoIcon onClick={() => handleNavigation('/')} location={location} />
             <ButtonWrapper isDesktop={isDesktop} isTablet={isTablet}>
               <StyledButton
-                onClick={() => handleNavigation('/home')}
+                onClick={() => handleNavigation('/home', '홈 피드')}
                 isActive={location.pathname === '/home'}
                 isDesktop={isDesktop}
                 isTablet={isTablet}
@@ -156,7 +160,7 @@ function Header() {
                 홈 피드
               </StyledButton>
               <StyledButton
-                onClick={() => handleNavigation('/location')}
+                onClick={() => handleNavigation('/location', '지역 검색')}
                 isActive={location.pathname === '/location'}
                 isDesktop={isDesktop}
                 isTablet={isTablet}
@@ -164,7 +168,7 @@ function Header() {
                 지역 검색
               </StyledButton>
               <StyledButton
-                onClick={() => handleNavigation('/level')}
+                onClick={() => handleNavigation('/level', '숙련도 검색')}
                 isActive={location.pathname === '/level'}
                 isDesktop={isDesktop}
                 isTablet={isTablet}
@@ -172,7 +176,7 @@ function Header() {
                 숙련도 검색
               </StyledButton>
               <StyledButton
-                onClick={() => handleNavigation('/genre')}
+                onClick={() => handleNavigation('/genre', '장르 검색')}
                 isActive={location.pathname === '/genre'}
                 isDesktop={isDesktop}
                 isTablet={isTablet}
@@ -239,19 +243,19 @@ function Header() {
                 />
               </MobileSearchInputWrapper>
               <MobileButtonWrapper>
-                <MobileButton onClick={() => handleNavigation('/home')} isActive={location.pathname === '/home'}>
+                <MobileButton onClick={() => handleNavigation('/home', '홈 피드')} isActive={location.pathname === '/home'}>
                   홈 피드
                 </MobileButton>
                 <MobileButton
-                  onClick={() => handleNavigation('/location')}
+                  onClick={() => handleNavigation('/location', '지역 검색')}
                   isActive={location.pathname === '/location'}
                 >
                   지역 검색
                 </MobileButton>
-                <MobileButton onClick={() => handleNavigation('/level')} isActive={location.pathname === '/level'}>
+                <MobileButton onClick={() => handleNavigation('/level', '숙련도 검색')} isActive={location.pathname === '/level'}>
                   숙련도 검색
                 </MobileButton>
-                <MobileButton onClick={() => handleNavigation('/genre')} isActive={location.pathname === '/genre'}>
+                <MobileButton onClick={() => handleNavigation('/genre', '장르 검색')} isActive={location.pathname === '/genre'}>
                   장르 검색
                 </MobileButton>
               </MobileButtonWrapper>

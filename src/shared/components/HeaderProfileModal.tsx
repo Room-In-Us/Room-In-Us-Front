@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { getMemberInfoAPI } from "../../features/auth/api/memberAPI";
 import type { MemberInfoResponse } from "../../features/auth/api/types";
 import { postLogoutAPI } from "../../features/auth/api/authAPI";
-import { clearTrackedUserId } from "../utils/analytics";
+import { clearTrackedUserId, navigateAfterAnalytics } from "../utils/analytics";
 import { clearAuthSession } from "../auth/authSession";
 import { getAuthSessionGeneration, invalidateAuthSession, isAuthSessionCurrent } from "../auth/sessionState";
 
@@ -46,8 +46,11 @@ function HeaderProfileModal({ visible }: HeaderProfileModalProps) {
         // 프론트 토큰 정리
         clearAuthSession();
         clearTrackedUserId();
+        const redirectGeneration = getAuthSessionGeneration();
         alert("로그아웃 되었습니다.");
-        window.location.replace('/login');
+        navigateAfterAnalytics(() => {
+          if (isAuthSessionCurrent(redirectGeneration)) window.location.replace('/login');
+        });
       }
     }
   };

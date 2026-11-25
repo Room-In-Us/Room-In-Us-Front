@@ -1,3 +1,4 @@
+import { track } from '../../../../shared/utils/analytics';
 import styled from 'styled-components'
 import DropDownIcon from '../../../../shared/assets/icons/common/arrow/downArrow.svg?react';
 import { 
@@ -39,6 +40,7 @@ export default function FavoriteDropDown() {
           <DropdownItem
             key={option.value}
             onClick={() => {
+              if (headCount !== option.value) track('list_sort_change', { list_name: '찜한테마', sort_key: option.label });
               setHeadCount(option.value);
               toggleDropdown();
             }}

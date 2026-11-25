@@ -1,3 +1,4 @@
+import { navigateAfterAnalytics, track } from '../shared/utils/analytics';
 import styled from 'styled-components';
 import NoiseFilter from '../shared/assets/icons/login/loginNoiseFilter.svg';
 import TextLogo from '../shared/assets/icons/common/textLogo.svg?react';
@@ -18,12 +19,14 @@ function LoginPage() {
 
   // 카카오 로그인
   const handleKakaoLogin = () => {
-    window.location.href = `${import.meta.env.VITE_SERVER_URL_API}oauth2/authorization/kakao`;
+    track('login_start');
+    navigateAfterAnalytics(() => { window.location.href = `${import.meta.env.VITE_SERVER_URL_API}oauth2/authorization/kakao`; });
   };
 
   // 구글 로그인
   const handleGoogleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_SERVER_URL_API}oauth2/authorization/google`;
+    track('login_start');
+    navigateAfterAnalytics(() => { window.location.href = `${import.meta.env.VITE_SERVER_URL_API}oauth2/authorization/google`; });
   };
 
   return (
