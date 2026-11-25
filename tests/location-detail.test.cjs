@@ -53,6 +53,13 @@ function mount(kind, { storeId = 1, mobile = false, routeState = null, loggedIn 
       if (!(i in slots)) slots[i] = { current: initial };
       return slots[i];
     },
+    useCallback(callback, deps) {
+      const i = cursor++;
+      if (!slots[i]?.deps || deps.some((value, index) => !Object.is(value, slots[i].deps[index]))) {
+        slots[i] = { callback, deps };
+      }
+      return slots[i].callback;
+    },
     useEffect(effect, deps) {
       const i = cursor++;
       if (!slots[i]?.deps || deps.some((value, index) => !Object.is(value, slots[i].deps[index]))) {
@@ -99,7 +106,7 @@ function mount(kind, { storeId = 1, mobile = false, routeState = null, loggedIn 
       if (id.includes('useDevice')) return { __esModule: true, default: () => ({ isMobile: mobile }) };
       if (id.includes('useAuthSession')) return { __esModule: true, default: () => loggedIn };
       if (id.includes('themeLikeAPI')) return {
-        postThemeLikeAPI: id => mutations.push(['post', id]), deleteThemeLikeAPI: id => mutations.push(['delete', id]),
+        postThemeLikeAPI: async id => mutations.push(['post', id]), deleteThemeLikeAPI: async id => mutations.push(['delete', id]),
       };
       if (id.endsWith('locationAPI') || id.endsWith('locationThemeAPI') || id.endsWith('OptionList') || id.includes('/utils/')) {
         return load(path.resolve(path.dirname(filename), id + '.ts'));
@@ -169,7 +176,7 @@ test('normal store requests, filter arguments, reset, empty results and back nav
     assert.deepEqual(plain(m.themes()[0].params), { storeId: 1, headcount: 2, page: 1, size: 10000, sortOption: 'HIGH_SATISFACTION_LEVEL' });
     m.info()[0].resolve(detail(1)); m.themes()[0].resolve({ contents: [theme(93)] }); await m.settle();
     assert.equal(m.text().includes('매장 1'), true);
-    assert.deepEqual(plain(m.cards()[0].props), { data: theme(93), headCount: 2, type: 'location' });
+    assert.deepEqual(plain(m.cards()[0].props), { data: theme(93), headCount: 2, type: 'location', listName: '지역목록', listPosition: 1 });
     if (mobile) {
       m.filter().props.onApply({ people: 4, sort: 'LOW_PRICE', region: '지역 전체', zones: [] }); m.render();
     } else {

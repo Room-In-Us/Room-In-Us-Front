@@ -43,6 +43,7 @@ function mount(relative, { values = {}, props = {}, sharedAtoms, isMobile = fals
     if (cache.has(filename)) return cache.get(filename);
     const module = { exports: {} };
     const requireModule = id => {
+      if (id.endsWith('/utils/analytics')) return load(path.resolve(path.dirname(filename), id + '.ts'));
       if (id === 'react') return { ...react, __esModule: true, default: react };
       if (id === 'react/jsx-runtime') return { jsx, jsxs: jsx, Fragment: 'Fragment' };
       if (id === 'styled-components') return { __esModule: true, default: styled };
@@ -123,8 +124,16 @@ test('4-30 OAuth buttons preserve provider URLs and desktop/mobile logo placemen
   for (const isMobile of [false, true]) {
     const m = mount('src/pages/LoginPage.tsx', { isMobile }); m.render();
     assert.equal(m.nodes(node => String(node.type).includes('textLogo.svg')).length, 1);
-    m.click('카카오 계정으로 로그인'); assert.equal(m.window.location.href, 'https://api.example.test/oauth2/authorization/kakao');
-    m.click('구글 계정으로 로그인'); assert.equal(m.window.location.href, 'https://api.example.test/oauth2/authorization/google');
+    m.click('카카오 계정으로 로그인');
+    assert.equal(m.window.dataLayer.at(-1).event, 'login_start');
+    assert.equal(m.timers[0].ms, 120);
+    m.timers[0].fn();
+    assert.equal(m.window.location.href, 'https://api.example.test/oauth2/authorization/kakao');
+    m.click('구글 계정으로 로그인');
+    assert.equal(m.window.dataLayer.at(-1).event, 'login_start');
+    assert.equal(m.timers[1].ms, 120);
+    m.timers[1].fn();
+    assert.equal(m.window.location.href, 'https://api.example.test/oauth2/authorization/google');
     m.click('로그인 없이 둘러보기'); assert.deepEqual(plain(m.navigation), [['/home']]); assert.equal(m.requests.length, 0);
   }
 });

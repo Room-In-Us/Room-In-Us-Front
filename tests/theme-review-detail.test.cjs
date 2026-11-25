@@ -16,6 +16,7 @@ function mount(relative, { props = {}, values = {}, isMobile = false, sharedAtom
   if (sharedAtoms) for (const [key, value] of Object.entries(values)) if (!Object.hasOwn(atoms, key)) atoms[key] = value;
   const cache = new Map(), defaults = new Map(), setters = new Map();
   const listeners = new Map(), copied = [], timers = [], mutations = [];
+  const dataLayer = [];
   let currentLoggedIn = loggedIn;
   let cursor = 0, changed = false, tree, unmounted = false;
   const setAtom = (key, value) => { atoms[key] = typeof value === 'function' ? value(atoms[key]) : value; writes.push({ key, value: atoms[key] }); changed = true; };
@@ -55,7 +56,7 @@ function mount(relative, { props = {}, values = {}, isMobile = false, sharedAtom
       if (id === 'react/jsx-runtime') return { jsx, jsxs: jsx, Fragment: 'Fragment' };
       if (id === 'styled-components') return { __esModule: true, default: styled, css };
       if (id === 'dayjs' || id === 'date-fns' || id === 'prop-types' || id === 'axios') return require(id);
-      if (id === 'react-router-dom') return { useNavigate: () => (...args) => navigation.push(args), useParams: () => params, useLocation: () => ({ state: routeState }) };
+      if (id === 'react-router-dom') return { useNavigate: () => (...args) => navigation.push(args), useParams: () => params, useLocation: () => ({ state: routeState }), useNavigationType: () => 'POP' };
       if (id === 'recoil') return {
         atom(config) { defaults.set(config.key, config.default); if (!Object.hasOwn(atoms, config.key)) atoms[config.key] = structuredClone(config.default); return config.key; },
         atomFamily(config) { return parameter => `${config.key}:${String(parameter)}`; },
@@ -80,7 +81,7 @@ function mount(relative, { props = {}, values = {}, isMobile = false, sharedAtom
     const code = ts.transpileModule(fs.readFileSync(source, 'utf8'), { fileName: source, compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX } }).outputText;
     vm.runInNewContext(code, {
       module, exports: module.exports, require: requireModule, Date,
-      window: { innerWidth: isMobile ? 375 : 1280, location: { href: 'https://localhost:5173/theme/7' }, open: (...args) => navigation.push(args) },
+      window: { dataLayer, innerWidth: isMobile ? 375 : 1280, location: { href: 'https://localhost:5173/theme/7', pathname: '/theme/7' }, open: (...args) => navigation.push(args) },
       navigator: { clipboard: { writeText: async value => { if (copyFails) throw Error('clipboard denied'); copied.push(value); } } },
       setTimeout: (fn, ms) => { timers.push({ fn, ms }); return timers.length; },
       document: { addEventListener(name, fn) { if (!listeners.has(name)) listeners.set(name, new Set()); listeners.get(name).add(fn); }, removeEventListener(name, fn) { listeners.get(name)?.delete(fn); } },
@@ -97,7 +98,7 @@ function mount(relative, { props = {}, values = {}, isMobile = false, sharedAtom
   };
   const text = node => Array.isArray(node) ? node.map(text).join('') : node == null || typeof node === 'boolean' ? '' : typeof node === 'object' ? text(node.props?.children) : String(node);
   return {
-    atoms, writes, stateWrites, requests, navigation, alerts, errors, listeners, copied, timers, mutations, render, nodes, text: () => text(tree), textOf: text,
+    atoms, writes, stateWrites, requests, navigation, alerts, errors, listeners, copied, timers, mutations, dataLayer, render, nodes, text: () => text(tree), textOf: text,
     children: name => nodes(node => String(node.type).endsWith('/' + name) || node.type === name),
     update(next) { Object.assign(props, next); return render(); },
     setParams(next) { for (const key of Object.keys(params)) delete params[key]; Object.assign(params, next); return render(); },
@@ -739,6 +740,22 @@ test('async lists: search explicit retries with the same keyword have independen
   const retry = oldSearch(); m.requests[3].resolve({ contents: [exploreTheme(4)] }); await retry; await m.settle(); assert.deepEqual(exploreIds(m), [4]);
   item.change(m, true); await oldSearch(); assert.equal(m.requests.length, 5); // A retained handler cannot query an obsolete keyword.
   m.unmount(); const afterUnmount = m.requests.length; await m.children('SearchInput')[0].props.onSearch(); assert.equal(m.requests.length, afterUnmount);
+});
+
+test('search analytics counts one explicit submission and ignores typing requests or stale responses', async () => {
+  const m = mount(exploreCases[0].file);
+  m.render();
+  m.children('SearchInput')[0].props.setKeyword('mystery');
+  m.render();
+  const submitted = m.children('SearchInput')[0].props.onSearch('mystery');
+  m.requests[2].resolve({ contents: [] });
+  await submitted;
+  m.requests[1].resolve({ contents: [exploreTheme(2)] });
+  m.requests[0].resolve({ contents: [] });
+  await m.settle();
+  assert.deepEqual(m.dataLayer.map(({ event, search_term }) => [event, search_term]), [
+    ['search_submit', 'mystery'], ['search_no_result', 'mystery'],
+  ]);
 });
 
 for (const item of exploreCases.filter(item => ['genre', 'level'].includes(item.name))) {

@@ -595,6 +595,7 @@ for (const component of ['Header', 'HeaderProfileModal']) {
     let clearedAnalytics = 0;
     const alerts = [];
     const redirects = [];
+    const delayedRedirects = [];
     harness.window.location.replace = (location) => redirects.push(location);
     const handleLogout = loadComponentHandler(`src/shared/components/${component}.tsx`, 'handleLogout', {
       ...state,
@@ -604,6 +605,7 @@ for (const component of ['Header', 'HeaderProfileModal']) {
         return pendingLogout.promise;
       },
       clearTrackedUserId: () => { clearedAnalytics += 1; },
+      navigateAfterAnalytics: (navigate) => delayedRedirects.push(navigate),
       alert: (message) => alerts.push(message),
       window: harness.window,
       console: { error() {} },
@@ -636,6 +638,21 @@ for (const component of ['Header', 'HeaderProfileModal']) {
     assert.equal(state.getAuthSessionSnapshot(), false);
     assert.equal(clearedAnalytics, 1);
     assert.equal(alerts.length, 1);
+    assert.equal(redirects.length, 0);
+    assert.equal(delayedRedirects.length, 1);
+    delayedRedirects.shift()();
+    assert.deepEqual(redirects, ['/login']);
+
+    harness.localStorage.setItem('accessToken', 'another-account-token');
+    state.beginAuthSession();
+    pendingLogout = deferred();
+    const logoutBeforeNewLogin = handleLogout();
+    pendingLogout.resolve('logout completed');
+    await logoutBeforeNewLogin;
+    assert.equal(delayedRedirects.length, 1);
+    harness.localStorage.setItem('accessToken', 'latest-account-token');
+    state.beginAuthSession();
+    delayedRedirects.shift()();
     assert.deepEqual(redirects, ['/login']);
   });
 }

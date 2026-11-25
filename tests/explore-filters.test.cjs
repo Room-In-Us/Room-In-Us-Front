@@ -85,6 +85,7 @@ function mount(relative, { mobile = false, props = {}, ref = null, themes = Arra
     if (cache.has(filename)) return cache.get(filename);
     const module = { exports: {} };
     const requireModule = id => {
+      if (id.endsWith('/utils/analytics')) return load(path.resolve(path.dirname(filename), id + '.ts'));
       if (id === 'react') return react;
       if (id === 'react/jsx-runtime') return { jsx, jsxs: jsx, Fragment: 'Fragment' };
       if (id === 'styled-components') return { __esModule: true, default: styled };
