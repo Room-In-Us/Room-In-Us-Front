@@ -20,9 +20,9 @@ import type { Dispatch, SetStateAction } from 'react';
 import type { ThemePriceResponse } from '../api/types';
 import type { ThemeDetailView } from '../model/themeDetailView';
 
-type ThemeInfoSectionProps = { themeData: ThemeDetailView; themePrice: ThemePriceResponse[]; reviewRefetchKey?: number };
+type ThemeInfoSectionProps = { themeData: ThemeDetailView; themePrice: ThemePriceResponse[]; reviewRefetchKey?: number; onReviewCount?: (count?: number) => void };
 
-function ThemeInfoSection({ themeData, themePrice, reviewRefetchKey }: ThemeInfoSectionProps) {
+function ThemeInfoSection({ themeData, themePrice, reviewRefetchKey, onReviewCount }: ThemeInfoSectionProps) {
   const [showAddressTooltip, setShowAddressTooltip] = useState(false);
   const [showUrlTooltip, setShowUrlTooltip] = useState(false);
   const [showContactTooltip, setShowContactTooltip] = useState(false);
@@ -146,6 +146,7 @@ function ThemeInfoSection({ themeData, themePrice, reviewRefetchKey }: ThemeInfo
       <ThemeReviewSection
         themeId={themeData?.themeId}
         reviewRefetchKey={reviewRefetchKey}
+        onReviewCount={onReviewCount}
       />
 
       {/* 인당 가격 안내 */}
@@ -219,6 +220,7 @@ function ThemeInfoSection({ themeData, themePrice, reviewRefetchKey }: ThemeInfo
 
 // eslint 오류 방지
 ThemeInfoSection.propTypes = {
+  onReviewCount: PropTypes.func,
   themeData: PropTypes.shape({
     themeId: PropTypes.number,
     themeName: PropTypes.string,

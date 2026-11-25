@@ -1,4 +1,5 @@
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { openTrackedReservation, track } from '../shared/utils/analytics';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import styled from "styled-components";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import LeftArrowIcon from "../shared/assets/icons/common/arrow/leftArrow.svg?react";
@@ -43,6 +44,7 @@ function ThemeDetailPage() {
   const { themeId } = useParams();
   const [resolvedThemeId, setResolvedThemeId] = useState(themeId);
   const requestGeneration = useRef(0);
+  const hasTrackedView = useRef(false);
   const currentThemeId = useRef(themeId);
   const themeDetail = resolvedThemeId === themeId ? themeDetailState : {};
   const themePrice = resolvedThemeId === themeId ? themePriceState : [];
@@ -54,6 +56,7 @@ function ThemeDetailPage() {
 
   useLayoutEffect(() => {
     currentThemeId.current = themeId;
+    hasTrackedView.current = false;
     requestGeneration.current += 1;
     setThemeDetail({});
     setThemePrice([]);
@@ -88,6 +91,18 @@ function ThemeDetailPage() {
     return () => { active = false; };
   }, [themeId]);
 
+  const handleReviewCount = useCallback((reviewCount?: number) => {
+    if (resolvedThemeId !== themeId || themeDetailState.themeId == null || hasTrackedView.current) return;
+    hasTrackedView.current = true;
+    track('view_theme_detail', {
+      theme_id: themeDetailState.themeId,
+      theme_name: themeDetailState.themeName,
+      cafe_name: themeDetailState.storeInfo?.storeName,
+      price_min: themePriceState.length ? Math.min(...themePriceState.map(({ price }) => price)) : undefined,
+      has_review: reviewCount == null ? undefined : reviewCount > 0,
+    });
+  }, [resolvedThemeId, themeId, themeDetailState, themePriceState]);
+
   return (
     <PageWrapper>
       {/* 돌아가기 버튼 */}
@@ -110,6 +125,7 @@ function ThemeDetailPage() {
           themeData={themeDetail}
           themePrice={themePrice}
           reviewRefetchKey={reviewRefetchKey}
+          onReviewCount={handleReviewCount}
         />
 
       </ContentWrapper>
@@ -136,7 +152,7 @@ function ThemeDetailPage() {
         isFloatingButtonOpen ? (
           <ModalBackdrop>
             <FloatingMenuWrapper>
-              <InteractionButton onClick={() => window.open(themeDetail?.storeInfo?.storeReservationUrl, '_blank',)}>
+              <InteractionButton onClick={() => openTrackedReservation(themeDetail)}>
                 <StyledReservationIcon />
                 <ButtonText>
                   예약하기
@@ -145,6 +161,7 @@ function ThemeDetailPage() {
               <InteractionButton
                 onClick={() => {
                   if (!isLoggedIn) {
+                    if (themeDetail.themeId != null) track('add_to_schedule', { theme_id: themeDetail.themeId, result: 'need_login' });
                     setIsLoginModalOpen(true);
                     return;
                   }
@@ -158,6 +175,9 @@ function ThemeDetailPage() {
               </InteractionButton>
               <InteractionButton
                 onClick={() => {
+                  if (themeDetail.themeId != null) {
+                    track('review_write_start', { theme_id: themeDetail.themeId, result: isLoggedIn ? 'success' : 'need_login' });
+                  }
                   if (!isLoggedIn) {
                     setIsLoginModalOpen(true);
                     return;

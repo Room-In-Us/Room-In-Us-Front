@@ -1,3 +1,4 @@
+import { openTrackedReservation, track, trackFavorite } from '../../../shared/utils/analytics';
 import { useState, useLayoutEffect, useRef } from "react";
 import { isAxiosError } from 'axios';
 import styled from "styled-components";
@@ -94,9 +95,11 @@ function ThemeOverviewCard({ themeData }: ThemeOverviewCardProps) {
           if (next) await postThemeLikeAPI(themeId);
           else await deleteThemeLikeAPI(themeId);
           if (!isCurrentLikeSession(session)) return;
+          trackFavorite(themeId, next, 'success');
           session.confirmed = next;
         } catch (error) {
           if (!isCurrentLikeSession(session)) return;
+          trackFavorite(themeId, next, 'fail');
           console.error('찜 상태 변경 실패:', error);
           if (session.revision === revision) {
             session.desired = session.confirmed;
@@ -115,6 +118,7 @@ function ThemeOverviewCard({ themeData }: ThemeOverviewCardProps) {
 
   const handleToggleLike = (event: ReactMouseEvent<HTMLDivElement>) => {
     if (!isLoggedIn) {
+      if (themeData.themeId != null) trackFavorite(themeData.themeId, !isHeartActive, 'need_login');
       setIsLoginModalOpen(true);
       return;
     }
@@ -130,6 +134,7 @@ function ThemeOverviewCard({ themeData }: ThemeOverviewCardProps) {
 
   // 복사 기능
   const handleCopyLink = () => {
+    track('click_share', { theme_id: themeData.themeId, theme_name: themeData.themeName });
     navigator.clipboard.writeText(window.location.href)
       .then(() => {
         setShowTooltip(true);
@@ -170,7 +175,7 @@ function ThemeOverviewCard({ themeData }: ThemeOverviewCardProps) {
             {/* 버튼 영역 */}
             <ButtonSection>
               <ButtonWrapper>
-                <StyledButton onClick={() => window.open(themeData?.storeInfo?.storeReservationUrl, '_blank',)}>
+                <StyledButton onClick={() => openTrackedReservation(themeData)}>
                   <StyeldReservationIcon/>
                   <ButtonText>
                     예약하러 가기
@@ -178,6 +183,7 @@ function ThemeOverviewCard({ themeData }: ThemeOverviewCardProps) {
                 </StyledButton>
                 <StyledButton onClick={() => {
                   if (!isLoggedIn) {
+                    track('add_to_schedule', { theme_id: themeData.themeId, result: 'need_login' });
                     setIsLoginModalOpen(true);
                     return;
                   }
@@ -218,7 +224,7 @@ function ThemeOverviewCard({ themeData }: ThemeOverviewCardProps) {
           // 모바일 버전
          <MobileBottomWrapper>
           <ButtonWrapper>
-            <StyledButton type="reservation" onClick={() => window.open(themeData?.storeInfo?.storeReservationUrl, '_blank',)}>
+            <StyledButton type="reservation" onClick={() => openTrackedReservation(themeData)}>
               <StyeldReservationIcon/>
               <ButtonText>
                 예약하러 가기
@@ -228,6 +234,7 @@ function ThemeOverviewCard({ themeData }: ThemeOverviewCardProps) {
               type="schedule"
               onClick={() => {
                 if (!isLoggedIn) {
+                  track('add_to_schedule', { theme_id: themeData.themeId, result: 'need_login' });
                   setIsLoginModalOpen(true);
                   return;
                 }
