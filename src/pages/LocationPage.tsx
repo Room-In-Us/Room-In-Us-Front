@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { track, trackListFilter } from '../shared/utils/analytics';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import GoogleMapComponent from '../features/location/ui/GoogleMapComponent';
 import MarkerIcon from '../shared/assets/icons/location/markerIcon.svg?react';
@@ -46,7 +47,7 @@ function LocationPage() {
   const [isStoreCardVisible, setIsStoreCardVisible] = useRecoilState(storeCardVisible);
   const [stationList, setStationList] = useState<ZoneResponse[]>([]); // 역 목록 상태
   const [regionId, setRegionId] = useRecoilState(locationRegionId); // 지역 아이디 상태
-  const [, setZoneName] = useRecoilState(zoneName); // 구역 이름 상태
+  const [selectedZoneName, setZoneName] = useRecoilState(zoneName);
   const [, setStoreCount] = useRecoilState(storeCount); // 구역별 매장 개수
   const [, setThemeCount] = useRecoilState(themeCount); // 구역별 테마 개수
   const [, setIsZoneId] = useRecoilState(zoneId);
@@ -69,6 +70,9 @@ function LocationPage() {
 
   // 지역 선택 핸들러
   const handleLocationCheck = (id: RegionId) => {
+    const regionName = id === 1 ? '서울' : '경기/인천';
+    track('select_region', { region_name: regionName });
+    if (id !== activeRegionId) trackListFilter('지역목록', 'region', regionName);
     setEntryRegionId(null);
     setEntryZoneName(null);
     setIsStationListVisible(true);
@@ -77,7 +81,17 @@ function LocationPage() {
   };
 
   // 역 선택 핸들러
-  const handleStationSelect = (data: ZoneResponse) => {
+  const handleStationClick = (data: ZoneResponse) => {
+    track('select_region', {
+      region_name: data.zoneName,
+      region_group: activeRegionId === 1 ? '서울' : '경기/인천',
+      theme_count: data.themeCount,
+    });
+    if (data.zoneName !== selectedZoneName) trackListFilter('지역목록', 'region', data.zoneName);
+    handleStationSelect(data);
+  };
+
+  const handleStationSelect = useCallback((data: ZoneResponse) => {
     setIsStationCardVisible(true);
     setIsStoreCardVisible(false);
 
@@ -87,7 +101,7 @@ function LocationPage() {
     setStoreCount(data.storeCount);
     setThemeCount(data.themeCount);
     setCurrentPage(1);
-  };
+  }, [activeRegionId, setCurrentPage, setIsStationCardVisible, setIsStoreCardVisible, setIsZoneId, setSelectedRegionId, setStoreCount, setThemeCount, setZoneName]);
 
   // 구역 목록 조회
   useEffect(() => {
@@ -139,7 +153,7 @@ function LocationPage() {
     }));
 
     setEntryZoneName(null);
-  }, [entryZoneName, stationList, activeRegionId]);
+  }, [entryZoneName, stationList, activeRegionId, handleStationSelect]);
 
   return (
     <PageWrapper isMobile={isMobile}>
@@ -167,7 +181,7 @@ function LocationPage() {
                 key={index}
                 isSelected={selectedStationIndices[activeRegionId] === index}
                 onClick={() => {
-                  handleStationSelect(station);
+                  handleStationClick(station);
                   setSelectedStationIndices({
                     [activeRegionId]: index,
                     [activeRegionId === 1 ? 2 : 1]: null,
@@ -248,7 +262,7 @@ function LocationPage() {
                           key={index}
                           isSelected={selectedStationIndices[activeRegionId] === index}
                           onClick={() => {
-                            handleStationSelect(station);
+                            handleStationClick(station);
                             setSelectedStationIndices({
                               [activeRegionId]: index,
                               [activeRegionId === 1 ? 2 : 1]: null,

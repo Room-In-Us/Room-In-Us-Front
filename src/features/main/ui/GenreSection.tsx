@@ -1,3 +1,4 @@
+import { trackGenreSelection } from '../../../shared/utils/analytics';
 import type { ThemeGenre, ThemeResponse } from '../../../shared/types/theme';
 
 import { useState, useEffect } from "react";
@@ -38,6 +39,7 @@ function GenreSection() {
 
   // 버튼 활성화 함수
   const handleGenreClick = (genre: ThemeGenre): void => {
+    trackGenreSelection(genre);
     setActiveGenre(genre);
   };
 
@@ -120,8 +122,8 @@ function GenreSection() {
         <>
           { isDesktop && (
             <ListWrapper>
-              {themeList.map((items) => (
-                <ContentCard key={items.themeId} data={items} headCount={headCount} type="home"/>
+              {themeList.map((items, index) => (
+                <ContentCard key={items.themeId} data={items} headCount={headCount} type="home" listName="장르 기반 추천" listPosition={index + 1} />
               ))}
             </ListWrapper>
           )}
@@ -135,15 +137,15 @@ function GenreSection() {
             >
               <StyledSwiperSlide1>
                 <ListWrapper>
-                  {themeList.slice(0, 4).map((items) => (
-                    <ContentCard key={items.themeId} data={items} headCount={headCount} type="home"/>
+                  {themeList.slice(0, 4).map((items, index) => (
+                    <ContentCard key={items.themeId} data={items} headCount={headCount} type="home" listName="장르 기반 추천" listPosition={index + 1} />
                   ))}
                 </ListWrapper>
               </StyledSwiperSlide1>
               <StyledSwiperSlide2>
                 <ListWrapper>
-                  {themeList.slice(4, 8).map((items) => (
-                    <ContentCard key={items.themeId} data={items} headCount={headCount} type="home"/>
+                  {themeList.slice(4, 8).map((items, index) => (
+                    <ContentCard key={items.themeId} data={items} headCount={headCount} type="home" listName="장르 기반 추천" listPosition={index + 5} />
                   ))}
                 </ListWrapper>
               </StyledSwiperSlide2>

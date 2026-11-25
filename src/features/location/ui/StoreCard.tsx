@@ -1,3 +1,4 @@
+import { trackListFilter } from '../../../shared/utils/analytics';
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import LeftArrowIcon from "../../../shared/assets/icons/common/arrow/leftArrow.svg?react";
@@ -20,6 +21,8 @@ import type { Dispatch, SetStateAction } from "react";
 import type { LocationStoreInfoResponse } from "../api/types";
 import type { ThemeResponse, ThemeSortOption } from "../../../shared/types/theme";
 import type { FilterValues } from "../../../shared/components/filter/filterTypes";
+
+const LIST_NAME = '지역목록';
 
 function StoreCard() {
   // 상태 관리
@@ -66,6 +69,7 @@ function StoreCard() {
 
   // 인원수 필터링
   const handlePeopleFilterChange = (count: number) => {
+    if (count !== headCount) trackListFilter(LIST_NAME, 'price_basis', count);
     setHeadCount(count); 
   };
 
@@ -156,9 +160,16 @@ function StoreCard() {
   };
 
   // 필터 적용 함수 수정
-  const handleApplyFilters = ({ people, sort }: FilterValues) => {
-    setHeadCount(people);
+  const handleSortChange = (sort: ThemeSortOption) => {
+    if (sort !== selectedSort) {
+      trackListFilter(LIST_NAME, 'sort', sortOptions.find((option) => option.value === sort)?.label ?? sort);
+    }
     setSelectedSort(sort);
+  };
+
+  const handleApplyFilters = ({ people, sort }: FilterValues) => {
+    handlePeopleFilterChange(people);
+    handleSortChange(sort);
     setIsFilterActive(true);
 
     // if (region === "지역 전체") {
@@ -383,15 +394,15 @@ function StoreCard() {
             {/* 인원 필터 */}
             <LocationPeopleFilter onSelect={(count) => handlePeopleFilterChange(count)} selected={headCount} />
             {/* 정렬 필터 */}
-            <LocationSortFilter onSelect={(value) => setSelectedSort(value)} selected={selectedSort} />
+            <LocationSortFilter onSelect={handleSortChange} selected={selectedSort} />
           </FilterWrapper>
         )}
       </FilterTitleWrapper>
 
       {/* 콘텐츠 카드 영역 */}
       <ContentCardWrapper>
-        {visibleThemeList.map((items) => (
-          <LocationContentCard key={items.themeId} data={items} headCount={headCount} type="location"/>
+        {visibleThemeList.map((items, index) => (
+          <LocationContentCard key={items.themeId} data={items} headCount={headCount} type="location" listName="지역목록" listPosition={index + 1} />
         ))}
       </ContentCardWrapper>
     </ComponentWrapper>

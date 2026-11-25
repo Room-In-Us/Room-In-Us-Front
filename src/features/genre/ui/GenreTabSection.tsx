@@ -1,3 +1,4 @@
+import { trackGenreSelection } from '../../../shared/utils/analytics';
 import styled from 'styled-components';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { activeGenreState } from '../model/genreAtom';
@@ -63,7 +64,7 @@ export default function GenreTabSection() {
         { !isMobile && genres.map(({ icon: Icon, text, genre }) => (
           <GenreButton 
             key={genre} 
-            onClick={() => setActiveGenre(genre)}
+            onClick={() => { trackGenreSelection(genre); setActiveGenre(genre); }}
             isActive={activeGenre === genre}
           >
             <StyledGenreIcon isActive={activeGenre === genre}>
@@ -87,7 +88,7 @@ export default function GenreTabSection() {
             {chunk.map(({ icon: Icon, text, genre }) => (
             <GenreButton
             key={genre}
-            onClick={() => setActiveGenre(genre)}
+            onClick={() => { trackGenreSelection(genre); setActiveGenre(genre); }}
             isActive={activeGenre === genre}
             >
               <StyledGenreIcon isActive={activeGenre === genre}>

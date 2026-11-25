@@ -1,3 +1,4 @@
+import { track } from '../../../shared/utils/analytics';
 import type { ThemeProficiency, ThemeResponse } from '../../../shared/types/theme';
 
 import { useState, useEffect } from "react";
@@ -34,6 +35,7 @@ function LevelSection() {
 
   // 버튼 활성화 함수
   const handleLevelClick = (level: ThemeProficiency): void => {
+    track('select_level', { level_name: level });
     setActiveLevel(level);
   };
 
@@ -112,8 +114,8 @@ function LevelSection() {
         <>
           { isDesktop && (
             <ListWrapper>
-              {themeList.map((items) => (
-                <ContentCard key={items.themeId} data={items} headCount={headCount} type="home"/>
+              {themeList.map((items, index) => (
+                <ContentCard key={items.themeId} data={items} headCount={headCount} type="home" listName="숙련도 기반 추천" listPosition={index + 1} />
               ))}
             </ListWrapper>
           )}
@@ -127,15 +129,15 @@ function LevelSection() {
             >
               <StyledSwiperSlide1>
                 <ListWrapper>
-                  {themeList.slice(0, 4).map((items) => (
-                    <ContentCard key={items.themeId} data={items} headCount={headCount} type="home"/>
+                  {themeList.slice(0, 4).map((items, index) => (
+                    <ContentCard key={items.themeId} data={items} headCount={headCount} type="home" listName="숙련도 기반 추천" listPosition={index + 1} />
                   ))}
                 </ListWrapper>
               </StyledSwiperSlide1>
               <StyledSwiperSlide2>
                 <ListWrapper>
-                  {themeList.slice(4, 8).map((items) => (
-                    <ContentCard key={items.themeId} data={items} headCount={headCount} type="home"/>
+                  {themeList.slice(4, 8).map((items, index) => (
+                    <ContentCard key={items.themeId} data={items} headCount={headCount} type="home" listName="숙련도 기반 추천" listPosition={index + 5} />
                   ))}
                 </ListWrapper>
               </StyledSwiperSlide2>

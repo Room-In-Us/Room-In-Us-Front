@@ -68,8 +68,10 @@ export default function ContentCardSection() {
 			</NonDataTextWrapper>
 			</NoDataWrapper>
 			) : (
-				visibleThemeList.map((items) => (
+				visibleThemeList.map((items, index) => (
 					<ContentCard
+						listName="찜한테마"
+						listPosition={index + 1}
 						key={items.themeId}
 						data={{ ...items, price: items.price != null ? items.price * headCount : null }}
 						headCount={headCount}

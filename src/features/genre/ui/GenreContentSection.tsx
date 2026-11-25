@@ -1,3 +1,4 @@
+import { trackListFilter } from '../../../shared/utils/analytics';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
 import { useRecoilValue } from 'recoil';
@@ -19,6 +20,8 @@ import NoDataImgLarge from '../../../shared/assets/images/common/noData/noDataIm
 import type { RegionId, RegionResponse, ZoneId } from '../../location/api/types';
 import type { ThemeResponse, ThemeSortOption } from '../../../shared/types/theme';
 import type { FilterZone, RegionFilterValues } from '../../../shared/components/filter/filterTypes';
+
+const LIST_NAME = '장르목록';
 
 // 구역 조회는 적용된 필터 상태를 변경하지 않는다.
 const loadZones = async (regionId: RegionId): Promise<FilterZone[]> => {
@@ -155,6 +158,7 @@ export default function GenreContentSection() {
 
   // 인원수 필터링
   const handlePeopleFilterChange = (count: number) => {
+    if (count !== headCount) trackListFilter(LIST_NAME, 'price_basis', count);
     setHeadCount(count); 
   };
   
@@ -193,6 +197,7 @@ export default function GenreContentSection() {
     if (!filtersMounted.current) return;
     regionSelectionVersion.current += 1;
     viewRegion(1);
+    if (selectedRegion !== '지역 전체') trackListFilter(LIST_NAME, 'region', '지역 전체');
     setSelectedRegion("지역 전체");
     setIsAllZoneSelected(false);
     selectedZoneNames.current = [];
@@ -220,6 +225,7 @@ export default function GenreContentSection() {
     setIsAllZoneSelected(true);
     selectedZoneNames.current = [];
     setSelectedZones([]);
+    if (buttonText !== selectedRegion) trackListFilter(LIST_NAME, 'region', buttonText);
     setSelectedRegion(buttonText);
     // 조회 완료를 기다리지 않고 사용자의 선택을 확정한다.
     setZoneIdList(null);
@@ -247,6 +253,7 @@ export default function GenreContentSection() {
     const updatedZones = previous.includes(zoneName)
       ? previous.filter(name => name !== zoneName)
       : [...previous, zoneName];
+    trackListFilter(LIST_NAME, 'region', updatedZones.join(',') || '지역 전체');
     selectedZoneNames.current = updatedZones;
     setSelectedZones(updatedZones);
 
@@ -294,15 +301,26 @@ export default function GenreContentSection() {
   }, [headCount, selectedSort, regionId, zoneIdList, keyword]);
   
   // 모바일의 임시 선택을 적용 버튼에서 한 번에 확정한다.
+  const handleSortChange = (sort: ThemeSortOption) => {
+    if (sort !== selectedSort) {
+      trackListFilter(LIST_NAME, 'sort', sortOptions.find((option) => option.value === sort)?.label ?? sort);
+    }
+    setSelectedSort(sort);
+  };
+
   const handleApplyFilters = ({ people, sort, region, regionSelection }: RegionFilterValues) => {
     if (!filtersMounted.current) return;
     regionSelectionVersion.current += 1;
     zoneRequestVersion.current += 1;
     viewedRegionId.current = regionSelection.activeRegionId;
     availableZones.current = { regionId: regionSelection.activeRegionId, zones: regionSelection.zones };
+    const nextRegion = regionSelection.selectedRegion ?? region;
+    if (nextRegion !== selectedRegion || regionSelection.selectedZones.join() !== selectedZoneNames.current.join()) {
+      trackListFilter(LIST_NAME, 'region', regionSelection.selectedZones.join(',') || nextRegion);
+    }
     selectedZoneNames.current = regionSelection.selectedZones;
-    setHeadCount(people);
-    setSelectedSort(sort);
+    handlePeopleFilterChange(people);
+    handleSortChange(sort);
     setIsFilterActive(true);
     setActiveRegionId(regionSelection.activeRegionId);
     setZones(regionSelection.zones);
@@ -347,7 +365,7 @@ export default function GenreContentSection() {
             <PeopleFilter onSelect={(count) => handlePeopleFilterChange(count)} selected={headCount} />
 
             {/* 만족도 필터 */}
-            <SortFilter onSelect={(value) => setSelectedSort(value)} selected={selectedSort} />
+            <SortFilter onSelect={handleSortChange} selected={selectedSort} />
     
             {/* 지역 필터 */}
             <RegionFilter 
@@ -413,8 +431,10 @@ export default function GenreContentSection() {
           <ListWrapper>
             {themeList
               .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-              .map((items) => (
+              .map((items, index) => (
                 <ContentCard
+                  listName="장르목록"
+                  listPosition={(currentPage - 1) * itemsPerPage + index + 1}
                   key={items.themeId}
                   data={{ ...items, price: items.price != null ? items.price * headCount : null }}
                   headCount={headCount}

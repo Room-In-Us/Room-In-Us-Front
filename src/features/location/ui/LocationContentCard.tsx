@@ -1,3 +1,4 @@
+import { trackFavorite, trackThemeSelection } from '../../../shared/utils/analytics';
 import { useState, useEffect, memo } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -18,10 +19,12 @@ import type { ThemeResponse } from '../../../shared/types/theme';
 type LocationContentCardProps = {
   data: ThemeResponse;
   headCount: number;
+  listName: string;
+  listPosition: number;
   type: string;
 };
 
-function LocationContentCard({ data, headCount, type }: LocationContentCardProps) {
+function LocationContentCard({ data, headCount, type, listName, listPosition }: LocationContentCardProps) {
   const {
     themeId,
     awardsYear,
@@ -66,8 +69,29 @@ function LocationContentCard({ data, headCount, type }: LocationContentCardProps
     setImageUrl(ThumbnailImg);
   };
 
+  const handleFavoriteClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    const adding = !isHeartActive;
+    if (!isLoggedIn) {
+      trackFavorite(themeId, adding, 'need_login');
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    setIsHeartActive(adding);
+    const sourcePage = typeof window === 'undefined' ? undefined : window.location?.pathname;
+    const updateFavorite = adding ? postThemeLikeAPI : deleteThemeLikeAPI;
+    void updateFavorite(themeId).then(
+      () => trackFavorite(themeId, adding, 'success', sourcePage),
+      () => trackFavorite(themeId, adding, 'fail', sourcePage),
+    );
+  };
+
   return (
-    <ContentWrapper onClick={() => navigate(`/theme/${themeId}`)}>
+    <ContentWrapper onClick={() => {
+      trackThemeSelection(data, listName, listPosition);
+      navigate(`/theme/${themeId}`);
+    }}>
       {/* 이미지 영역 */}
       <ImageSection imgUrl={imageUrl}>
         {awardsYear && (
@@ -138,19 +162,7 @@ function LocationContentCard({ data, headCount, type }: LocationContentCardProps
 
           {/* 하트 아이콘 영역 */}
           <HeartWrapper
-            onClick={(e) => {
-              e.stopPropagation();
-              if (!isLoggedIn) {
-                setIsLoginModalOpen(true);
-                return;
-              }
-              setIsHeartActive(!isHeartActive);
-              if (isHeartActive) {
-                deleteThemeLikeAPI(themeId);
-              } else {
-                postThemeLikeAPI(themeId);
-              }
-            }}
+            onClick={handleFavoriteClick}
           >
             {isHeartActive ? (
               <StyledHeartIcon3 />
@@ -183,6 +195,8 @@ LocationContentCard.propTypes = {
   data: PropTypes.object.isRequired,
   type: PropTypes.string.isRequired,
   headCount: PropTypes.number.isRequired,
+  listName: PropTypes.string.isRequired,
+  listPosition: PropTypes.number.isRequired,
 };
 
 export default memo(LocationContentCard);

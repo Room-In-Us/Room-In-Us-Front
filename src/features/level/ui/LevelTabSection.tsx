@@ -1,3 +1,4 @@
+import { track } from '../../../shared/utils/analytics';
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -93,7 +94,7 @@ export default function LevelTabSection() {
         { !isMobile && levels.map(({ icon: Icon, text, level }) => (
           <LevelButton 
             key={level} 
-            onClick={() => setActiveLevel(level)}
+            onClick={() => { track('select_level', { level_name: level }); setActiveLevel(level); }}
             isActive={activeLevel === level}
           >
             <StyledLevelIcon isActive={activeLevel === level}>
@@ -107,7 +108,7 @@ export default function LevelTabSection() {
         { isMobile && levels.map(({ icon: Icon, text, level }) => (
             <LevelButton
             key={level}
-            onClick={() => setActiveLevel(level)}
+            onClick={() => { track('select_level', { level_name: level }); setActiveLevel(level); }}
             isActive={activeLevel === level}
             >
               <StyledLevelIcon isActive={activeLevel === level}>
