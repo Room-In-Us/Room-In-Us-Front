@@ -27,6 +27,23 @@ test('analytics sends only sanitized search terms and distinguishes zero results
   ]);
 });
 
+test('search analytics masks parenthesized phone numbers before truncating both events', (context) => {
+  const window = { dataLayer: [], location: { pathname: '/search' } };
+  globalThis.window = window;
+  context.after(() => { delete globalThis.window; });
+  const { trackSearch } = analyticsModule.exports;
+  const prefix = 'x'.repeat(92) + ' ';
+  const searchTerm = prefix + '[phone]';
+
+  for (const phone of ['02)123-4567', '(02) 123-4567', '(010) 1234-5678', '+82 (2) 123-4567']) {
+    trackSearch(prefix + phone, 0);
+    assert.deepEqual(window.dataLayer.splice(0), [
+      { event: 'search_submit', source_page: '/search', search_term: searchTerm, result_count: 0 },
+      { event: 'search_no_result', source_page: '/search', search_term: searchTerm },
+    ], phone);
+  }
+});
+
 test('preference analytics preserves counts, shares genre codes and excludes free text', (context) => {
   const window = { dataLayer: [], location: { pathname: '/survey' } };
   globalThis.window = window;

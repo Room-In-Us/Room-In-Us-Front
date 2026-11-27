@@ -76,7 +76,7 @@ export function trackFavorite(themeId: number, adding: boolean, result: 'success
 export function trackSearch(term: string, resultCount: number): void {
   const searchTerm = term.trim()
     .replace(/[\w.+-]+@[\w.-]+\.[\w-]+/g, '[email]')
-    .replace(/(?:\+82[\s.-]?|0)(?:1[016789]|2|[3-6][1-5]|70)[\s.-]?\d{3,4}[\s.-]?\d{4}/g, '[phone]')
+    .replace(/(?:\+82[\s.-]?\(?|\(?0)(?:1[016789]|2|[3-6][1-5]|70)\)?[\s.-]?\d{3,4}[\s.-]?\d{4}/g, '[phone]')
     .slice(0, 100);
   if (!searchTerm) return;
   track('search_submit', { search_term: searchTerm, result_count: resultCount });
