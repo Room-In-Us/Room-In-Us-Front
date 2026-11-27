@@ -321,9 +321,9 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }: Review
   
       // 작성 모드
       const response = await postReviewAPI(themeId, serverData);
-      if (!isCurrentRequest()) return;
   
       if (!response.success) {
+        if (!isCurrentRequest()) return;
         const rawMsg = response?.message ?? '알 수 없는 오류가 발생했습니다.';
         const parsed = parseServerErrors(rawMsg);
         setErrorMessages(parsed);
@@ -331,7 +331,6 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }: Review
         return;
       }
   
-      console.log("[ReviewWriteModal] 후기 작성 요청 데이터:", serverData);
       const [hours, minutes, seconds] = serverData.remainingTime?.split(':').map(Number) ?? [];
       const timeLeft = (hours ?? 0) * 60 + (minutes ?? 0) + (seconds ?? 0) / 60;
       track('review_submit', {
@@ -344,6 +343,8 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }: Review
         time_left_min: serverData.remainingTime && Number.isFinite(timeLeft) ? timeLeft : undefined,
         has_comment: Boolean(serverData.reviewComment.trim()),
       });
+      if (!isCurrentRequest()) return;
+      console.log("[ReviewWriteModal] 후기 작성 요청 데이터:", serverData);
       const createdReviewId = response.data?.reviewId ?? null;
       setCompletedReviewData({
         ...sharePayload,
