@@ -153,17 +153,21 @@ export default function ScheduleModal({themeId}: ScheduleModalProps) {
         if (!reservation) return;
         await patchReservationAPI(reservation.themeId, reservation.themeReservationId, reservedAt, selectedThemeId);
       } else {
-        await addReservationsAPI(selectedThemeId, reservedAt);
+        await addReservationsAPI(selectedThemeId, reservedAt).then(
+          () => track('add_to_schedule', { theme_id: selectedThemeId, result: 'success' }),
+          (error: unknown) => {
+            track('add_to_schedule', { theme_id: selectedThemeId, result: 'fail' });
+            throw error;
+          },
+        );
       }
       if (!isCurrentOperation(operation)) return;
-      if (mode === 'add') track('add_to_schedule', { theme_id: selectedThemeId, result: 'success' });
       savedReservation.current = saved;
       alert(mode === "edit" ? "예약이 수정되었습니다." : "예약이 추가되었습니다.");
 
       await finishSavedReservation(operation, saved);
     } catch (error) {
       if (!isCurrentOperation(operation)) return;
-      if (mode === 'add' && !savedReservation.current) track('add_to_schedule', { theme_id: selectedThemeId, result: 'fail' });
       console.error("예약 처리 실패:", error);
       alert(mode === "edit" ? "예약 수정에 실패했습니다." : "예약 추가에 실패했습니다.");
     } finally {
