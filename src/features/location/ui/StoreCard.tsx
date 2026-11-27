@@ -203,8 +203,8 @@ function StoreCard() {
 
   // 리셋 처리 함수
   const handleResetFilters = ({ people, sort }: FilterValues) => {
-    setHeadCount(people);  
-    setSelectedSort(sort);
+    handlePeopleFilterChange(people);
+    handleSortChange(sort);
     // setSelectedRegion(region); 
     // setSelectedZones([]); 
     // setZoneList([]);
