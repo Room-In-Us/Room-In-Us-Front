@@ -1,5 +1,5 @@
 import { openTrackedReservation, track } from '../shared/utils/analytics';
-import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import LeftArrowIcon from "../shared/assets/icons/common/arrow/leftArrow.svg?react";
@@ -81,6 +81,15 @@ function ThemeDetailPage() {
         setThemeDetail(detailRes);
         setThemePrice(priceRes);
         setResolvedThemeId(themeId);
+        if (detailRes.themeId != null && !hasTrackedView.current) {
+          hasTrackedView.current = true;
+          track('view_theme_detail', {
+            theme_id: detailRes.themeId,
+            theme_name: detailRes.themeName,
+            cafe_name: detailRes.storeInfo?.storeName,
+            price_min: priceRes.length ? Math.min(...priceRes.map(({ price }) => price)) : undefined,
+          });
+        }
       } catch (err) {
         if (!isCurrent()) return;
         console.error('테마 상세 api 호출 중 오류 발생: ', err);
@@ -90,18 +99,6 @@ function ThemeDetailPage() {
     fetchAll();
     return () => { active = false; };
   }, [themeId]);
-
-  const handleReviewCount = useCallback((reviewCount?: number) => {
-    if (resolvedThemeId !== themeId || themeDetailState.themeId == null || hasTrackedView.current) return;
-    hasTrackedView.current = true;
-    track('view_theme_detail', {
-      theme_id: themeDetailState.themeId,
-      theme_name: themeDetailState.themeName,
-      cafe_name: themeDetailState.storeInfo?.storeName,
-      price_min: themePriceState.length ? Math.min(...themePriceState.map(({ price }) => price)) : undefined,
-      has_review: reviewCount == null ? undefined : reviewCount > 0,
-    });
-  }, [resolvedThemeId, themeId, themeDetailState, themePriceState]);
 
   return (
     <PageWrapper>
@@ -125,7 +122,6 @@ function ThemeDetailPage() {
           themeData={themeDetail}
           themePrice={themePrice}
           reviewRefetchKey={reviewRefetchKey}
-          onReviewCount={handleReviewCount}
         />
 
       </ContentWrapper>
