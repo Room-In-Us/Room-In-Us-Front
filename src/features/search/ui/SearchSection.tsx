@@ -1,3 +1,4 @@
+import { trackSearch } from '../../../shared/utils/analytics';
 import styled from 'styled-components'
 import SearchInput from '../../../shared/components/SearchInput';
 import ContentCard from '../../../shared/components/ContentCard';
@@ -5,7 +6,7 @@ import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react
 import { getThemesAPI } from '../../../features/search/api/getSearchAPI';
 import CustomPagination from '../../../shared/components/CustomPagination';
 import useDevice from '../../../shared/hooks/useDevice';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigationType } from 'react-router-dom';
 import NoDataImg from '../../../shared/assets/images/common/noData/noDataImageLarge.png';
 import type { Location } from 'react-router-dom';
 import type { ThemeResponse } from '../../../shared/types/theme';
@@ -19,6 +20,8 @@ export default function SearchSection() {
   const location: Location<SearchNavigationState | null> = useLocation();
 
   const keywordFromState = location.state?.keyword ?? '';
+  const navigationType = useNavigationType();
+  const submittedKeyword = useRef<string | null>(navigationType === 'PUSH' ? keywordFromState : null);
   const [keyword, setKeyword] = useState(keywordFromState);
   const requestGeneration = useRef(0);
   const requestContext = useRef<{ keyword: string } | null>(null);
@@ -61,10 +64,16 @@ export default function SearchSection() {
       });
 
       if (!isCurrent()) return;
-      setThemes(data.contents || []);
+      const results = data.contents || [];
+      if (submittedKeyword.current === context.keyword) {
+        submittedKeyword.current = null;
+        trackSearch(context.keyword, results.length);
+      }
+      setThemes(results);
       setCurrentPage(1);
     } catch (error) {
       if (!isCurrent()) return;
+      if (submittedKeyword.current === context.keyword) submittedKeyword.current = null;
       console.error('검색 실패:', error);
       setThemes([]);
     }
@@ -80,8 +89,16 @@ export default function SearchSection() {
       <SearchInput 
         type='text' 
         keyword={keyword} 
-        setKeyword={setKeyword}
-        onSearch={handleSearch}
+        setKeyword={(value) => {
+          submittedKeyword.current = null;
+          setKeyword(value);
+        }}
+        onSearch={(value = keyword) => {
+          if (requestContext.current?.keyword !== keyword) return;
+          submittedKeyword.current = value;
+          if (value === keyword) return handleSearch();
+          setKeyword(value);
+        }}
       />
 
       <TextWrapper>
@@ -99,10 +116,12 @@ export default function SearchSection() {
           </NonDataTextWrapper>
         </NoDataWrapper>
       ) : (
-        paginatedThemes.map((theme) => (
+        paginatedThemes.map((theme, index) => (
           <ContentCard
             key={theme.themeId}
             data={theme}
+            listName="검색결과"
+            listPosition={startIndex + index + 1}
             type="search"
             headCount={2}
           />

@@ -1,3 +1,4 @@
+import { track } from '../../../../shared/utils/analytics';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components"
@@ -188,8 +189,10 @@ export default function ReviewCard({ data, onDeleted, onEdit, onEditStart }: Rev
     const shareThumbnailUrl = await getShareThumbnailUrl();
     if (shareThumbnailUrl == null || currentTarget.current !== target || shareGeneration.current !== generation) return;
 
+    track('review_share_start', { theme_id: data.themeId, entry_type: 'mypage' });
     navigate('/review/share', {
       state: {
+        themeId: data.themeId,
         backButtonText: '내 후기 목록으로 돌아가기',
         reviewData: {
           ...data,

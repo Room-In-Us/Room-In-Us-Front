@@ -1,3 +1,4 @@
+import { track } from '../../../shared/utils/analytics';
 import styled from "styled-components";
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from "react-router-dom";
@@ -70,6 +71,10 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }: Review
 
   // 모달 닫기 핸들러
   const handleClose = () => {
+    if (!isEditMode && reviewSection !== 'last' && themeData.themeId != null) {
+      const stepNumber = reviewSection === 'first' ? 1 : reviewSection === 'second' ? 2 : 3;
+      track('review_abandon', { theme_id: themeData.themeId, step_number: stepNumber });
+    }
     saveGeneration.current += 1;
     inFlightSave.current = null;
     saveSessionOpen.current = false;
@@ -83,10 +88,12 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }: Review
     inFlightSave.current = null;
     saveSessionOpen.current = false;
     setReviewModalOpen(false);
+    track('review_share_start', { theme_id: themeData.themeId, entry_type: isEditMode ? 'mypage' : 'write_complete' });
     navigate('/review/share', {
       state: {
         backButtonText: isEditMode ? '후기 수정으로 돌아가기' : '후기 작성으로 돌아가기',
         reviewData: completedReviewData,
+        themeId: themeData.themeId,
       },
     });
   };
@@ -114,6 +121,7 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }: Review
   // 다음 화면 이동
   const goNext = () => {
     if (reviewSection === "first") {
+      if (!isEditMode) track('review_step_next', { theme_id: themeData.themeId, step_number: 2 });
       setReviewSection("second");
       return;
     }
@@ -129,6 +137,7 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }: Review
         return;
       }
 
+      if (!isEditMode) track('review_step_next', { theme_id: themeData.themeId, step_number: 3 });
       setReviewSection("third");
       return;
     }
@@ -312,9 +321,9 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }: Review
   
       // 작성 모드
       const response = await postReviewAPI(themeId, serverData);
-      if (!isCurrentRequest()) return;
   
       if (!response.success) {
+        if (!isCurrentRequest()) return;
         const rawMsg = response?.message ?? '알 수 없는 오류가 발생했습니다.';
         const parsed = parseServerErrors(rawMsg);
         setErrorMessages(parsed);
@@ -322,6 +331,19 @@ function ReviewWriteModal({ themeData, reviewId, isEditMode, onUpdated }: Review
         return;
       }
   
+      const [hours, minutes, seconds] = serverData.remainingTime?.split(':').map(Number) ?? [];
+      const timeLeft = (hours ?? 0) * 60 + (minutes ?? 0) + (seconds ?? 0) / 60;
+      track('review_submit', {
+        theme_id: themeId,
+        rating: serverData.satisfactionLevel,
+        verdict: serverData.review,
+        is_escaped: serverData.isEscaped,
+        hint_count: serverData.usedHint,
+        play_member_count: serverData.participantList.length,
+        time_left_min: serverData.remainingTime && Number.isFinite(timeLeft) ? timeLeft : undefined,
+        has_comment: Boolean(serverData.reviewComment.trim()),
+      });
+      if (!isCurrentRequest()) return;
       console.log("[ReviewWriteModal] 후기 작성 요청 데이터:", serverData);
       const createdReviewId = response.data?.reviewId ?? null;
       setCompletedReviewData({

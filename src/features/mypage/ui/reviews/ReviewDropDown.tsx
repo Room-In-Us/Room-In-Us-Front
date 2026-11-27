@@ -1,3 +1,4 @@
+import { track } from '../../../../shared/utils/analytics';
 import styled from 'styled-components'
 import DropDownIcon from '../../../../shared/assets/icons/common/arrow/downArrow.svg?react';
 import { useRecoilState } from 'recoil';
@@ -12,6 +13,7 @@ export default function ReviewDropDown() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleSelect = (option: (typeof reviewSortOption)[number]) => {
+    if (sortOption !== option.value) track('list_sort_change', { list_name: '내 후기', sort_key: option.value });
     setSortOption(option.value);
     setIsOpen(false);
   };

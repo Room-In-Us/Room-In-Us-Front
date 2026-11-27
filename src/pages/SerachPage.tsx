@@ -1,11 +1,13 @@
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components'
 import SearchSection from '../features/search/ui/SearchSection';
 
 export default function SerachPage() {
+  const { key } = useLocation();
 
   return (
     <Wrapper>
-      <SearchSection />
+      <SearchSection key={key} />
     </Wrapper>
   )
 }

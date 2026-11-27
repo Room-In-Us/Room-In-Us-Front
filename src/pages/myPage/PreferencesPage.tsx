@@ -1,3 +1,4 @@
+import { trackPreferences } from '../../shared/utils/analytics';
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -179,6 +180,7 @@ function PreferencesPage() {
       console.log("성향조사 제출 결과: ", payload);
       const response = await patchPreferencesAPI(payload);
       if (!isCurrentRequest(request, requestRef.current)) return;
+      trackPreferences(payload);
       console.log("성향조사 제출 결과: ", response);
       alert("성향조사 결과가 저장되었습니다.");
       if (isCurrentRequest(request, requestRef.current)) navigate('/mypage');

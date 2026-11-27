@@ -1,3 +1,4 @@
+import { trackPreferences } from '../../../shared/utils/analytics';
 import styled from 'styled-components';
 import CautionIcon from '../../../shared/assets/icons/survey/modalCautionIcon.svg?react';
 import CancelIcon from '../../../shared/assets/icons/survey/modalCancelIcon.svg?react';
@@ -32,6 +33,7 @@ function QuitModal() {
 
       console.log('성향조사 제출 결과: ', payload);
       const response = await patchPreferencesAPI(payload);
+      trackPreferences(payload);
       console.log('성향조사 제출 결과: ', response);
       setSurveySection('proficiency');
       resetSurvey();

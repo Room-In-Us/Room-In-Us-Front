@@ -1,3 +1,4 @@
+import { openTrackedReservation, track } from '../shared/utils/analytics';
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
@@ -43,6 +44,7 @@ function ThemeDetailPage() {
   const { themeId } = useParams();
   const [resolvedThemeId, setResolvedThemeId] = useState(themeId);
   const requestGeneration = useRef(0);
+  const hasTrackedView = useRef(false);
   const currentThemeId = useRef(themeId);
   const themeDetail = resolvedThemeId === themeId ? themeDetailState : {};
   const themePrice = resolvedThemeId === themeId ? themePriceState : [];
@@ -54,6 +56,7 @@ function ThemeDetailPage() {
 
   useLayoutEffect(() => {
     currentThemeId.current = themeId;
+    hasTrackedView.current = false;
     requestGeneration.current += 1;
     setThemeDetail({});
     setThemePrice([]);
@@ -78,6 +81,15 @@ function ThemeDetailPage() {
         setThemeDetail(detailRes);
         setThemePrice(priceRes);
         setResolvedThemeId(themeId);
+        if (detailRes.themeId != null && !hasTrackedView.current) {
+          hasTrackedView.current = true;
+          track('view_theme_detail', {
+            theme_id: detailRes.themeId,
+            theme_name: detailRes.themeName,
+            cafe_name: detailRes.storeInfo?.storeName,
+            price_min: priceRes.length ? Math.min(...priceRes.map(({ price }) => price)) : undefined,
+          });
+        }
       } catch (err) {
         if (!isCurrent()) return;
         console.error('테마 상세 api 호출 중 오류 발생: ', err);
@@ -136,7 +148,7 @@ function ThemeDetailPage() {
         isFloatingButtonOpen ? (
           <ModalBackdrop>
             <FloatingMenuWrapper>
-              <InteractionButton onClick={() => window.open(themeDetail?.storeInfo?.storeReservationUrl, '_blank',)}>
+              <InteractionButton onClick={() => openTrackedReservation(themeDetail)}>
                 <StyledReservationIcon />
                 <ButtonText>
                   예약하기
@@ -145,6 +157,7 @@ function ThemeDetailPage() {
               <InteractionButton
                 onClick={() => {
                   if (!isLoggedIn) {
+                    if (themeDetail.themeId != null) track('add_to_schedule', { theme_id: themeDetail.themeId, result: 'need_login' });
                     setIsLoginModalOpen(true);
                     return;
                   }
@@ -158,6 +171,9 @@ function ThemeDetailPage() {
               </InteractionButton>
               <InteractionButton
                 onClick={() => {
+                  if (themeDetail.themeId != null) {
+                    track('review_write_start', { theme_id: themeDetail.themeId, result: isLoggedIn ? 'success' : 'need_login' });
+                  }
                   if (!isLoggedIn) {
                     setIsLoginModalOpen(true);
                     return;

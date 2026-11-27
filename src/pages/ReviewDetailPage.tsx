@@ -1,3 +1,4 @@
+import { openTrackedReservation, track } from '../shared/utils/analytics';
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
@@ -107,7 +108,7 @@ function ReviewDetailPage() {
         isFloatingButtonOpen ? (
           <ModalBackdrop>
             <FloatingMenuWrapper>
-              <InteractionButton onClick={() => window.open(themeDetail?.storeInfo?.storeReservationUrl, '_blank',)}>
+              <InteractionButton onClick={() => openTrackedReservation(themeDetail)}>
                 <StyledReservationIcon />
                 <ButtonText>
                   예약하기
@@ -116,6 +117,7 @@ function ReviewDetailPage() {
               <InteractionButton
                 onClick={() => {
                   if (!isLoggedIn) {
+                    if (themeDetail.themeId != null) track('add_to_schedule', { theme_id: themeDetail.themeId, result: 'need_login' });
                     setIsLoginModalOpen(true);
                     return;
                   }
@@ -129,6 +131,9 @@ function ReviewDetailPage() {
               </InteractionButton>
               <InteractionButton
                 onClick={() => {
+                  if (themeDetail.themeId != null) {
+                    track('review_write_start', { theme_id: themeDetail.themeId, result: isLoggedIn ? 'success' : 'need_login' });
+                  }
                   if (!isLoggedIn) {
                     setIsLoginModalOpen(true);
                     return;

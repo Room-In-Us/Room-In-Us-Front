@@ -1,3 +1,4 @@
+import { track } from '../shared/utils/analytics';
 import { toBlob } from 'html-to-image';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -14,6 +15,17 @@ import type { MyReviewListItem, ThemeReservationResponse } from '../features/myp
 import type { ReviewDraftState } from '../features/themeDetail/model/reviewAtom';
 
 type TemplateId = 'center-badge' | 'bottom-record' | 'poster' | 'corner-stamp' | 'date-card' | 'minimal' | 'score-grid' | 'film';
+const templateCodes: Record<TemplateId, string> = {
+  'center-badge': 'center_badge',
+  'bottom-record': 'bottom_record',
+  poster: 'poster',
+  'corner-stamp': 'corner_stamp',
+  'date-card': 'date_card',
+  minimal: 'minimal',
+  'score-grid': 'score_grid',
+  film: 'film_log',
+};
+
 type ShareMessageTone = 'default' | 'success' | 'error';
 type ShareVariant = 'instagram' | 'download';
 type ActiveProps = { $active: boolean };
@@ -25,7 +37,7 @@ type ReviewShareData = Pick<MyReviewListItem,
   | 'isEscaped' | 'remainingTime' | 'usedHint' | 'participantCnt'>
   & Partial<Pick<ReviewDraftState, 'participantList' | 'minRecommendedHeadcount' | 'maxRecommendedHeadcount' | 'img'>>
   & { thumbnailUrl?: string; themeImg?: ThemeReservationResponse['themeImg'] };
-type ReviewShareNavigationState = { backButtonText?: string; reviewData?: ReviewShareData | null };
+type ReviewShareNavigationState = { themeId?: MyReviewListItem['themeId']; backButtonText?: string; reviewData?: ReviewShareData | null };
 type ShareDisplayData = {
   themeName: ReviewShareData['themeName'];
   storeName: ReviewShareData['storeName'];
@@ -362,6 +374,11 @@ function ReviewSharePage() {
     return exportReviewImage(previewRef.current, () => isCurrentExport(operation));
   };
 
+  const trackExport = (method: 'native_share' | 'download', result: 'success' | 'fail') => {
+    if (state?.themeId == null) return;
+    track('review_share_export', { theme_id: state.themeId, template_name: templateCodes[selectedTemplate], method, result });
+  };
+
   const handleImageDownload = async () => {
     const operation = beginExport();
     if (!operation) return;
@@ -372,9 +389,11 @@ function ReviewSharePage() {
       if (!blob || !isCurrentExport(operation)) return;
       downloadBlob(blob, createShareFileName(displayData.themeName, selectedTemplate));
       if (!isCurrentExport(operation)) return;
+      trackExport('download', 'success');
       updateShareMessage('이미지를 다운로드했어요.', 'success');
     } catch (error) {
       if (!isCurrentExport(operation)) return;
+      trackExport('download', 'fail');
       console.error('[ReviewSharePage] 이미지 다운로드 실패:', error);
       const shareError = error != null && (typeof error === 'object' || typeof error === 'function') ? error : {};
       updateShareMessage(
@@ -391,6 +410,7 @@ function ReviewSharePage() {
   const handleInstagramStoryShare = async () => {
     const operation = beginExport();
     if (!operation) return;
+    let method: 'native_share' | 'download' = 'native_share';
     updateShareMessage('공유를 준비하고 있어요.', 'default');
 
     try {
@@ -407,16 +427,20 @@ function ReviewSharePage() {
           text: 'ROOM IN US에서 만든 후기 이미지를 공유해 보세요.',
         });
         if (!isCurrentExport(operation)) return;
+        trackExport('native_share', 'success');
         updateShareMessage('공유 메뉴가 열렸어요. 원하는 앱을 선택해 주세요.', 'success');
         return;
       }
 
+      method = 'download';
       downloadBlob(blob, shareFile.name);
       if (!isCurrentExport(operation)) return;
+      trackExport('download', 'success');
       updateShareMessage('이 기기에서는 직접 공유가 어려워 먼저 이미지를 저장했어요.', 'default');
     } catch (error) {
       if (!isCurrentExport(operation)) return;
       const shareError = error != null && (typeof error === 'object' || typeof error === 'function') ? error : {};
+      trackExport(method, 'fail');
       if ('name' in shareError && shareError.name === 'AbortError') {
         updateShareMessage('공유가 취소되었어요.', 'default');
       } else if ('message' in shareError && shareError.message === 'THEME_IMAGE_PROXY_REQUIRED') {
@@ -493,7 +517,12 @@ function ReviewSharePage() {
                 key={template.id}
                 type="button"
                 $active={selectedTemplate === template.id}
-                onClick={() => setSelectedTemplate(template.id)}
+                onClick={() => {
+                  if (state?.themeId != null) {
+                    track('review_template_select', { theme_id: state.themeId, template_name: templateCodes[template.id] });
+                  }
+                  setSelectedTemplate(template.id);
+                }}
               >
                 <TemplateThumb>
                   <TemplateThumbScene $sceneSize={templatePreviewSize} $scale={templatePreviewScale}>

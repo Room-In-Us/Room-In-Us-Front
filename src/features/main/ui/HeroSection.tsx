@@ -1,3 +1,4 @@
+import { track } from '../../../shared/utils/analytics';
 import styled from "styled-components";
 import TextLogo from '../../../shared/assets/icons/main/mainTextLogo.svg?react';
 import SearchInput from "../../../shared/components/SearchInput";
@@ -43,7 +44,7 @@ function HeroSection() {
 
         <ButtonWrapper>
           {/* 지역 버튼 */}
-          <StyledButton onClick={() => navigate('/location')}>
+          <StyledButton onClick={() => { track('select_search_entry', { entry_type: 'region' }); navigate('/location'); }}>
             <ButtonTop>
               <StyledLocationIcon/>
             </ButtonTop>
@@ -53,7 +54,7 @@ function HeroSection() {
           </StyledButton>
 
           {/* 숙련도 버튼 */}
-          <StyledButton onClick={() => navigate('/level')}>
+          <StyledButton onClick={() => { track('select_search_entry', { entry_type: 'level' }); navigate('/level'); }}>
             <ButtonTop>
               <StyledLevelIcon/>
             </ButtonTop>
@@ -63,7 +64,7 @@ function HeroSection() {
           </StyledButton>
 
           {/* 장르 버튼 */}
-          <StyledButton onClick={() => navigate('/genre')}>
+          <StyledButton onClick={() => { track('select_search_entry', { entry_type: 'genre' }); navigate('/genre'); }}>
             <ButtonTop>
               <StyledGenreIcon/>
             </ButtonTop>

@@ -1,9 +1,15 @@
+import { track } from '../../../shared/utils/analytics';
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import RightArrow from "../../../shared/assets/icons/common/arrow/rightArrow.svg?react";
 
 function LocationSection() {
   const navigate = useNavigate();
+
+  const handleSelectRegion = (regionId: 1 | 2, zoneName: string) => {
+    track('select_region', { region_name: zoneName, region_group: regionId === 1 ? '서울' : '경기/인천' });
+    navigate('/location', { state: { regionId, zoneName } });
+  };
 
   return (
     <SectionWrapper aria-labelledby="home-location-title">
@@ -18,19 +24,19 @@ function LocationSection() {
 
       {/* 대표지역 리스트 영역 */}
       <PopularLocatioinButtonWrapper>
-        <PopularLocationButton onClick={() => navigate('/location', {state: {regionId: 1, zoneName: '강남'}})}>
+        <PopularLocationButton onClick={() => handleSelectRegion(1, '강남')}>
           <ButtonTitle>강남</ButtonTitle>
           <ButtonSubTitle>강남, 신논현, 역삼</ButtonSubTitle>
         </PopularLocationButton>
-        <PopularLocationButton onClick={() => navigate('/location', {state: {regionId: 1, zoneName: '홍대'}})}>
+        <PopularLocationButton onClick={() => handleSelectRegion(1, '홍대')}>
           <ButtonTitle>홍대</ButtonTitle>
           <ButtonSubTitle>홍대입구, 합정, 상수</ButtonSubTitle>
         </PopularLocationButton>
-        <PopularLocationButton onClick={() => navigate('/location', {state: {regionId: 1, zoneName: '건대'}})}>
+        <PopularLocationButton onClick={() => handleSelectRegion(1, '건대')}>
           <ButtonTitle>건대</ButtonTitle>
           <ButtonSubTitle>건대입구</ButtonSubTitle>
         </PopularLocationButton>
-        <PopularLocationButton onClick={() => navigate('/location', {state: {regionId: 2, zoneName: '인천'}})}>
+        <PopularLocationButton onClick={() => handleSelectRegion(2, '인천')}>
           <ButtonTitle>인천</ButtonTitle>
           <ButtonSubTitle>부평, 인천터미널, 예술회관</ButtonSubTitle>
         </PopularLocationButton>
@@ -38,10 +44,10 @@ function LocationSection() {
 
       {/* 일반지역 리스트 영역 */}
       <LocationButtonWrapper>
-        <LocationButton onClick={() => navigate('/location', {state: {regionId: 2, zoneName: '수원'}})}>수원</LocationButton>
-        <LocationButton onClick={() => navigate('/location', {state: {regionId: 1, zoneName: '신촌'}})}>신촌</LocationButton>
-        <LocationButton onClick={() => navigate('/location', {state: {regionId: 1, zoneName: '대학로'}})}>대학로</LocationButton>
-        <LocationButton onClick={() => navigate('/location', {state: {regionId: 1, zoneName: '잠실'}})}>잠실</LocationButton>
+        <LocationButton onClick={() => handleSelectRegion(2, '수원')}>수원</LocationButton>
+        <LocationButton onClick={() => handleSelectRegion(1, '신촌')}>신촌</LocationButton>
+        <LocationButton onClick={() => handleSelectRegion(1, '대학로')}>대학로</LocationButton>
+        <LocationButton onClick={() => handleSelectRegion(1, '잠실')}>잠실</LocationButton>
       </LocationButtonWrapper>
     </SectionWrapper>
   )

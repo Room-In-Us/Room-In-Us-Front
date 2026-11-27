@@ -1,3 +1,4 @@
+import { track } from '../../../shared/utils/analytics';
 import styled from "styled-components";
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import RatingStar from "../../../shared/assets/icons/themeDetail/ratingStar.svg?react";
@@ -15,9 +16,9 @@ import PopUpModal from "../../../shared/components/PopUpModal";
 import { useNavigate } from "react-router-dom";
 import type { ThemeDetailResponse, ThemeReviewDto } from '../api/types';
 
-type ThemeReviewSectionProps = { themeId?: ThemeDetailResponse['themeId']; reviewRefetchKey?: number };
+type ThemeReviewSectionProps = { themeId?: ThemeDetailResponse['themeId']; reviewRefetchKey?: number; onReviewCount?: (count?: number) => void };
 
-function ThemeReviewSection({ themeId, reviewRefetchKey }: ThemeReviewSectionProps) {
+function ThemeReviewSection({ themeId, reviewRefetchKey, onReviewCount }: ThemeReviewSectionProps) {
   const [pageSelection, setPageSelection] = useState({ themeId, page: 1 });
   // 이전 테마의 페이지로 새 조회가 시작되는 중간 렌더도 방지한다.
   const currentPage = pageSelection.themeId === themeId ? pageSelection.page : 1;
@@ -70,6 +71,7 @@ function ThemeReviewSection({ themeId, reviewRefetchKey }: ThemeReviewSectionPro
       try {
         const res = await getThemeReviewsListAPI(themeId, currentPage, pageSize);
         if (!isCurrent()) return;
+        onReviewCount?.(res?.reviewCnt);
         if (res) {
           setSatisfactionAvg(res.satisfactionAvg || 0);
           setReviewCnt(res.reviewCnt || 0);
@@ -78,12 +80,14 @@ function ThemeReviewSection({ themeId, reviewRefetchKey }: ThemeReviewSectionPro
           setResolvedThemeId(themeId);
         }
       } catch (error) {
-        if (isCurrent()) console.error('테마 후기 목록 조회 중 오류 발생:', error);
+        if (!isCurrent()) return;
+        onReviewCount?.();
+        console.error('테마 후기 목록 조회 중 오류 발생:', error);
       }
     };
     fetchData();
     return () => { active = false; };
-  }, [themeId, currentPage, reviewRefetchKey]);
+  }, [themeId, currentPage, reviewRefetchKey, onReviewCount]);
 
   const handlePageClick = (page: number) => {
     if (page !== currentPage) setPageSelection({ themeId, page });
@@ -95,6 +99,12 @@ function ThemeReviewSection({ themeId, reviewRefetchKey }: ThemeReviewSectionPro
 
   const handleNextPage = () => {
     if (currentPage < totalPages) setPageSelection({ themeId, page: currentPage + 1 });
+  };
+
+  const handleReviewStart = () => {
+    if (themeId != null) track('review_write_start', { theme_id: themeId, result: isLoggedIn ? 'success' : 'need_login' });
+    if (isLoggedIn) setModal(true);
+    else setIsLoginModalOpen(true);
   };
 
   return (
@@ -114,13 +124,7 @@ function ThemeReviewSection({ themeId, reviewRefetchKey }: ThemeReviewSectionPro
 
           {/* 리뷰 작성 버튼 */}
           <ReviewWriteButton
-            onClick={() => {
-              if (!isLoggedIn) {
-                setIsLoginModalOpen(true);
-                return;
-              }
-              setModal(true);
-          }}>
+            onClick={handleReviewStart}>
             <StyledPencilIcon/>
             <ReviewWriteButtonText>
               후기 작성하기
@@ -141,13 +145,7 @@ function ThemeReviewSection({ themeId, reviewRefetchKey }: ThemeReviewSectionPro
 
           {/* 리뷰 작성 버튼 */}
           <ReviewWriteButton
-            onClick={() => {
-              if (!isLoggedIn) {
-                setIsLoginModalOpen(true);
-                return;
-              }
-              setModal(true);
-          }}>
+            onClick={handleReviewStart}>
             <StyledPencilIcon/>
             <ReviewWriteButtonText>
               후기 작성하기
@@ -202,6 +200,7 @@ function ThemeReviewSection({ themeId, reviewRefetchKey }: ThemeReviewSectionPro
 
 // eslint 에러 방지
 ThemeReviewSection.propTypes = {
+  onReviewCount: PropTypes.func,
   themeId: PropTypes.number.isRequired,
 };
 

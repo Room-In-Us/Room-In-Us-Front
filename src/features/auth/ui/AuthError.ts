@@ -1,3 +1,4 @@
+import { track } from '../../../shared/utils/analytics';
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -7,6 +8,7 @@ function AuthError() {
 
   useEffect(() => {
     if (!hasRun.current) {
+      track('login_fail');
       hasRun.current = true; // 첫 실행 후 플래그 변경
       alert("에러가 발생하였습니다.");
       navigate('/login');

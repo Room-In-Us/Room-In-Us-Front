@@ -1,3 +1,4 @@
+import { trackPreferences } from '../../../shared/utils/analytics';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { useRecoilState } from 'recoil';
@@ -45,6 +46,7 @@ function SurveyInfoSection() {
 
       console.log('성향조사 제출 결과: ', payload);
       const response = await patchPreferencesAPI(payload);
+      trackPreferences(payload);
       console.log('성향조사 제출 결과: ', response);
       setSurveySection('complete');
     } catch (error) {

@@ -1,3 +1,4 @@
+import { trackFavorite, trackThemeSelection } from '../utils/analytics';
 import { useState, useEffect, memo } from 'react';
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -21,12 +22,14 @@ import type { ThemeResponse } from '../types/theme';
 type ContentCardProps = {
   data: ThemeResponse;
   headCount: number;
+  listName: string;
+  listPosition: number;
   type?: string;
   onUnlike?: (themeId: ThemeResponse['themeId']) => void;
   backButtonText?: string;
 };
 
-function ContentCard({ data, headCount, type, onUnlike, backButtonText }: ContentCardProps) {
+function ContentCard({ data, headCount, type, onUnlike, backButtonText, listName, listPosition }: ContentCardProps) {
   const {
     themeId,
     locationName,
@@ -78,6 +81,25 @@ function ContentCard({ data, headCount, type, onUnlike, backButtonText }: Conten
     setIsHeartActive(isLoggedIn ? isLiked : false);
   }, [isLiked, isLoggedIn]);
 
+  const handleFavoriteClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    const adding = !isHeartActive;
+    if (!isLoggedIn) {
+      trackFavorite(themeId, adding, 'need_login');
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    setIsHeartActive(adding);
+    const sourcePage = typeof window === 'undefined' ? undefined : window.location?.pathname;
+    const updateFavorite = adding ? postThemeLikeAPI : deleteThemeLikeAPI;
+    void updateFavorite(themeId).then(
+      () => trackFavorite(themeId, adding, 'success', sourcePage),
+      () => trackFavorite(themeId, adding, 'fail', sourcePage),
+    );
+    if (!adding) onUnlike?.(themeId);
+  };
+
   return (
     <ContentWrapper 
       onClick={() => {
@@ -87,6 +109,7 @@ function ContentCard({ data, headCount, type, onUnlike, backButtonText }: Conten
           reservation: null,
         });
 
+        trackThemeSelection(data, listName, listPosition);
         navigate(`/theme/${themeId}`, { state: { backButtonText } });
       }}
     >
@@ -117,23 +140,7 @@ function ContentCard({ data, headCount, type, onUnlike, backButtonText }: Conten
               <>
                 {/* 하트 아이콘 영역 */}
                 <HeartWrapper
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!isLoggedIn) {
-                      setIsLoginModalOpen(true);
-                      return;
-                    }
-
-                    const next = !isHeartActive;
-                    setIsHeartActive(next);
-                  
-                    if (next) {
-                      postThemeLikeAPI(themeId);
-                    } else {
-                      deleteThemeLikeAPI(themeId);
-                      if (onUnlike) onUnlike(themeId);
-                    }
-                  }}
+                  onClick={handleFavoriteClick}
                 >
                   {isHeartActive ? (
                     <StyledHeartIcon3 />
@@ -191,22 +198,7 @@ function ContentCard({ data, headCount, type, onUnlike, backButtonText }: Conten
               <>
                 {/* 모바일 하트 아이콘 영역 */}
                 <HeartWrapper
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!isLoggedIn) {
-                      setIsLoginModalOpen(true);
-                      return;
-                    }
-                    const next = !isHeartActive;
-                    setIsHeartActive(next);
-                  
-                    if (next) {
-                      postThemeLikeAPI(themeId);
-                    } else {
-                      deleteThemeLikeAPI(themeId);
-                      if (onUnlike) onUnlike(themeId);
-                    }
-                  }}
+                  onClick={handleFavoriteClick}
                 >
                   {isHeartActive ? (
                     <StyledHeartIcon3 />
@@ -241,6 +233,8 @@ ContentCard.propTypes = {
   data: PropTypes.object.isRequired,
   type: PropTypes.string,
   headCount: PropTypes.number.isRequired,
+  listName: PropTypes.string.isRequired,
+  listPosition: PropTypes.number.isRequired,
   onUnlike: PropTypes.func,
 };
 

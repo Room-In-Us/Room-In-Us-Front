@@ -53,6 +53,7 @@ function mount(relative, { props = {}, values = {}, isMobile = false, sharedAtom
     if (cache.has(filename)) return cache.get(filename);
     const module = { exports: {} };
     const requireModule = id => {
+      if (id.endsWith('/utils/analytics')) return load(path.resolve(path.dirname(filename), id + '.ts'));
       if (id === 'react') return { ...react, __esModule: true, default: react };
       if (id === 'react/jsx-runtime') return { jsx, jsxs: jsx, Fragment: 'Fragment' };
       if (id === 'styled-components') return { __esModule: true, default: styled, css };

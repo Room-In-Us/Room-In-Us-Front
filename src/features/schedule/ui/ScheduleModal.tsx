@@ -1,3 +1,4 @@
+import { track } from '../../../shared/utils/analytics';
 import styled from 'styled-components'
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { scheduleModalState } from '../modal/scheduleAtom';
@@ -152,7 +153,13 @@ export default function ScheduleModal({themeId}: ScheduleModalProps) {
         if (!reservation) return;
         await patchReservationAPI(reservation.themeId, reservation.themeReservationId, reservedAt, selectedThemeId);
       } else {
-        await addReservationsAPI(selectedThemeId, reservedAt);
+        await addReservationsAPI(selectedThemeId, reservedAt).then(
+          () => track('add_to_schedule', { theme_id: selectedThemeId, result: 'success' }),
+          (error: unknown) => {
+            track('add_to_schedule', { theme_id: selectedThemeId, result: 'fail' });
+            throw error;
+          },
+        );
       }
       if (!isCurrentOperation(operation)) return;
       savedReservation.current = saved;

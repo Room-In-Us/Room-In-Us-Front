@@ -1,3 +1,4 @@
+import { track } from '../../shared/utils/analytics';
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -204,25 +205,25 @@ function MyPage() {
 
         {/* 네비게이션 영역 */}
         <NavigatorWrapper>
-          <NavigatorBox onClick={() => navigate('/mypage/preferences')}>
+          <NavigatorBox onClick={() => { track('click_mypage_menu', { menu_target: 'preferences' }); navigate('/mypage/preferences'); }}>
             <NavigatorText>
               내 성향조사 수정하기
             </NavigatorText>
             <StyledArrowIcon/>
           </NavigatorBox>
-          <NavigatorBox onClick={() => navigate('/mypage/reservations')}>
+          <NavigatorBox onClick={() => { track('click_mypage_menu', { menu_target: 'reservations' }); navigate('/mypage/reservations'); }}>
             <NavigatorText>
               예약한 방탈출 관리
             </NavigatorText>
             <StyledArrowIcon/>
           </NavigatorBox>
-          <NavigatorBox onClick={() => navigate('/mypage/favorites')}>
+          <NavigatorBox onClick={() => { track('click_mypage_menu', { menu_target: 'favorites' }); navigate('/mypage/favorites'); }}>
             <NavigatorText>
               찜해둔 방탈출
             </NavigatorText>
             <StyledArrowIcon/>
           </NavigatorBox>
-          <NavigatorBox onClick={() => navigate('/mypage/reviews')}>
+          <NavigatorBox onClick={() => { track('click_mypage_menu', { menu_target: 'reviews' }); navigate('/mypage/reviews'); }}>
             <NavigatorText>
               내가 작성한 후기
             </NavigatorText>
