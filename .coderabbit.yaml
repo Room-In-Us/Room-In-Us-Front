@@ -1,0 +1,102 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: 'ko-KR'
+early_access: false
+
+tone_instructions: >-
+  한국어로 간결하게 작성해 주세요. 각 지적의 발생 조건과 사용자 영향을 설명하고,
+  런타임 오류, 보안, 접근성, 회귀를 우선해 주세요. 포맷터가 처리하는 차이는 생략해 주세요.
+
+reviews:
+  profile: 'assertive'
+  request_changes_workflow: false
+  high_level_summary: true
+  high_level_summary_in_walkthrough: true
+  changed_files_summary: true
+  collapse_walkthrough: true
+  review_status: true
+  review_details: false
+  commit_status: true
+  fail_commit_status: false
+  poem: false
+  sequence_diagrams: false
+
+  path_filters:
+    - '!node_modules/**'
+    - '!dist/**'
+    - '!dist-ssr/**'
+    - '!.vite/**'
+    - '!coverage/**'
+    - '!**/*.png'
+    - '!**/*.jpg'
+    - '!**/*.jpeg'
+    - '!**/*.gif'
+    - '!**/*.webp'
+    - '!**/*.ico'
+    - '!**/*.avif'
+    - '!**/*.mp4'
+    - '!**/*.webm'
+    - '!**/*.mp3'
+    - '!**/*.ogg'
+
+  path_instructions:
+    - path: 'src/**/*.{ts,tsx}'
+      instructions: |
+        인접 코드의 상대경로 import와 타입 계약을 확인합니다.
+        로딩, 빈 결과, 오류, 중복 제출 처리와 반응형 레이아웃, 폼 레이블, 키보드 포커스 등 변경에 해당하는 사용자 흐름을 확인합니다.
+        UI 변경은 기존 styled-components, MUI와 공유 컴포넌트의 패턴을 기준으로 검토합니다.
+    - path: 'src/{app,pages}/**'
+      instructions: |
+        React Router의 경로, 파라미터, 보호 라우트, 리다이렉트, 404 처리와 직접 URL 접근을 확인합니다.
+        라우트 경로를 바꾸면 SEO 설정과 배포 환경의 SPA fallback에 미치는 영향을 확인합니다.
+    - path: 'src/{app/API.ts,features/**/api/**,features/auth/**,shared/auth/**}'
+      instructions: |
+        공통 Axios 인스턴스 사용, 요청·응답 타입, 네트워크 오류와 요청 취소 처리를 확인합니다.
+        인증 변경은 세션 전환이나 로그아웃 후 늦게 도착하는 응답, 동시 401과 재발급 반복 여부를 확인합니다.
+    - path: 'src/shared/utils/analytics.ts'
+      instructions: |
+        이벤트 이름과 파라미터의 호환성, 중복 기록, 개인정보 마스킹을 확인합니다.
+    - path: '{server,api}/**'
+      instructions: |
+        이미지 프록시의 허용 호스트 검사, 요청 검증, 오류 응답과 Node.js 서버 및 Vercel 진입점의 일관성을 확인합니다.
+    - path: '{.github/workflows/**,Dockerfile,vite.config.js,nginx-app.conf,netlify.toml,vercel.json,_redirects}'
+      instructions: |
+        변경에 해당하는 브랜치별 배포, npm 명령, Node.js 버전, Vite 빌드 환경 변수와 SPA fallback을 확인합니다.
+        빌드 로그와 클라이언트 번들의 비밀 값 노출 여부를 확인합니다.
+    - path: 'tests/**/*.test.cjs'
+      instructions: |
+        node:test 기반 회귀 테스트가 변경된 동작과 실패 조건을 재현하는지 확인합니다.
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - '^develop$'
+      - '^main$'
+
+  finishing_touches:
+    docstrings:
+      enabled: false
+    unit_tests:
+      enabled: false
+
+  tools:
+    eslint:
+      enabled: true
+    gitleaks:
+      enabled: true
+    markdownlint:
+      enabled: true
+    yamllint:
+      enabled: true
+    actionlint:
+      enabled: true
+
+chat:
+  art: false
+  auto_reply: true
+
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - 'AGENTS.md'
